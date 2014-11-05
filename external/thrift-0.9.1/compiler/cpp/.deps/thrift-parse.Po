@@ -20,8 +20,7 @@ thrift-parse.o: src/parse/parse.cc src/parse/t_type.h \
   /usr/include/sys/_types/_wint_t.h /usr/include/_types/_wctype_t.h \
   /usr/include/ctype.h /usr/include/runetype.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstring \
-  /usr/include/string.h /usr/include/sys/_types/_rsize_t.h \
-  /usr/include/sys/_types/_errno_t.h /usr/include/strings.h \
+  /usr/include/string.h /usr/include/strings.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwchar \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cwctype \
@@ -34,7 +33,6 @@ thrift-parse.o: src/parse/parse.cc src/parse/t_type.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/type_traits \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03 \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/typeinfo \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/exception \
@@ -52,13 +50,12 @@ thrift-parse.o: src/parse/parse.cc src/parse/t_type.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__undef_min_max \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/iterator \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03 \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple \
+  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/atomic \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/map \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/functional \
-  /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_03 \
   src/parse/t_doc.h src/parse/t_typedef.h src/md5.h
 
 src/parse/t_type.h:
@@ -137,10 +134,6 @@ src/parse/t_type.h:
 
 /usr/include/string.h:
 
-/usr/include/sys/_types/_rsize_t.h:
-
-/usr/include/sys/_types/_errno_t.h:
-
 /usr/include/strings.h:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/cstdio:
@@ -168,8 +161,6 @@ src/parse/t_type.h:
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/utility:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple:
-
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tuple_03:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/memory:
 
@@ -217,9 +208,9 @@ src/parse/t_type.h:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base:
 
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_base_03:
-
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/tuple:
+
+/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/atomic:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stdexcept:
 
@@ -228,8 +219,6 @@ src/parse/t_type.h:
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__tree:
 
 /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/functional:
-
-/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__functional_03:
 
 src/parse/t_doc.h:
 

@@ -16,29 +16,34 @@ THRIFTSRCDIR := $(SRCDIR)/thrift
 THRIFTBUILDDIR := $(BUILDDIR)/thrift
 THRIFTTARGET_QS := $(BINDIR)/qserver
 THRIFTTARGET_SS := $(BINDIR)/succinct
+THRIFTTARGET_SC := $(LIBDIR)/libsuccinctclient.a
 
 SUCCINCTSRCDIRS := $(shell find $(SUCCINCTSRCDIR) -type d)
 SUCCINCTBUILDDIRS := $(subst $(SUCCINCTSRCDIR),$(SUCCINCTBUILDDIR),$(SUCCINCTSRCDIRS))
 
 SUCCINCTSOURCES := $(shell find $(SUCCINCTSRCDIR) -type f -name *.cpp)
 SUCCINCTOBJECTS := $(patsubst $(SUCCINCTSRCDIR)/%,$(SUCCINCTBUILDDIR)/%,$(SUCCINCTSOURCES:.cpp=.o))
-SUCCINCTCFLAGS := -O3 -std=c++11 -Wall -Werror
+SUCCINCTCFLAGS := -O3 -std=c++11 -Wall
 SUCCINCTLIB :=
 SUCCINCTINC := -I include
 
 THRIFTSOURCES_GEN := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/QueryService.cpp
 THRIFTSOURCES_SS := $(THRIFTSRCDIR)/SuccinctServer.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTSOURCES_QS := $(THRIFTSRCDIR)/QueryServer.cpp
+THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTOBJECTS_GEN := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_GEN:.cpp=.o))
 THRIFTOBJECTS_SS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SS:.cpp=.o))
 THRIFTOBJECTS_QS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_QS:.cpp=.o))
+THRIFTOBJECTS_SC := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SC:.cpp=.o))
 THRIFTCFLAGS := -O3 -std=c++11 -w -DHAVE_NETINET_IN_H
 THRIFTLIB := -L $(LIBDIR) -lsuccinct -levent -lthrift
 THRIFTINC := -I include
 
 all: succinct
 
-succinct: $(SUCCINCTTARGET)
+succinct: succinct-lib
+
+succinct-lib: $(SUCCINCTTARGET)
 
 $(SUCCINCTTARGET): $(SUCCINCTOBJECTS)
 	@echo "Creating static library..."
@@ -49,7 +54,7 @@ $(SUCCINCTBUILDDIR)/%.o: $(SUCCINCTSRCDIR)/%.cpp
 	@echo " $(CC) $(SUCCINCTCFLAGS) $(SUCCINCTINC) -c -o $@ $<";\
 		$(CC) $(SUCCINCTCFLAGS) $(SUCCINCTINC) -c -o $@ $<
 
-succinct-thrift: build-thrift query-server succinct-server 
+succinct-thrift: build-thrift query-server succinct-server succinct-client 
 	@echo "test: $(THRIFTTARGET_SS) $(THRIFTTARGET_QS)"
 
 build-thrift:
@@ -78,6 +83,14 @@ $(THRIFTBUILDDIR)/%.o: $(THRIFTSRCDIR)/%.cpp
 	@mkdir -p $(THRIFTBUILDDIR)
 	@echo " $(CC) $(THRIFTCFLAGS) $(THRIFTINC) -c -o $@ $<";\
 		$(CC) $(THRIFTCFLAGS) $(THRIFTINC) -c -o $@ $<
+		
+succinct-client: succinct-client-lib
+
+succinct-client-lib: $(THRIFTTARGET_SC)
+
+$(THRIFTTARGET_SC): $(THRIFTOBJECTS_SC)
+	@echo "Creating static library..."
+	@echo " $(AR) $(ARFLAGS) $@ $^"; $(AR) $(ARFLAGS) $@ $^
 
 tests: build-gtest
 	@echo "Testing..."

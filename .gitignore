@@ -21,8 +21,19 @@
 *.la
 *.a
 *.lib
+lib/*
 
 # Executables
 *.exe
 *.out
 *.app
+bin/*
+
+# Directories
+build
+scratch
+
+# Eclipse files
+.cproject
+.project
+.settings

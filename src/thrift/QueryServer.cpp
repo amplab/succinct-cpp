@@ -25,16 +25,26 @@ public:
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
+        this->is_init = false;
     }
 
     int32_t init() {
+        fprintf(stderr, "Received INIT signal, initializing data structures...\n");
+        fprintf(stderr, "Construct is set to %d\n", construct);
+
         fd = new SuccinctFile(filename, construct);
         if(construct) {
+            fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
             fd->serialize(s_file);
             s_file.close();
-            remove(filename.c_str());
+        } else {
+            fprintf(stderr, "Read data structures from file %s\n", filename.c_str());
         }
+        fprintf(stderr, "Succinct data structures with original size = %llu\n", fd->original_size());
+        fprintf(stderr, "Done initializing...\n");
+        fprintf(stderr, "Waiting for queries...\n");
+        is_init = true;
         return 0;
     }
 
@@ -58,22 +68,29 @@ private:
     SuccinctFile *fd;
     bool construct;
     std::string filename;
+    bool is_init;
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-p port] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
 
-    if(argc < 2 || argc > 4) {
+    if(argc < 2 || argc > 6) {
         print_usage(argv[0]);
         return -1;
     }
 
+    fprintf(stderr, "Command line: ");
+    for(int i = 0; i < argc; i++) {
+        fprintf(stderr, "%s ", argv[i]);
+    }
+    fprintf(stderr, "\n");
+
     int c;
     uint32_t mode = 0, port = QUERY_SERVER_PORT;
-    while((c = getopt(argc, argv, "mp:")) != -1) {
+    while((c = getopt(argc, argv, "m:p:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -103,6 +120,7 @@ int main(int argc, char **argv) {
 
     // TODO: Change to non-blocking server
     TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+    fprintf(stderr, "Starting Query Server, waiting for INIT signal...\n");
     server.serve();
     return 0;
 }

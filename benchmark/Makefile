@@ -3,23 +3,35 @@ CC := g++
 SRCDIR := ../benchmark
 BUILDDIR := ../build/bench
 LIBDIR := ../lib
-TARGET := ../bin/succinct-bench
+TARGET_S := ../bin/sbench
+TARGET_SS := ../bin/ssbench
 
-SRCDIRS := $(shell find $(SRCDIR) -type d)
-BUILDDIRS := $(subst $(SRCDIR),$(BUILDDIR),$(SRCDIRS))
+SRC_S := $(SRCDIR)/succinct-bench.cpp
+SRC_SS := $(SRCDIR)/succinctserver-bench.cpp
 
-SOURCES := $(shell find $(SRCDIR) -type f -name *.cpp)
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
-CFLAGS := -O3 -std=c++11 -Wall -Werror
-LIB := -L $(LIBDIR) -l succinct
+OBJ_S := $(BUILDDIR)/succinct-bench.o
+OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
+
+CFLAGS := -O3 -std=c++11 -Wall -g
+LIB := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -lsuccinctclient
 INC := -I ../include
 
-$(TARGET) : $(OBJECTS)
+all: sbench ssbench
+
+sbench: $(TARGET_S)
+
+ssbench: $(TARGET_SS)
+
+$(TARGET_S): $(OBJ_S)
 	@echo "Linking..."
-	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
+	@echo " $(CC) $^ -o $(TARGET_S) $(LIB)"; $(CC) $^ -o $(TARGET_S) $(LIB)
+	
+$(TARGET_SS): $(OBJ_SS)
+	@echo "Linking..."
+	@echo " $(CC) $^ -o $(TARGET_SS) $(LIB)"; $(CC) $^ -o $(TARGET_SS) $(LIB)
 	
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(BUILDDIRS)
+	@mkdir -p $(BUILDDIR)
 	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:

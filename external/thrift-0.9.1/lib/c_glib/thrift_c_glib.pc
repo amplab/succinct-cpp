@@ -17,8 +17,8 @@
 # under the License.
 #
 
-prefix=/Users/anuragk/Work/Succinct-Work/succinct/succinct-cpp/external/thrift-0.9.1/../..
-exec_prefix=/Users/anuragk/Work/Succinct-Work/succinct/succinct-cpp/external/thrift-0.9.1/../..
+prefix=/Users/anuragk/Work/Succinct/succinct-cpp/external/thrift-0.9.1/../..
+exec_prefix=/Users/anuragk/Work/Succinct/succinct-cpp/external/thrift-0.9.1/../..
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
