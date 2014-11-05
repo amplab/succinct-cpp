@@ -1,4 +1,0 @@
-succinct-cpp
-============
-
-Succinct C++
