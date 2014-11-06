@@ -91,7 +91,6 @@ test-driver
 /external/thrift-0.9.1/compiler/cpp/thrifty.hh
 /external/thrift-0.9.1/compiler/cpp/version.h
 /external/thrift-0.9.1/config.*
-/external/thrift-0.9.1/configure
 /external/thrift-0.9.1/configure.lineno
 /external/thrift-0.9.1/configure.scan
 /external/thrift-0.9.1/contrib/fb303/config.cache
@@ -240,8 +239,9 @@ test-driver
 /external/thrift-0.9.1/lib/erl/logs/
 /external/thrift-0.9.1/libtool
 /external/thrift-0.9.1/ltmain.sh
-/external/thrift-0.9.1/missing
 /external/thrift-0.9.1/stamp-h1
+/external/thrift-0.9.1/Makefile*
+/external/thrift-0.9.1/missing
 /external/thrift-0.9.1/test/status.html
 /external/thrift-0.9.1/test/c_glib/test_client
 /external/thrift-0.9.1/test/c_glib/test_server
