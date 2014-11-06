@@ -240,7 +240,7 @@ test-driver
 /external/thrift-0.9.1/libtool
 /external/thrift-0.9.1/ltmain.sh
 /external/thrift-0.9.1/stamp-h1
-/external/thrift-0.9.1/Makefile*
+/external/thrift-0.9.1/Makefile
 /external/thrift-0.9.1/missing
 /external/thrift-0.9.1/test/status.html
 /external/thrift-0.9.1/test/c_glib/test_client
