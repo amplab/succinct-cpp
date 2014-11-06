@@ -47,6 +47,7 @@ succinct-lib: $(SUCCINCTTARGET)
 
 $(SUCCINCTTARGET): $(SUCCINCTOBJECTS)
 	@echo "Creating static library..."
+	@mkdir -p $(LIBDIR)
 	@echo " $(AR) $(ARFLAGS) $@ $^"; $(AR) $(ARFLAGS) $@ $^
 
 $(SUCCINCTBUILDDIR)/%.o: $(SUCCINCTSRCDIR)/%.cpp
@@ -71,11 +72,13 @@ succinct-server: succinct $(THRIFTTARGET_SS)
 
 $(THRIFTTARGET_SS): $(THRIFTOBJECTS_SS) $(THRIFTOBJECTS_GEN)
 	@echo "Linking..."
+	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(THRIFTTARGET_SS) $(THRIFTLIB)";\
 		$(CC) $^ -o $(THRIFTTARGET_SS) $(THRIFTLIB)
 
 $(THRIFTTARGET_QS): $(THRIFTOBJECTS_QS) $(THRIFTOBJECTS_GEN) 
 	@echo "Linking..."
+	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(THRIFTTARGET_QS) $(THRIFTLIB)";\
 		$(CC) $^ -o $(THRIFTTARGET_QS) $(THRIFTLIB)
 
@@ -90,6 +93,7 @@ succinct-client-lib: $(THRIFTTARGET_SC)
 
 $(THRIFTTARGET_SC): $(THRIFTOBJECTS_SC)
 	@echo "Creating static library..."
+	@mkdir -p $(LIBDIR)
 	@echo " $(AR) $(ARFLAGS) $@ $^"; $(AR) $(ARFLAGS) $@ $^
 
 tests: build-gtest

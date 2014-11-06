@@ -2,9 +2,10 @@ CC := g++
 
 SRCDIR := ../benchmark
 BUILDDIR := ../build/bench
+BINDIR := ../bin
 LIBDIR := ../lib
-TARGET_S := ../bin/sbench
-TARGET_SS := ../bin/ssbench
+TARGET_S := $(BINDIR)/sbench
+TARGET_SS := $(BINDIR)/ssbench
 
 SRC_S := $(SRCDIR)/succinct-bench.cpp
 SRC_SS := $(SRCDIR)/succinctserver-bench.cpp
@@ -28,6 +29,7 @@ $(TARGET_S): $(OBJ_S)
 	
 $(TARGET_SS): $(OBJ_SS)
 	@echo "Linking..."
+	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_SS) $(LIB)"; $(CC) $^ -o $(TARGET_SS) $(LIB)
 	
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
