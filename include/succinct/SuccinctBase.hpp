@@ -47,7 +47,7 @@ public:
     // Bitmap stored as a 64-bit array
     typedef struct _bitmap {
         uint64_t *bitmap;
-        uint64_t size; // TODO: Change to uint64_t
+        uint64_t size;
     } BitMap;
 
     // Dictionary stored as a bitmap with rank data structures

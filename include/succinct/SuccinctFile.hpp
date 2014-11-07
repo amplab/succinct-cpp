@@ -12,7 +12,6 @@ class SuccinctFile : public SuccinctCore {
 private:
     std::string input_filename;
     std::string succinct_filename;
-    /* TODO: Add any SuccinctFile Specific data-structures here */
 
 public:
     SuccinctFile(std::string filename, bool construct = true);

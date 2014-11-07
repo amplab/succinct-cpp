@@ -140,12 +140,10 @@ void SuccinctCore::construct(const char* filename,
                             data_bitmap, compactSA, compactISA, s_allocator);
         break;
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-        // TODO: Test
         npa = new EliasDeltaEncodedNPA(input_size, alphabet_size, context_len, npa_sampling_rate,
                 data_bitmap, compactSA, compactISA, s_allocator);
         return;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-        // TODO: Test
         npa = new WaveletTreeEncodedNPA(input_size, alphabet_size, context_len, npa_sampling_rate,
                 data_bitmap, compactSA, compactISA, s_allocator, this);
         break;
@@ -163,7 +161,6 @@ void SuccinctCore::construct(const char* filename,
         SA = new SampledByIndexSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator);
         break;
     case SamplingScheme::SAMPLE_BY_VALUE:
-        // TODO: Test
         SA = new SampledByValueSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator, this);
         break;
     default:
@@ -177,7 +174,6 @@ void SuccinctCore::construct(const char* filename,
         ISA = new SampledByIndexISA(isa_sampling_rate, npa, compactSA, input_size, s_allocator);
         break;
     case SamplingScheme::SAMPLE_BY_VALUE:
-        // TODO: Test
         assert(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
         ISA = new SampledByValueISA(sa_sampling_rate, npa, compactSA, input_size,
                 ((SampledByValueSA *)SA)->get_d_bpos(), s_allocator, this);
@@ -329,7 +325,6 @@ size_t SuccinctCore::deserialize(std::istream& in) {
         in_size += ((EliasGammaEncodedNPA *)npa)->deserialize(in);
         break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-        // TODO: Test
         in_size += ((WaveletTreeEncodedNPA *)npa)->deserialize(in);
         break;
     default:

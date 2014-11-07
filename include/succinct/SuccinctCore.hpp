@@ -31,7 +31,7 @@ protected:
     SampledArray *SA;                   // Suffix Array
     SampledArray *ISA;                  // Inverse Suffix Array
     NPA *npa;                           // Next Pointer Array
-    std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv; TODO: Remove!
+    std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
 
     /* Auxiliary data structures */
     char *alphabet;

@@ -34,9 +34,7 @@ public:
             SuccinctAllocator &s_allocator, SuccinctBase *s_base);
 
     // Virtual destructor
-    ~WaveletTreeEncodedNPA() {
-        // TODO: Cleanup!!!
-    }
+    ~WaveletTreeEncodedNPA() { }
 
     // Encode EliasDeltaEncodedNPA
     virtual void encode(bitmap_t *data_bitmap, bitmap_t *compactSA,

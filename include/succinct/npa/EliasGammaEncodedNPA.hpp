@@ -34,9 +34,7 @@ public:
             SuccinctAllocator &s_allocator);
 
     // Virtual destructor
-    ~EliasGammaEncodedNPA() {
-        //TODO: Cleanup!!!
-    }
+    ~EliasGammaEncodedNPA() { }
 
     // Compute the elias gamma encoding size in bits for a 64 bit integer
     static uint32_t elias_gamma_encoding_size(uint64_t n);

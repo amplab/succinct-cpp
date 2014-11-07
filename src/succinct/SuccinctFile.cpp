@@ -128,7 +128,6 @@ std::string SuccinctFile::name() {
 }
 
 void SuccinctFile::extract(std::string& result, uint64_t offset, uint64_t len) {
-    // TODO: Compare with string builder implementation
     result = "";
     uint64_t idx = lookupISA(offset);
     for (uint64_t k = 0;  k < len; k++) {

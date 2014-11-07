@@ -23,7 +23,6 @@ SampledByIndexISA::SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
 
 void SampledByIndexISA::sample(bitmap_t *SA, uint64_t n) {
 
-    // TODO: set this to log(max_sample)
     data_bits = SuccinctUtils::int_log_2(n + 1);
     data_size = (n / sampling_rate) + 1;
 

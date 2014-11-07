@@ -2,9 +2,11 @@
 #include "thrift/succinct_constants.h"
 #include "succinct/SuccinctFile.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <thrift/server/TThreadedServer.h>
+#include <thrift/transport/TSocket.h>
+#include <thrift/concurrency/PosixThreadFactory.h>
 
 #include <cstdio>
 #include <fstream>
@@ -114,13 +116,18 @@ int main(int argc, char **argv) {
 
     shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct));
     shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
-    shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-    shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-    shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-    // TODO: Change to non-blocking server
-    TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-    fprintf(stderr, "Starting Query Server, waiting for INIT signal...\n");
-    server.serve();
+    try {
+        shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
+        shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
+        shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
+        TThreadedServer server(processor,
+                         server_transport,
+                         transport_factory,
+                         protocol_factory);
+        server.serve();
+    } catch(std::exception& e) {
+        fprintf(stderr, "Exception at SuccinctServer:main(): %s\n", e.what());
+    }
     return 0;
 }
