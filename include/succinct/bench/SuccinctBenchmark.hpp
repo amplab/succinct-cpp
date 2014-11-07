@@ -5,6 +5,8 @@
 #include <fstream>
 #include <vector>
 
+#include <sys/time.h>
+
 #include "succinct/SuccinctFile.hpp"
 
 #if defined(__i386__)
@@ -56,9 +58,16 @@ private:
     typedef unsigned long long int time_t;
     typedef unsigned long count_t;
 
-    const count_t WARMUP_N = 10000;
-    const count_t COOLDOWN_N = 10000;
-    const count_t MEASURE_N = 100000;
+    const count_t WARMUP_N = 1000;
+    const count_t COOLDOWN_N = 1000;
+    const count_t MEASURE_N = 10000;
+
+    static time_t get_timestamp() {
+		struct timeval now;
+		gettimeofday (&now, NULL);
+
+		return  now.tv_usec + (time_t)now.tv_sec * 1000000;
+	}
 
     void generate_randoms() {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
@@ -156,39 +165,19 @@ public:
         count_t sum;
         std::ofstream res_stream(res_path);
 
-        // Warmup
-        sum = 0;
-        fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-        for(uint64_t i = 0; i < WARMUP_N; i++) {
-            res = fd->count(queries[i]);
-            sum = (sum + res) % fd->original_size();
-        }
-        fprintf(stderr, "Warmup chksum = %lu\n", sum);
-        fprintf(stderr, "Warmup complete.\n");
-
         // Measure
         sum = 0;
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+        for(uint64_t i = 0; i < queries.size(); i++) {
             t0 = rdtsc();
             res = fd->count(queries[i]);
             t1 = rdtsc();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
+            res_stream << res << "\t" << tdiff << "\n";
             sum = (sum + res) % fd->original_size();
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
         fprintf(stderr, "Measure complete.\n");
-
-        // Cooldown
-        sum = 0;
-        fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
-            res = fd->count(queries[i]);
-            sum = (sum + res) % fd->original_size();
-        }
-        fprintf(stderr, "Cooldown chksum = %lu\n", sum);
-        fprintf(stderr, "Cooldown complete.\n");
 
         res_stream.close();
 
@@ -200,42 +189,20 @@ public:
         count_t sum;
         std::ofstream res_stream(res_path);
 
-        // Warmup
-        sum = 0;
-        fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-        for(uint64_t i = 0; i < WARMUP_N; i++) {
-            std::vector<int64_t> res;
-            fd->search(res, queries[i]);
-            sum = (sum + res.size()) % fd->original_size();
-        }
-        fprintf(stderr, "Warmup chksum = %lu\n", sum);
-        fprintf(stderr, "Warmup complete.\n");
-
         // Measure
         sum = 0;
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+        for(uint64_t i = 0; i < queries.size(); i++) {
             std::vector<int64_t> res;
             t0 = rdtsc();
             fd->search(res, queries[i]);
             t1 = rdtsc();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << res.size() << "\t" << tdiff << "\n";
+            res_stream << res.size() << "\t" << tdiff << "\n";
             sum = (sum + res.size()) % fd->original_size();
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
         fprintf(stderr, "Measure complete.\n");
-
-        // Cooldown
-        sum = 0;
-        fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
-            std::vector<int64_t> res;
-            fd->search(res, queries[i]);
-            sum = (sum + res.size()) % fd->original_size();
-        }
-        fprintf(stderr, "Cooldown chksum = %lu\n", sum);
-        fprintf(stderr, "Cooldown complete.\n");
 
         res_stream.close();
 
@@ -253,7 +220,7 @@ public:
         fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
         for(uint64_t i = 0; i < WARMUP_N; i++) {
             std::string res;
-            fd->extract(res, randoms[i], randoms[i] + extract_length);
+            fd->extract(res, randoms[i], extract_length);
             sum = (sum + res.length()) % fd->original_size();
         }
         fprintf(stderr, "Warmup chksum = %lu\n", sum);
@@ -265,7 +232,7 @@ public:
         for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
             t0 = rdtsc();
-            fd->extract(res, randoms[i], randoms[i] + extract_length);
+            fd->extract(res, randoms[i], extract_length);
             t1 = rdtsc();
             tdiff = t1 - t0;
             res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
@@ -279,7 +246,7 @@ public:
         fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
         for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
-            fd->extract(res, randoms[i], randoms[i] + extract_length);
+            fd->extract(res, randoms[i], extract_length);
             sum = (sum + res.length()) % fd->original_size();
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);

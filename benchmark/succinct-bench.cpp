@@ -10,18 +10,22 @@ void print_usage(char *exec) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 4) {
+    if(argc < 2 || argc > 6) {
         print_usage(argv[0]);
         return -1;
     }
 
     int c;
     uint32_t mode = 0;
-    while((c = getopt(argc, argv, "m:")) != -1) {
+    std::string querypath = "";
+    while((c = getopt(argc, argv, "m:q:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
             break;
+        case 'q':
+        	querypath = std::string(optarg);
+        	break;
         default:
             mode = 0;
         }
@@ -43,12 +47,13 @@ int main(int argc, char **argv) {
         s_out.close();
 
         // Benchmark core functions
-        SuccinctBenchmark s_bench(&fd);
+        SuccinctBenchmark s_bench(&fd, querypath);
         s_bench.benchmark_core();
+        s_bench.benchmark_file();
     } else if(mode == 1) {
         // Benchmark core functions
-        SuccinctBenchmark s_bench(inputpath);
-        s_bench.benchmark_core();
+        SuccinctBenchmark s_bench(inputpath, querypath);
+        s_bench.benchmark_file();
     } else {
         // Only modes 0, 1 supported for now
         assert(0);

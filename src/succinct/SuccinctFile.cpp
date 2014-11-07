@@ -96,9 +96,12 @@ std::pair<int64_t, int64_t> SuccinctFile::get_range(const char *p,
     if(sp > ep) return range;
 
     for (int64_t i = m - npa->get_context_len() - 2; i >= 0; i--) {
-       if (alphabet_map.find(p[i]) != alphabet_map.end()) {
+    	if (alphabet_map.find(p[i]) != alphabet_map.end()) {
            sigma_id = alphabet_map[p[i]].second;
            context_val = compute_context_value(p, i + 1);
+           if(npa->contexts.find(context_val) == npa->contexts.end()) {
+        	   return range;
+           }
            context_id = npa->contexts[context_val];
            start_off = get_rank1(&(npa->col_nec[sigma_id]), context_id) - 1;
            c1 = npa->col_offsets[sigma_id] + npa->cell_offsets[sigma_id][start_off];
@@ -109,12 +112,14 @@ std::pair<int64_t, int64_t> SuccinctFile::get_range(const char *p,
            } else {
                c2 = input_size - 1;
            }
-       } else return range;
+    	} else {
+		   return range;
+    	}
 
-       sp = binary_search_npa(sp, c1, c2, false);
-       ep = binary_search_npa(ep, c1, c2, true);
+		sp = binary_search_npa(sp, c1, c2, false);
+		ep = binary_search_npa(ep, c1, c2, true);
 
-       if (sp > ep) return range;
+		if (sp > ep) return range;
     }
 
     range.first = sp;

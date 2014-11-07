@@ -30,7 +30,6 @@ private:
     const count_t MAXSUM = 10000;
 
     static time_t get_timestamp() {
-
         struct timeval now;
         gettimeofday (&now, NULL);
 

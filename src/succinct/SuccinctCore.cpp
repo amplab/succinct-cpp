@@ -289,7 +289,9 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     in.read(reinterpret_cast<char *>(&(cmap_size)), sizeof(uint64_t));
     in_size += sizeof(uint64_t);
     for(uint64_t i = 0; i < cmap_size; i++) {
-        uint64_t first, second_first, second_second;
+    	char first;
+    	uint64_t second_first;
+    	uint32_t second_second;
         in.read(reinterpret_cast<char *>(&(first)), sizeof(char));
         in_size += sizeof(char);
         in.read(reinterpret_cast<char *>(&(second_first)), sizeof(uint64_t));
@@ -309,8 +311,8 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     in_size += SA->deserialize(in);
     in_size += ISA->deserialize(in);
 
-    Dictionary *d_bpos = new Dictionary;
     if(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE) {
+    	Dictionary *d_bpos = new Dictionary;
         assert(ISA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
         in_size += deserialize_dictionary(&d_bpos, in);
         ((SampledByValueSA *)SA)->set_d_bpos(d_bpos);
@@ -330,6 +332,9 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     default:
         assert(0);
     }
+
+    // TODO: Fix
+    Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets.begin() + 1, npa->col_offsets.end());
 
     return in_size;
 }

@@ -287,3 +287,4 @@ test-driver
 /external/thrift-0.9.1/tutorial/java/build/
 /external/thrift-0.9.1/tutorial/js/build/
 /external/thrift-0.9.1/ylwrap
+/Debug/
