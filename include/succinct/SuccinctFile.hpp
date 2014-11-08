@@ -45,7 +45,6 @@ private:
     std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
     std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);
 
-    int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e, bool flag);
     uint64_t compute_context_value(const char *str, uint64_t pos);
 
 };

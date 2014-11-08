@@ -24,13 +24,11 @@ cd "$topsrcdir"
 
 make -k clean >/dev/null 2>&1
 make -k distclean >/dev/null 2>&1
-find . -name Makefile.in -exec rm -f {} \;
 rm -rf \
 AUTHORS \
 ChangeLog \
 INSTALL \
 Makefile \
-Makefile.in \
 Makefile.orig \
 aclocal/libtool.m4 \
 aclocal/ltoptions.m4 \
@@ -48,7 +46,6 @@ config.log \
 config.status \
 config.status.lineno \
 config.sub \
-configure \
 configure.lineno \
 configure.scan \
 depcomp \

@@ -74,6 +74,23 @@ public:
 
     virtual size_t deserialize(std::istream& in) = 0;
 
+    virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
+    									bool flag) {
+    	int64_t sp = s;
+		int64_t ep = e;
+		uint64_t m;
+
+		while (sp <= ep) {
+		   m = (sp + ep) / 2;
+		   uint64_t npa_val = operator[](m);
+		   if (npa_val == val) return m;
+		   else if(val < npa_val) ep = m - 1;
+		   else sp = m + 1;
+		}
+
+		return flag ? ep : sp;
+    }
+
 protected:
 
     bool compare_data_bitmap(bitmap_t *data_bitmap, uint64_t i,

@@ -22,23 +22,6 @@ uint64_t SuccinctFile::compute_context_value(const char *p, uint64_t i) {
     return val;
 }
 
-int64_t SuccinctFile::binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
-                                        bool flag) {
-    int64_t sp = s;
-    int64_t ep = e;
-    uint64_t m;
-
-    while (sp <= ep) {
-       m = (sp + ep) / 2;
-       uint64_t npa_val = lookupNPA(m);
-       if (npa_val == val) return m;
-       else if(val < npa_val) ep = m - 1;
-       else sp = m + 1;
-    }
-
-    return flag ? ep : sp;
-}
-
 std::pair<int64_t, int64_t> SuccinctFile::get_range_slow(const char *p,
                                                         uint64_t len) {
     std::pair<int64_t, int64_t> range(0, -1);
@@ -56,8 +39,10 @@ std::pair<int64_t, int64_t> SuccinctFile::get_range_slow(const char *p,
             c2 = alphabet_map[alphabet[alphabet_map[p[i]].second + 1]].first - 1;
         } else return range;
 
-        sp = binary_search_npa(sp, c1, c2, false);
-        ep = binary_search_npa(ep, c1, c2, true);
+        if(c2 < c1) return range;
+
+        sp = npa->binary_search_npa(sp, c1, c2, false);
+        ep = npa->binary_search_npa(ep, c1, c2, true);
 
         if (sp > ep) return range;
     }
@@ -112,12 +97,11 @@ std::pair<int64_t, int64_t> SuccinctFile::get_range(const char *p,
            } else {
                c2 = input_size - 1;
            }
-    	} else {
-		   return range;
-    	}
+           if(c2 < c1) return range;
+    	} else return range;
 
-		sp = binary_search_npa(sp, c1, c2, false);
-		ep = binary_search_npa(ep, c1, c2, true);
+		sp = npa->binary_search_npa(sp, c1, c2, false);
+		ep = npa->binary_search_npa(ep, c1, c2, true);
 
 		if (sp > ep) return range;
     }

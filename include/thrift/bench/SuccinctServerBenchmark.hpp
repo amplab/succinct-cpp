@@ -120,7 +120,7 @@ public:
             fd->search(res, queries[i]);
             t1 = get_timestamp();
             tdiff = t1 - t0;
-            res_stream << "\t" << res.size() << "\t" << tdiff << "\n";
+            res_stream << res.size() << "\t" << tdiff << "\n";
             sum = (sum + res.size()) % MAXSUM;
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
