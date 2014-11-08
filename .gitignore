@@ -37,6 +37,22 @@ scratch
 .settings
 
 # Thrift files
+/include/thrift/TApplicationException.h
+/include/thrift/TDispatchProcessor.h
+/include/thrift/TLogging.h
+/include/thrift/TProcessor.h
+/include/thrift/TReflectionLocal.h
+/include/thrift/Thrift.h
+/include/thrift/async
+/include/thrift/concurrency
+/include/thrift/config.h
+/include/thrift/cxxfunctional.h
+/include/thrift/processor
+/include/thrift/protocol
+/include/thrift/qt
+/include/thrift/server
+/include/thrift/thrift-config.h
+/include/thrift/transport
 
 # generic ignores
 *.deps
@@ -62,7 +78,6 @@ scratch
 .*project
 junit*.properties
 gen-*
-Makefile.in
 aclocal.m4
 acinclude.m4
 autom4te.cache

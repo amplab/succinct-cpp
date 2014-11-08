@@ -60,8 +60,8 @@ succinct-thrift: build-thrift query-server succinct-server succinct-client
 
 build-thrift:
 	@echo "Building thrift-0.9.1..."
-	@echo " cd external/thrift-0.9.1; ./bootstrap.sh; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-pic=no --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install";\
-		cd external/thrift-0.9.1; ./bootstrap.sh; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-pic=no --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install
+	@echo " cd external/thrift-0.9.1; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install";\
+		cd external/thrift-0.9.1; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install
 	@echo " ./bin/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift"; ./bin/thrift -I include/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift
 	@echo " $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/"; $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/
 	@echo " $(RM) src/thrift/*skeleton*"; $(RM) src/thrift/*skeleton*
