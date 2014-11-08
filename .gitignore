@@ -116,7 +116,6 @@ test-driver
 /external/thrift-0.9.1/contrib/fb303/py/fb303/__init__.py
 /external/thrift-0.9.1/contrib/fb303/py/fb303/constants.py
 /external/thrift-0.9.1/contrib/fb303/py/fb303/ttypes.py
-/external/thrift-0.9.1/depcomp
 /external/thrift-0.9.1/lib/cpp/Debug/
 /external/thrift-0.9.1/lib/cpp/Debug-mt/
 /external/thrift-0.9.1/lib/cpp/Release/
@@ -234,8 +233,6 @@ test-driver
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/configure.in
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/install-sh
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/libtool
-/external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/ltmain.sh
-/external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/missing
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/mkinstalldirs
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/modules/
 /external/thrift-0.9.1/lib/php/src/ext/thrift_protocol/php_thrift_protocol.lo
@@ -248,10 +245,8 @@ test-driver
 /external/thrift-0.9.1/lib/py/dist/
 /external/thrift-0.9.1/lib/erl/logs/
 /external/thrift-0.9.1/libtool
-/external/thrift-0.9.1/ltmain.sh
 /external/thrift-0.9.1/stamp-h1
 /external/thrift-0.9.1/Makefile
-/external/thrift-0.9.1/missing
 /external/thrift-0.9.1/test/status.html
 /external/thrift-0.9.1/test/c_glib/test_client
 /external/thrift-0.9.1/test/c_glib/test_server
@@ -296,5 +291,4 @@ test-driver
 /external/thrift-0.9.1/tutorial/hs/dist/
 /external/thrift-0.9.1/tutorial/java/build/
 /external/thrift-0.9.1/tutorial/js/build/
-/external/thrift-0.9.1/ylwrap
 /Debug/
