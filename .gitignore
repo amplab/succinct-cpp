@@ -105,9 +105,6 @@ test-driver
 /external/thrift-0.9.1/compiler/cpp/thrifty.h
 /external/thrift-0.9.1/compiler/cpp/thrifty.hh
 /external/thrift-0.9.1/compiler/cpp/version.h
-/external/thrift-0.9.1/config.*
-/external/thrift-0.9.1/configure.lineno
-/external/thrift-0.9.1/configure.scan
 /external/thrift-0.9.1/contrib/fb303/config.cache
 /external/thrift-0.9.1/contrib/fb303/config.log
 /external/thrift-0.9.1/contrib/fb303/config.status
@@ -121,7 +118,6 @@ test-driver
 /external/thrift-0.9.1/contrib/fb303/py/fb303/constants.py
 /external/thrift-0.9.1/contrib/fb303/py/fb303/ttypes.py
 /external/thrift-0.9.1/depcomp
-/external/thrift-0.9.1/install-sh
 /external/thrift-0.9.1/lib/cpp/Debug/
 /external/thrift-0.9.1/lib/cpp/Debug-mt/
 /external/thrift-0.9.1/lib/cpp/Release/
