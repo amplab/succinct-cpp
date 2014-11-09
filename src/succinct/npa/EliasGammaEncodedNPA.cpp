@@ -359,7 +359,7 @@ int64_t EliasGammaEncodedNPA::binary_search_npa(uint64_t val, uint64_t s, uint64
 #endif
 
     uint64_t res = col_offsets[col_id] + sample_offset * sampling_rate + delta_idx;
-    if(delta_idx == delta_sum || delta_off == B->size) return res;
+    if(val == delta_sum || delta_off == B->size) return res;
 
     return flag ? res - 1 : res;
 }
