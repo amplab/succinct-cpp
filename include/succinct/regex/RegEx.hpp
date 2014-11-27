@@ -1,6 +1,8 @@
 #ifndef REGEX_H
 #define REGEX_H
 
+#include <iostream>
+
 enum RegExType {
     Or,
     Concat,
@@ -64,42 +66,55 @@ public:
     }
 };
 
-enum RepeatType {
+enum RegExRepeatType {
     ZeroOrMore,
-    OneOrMore
+    OneOrMore,
+    MinToMax
 };
 
 class RegExRepeat: public RegEx {
 private:
     RegEx *internal;
-    RepeatType r_type;
+    RegExRepeatType r_type;
+    int min;
+    int max;
 
 public:
-    RegExRepeat(RegEx *internal, RepeatType r_type): RegEx(RegExType::Repeat) {
+    RegExRepeat(RegEx *internal, RegExRepeatType r_type, int min = -1, int max = -1): RegEx(RegExType::Repeat) {
         this->internal = internal;
         this->r_type = r_type;
+        this->min = min;
+        this->max = max;
     }
 
     RegEx *getInternal() {
         return internal;
     }
 
-    RepeatType getRepeatType() {
+    RegExRepeatType getRepeatType() {
         return r_type;
+    }
+
+    int getMin() {
+        return min;
+    }
+
+    int getMax() {
+        return max;
     }
 };
 
 class RegExPrimitive: public RegEx {
 private:
-    char c;
+    std::string mgram;
 
 public:
-    RegExPrimitive(char c): RegEx(RegExType::Primitive) {
-        this->c = c;
+    RegExPrimitive(std::string mgram): RegEx(RegExType::Primitive) {
+        this->mgram = mgram;
     }
 
-    char getCharacter() {
-        return c;
+    std::string getMgram() {
+        return mgram;
     }
 };
 

@@ -1,5 +1,7 @@
 #include "succinct/regex/RegEx.hpp"
 #include "succinct/regex/RegExParser.hpp"
+#include "succinct/regex/RegExPlanner.hpp"
+#include "succinct/regex/RegExExecutor.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -14,7 +16,7 @@ void display(RegEx *re) {
     }
     case RegExType::Primitive:
     {
-        fprintf(stderr, "[%c]", ((RegExPrimitive *)re)->getCharacter());
+        fprintf(stderr, "[%s]", ((RegExPrimitive *)re)->getMgram().c_str());
         break;
     }
     case RegExType::Repeat:
@@ -46,20 +48,32 @@ void display(RegEx *re) {
 }
 
 int main(int argc, char **argv) {
-    if(argc != 1) {
-        fprintf(stderr, "Usage: %s\n", argv[0]);
+    if(argc != 2) {
+        fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
         return -1;
     }
+
+    std::string filename = std::string(argv[1]);
 
     char exp[100];
     std::cin >> exp;
     fprintf(stderr, "Regex:[%s]\n", exp);
+
+    SuccinctFile *s_file = new SuccinctFile(filename);
 
     RegExParser parser(exp);
     RegEx *re = parser.parse();
 
     display(re);
     fprintf(stderr, "\n");
+
+    RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
+    RegEx *re_plan = planner->plan();
+
+    RegExExecutor rex(s_file, re_plan);
+    rex.execute();
+
+    rex.displayResults();
 
     return 0;
 }

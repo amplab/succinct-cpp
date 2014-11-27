@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef REGEX_PARSER_H
+#define REGEX_PARSER_H
 
 #include "succinct/regex/RegEx.hpp"
 #include <iostream>
@@ -10,12 +10,13 @@
 //
 //   <term> ::= { <factor> }
 //
-//   <factor> ::= <base> { '*' | '+' }
+//   <factor> ::= <base> { '*' | '+' | '{' <num> ',' <num> ')' }
 //
 //   <base> ::= <mgram>
 //            |  '(' <regex> ')'
 //
-//   <mgram> ::= <char> | <char> { <mgram> }
+//   <mgram> ::= <char> | '\' <char> { <mgram> }
+//   <num> ::= <digit> { <num> }
 
 class ParseException: public std::exception {
     virtual const char* what() const throw() {
@@ -26,10 +27,16 @@ class ParseException: public std::exception {
 class RegExParser {
 private:
     char *exp;
+    RegEx *blank;
 
 public:
     RegExParser(char *exp) {
         this->exp = exp;
+        this->blank = new RegExBlank();
+    }
+
+    ~RegExParser() {
+        delete blank;
     }
 
     RegEx *parse() {
@@ -69,11 +76,26 @@ private:
         return t;
     }
 
+    RegEx *concat(RegEx *a, RegEx *b) {
+        if(a->getType() == RegExType::Blank) {
+            return b;
+        } else if(a->getType() == RegExType::Primitive &&
+                b->getType() == RegExType::Primitive) {
+            std::string a_str = ((RegExPrimitive *)a)->getMgram();
+            std::string b_str = ((RegExPrimitive *)b)->getMgram();
+            RegEx *ret = new RegExPrimitive(a_str + b_str);
+            delete a;
+            delete b;
+            return ret;
+        }
+        return new RegExConcat(a, b);
+    }
+
     RegEx *term() {
-        RegEx *f = new RegExBlank();
+        RegEx *f = blank;
         while(more() && peek() != ')' && peek() != '|') {
             RegEx *next_f = factor();
-            f = new RegExConcat(f, next_f);
+            f = concat(f, next_f);
         }
         return f;
     }
@@ -83,35 +105,55 @@ private:
 
         if(more() && peek() == '*') {
             eat('*');
-            b = new RegExRepeat(b, RepeatType::ZeroOrMore);
+            b = new RegExRepeat(b, RegExRepeatType::ZeroOrMore);
         } else if(more() && peek() == '+') {
             eat('+');
-            b = new RegExRepeat(b, RepeatType::OneOrMore);
+            b = new RegExRepeat(b, RegExRepeatType::OneOrMore);
+        } else if(more() && peek() == '{') {
+            eat('{');
+            int min = nextInt();
+            eat(',');
+            int max = nextInt();
+            eat('}');
+            b = new RegExRepeat(b, RegExRepeatType::MinToMax, min, max);
         }
 
         return b;
     }
 
     RegEx *base() {
-        switch(peek()) {
-        case '(':
-        {
+        if(peek() == '(') {
             eat('(');
             RegEx *r = regex();
             eat(')');
             return r;
         }
-        case '\\':
-        {
+        return mgram();
+    }
+
+    char nextChar() {
+        if(peek() == '\\') {
             eat('\\');
-            char esc = next();
-            return new RegExPrimitive(esc);
         }
-        default:
-        {
-            return new RegExPrimitive(next());
+        return next();
+    }
+
+    int nextInt() {
+        int num = 0;
+        while(peek() >= 48 && peek() <= 57) {
+            num = num * 10 + (next() - 48);
         }
+        return num;
+    }
+
+    RegEx* mgram() {
+        std::string m = "";
+        while(more() && peek() != '|' && peek() != '(' &&
+                peek() != ')' && peek() != '*' && peek() != '+' &&
+                peek() != '{' && peek() != '}') {
+            m += nextChar();
         }
+        return new RegExPrimitive(m);
     }
 };
 
