@@ -3,6 +3,7 @@
 
 #include "succinct/regex/RegEx.hpp"
 #include <iostream>
+#include <cstring>
 
 // Grammar:
 //   <regex> ::= <term> '|' <regex>
@@ -63,7 +64,7 @@ private:
     }
 
     bool more() {
-        return strlen(exp) > 0;
+        return (strlen(exp) > 0);
     }
 
     RegEx *regex() {

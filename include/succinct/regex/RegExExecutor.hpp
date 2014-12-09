@@ -133,7 +133,7 @@ private:
             size_t cur_a_len = a.lengths.at(i);
             while(b_pos < b.offsets.size() && b.offsets.at(b_pos) <= cur_a) b_pos++;
             if(b_pos == b.offsets.size()) break;
-            if(b.offsets.at(b_pos) == cur_a + cur_a_len) {
+            if(b.offsets.at(b_pos) == cur_a + (int64_t)cur_a_len) {
                 concat_res.offsets.push_back(cur_a);
                 concat_res.lengths.push_back(cur_a_len + b.lengths.at(b_pos));
             }
