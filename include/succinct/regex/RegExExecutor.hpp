@@ -69,19 +69,16 @@ private:
         switch(r->getType()) {
         case RegExType::Blank:
         {
-            fprintf(stderr, "Blank!\n");
             // Do nothing
             break;
         }
         case RegExType::Primitive:
         {
-            fprintf(stderr, "Primitive!\n");
             mgramSearch(res, (RegExPrimitive *)r);
             break;
         }
         case RegExType::Or:
         {
-            fprintf(stderr, "Or!\n");
             RegExResult first_res, second_res;
             compute(first_res, ((RegExOr *)r)->getFirst());
             compute(second_res, ((RegExOr *)r)->getSecond());
@@ -90,7 +87,6 @@ private:
         }
         case RegExType::Concat:
         {
-            fprintf(stderr, "Concat!\n");
             RegExResult first_res, second_res;
             compute(first_res, ((RegExConcat *)r)->getFirst());
             compute(second_res, ((RegExConcat *)r)->getSecond());
@@ -99,7 +95,6 @@ private:
         }
         case RegExType::Repeat:
         {
-            fprintf(stderr, "Repeat!\n");
             RegExResult internal_res;
             compute(internal_res, ((RegExRepeat *)r)->getInternal());
             regexRepeat(res, internal_res, ((RegExRepeat *)r)->getRepeatType());
@@ -161,7 +156,7 @@ private:
 
                 concat_size = concat_res.offsets.size();
 
-                fprintf(stderr, "Size of intermediate result = %lu\n", concat_temp_res.offsets.size());
+                // fprintf(stderr, "Size of intermediate result = %lu\n", concat_temp_res.offsets.size());
 
                 RegExResult repeat_temp_res;
                 regexUnion(repeat_temp_res, repeat_res, concat_res);

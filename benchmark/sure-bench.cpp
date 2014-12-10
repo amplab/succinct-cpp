@@ -5,6 +5,9 @@
 
 #include <cstdio>
 #include <iostream>
+#include <unistd.h>
+#include <time.h>
+#include <sys/time.h>
 
 // Debug
 void display(RegEx *re) {
@@ -47,33 +50,81 @@ void display(RegEx *re) {
     }
 }
 
+void print_usage(char *exec) {
+    fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+}
+
+typedef unsigned long long int timestamp_t;
+
+static timestamp_t get_timestamp() {
+    struct timeval now;
+    gettimeofday (&now, NULL);
+
+    return now.tv_usec + (time_t)now.tv_sec * 1000000;
+}
+
 int main(int argc, char **argv) {
-    if(argc != 2) {
-        fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
+    if(argc < 2 || argc > 6) {
+        print_usage(argv[0]);
         return -1;
     }
 
-    std::string filename = std::string(argv[1]);
+    int c;
+    uint32_t mode = 0;
+    std::string querypath = "";
+    while((c = getopt(argc, argv, "m:q:")) != -1) {
+        switch(c) {
+        case 'm':
+            mode = atoi(optarg);
+            break;
+        case 'q':
+            querypath = std::string(optarg);
+            break;
+        default:
+            mode = 0;
+        }
+    }
 
-    char exp[100];
-    std::cin >> exp;
-    fprintf(stderr, "Regex:[%s]\n", exp);
+    if(optind == argc) {
+        print_usage(argv[0]);
+        return -1;
+    }
 
-    SuccinctFile *s_file = new SuccinctFile(filename);
+    std::string filename = std::string(argv[optind]);
+    SuccinctFile *s_file = NULL;
+    if(mode == 0) {
+        s_file = new SuccinctFile(filename);
 
-    RegExParser parser(exp);
-    RegEx *re = parser.parse();
+        std::ofstream s_out(filename + ".succinct");
+        s_file->serialize(s_out);
+        s_out.close();
+    } else {
+        s_file = new SuccinctFile(filename, false);
+    }
 
-    display(re);
-    fprintf(stderr, "\n");
+    while(true) {
+        char exp[100];
+        std::cout << "sure>";
+        std::cin >> exp;
+        fprintf(stderr, "Regex:[%s]\n", exp);
 
-    RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
-    RegEx *re_plan = planner->plan();
+        timestamp_t start = get_timestamp();
+        RegExParser parser(exp);
+        RegEx *re = parser.parse();
 
-    RegExExecutor rex(s_file, re_plan);
-    rex.execute();
+        RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
+        RegEx *re_plan = planner->plan();
 
-    rex.displayResults();
+        RegExExecutor rex(s_file, re_plan);
+        rex.execute();
+
+        timestamp_t tot_time = get_timestamp() - start;
+
+        std::cout << "Query took " << tot_time << "us\n";
+        // display(re);
+        // fprintf(stderr, "\n");
+        // rex.displayResults();
+    }
 
     return 0;
 }
