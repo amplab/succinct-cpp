@@ -60,7 +60,7 @@ static timestamp_t get_timestamp() {
     struct timeval now;
     gettimeofday (&now, NULL);
 
-    return now.tv_usec + (time_t)now.tv_sec * 1000000;
+    return (now.tv_usec + (time_t)now.tv_sec * 1000000) / 1000;
 }
 
 int main(int argc, char **argv) {
@@ -93,14 +93,19 @@ int main(int argc, char **argv) {
     std::string filename = std::string(argv[optind]);
     SuccinctFile *s_file = NULL;
     if(mode == 0) {
+        std::cout << "Constructing Succinct data structures...\n";
         s_file = new SuccinctFile(filename);
 
+        std::cout << "Serializing Succinct data structures...\n";
         std::ofstream s_out(filename + ".succinct");
         s_file->serialize(s_out);
         s_out.close();
     } else {
+        std::cout << "De-serializing Succinct data structures...\n";
         s_file = new SuccinctFile(filename, false);
     }
+
+    std::cout << "Done.\n";
 
     while(true) {
         char exp[100];
@@ -120,7 +125,7 @@ int main(int argc, char **argv) {
 
         timestamp_t tot_time = get_timestamp() - start;
 
-        std::cout << "Query took " << tot_time << "us\n";
+        std::cout << "Query took " << tot_time << " ms\n";
         // display(re);
         // fprintf(stderr, "\n");
         // rex.displayResults();
