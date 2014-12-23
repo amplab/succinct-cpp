@@ -38,12 +38,12 @@ void display(RegEx *re) {
         fprintf(stderr, ")");
         break;
     }
-    case RegExType::Or:
+    case RegExType::Union:
     {
         fprintf(stderr, "or(");
-        display(((RegExOr *)re)->getFirst());
+        display(((RegExUnion *)re)->getFirst());
         fprintf(stderr, ",");
-        display(((RegExOr *)re)->getSecond());
+        display(((RegExUnion *)re)->getSecond());
         fprintf(stderr, ")");
         break;
     }

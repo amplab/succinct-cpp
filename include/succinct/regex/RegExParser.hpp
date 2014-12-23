@@ -72,7 +72,7 @@ private:
         if(more() && peek() == '|') {
             eat('|');
             RegEx *r = regex();
-            return new RegExOr(t, r);
+            return new RegExUnion(t, r);
         }
         return t;
     }

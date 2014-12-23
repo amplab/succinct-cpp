@@ -77,11 +77,11 @@ private:
             mgramSearch(res, (RegExPrimitive *)r);
             break;
         }
-        case RegExType::Or:
+        case RegExType::Union:
         {
             RegExResult first_res, second_res;
-            compute(first_res, ((RegExOr *)r)->getFirst());
-            compute(second_res, ((RegExOr *)r)->getSecond());
+            compute(first_res, ((RegExUnion *)r)->getFirst());
+            compute(second_res, ((RegExUnion *)r)->getSecond());
             regexUnion(res, first_res, second_res);
             break;
         }
