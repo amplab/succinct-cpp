@@ -91,10 +91,10 @@ int main(int argc, char **argv) {
     }
 
     std::string filename = std::string(argv[optind]);
-    SuccinctFile *s_file = NULL;
+    SuccinctShard *s_file = NULL;
     if(mode == 0) {
         std::cout << "Constructing Succinct data structures...\n";
-        s_file = new SuccinctFile(filename);
+        s_file = new SuccinctShard(filename);
 
         std::cout << "Serializing Succinct data structures...\n";
         std::ofstream s_out(filename + ".succinct");
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
         s_out.close();
     } else {
         std::cout << "De-serializing Succinct data structures...\n";
-        s_file = new SuccinctFile(filename, false);
+        s_file = new SuccinctShard(filename, false);
     }
 
     std::cout << "Done.\n";

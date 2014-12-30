@@ -1,6 +1,5 @@
 #include "thrift/QueryService.h"
 #include "thrift/succinct_constants.h"
-#include "succinct/SuccinctFile.hpp"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
@@ -12,6 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
+#include "../../include/succinct/SuccinctShard.hpp"
 #include "thrift/ports.h"
 
 using namespace ::apache::thrift;
@@ -28,13 +28,19 @@ public:
         this->construct = construct;
         this->filename = filename;
         this->is_init = false;
+        std::ifstream input(filename);
+        this->num_keys = std::count(std::istreambuf_iterator<char>(input),
+                        std::istreambuf_iterator<char>(), '\n');
+        input.close();
     }
 
-    int32_t init() {
+    int32_t init(int32_t id) {
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new SuccinctFile(filename, construct);
+
+
+        fd = new SuccinctShard(id, filename, num_keys, construct);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
@@ -50,27 +56,16 @@ public:
         return 0;
     }
 
-    void extract(std::string& _return, const int64_t offset, const int64_t len) {
-        fd->extract(_return, offset, len);
-    }
-
-    int64_t count(const std::string& query) {
-        return fd->count(query);
-    }
-
-    void search(std::vector<int64_t> & _return, const std::string& query) {
-        fd->search(_return, query);
-    }
-
-    void wildcard_search(std::vector<int64_t> & _return, const std::string& pattern, const int64_t max_sep) {
-        fd->wildcard_search(_return, pattern, max_sep);
+    void get(std::string& _return, const int64_t key) {
+        fd->get(_return, key);
     }
 
 private:
-    SuccinctFile *fd;
+    SuccinctShard *fd;
     bool construct;
     std::string filename;
     bool is_init;
+    uint32_t num_keys;
 };
 
 void print_usage(char *exec) {

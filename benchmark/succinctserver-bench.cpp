@@ -2,8 +2,8 @@
 #include <fstream>
 #include <unistd.h>
 
+#include "../include/succinct/SuccinctShard.hpp"
 #include "thrift/bench/SuccinctServerBenchmark.hpp"
-#include "succinct/SuccinctFile.hpp"
 
 void print_usage(char *exec) {
     fprintf(stderr, "Usage: %s [inputfile] [queryfile]\n", exec);

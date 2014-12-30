@@ -28,7 +28,6 @@ protected:
     uint64_t input_size;                // Size of input
 
     /* Primary data structures */
-    SampledArray *SA;                   // Suffix Array
     SampledArray *ISA;                  // Inverse Suffix Array
     NPA *npa;                           // Next Pointer Array
     std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
@@ -42,12 +41,9 @@ public:
     /* Constructors */
     SuccinctCore(const char *filename,
                 bool construct_succinct = true,
-                uint32_t sa_sampling_rate = 32,
                 uint32_t isa_sampling_rate = 32,
                 uint32_t npa_sampling_rate = 128,
                 uint32_t context_len = 3,
-                SamplingScheme sa_sampling_scheme =
-                        SamplingScheme::SAMPLE_BY_INDEX,
                 SamplingScheme isa_sampling_scheme =
                         SamplingScheme::SAMPLE_BY_INDEX,
                 NPA::NPAEncodingScheme npa_encoding_scheme =
@@ -56,9 +52,6 @@ public:
     /* Lookup functions for each of the core data structures */
     // Lookup NPA at index i
     uint64_t lookupNPA(uint64_t i);
-
-    // Lookup SA at index i
-    uint64_t lookupSA(uint64_t i);
 
     // Lookup ISA at index i
     uint64_t lookupISA(uint64_t i);
@@ -85,11 +78,9 @@ private:
 
     // Parent construct function
     void construct(const char* filename,
-            uint32_t sa_sampling_rate,
             uint32_t isa_sampling_rate,
             uint32_t npa_sampling_rate,
             uint32_t context_len,
-            SamplingScheme sa_sampling_scheme,
             SamplingScheme isa_sampling_scheme,
             NPA::NPAEncodingScheme npa_encoding_scheme);
 

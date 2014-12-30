@@ -8,44 +8,35 @@
 
 #include "succinct/SuccinctCore.hpp"
 
-class SuccinctFile : public SuccinctCore {
+class SuccinctShard : public SuccinctCore {
 private:
-    std::string input_filename;
-    std::string succinct_filename;
+    std::string input_datafile;
+    std::string succinct_datafile;
+
+    std::vector<int64_t> keys;
+    std::vector<int64_t> value_offsets;
+    BitMap *invalid_offsets;
+
+    uint32_t id;
+
+    int64_t MAX_KEYS = 1L << 32;
 
 public:
-    SuccinctFile(std::string filename, bool construct = true);
+    SuccinctShard(uint32_t id, std::string datafile, uint32_t num_keys, bool construct = true,
+            uint32_t isa_sampling_rate = 32, uint32_t npa_sampling_rate = 128);
 
     std::string name();
+
+    size_t num_keys();
+
     /*
      * Random access into the Succinct file with the specified offset
      * and length
      */
-    void extract(std::string& result, uint64_t offset, uint64_t len);
-
-    /*
-     * Get the count of a string in the Succinct file
-     */
-    uint64_t count(std::string str);
-
-    /*
-     * Get the offsets of all the occurrences
-     * of a string in the Succinct file
-     */
-    void search(std::vector<int64_t>& result, std::string str);
-
-    /*
-     * Get the offsets of all the occurrences of a
-     * wild-card string in the Succinct file
-     */
-    void wildcard_search(std::vector<int64_t>& result, std::string pattern,
-                                            uint64_t max_sep);
+    void get(std::string& result, int64_t key);
 
 private:
-    std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
-    std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);
-
-    uint64_t compute_context_value(const char *str, uint64_t pos);
+    int64_t get_value_offset_pos(const int64_t key);
 
 };
 

@@ -87,7 +87,7 @@ public:
             QueryServiceClient client(protocol);
             transport->open();
             fprintf(stderr, "Connected to QueryServer %u!\n ", i);
-            int32_t status = client.init();
+            int32_t status = client.init(i);
             if(status == 0) {
                 fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
                 qservers.push_back(client);
@@ -100,49 +100,9 @@ public:
 
     }
 
-    void extract(std::string& _return, const int64_t offset, const int64_t len) {
-        uint32_t qserver_id = offset / split_size;
-        qservers.at(qserver_id).extract(_return, offset % split_size, len);
-    }
-
-    int64_t count(const std::string& query) override {
-        for(size_t i = 0; i < qservers.size(); i++) {
-            qservers.at(i).send_count(query);
-        }
-
-        uint64_t count = 0;
-        for(size_t i = 0; i < qservers.size(); i++) {
-            count += qservers.at(i).recv_count();
-        }
-        return count;
-    }
-
-    void search(std::vector<int64_t> & _return, const std::string& query) {
-        for(size_t i = 0; i < qservers.size(); i++) {
-            qservers.at(i).send_search(query);
-        }
-
-        for(size_t i = 0; i < qservers.size(); i++) {
-            std::vector<int64_t> locs;
-            qservers.at(i).recv_search(locs);
-            for(uint64_t i = 0; i < locs.size(); i++) {
-                _return.push_back(locs[i] + split_size * i);
-            }
-        }
-    }
-
-    void wildcard_search(std::vector<int64_t> & _return, const std::string& pattern, const int64_t max_sep) {
-        for(size_t i = 0; i < qservers.size(); i++) {
-            qservers.at(i).send_wildcard_search(pattern, max_sep);
-        }
-
-        for(size_t i = 0; i < qservers.size(); i++) {
-            std::vector<int64_t> locs;
-            qservers.at(i).recv_wildcard_search(locs);
-            for(uint64_t i = 0; i < locs.size(); i++) {
-                _return.push_back(locs[i] + split_size * i);
-            }
-        }
+    void get(std::string& _return, const int64_t key) {
+        uint32_t qserver_id = key / split_size;
+        qservers.at(qserver_id).get(_return, key);
     }
 
 private:

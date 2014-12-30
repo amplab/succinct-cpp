@@ -2,25 +2,22 @@
 
 SuccinctCore::SuccinctCore(const char *filename,
                             bool construct_succinct,
-                            uint32_t sa_sampling_rate,
                             uint32_t isa_sampling_rate,
                             uint32_t npa_sampling_rate,
                             uint32_t context_len,
-                            SamplingScheme sa_sampling_scheme,
                             SamplingScheme isa_sampling_scheme,
                             NPA::NPAEncodingScheme npa_encoding_scheme) :
                             SuccinctBase() {
 
     this->alphabet = NULL;
-    this->SA = NULL;
     this->ISA = NULL;
     this->npa = NULL;
     this->alphabet_size = 0;
     this->input_size = 0;
 
     if(construct_succinct) {
-        construct(filename, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
-            context_len, sa_sampling_scheme, isa_sampling_scheme,
+        construct(filename, isa_sampling_rate, npa_sampling_rate,
+            context_len, isa_sampling_scheme,
             npa_encoding_scheme);
     } else {
         switch(npa_encoding_scheme) {
@@ -41,27 +38,9 @@ SuccinctCore::SuccinctCore(const char *filename,
         }
 
         assert(npa != NULL);
-
-        switch(sa_sampling_scheme) {
-        case SamplingScheme::SAMPLE_BY_INDEX:
-            SA = new SampledByIndexSA(sa_sampling_rate, npa, s_allocator);
-            break;
-        case SamplingScheme::SAMPLE_BY_VALUE:
-            SA = new SampledByValueSA(sa_sampling_rate, npa, s_allocator, this);
-            break;
-        default:
-            SA = NULL;
-        }
-
-        assert(SA != NULL);
-
         switch(isa_sampling_scheme) {
         case SamplingScheme::SAMPLE_BY_INDEX:
             ISA = new SampledByIndexISA(isa_sampling_rate, npa, s_allocator);
-            break;
-        case SamplingScheme::SAMPLE_BY_VALUE:
-            assert(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
-            ISA = new SampledByValueISA(sa_sampling_rate, npa, s_allocator, this);
             break;
         default:
             ISA = NULL;
@@ -78,11 +57,9 @@ SuccinctCore::SuccinctCore(const char *filename,
 
 /* Primary Construct function */
 void SuccinctCore::construct(const char* filename,
-        uint32_t sa_sampling_rate,
         uint32_t isa_sampling_rate,
         uint32_t npa_sampling_rate,
         uint32_t context_len,
-        SamplingScheme sa_sampling_scheme,
         SamplingScheme isa_sampling_scheme,
         NPA::NPAEncodingScheme npa_encoding_scheme) {
 
@@ -156,27 +133,9 @@ void SuccinctCore::construct(const char* filename,
     destroy_bitmap(&compactISA, s_allocator);
     destroy_bitmap(&data_bitmap, s_allocator);
 
-    switch(sa_sampling_scheme) {
-    case SamplingScheme::SAMPLE_BY_INDEX:
-        SA = new SampledByIndexSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator);
-        break;
-    case SamplingScheme::SAMPLE_BY_VALUE:
-        SA = new SampledByValueSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator, this);
-        break;
-    default:
-        SA = NULL;
-    }
-
-    assert(SA != NULL);
-
     switch(isa_sampling_scheme) {
     case SamplingScheme::SAMPLE_BY_INDEX:
         ISA = new SampledByIndexISA(isa_sampling_rate, npa, compactSA, input_size, s_allocator);
-        break;
-    case SamplingScheme::SAMPLE_BY_VALUE:
-        assert(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
-        ISA = new SampledByValueISA(sa_sampling_rate, npa, compactSA, input_size,
-                ((SampledByValueSA *)SA)->get_d_bpos(), s_allocator, this);
         break;
     default:
         ISA = NULL;
@@ -220,11 +179,6 @@ uint64_t SuccinctCore::lookupNPA(uint64_t i) {
     return (*npa)[i];
 }
 
-// Lookup SA at index i
-uint64_t SuccinctCore::lookupSA(uint64_t i) {
-    return (*SA)[i];
-}
-
 // Lookup ISA at index i
 uint64_t SuccinctCore::lookupISA(uint64_t i) {
     return (*ISA)[i];
@@ -262,14 +216,7 @@ size_t SuccinctCore::serialize(std::ostream& out) {
         out.write(reinterpret_cast<const char *>(&alphabet[i]), sizeof(char));
     }
 
-    out_size += SA->serialize(out);
     out_size += ISA->serialize(out);
-
-    if(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE) {
-        assert(ISA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
-        out_size += serialize_dictionary(((SampledByValueSA *)SA)->get_d_bpos(), out);
-    }
-
     out_size += npa->serialize(out);
 
     return out_size;
@@ -308,16 +255,7 @@ size_t SuccinctCore::deserialize(std::istream& in) {
         in.read(reinterpret_cast<char *>(&alphabet[i]), sizeof(char));
     }
 
-    in_size += SA->deserialize(in);
     in_size += ISA->deserialize(in);
-
-    if(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE) {
-    	Dictionary *d_bpos = new Dictionary;
-        assert(ISA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
-        in_size += deserialize_dictionary(&d_bpos, in);
-        ((SampledByValueSA *)SA)->set_d_bpos(d_bpos);
-        ((SampledByValueISA *)ISA)->set_d_bpos(d_bpos);
-    }
 
     switch(npa->get_encoding_scheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
