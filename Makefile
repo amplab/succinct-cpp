@@ -15,7 +15,8 @@ SUCCINCTTARGET := $(LIBDIR)/libsuccinct.a
 THRIFTSRCDIR := $(SRCDIR)/thrift
 THRIFTBUILDDIR := $(BUILDDIR)/thrift
 THRIFTTARGET_QS := $(BINDIR)/qserver
-THRIFTTARGET_SS := $(BINDIR)/succinct
+THRIFTTARGET_SS := $(BINDIR)/qhandler
+THRIFTTARGET_MS := $(BINDIR)/smaster
 THRIFTTARGET_SC := $(LIBDIR)/libsuccinctclient.a
 
 SUCCINCTSRCDIRS := $(shell find $(SUCCINCTSRCDIR) -type d)
@@ -30,12 +31,14 @@ SUCCINCTINC := -I include
 THRIFTSOURCES_GEN := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/QueryService.cpp
 THRIFTSOURCES_SS := $(THRIFTSRCDIR)/SuccinctServer.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTSOURCES_QS := $(THRIFTSRCDIR)/QueryServer.cpp
+THRIFTSOURCES_MS := $(THRIFTSRCDIR)/SuccinctMaster.cpp $(THRIFTSRCDIR)/MasterService.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTOBJECTS_GEN := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_GEN:.cpp=.o))
 THRIFTOBJECTS_SS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SS:.cpp=.o))
 THRIFTOBJECTS_QS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_QS:.cpp=.o))
+THRIFTOBJECTS_MS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_MS:.cpp=.o))
 THRIFTOBJECTS_SC := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SC:.cpp=.o))
-THRIFTCFLAGS := -O3 -std=c++11 -w -DHAVE_NETINET_IN_H
+THRIFTCFLAGS := -O3 -std=c++11 -w -DHAVE_NETINET_IN_H -g
 THRIFTLIB := -L $(LIBDIR) -lsuccinct -levent -lthrift
 THRIFTINC := -I include
 
@@ -55,8 +58,9 @@ $(SUCCINCTBUILDDIR)/%.o: $(SUCCINCTSRCDIR)/%.cpp
 	@echo " $(CC) $(SUCCINCTCFLAGS) $(SUCCINCTINC) -c -o $@ $<";\
 		$(CC) $(SUCCINCTCFLAGS) $(SUCCINCTINC) -c -o $@ $<
 
-succinct-thrift: build-thrift query-server succinct-server succinct-client 
-	@echo "test: $(THRIFTTARGET_SS) $(THRIFTTARGET_QS)"
+succinct-thrift: build-thrift succinct-thrift-components
+
+succinct-thrift-components: query-server succinct-server succinct-master succinct-client
 
 build-thrift:
 	@echo "Building thrift-0.9.1..."
@@ -70,6 +74,8 @@ query-server: succinct $(THRIFTTARGET_QS)
 
 succinct-server: succinct $(THRIFTTARGET_SS)
 
+succinct-master: succinct $(THRIFTTARGET_MS)
+
 $(THRIFTTARGET_SS): $(THRIFTOBJECTS_SS) $(THRIFTOBJECTS_GEN)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
@@ -81,6 +87,12 @@ $(THRIFTTARGET_QS): $(THRIFTOBJECTS_QS) $(THRIFTOBJECTS_GEN)
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(THRIFTTARGET_QS) $(THRIFTLIB)";\
 		$(CC) $^ -o $(THRIFTTARGET_QS) $(THRIFTLIB)
+		
+$(THRIFTTARGET_MS): $(THRIFTOBJECTS_MS) $(THRIFTOBJECTS_GEN)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(THRIFTTARGET_MS) $(THRIFTLIB)";\
+		$(CC) $^ -o $(THRIFTTARGET_MS) $(THRIFTLIB)
 
 $(THRIFTBUILDDIR)/%.o: $(THRIFTSRCDIR)/%.cpp
 	@mkdir -p $(THRIFTBUILDDIR)

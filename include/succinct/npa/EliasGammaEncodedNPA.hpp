@@ -39,16 +39,11 @@ public:
     // Compute the elias gamma encoding size in bits for a 64 bit integer
     static uint32_t elias_gamma_encoding_size(uint64_t n);
 
-    // Binary search elias gamma encoded npa
-    virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
-    									bool flag);
-
 private:
     // Accesses data from a 64 bit integer represented as a bit map
     // from a specified position and for a specified number of bits
     uint16_t access_data_pos16(uint16_t data, uint32_t pos, uint32_t b);
 
-    int64_t binary_search_samples(DeltaEncodedVector *dv, uint64_t val, uint64_t s, uint64_t e);
 
     // Initialize pre-computed prefix sums
     void init_prefixsum();

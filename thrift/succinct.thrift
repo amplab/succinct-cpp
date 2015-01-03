@@ -1,19 +1,25 @@
 service SuccinctService {
-	i32 connect_to_clients(),
-  	i32 disconnect_from_clients(),
+	i32 connect_to_handlers(),
+  	i32 disconnect_from_handlers(),
 
   	i32 connect_to_local_servers(),
   	i32 disconnect_from_local_servers(),
 
-  	i32 start_servers(1:i32 num_servers, 2:i32 part_scheme),
+  	i32 start_servers(),
 	i32 initialize(1:i32 mode),
 	
 	string get(1:i64 key),
+	
+	i32 get_num_hosts(),
+	i32 get_num_shards(1:i32 host_id),
+	i32 get_num_keys(1:i32 shard_id),
 }
 
 service QueryService {
     i32 init(1:i32 id),
 	string get(1:i64 key),
+	
+	i32 get_num_keys(),
 }
 
 service MasterService {

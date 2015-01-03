@@ -38,8 +38,6 @@ public:
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-
-
         fd = new SuccinctShard(id, filename, num_keys, construct);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
@@ -58,6 +56,10 @@ public:
 
     void get(std::string& _return, const int64_t key) {
         fd->get(_return, key);
+    }
+
+    int32_t get_num_keys() {
+        return fd->num_keys();
     }
 
 private:

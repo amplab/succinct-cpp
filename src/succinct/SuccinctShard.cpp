@@ -14,7 +14,6 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename, uint32_t num_key
     std::ifstream input(filename);
     int64_t value_offset = 0;
     for(uint32_t i = 0; i < num_keys; i++) {
-        fprintf(stderr, "%lld, %lld\n", id * MAX_KEYS + i, value_offset);
         keys.push_back(id * MAX_KEYS + i);
         value_offsets.push_back(value_offset);
         std::string line;

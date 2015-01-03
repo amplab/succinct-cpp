@@ -6,20 +6,19 @@
 #include "thrift/bench/SuccinctServerBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [inputfile] [queryfile]\n", exec);
+    fprintf(stderr, "Usage: %s inputfile\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc != 3) {
+    if(argc != 2) {
         print_usage(argv[0]);
         return -1;
     }
 
     std::string inputpath = std::string(argv[1]);
-    std::string querypath = std::string(argv[2]);
 
     // Benchmark core functions
-    SuccinctServerBenchmark s_bench(inputpath, querypath);
+    SuccinctServerBenchmark s_bench(inputpath);
     s_bench.benchmark_functions();
 
     return 0;

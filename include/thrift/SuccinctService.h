@@ -15,13 +15,16 @@
 class SuccinctServiceIf {
  public:
   virtual ~SuccinctServiceIf() {}
-  virtual int32_t connect_to_clients() = 0;
-  virtual int32_t disconnect_from_clients() = 0;
+  virtual int32_t connect_to_handlers() = 0;
+  virtual int32_t disconnect_from_handlers() = 0;
   virtual int32_t connect_to_local_servers() = 0;
   virtual int32_t disconnect_from_local_servers() = 0;
-  virtual int32_t start_servers(const int32_t num_servers, const int32_t part_scheme) = 0;
+  virtual int32_t start_servers() = 0;
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
+  virtual int32_t get_num_hosts() = 0;
+  virtual int32_t get_num_shards(const int32_t host_id) = 0;
+  virtual int32_t get_num_keys(const int32_t shard_id) = 0;
 };
 
 class SuccinctServiceIfFactory {
@@ -51,11 +54,11 @@ class SuccinctServiceIfSingletonFactory : virtual public SuccinctServiceIfFactor
 class SuccinctServiceNull : virtual public SuccinctServiceIf {
  public:
   virtual ~SuccinctServiceNull() {}
-  int32_t connect_to_clients() {
+  int32_t connect_to_handlers() {
     int32_t _return = 0;
     return _return;
   }
-  int32_t disconnect_from_clients() {
+  int32_t disconnect_from_handlers() {
     int32_t _return = 0;
     return _return;
   }
@@ -67,7 +70,7 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     int32_t _return = 0;
     return _return;
   }
-  int32_t start_servers(const int32_t /* num_servers */, const int32_t /* part_scheme */) {
+  int32_t start_servers() {
     int32_t _return = 0;
     return _return;
   }
@@ -78,27 +81,39 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   void get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
+  int32_t get_num_hosts() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t get_num_shards(const int32_t /* host_id */) {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t get_num_keys(const int32_t /* shard_id */) {
+    int32_t _return = 0;
+    return _return;
+  }
 };
 
 
-class SuccinctService_connect_to_clients_args {
+class SuccinctService_connect_to_handlers_args {
  public:
 
-  SuccinctService_connect_to_clients_args() {
+  SuccinctService_connect_to_handlers_args() {
   }
 
-  virtual ~SuccinctService_connect_to_clients_args() throw() {}
+  virtual ~SuccinctService_connect_to_handlers_args() throw() {}
 
 
-  bool operator == (const SuccinctService_connect_to_clients_args & /* rhs */) const
+  bool operator == (const SuccinctService_connect_to_handlers_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const SuccinctService_connect_to_clients_args &rhs) const {
+  bool operator != (const SuccinctService_connect_to_handlers_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const SuccinctService_connect_to_clients_args & ) const;
+  bool operator < (const SuccinctService_connect_to_handlers_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -106,93 +121,93 @@ class SuccinctService_connect_to_clients_args {
 };
 
 
-class SuccinctService_connect_to_clients_pargs {
+class SuccinctService_connect_to_handlers_pargs {
  public:
 
 
-  virtual ~SuccinctService_connect_to_clients_pargs() throw() {}
+  virtual ~SuccinctService_connect_to_handlers_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _SuccinctService_connect_to_clients_result__isset {
-  _SuccinctService_connect_to_clients_result__isset() : success(false) {}
+typedef struct _SuccinctService_connect_to_handlers_result__isset {
+  _SuccinctService_connect_to_handlers_result__isset() : success(false) {}
   bool success;
-} _SuccinctService_connect_to_clients_result__isset;
+} _SuccinctService_connect_to_handlers_result__isset;
 
-class SuccinctService_connect_to_clients_result {
+class SuccinctService_connect_to_handlers_result {
  public:
 
-  SuccinctService_connect_to_clients_result() : success(0) {
+  SuccinctService_connect_to_handlers_result() : success(0) {
   }
 
-  virtual ~SuccinctService_connect_to_clients_result() throw() {}
+  virtual ~SuccinctService_connect_to_handlers_result() throw() {}
 
   int32_t success;
 
-  _SuccinctService_connect_to_clients_result__isset __isset;
+  _SuccinctService_connect_to_handlers_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const SuccinctService_connect_to_clients_result & rhs) const
+  bool operator == (const SuccinctService_connect_to_handlers_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const SuccinctService_connect_to_clients_result &rhs) const {
+  bool operator != (const SuccinctService_connect_to_handlers_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const SuccinctService_connect_to_clients_result & ) const;
+  bool operator < (const SuccinctService_connect_to_handlers_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _SuccinctService_connect_to_clients_presult__isset {
-  _SuccinctService_connect_to_clients_presult__isset() : success(false) {}
+typedef struct _SuccinctService_connect_to_handlers_presult__isset {
+  _SuccinctService_connect_to_handlers_presult__isset() : success(false) {}
   bool success;
-} _SuccinctService_connect_to_clients_presult__isset;
+} _SuccinctService_connect_to_handlers_presult__isset;
 
-class SuccinctService_connect_to_clients_presult {
+class SuccinctService_connect_to_handlers_presult {
  public:
 
 
-  virtual ~SuccinctService_connect_to_clients_presult() throw() {}
+  virtual ~SuccinctService_connect_to_handlers_presult() throw() {}
 
   int32_t* success;
 
-  _SuccinctService_connect_to_clients_presult__isset __isset;
+  _SuccinctService_connect_to_handlers_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 
-class SuccinctService_disconnect_from_clients_args {
+class SuccinctService_disconnect_from_handlers_args {
  public:
 
-  SuccinctService_disconnect_from_clients_args() {
+  SuccinctService_disconnect_from_handlers_args() {
   }
 
-  virtual ~SuccinctService_disconnect_from_clients_args() throw() {}
+  virtual ~SuccinctService_disconnect_from_handlers_args() throw() {}
 
 
-  bool operator == (const SuccinctService_disconnect_from_clients_args & /* rhs */) const
+  bool operator == (const SuccinctService_disconnect_from_handlers_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const SuccinctService_disconnect_from_clients_args &rhs) const {
+  bool operator != (const SuccinctService_disconnect_from_handlers_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const SuccinctService_disconnect_from_clients_args & ) const;
+  bool operator < (const SuccinctService_disconnect_from_handlers_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -200,69 +215,69 @@ class SuccinctService_disconnect_from_clients_args {
 };
 
 
-class SuccinctService_disconnect_from_clients_pargs {
+class SuccinctService_disconnect_from_handlers_pargs {
  public:
 
 
-  virtual ~SuccinctService_disconnect_from_clients_pargs() throw() {}
+  virtual ~SuccinctService_disconnect_from_handlers_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _SuccinctService_disconnect_from_clients_result__isset {
-  _SuccinctService_disconnect_from_clients_result__isset() : success(false) {}
+typedef struct _SuccinctService_disconnect_from_handlers_result__isset {
+  _SuccinctService_disconnect_from_handlers_result__isset() : success(false) {}
   bool success;
-} _SuccinctService_disconnect_from_clients_result__isset;
+} _SuccinctService_disconnect_from_handlers_result__isset;
 
-class SuccinctService_disconnect_from_clients_result {
+class SuccinctService_disconnect_from_handlers_result {
  public:
 
-  SuccinctService_disconnect_from_clients_result() : success(0) {
+  SuccinctService_disconnect_from_handlers_result() : success(0) {
   }
 
-  virtual ~SuccinctService_disconnect_from_clients_result() throw() {}
+  virtual ~SuccinctService_disconnect_from_handlers_result() throw() {}
 
   int32_t success;
 
-  _SuccinctService_disconnect_from_clients_result__isset __isset;
+  _SuccinctService_disconnect_from_handlers_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const SuccinctService_disconnect_from_clients_result & rhs) const
+  bool operator == (const SuccinctService_disconnect_from_handlers_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const SuccinctService_disconnect_from_clients_result &rhs) const {
+  bool operator != (const SuccinctService_disconnect_from_handlers_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const SuccinctService_disconnect_from_clients_result & ) const;
+  bool operator < (const SuccinctService_disconnect_from_handlers_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _SuccinctService_disconnect_from_clients_presult__isset {
-  _SuccinctService_disconnect_from_clients_presult__isset() : success(false) {}
+typedef struct _SuccinctService_disconnect_from_handlers_presult__isset {
+  _SuccinctService_disconnect_from_handlers_presult__isset() : success(false) {}
   bool success;
-} _SuccinctService_disconnect_from_clients_presult__isset;
+} _SuccinctService_disconnect_from_handlers_presult__isset;
 
-class SuccinctService_disconnect_from_clients_presult {
+class SuccinctService_disconnect_from_handlers_presult {
  public:
 
 
-  virtual ~SuccinctService_disconnect_from_clients_presult() throw() {}
+  virtual ~SuccinctService_disconnect_from_handlers_presult() throw() {}
 
   int32_t* success;
 
-  _SuccinctService_disconnect_from_clients_presult__isset __isset;
+  _SuccinctService_disconnect_from_handlers_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -456,39 +471,18 @@ class SuccinctService_disconnect_from_local_servers_presult {
 
 };
 
-typedef struct _SuccinctService_start_servers_args__isset {
-  _SuccinctService_start_servers_args__isset() : num_servers(false), part_scheme(false) {}
-  bool num_servers;
-  bool part_scheme;
-} _SuccinctService_start_servers_args__isset;
 
 class SuccinctService_start_servers_args {
  public:
 
-  SuccinctService_start_servers_args() : num_servers(0), part_scheme(0) {
+  SuccinctService_start_servers_args() {
   }
 
   virtual ~SuccinctService_start_servers_args() throw() {}
 
-  int32_t num_servers;
-  int32_t part_scheme;
 
-  _SuccinctService_start_servers_args__isset __isset;
-
-  void __set_num_servers(const int32_t val) {
-    num_servers = val;
-  }
-
-  void __set_part_scheme(const int32_t val) {
-    part_scheme = val;
-  }
-
-  bool operator == (const SuccinctService_start_servers_args & rhs) const
+  bool operator == (const SuccinctService_start_servers_args & /* rhs */) const
   {
-    if (!(num_servers == rhs.num_servers))
-      return false;
-    if (!(part_scheme == rhs.part_scheme))
-      return false;
     return true;
   }
   bool operator != (const SuccinctService_start_servers_args &rhs) const {
@@ -509,8 +503,6 @@ class SuccinctService_start_servers_pargs {
 
   virtual ~SuccinctService_start_servers_pargs() throw() {}
 
-  const int32_t* num_servers;
-  const int32_t* part_scheme;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -789,6 +781,316 @@ class SuccinctService_get_presult {
 
 };
 
+
+class SuccinctService_get_num_hosts_args {
+ public:
+
+  SuccinctService_get_num_hosts_args() {
+  }
+
+  virtual ~SuccinctService_get_num_hosts_args() throw() {}
+
+
+  bool operator == (const SuccinctService_get_num_hosts_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_hosts_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_hosts_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_get_num_hosts_pargs {
+ public:
+
+
+  virtual ~SuccinctService_get_num_hosts_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_hosts_result__isset {
+  _SuccinctService_get_num_hosts_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_hosts_result__isset;
+
+class SuccinctService_get_num_hosts_result {
+ public:
+
+  SuccinctService_get_num_hosts_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_get_num_hosts_result() throw() {}
+
+  int32_t success;
+
+  _SuccinctService_get_num_hosts_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_get_num_hosts_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_hosts_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_hosts_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_hosts_presult__isset {
+  _SuccinctService_get_num_hosts_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_hosts_presult__isset;
+
+class SuccinctService_get_num_hosts_presult {
+ public:
+
+
+  virtual ~SuccinctService_get_num_hosts_presult() throw() {}
+
+  int32_t* success;
+
+  _SuccinctService_get_num_hosts_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_get_num_shards_args__isset {
+  _SuccinctService_get_num_shards_args__isset() : host_id(false) {}
+  bool host_id;
+} _SuccinctService_get_num_shards_args__isset;
+
+class SuccinctService_get_num_shards_args {
+ public:
+
+  SuccinctService_get_num_shards_args() : host_id(0) {
+  }
+
+  virtual ~SuccinctService_get_num_shards_args() throw() {}
+
+  int32_t host_id;
+
+  _SuccinctService_get_num_shards_args__isset __isset;
+
+  void __set_host_id(const int32_t val) {
+    host_id = val;
+  }
+
+  bool operator == (const SuccinctService_get_num_shards_args & rhs) const
+  {
+    if (!(host_id == rhs.host_id))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_shards_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_shards_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_get_num_shards_pargs {
+ public:
+
+
+  virtual ~SuccinctService_get_num_shards_pargs() throw() {}
+
+  const int32_t* host_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_shards_result__isset {
+  _SuccinctService_get_num_shards_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_shards_result__isset;
+
+class SuccinctService_get_num_shards_result {
+ public:
+
+  SuccinctService_get_num_shards_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_get_num_shards_result() throw() {}
+
+  int32_t success;
+
+  _SuccinctService_get_num_shards_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_get_num_shards_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_shards_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_shards_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_shards_presult__isset {
+  _SuccinctService_get_num_shards_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_shards_presult__isset;
+
+class SuccinctService_get_num_shards_presult {
+ public:
+
+
+  virtual ~SuccinctService_get_num_shards_presult() throw() {}
+
+  int32_t* success;
+
+  _SuccinctService_get_num_shards_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_get_num_keys_args__isset {
+  _SuccinctService_get_num_keys_args__isset() : shard_id(false) {}
+  bool shard_id;
+} _SuccinctService_get_num_keys_args__isset;
+
+class SuccinctService_get_num_keys_args {
+ public:
+
+  SuccinctService_get_num_keys_args() : shard_id(0) {
+  }
+
+  virtual ~SuccinctService_get_num_keys_args() throw() {}
+
+  int32_t shard_id;
+
+  _SuccinctService_get_num_keys_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  bool operator == (const SuccinctService_get_num_keys_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_keys_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_keys_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_get_num_keys_pargs {
+ public:
+
+
+  virtual ~SuccinctService_get_num_keys_pargs() throw() {}
+
+  const int32_t* shard_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_keys_result__isset {
+  _SuccinctService_get_num_keys_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_keys_result__isset;
+
+class SuccinctService_get_num_keys_result {
+ public:
+
+  SuccinctService_get_num_keys_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_get_num_keys_result() throw() {}
+
+  int32_t success;
+
+  _SuccinctService_get_num_keys_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_get_num_keys_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_num_keys_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_num_keys_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_num_keys_presult__isset {
+  _SuccinctService_get_num_keys_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_num_keys_presult__isset;
+
+class SuccinctService_get_num_keys_presult {
+ public:
+
+
+  virtual ~SuccinctService_get_num_keys_presult() throw() {}
+
+  int32_t* success;
+
+  _SuccinctService_get_num_keys_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class SuccinctServiceClient : virtual public SuccinctServiceIf {
  public:
   SuccinctServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -809,20 +1111,20 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  int32_t connect_to_clients();
-  void send_connect_to_clients();
-  int32_t recv_connect_to_clients();
-  int32_t disconnect_from_clients();
-  void send_disconnect_from_clients();
-  int32_t recv_disconnect_from_clients();
+  int32_t connect_to_handlers();
+  void send_connect_to_handlers();
+  int32_t recv_connect_to_handlers();
+  int32_t disconnect_from_handlers();
+  void send_disconnect_from_handlers();
+  int32_t recv_disconnect_from_handlers();
   int32_t connect_to_local_servers();
   void send_connect_to_local_servers();
   int32_t recv_connect_to_local_servers();
   int32_t disconnect_from_local_servers();
   void send_disconnect_from_local_servers();
   int32_t recv_disconnect_from_local_servers();
-  int32_t start_servers(const int32_t num_servers, const int32_t part_scheme);
-  void send_start_servers(const int32_t num_servers, const int32_t part_scheme);
+  int32_t start_servers();
+  void send_start_servers();
   int32_t recv_start_servers();
   int32_t initialize(const int32_t mode);
   void send_initialize(const int32_t mode);
@@ -830,6 +1132,15 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
+  int32_t get_num_hosts();
+  void send_get_num_hosts();
+  int32_t recv_get_num_hosts();
+  int32_t get_num_shards(const int32_t host_id);
+  void send_get_num_shards(const int32_t host_id);
+  int32_t recv_get_num_shards();
+  int32_t get_num_keys(const int32_t shard_id);
+  void send_get_num_keys(const int32_t shard_id);
+  int32_t recv_get_num_keys();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -845,23 +1156,29 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (SuccinctServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_connect_to_clients(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_disconnect_from_clients(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_connect_to_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_disconnect_from_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_connect_to_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_disconnect_from_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_start_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   SuccinctServiceProcessor(boost::shared_ptr<SuccinctServiceIf> iface) :
     iface_(iface) {
-    processMap_["connect_to_clients"] = &SuccinctServiceProcessor::process_connect_to_clients;
-    processMap_["disconnect_from_clients"] = &SuccinctServiceProcessor::process_disconnect_from_clients;
+    processMap_["connect_to_handlers"] = &SuccinctServiceProcessor::process_connect_to_handlers;
+    processMap_["disconnect_from_handlers"] = &SuccinctServiceProcessor::process_disconnect_from_handlers;
     processMap_["connect_to_local_servers"] = &SuccinctServiceProcessor::process_connect_to_local_servers;
     processMap_["disconnect_from_local_servers"] = &SuccinctServiceProcessor::process_disconnect_from_local_servers;
     processMap_["start_servers"] = &SuccinctServiceProcessor::process_start_servers;
     processMap_["initialize"] = &SuccinctServiceProcessor::process_initialize;
     processMap_["get"] = &SuccinctServiceProcessor::process_get;
+    processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
+    processMap_["get_num_shards"] = &SuccinctServiceProcessor::process_get_num_shards;
+    processMap_["get_num_keys"] = &SuccinctServiceProcessor::process_get_num_keys;
   }
 
   virtual ~SuccinctServiceProcessor() {}
@@ -890,22 +1207,22 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  int32_t connect_to_clients() {
+  int32_t connect_to_handlers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->connect_to_clients();
+      ifaces_[i]->connect_to_handlers();
     }
-    return ifaces_[i]->connect_to_clients();
+    return ifaces_[i]->connect_to_handlers();
   }
 
-  int32_t disconnect_from_clients() {
+  int32_t disconnect_from_handlers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->disconnect_from_clients();
+      ifaces_[i]->disconnect_from_handlers();
     }
-    return ifaces_[i]->disconnect_from_clients();
+    return ifaces_[i]->disconnect_from_handlers();
   }
 
   int32_t connect_to_local_servers() {
@@ -926,13 +1243,13 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return ifaces_[i]->disconnect_from_local_servers();
   }
 
-  int32_t start_servers(const int32_t num_servers, const int32_t part_scheme) {
+  int32_t start_servers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->start_servers(num_servers, part_scheme);
+      ifaces_[i]->start_servers();
     }
-    return ifaces_[i]->start_servers(num_servers, part_scheme);
+    return ifaces_[i]->start_servers();
   }
 
   int32_t initialize(const int32_t mode) {
@@ -952,6 +1269,33 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     }
     ifaces_[i]->get(_return, key);
     return;
+  }
+
+  int32_t get_num_hosts() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_num_hosts();
+    }
+    return ifaces_[i]->get_num_hosts();
+  }
+
+  int32_t get_num_shards(const int32_t host_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_num_shards(host_id);
+    }
+    return ifaces_[i]->get_num_shards(host_id);
+  }
+
+  int32_t get_num_keys(const int32_t shard_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_num_keys(shard_id);
+    }
+    return ifaces_[i]->get_num_keys(shard_id);
   }
 
 };

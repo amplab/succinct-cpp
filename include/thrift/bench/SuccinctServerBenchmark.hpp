@@ -14,6 +14,48 @@
 #include "thrift/SuccinctService.h"
 #include "thrift/ports.h"
 
+#if defined(__i386__)
+
+static __inline__ unsigned long long rdtsc(void) {
+    unsigned long long int x;
+    __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
+    return x;
+}
+#elif defined(__x86_64__)
+
+static __inline__ unsigned long long rdtsc(void) {
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
+}
+
+#elif defined(__powerpc__)
+
+static __inline__ unsigned long long rdtsc(void) {
+    unsigned long long int result=0;
+    unsigned long int upper, lower,tmp;
+    __asm__ volatile(
+                "0:                  \n"
+                "\tmftbu   %0           \n"
+                "\tmftb    %1           \n"
+                "\tmftbu   %2           \n"
+                "\tcmpw    %2,%0        \n"
+                "\tbne     0b         \n"
+                : "=r"(upper),"=r"(lower),"=r"(tmp)
+                );
+    result = upper;
+    result = result<<32;
+    result = result|lower;
+
+    return(result);
+}
+
+#else
+
+#error "No tick counter is available!"
+
+#endif
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -29,6 +71,8 @@ private:
     const count_t MEASURE_N = 100000;
     const count_t MAXSUM = 10000;
 
+    const count_t MIN_KEY_COUNT = 1000; // TODO: REMOVE!!
+
     static time_t get_timestamp() {
         struct timeval now;
         gettimeofday (&now, NULL);
@@ -38,103 +82,39 @@ private:
 
     void generate_randoms() {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
+        int64_t MAX_KEYS = 1L << 32;
         for(count_t i = 0; i < q_cnt; i++) {
-            randoms.push_back(rand() % MAXSUM);
+            // Pick a host
+            uint64_t host_id = rand() % fd->get_num_hosts();
+
+            // Pick a shard
+            uint64_t shard_id = host_id * fd->get_num_shards(host_id) + rand() % fd->get_num_shards(host_id);
+
+            // Pick a key
+            uint64_t key = rand() % fd->get_num_keys(shard_id);
+
+            randoms.push_back(shard_id * MAX_KEYS + key);
         }
         fprintf(stderr, "Generated %lu random integers\n", q_cnt);
     }
 
-    void read_queries(std::string queryfile) {
-        std::ifstream inputfile(queryfile);
-        if(!inputfile.is_open()) {
-            fprintf(stderr, "Error: Query file [%s] may be missing.\n",
-                    queryfile.c_str());
-            return;
-        }
-
-        std::string line, bin, query;
-        while (getline(inputfile, line)) {
-            // Extract key and value
-            int split_index = line.find_first_of('\t');
-            bin = line.substr(0, split_index);
-            query = line.substr(split_index + 1);
-            queries.push_back(query);
-        }
-        fprintf(stderr, "Read %lu queries\n", queries.size());
-        inputfile.close();
-    }
-
 public:
 
-    SuccinctServerBenchmark(std::string filename, std::string queryfile = "") {
+    SuccinctServerBenchmark(std::string filename) {
         this->filename = filename;
-        int port = SUCCINCT_SERVER_PORT;
+        int port = QUERY_HANDLER_PORT;
         boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         this->fd = new SuccinctServiceClient(protocol);
         transport->open();
         generate_randoms();
-        if(queryfile != "") {
-            read_queries(queryfile);
-        }
     }
 
-    void benchmark_count(std::string res_path) {
-
-        time_t t0, t1, tdiff;
-        uint64_t res;
-        count_t sum;
-        std::ofstream res_stream(res_path);
-
-        // Measure
-        sum = 0;
-        fprintf(stderr, "Measuring for %lu queries...\n", queries.size());
-        for(uint64_t i = 0; i < queries.size(); i++) {
-            t0 = get_timestamp();
-            res = fd->count(queries[i]);
-            t1 = get_timestamp();
-            tdiff = t1 - t0;
-            res_stream << res << "\t" << tdiff << "\n";
-            sum = (sum + res) % MAXSUM;
-        }
-        fprintf(stderr, "Measure chksum = %lu\n", sum);
-        fprintf(stderr, "Measure complete.\n");
-
-        res_stream.close();
-
-    }
-
-    void benchmark_search(std::string res_path) {
+    void benchmark_latency_get(std::string res_path) {
 
         time_t t0, t1, tdiff;
         count_t sum;
-        std::ofstream res_stream(res_path);
-
-        // Measure
-        sum = 0;
-        fprintf(stderr, "Measuring for %lu queries...\n", queries.size());
-        for(uint64_t i = 0; i < queries.size(); i++) {
-            std::vector<int64_t> res;
-            t0 = get_timestamp();
-            fd->search(res, queries[i]);
-            t1 = get_timestamp();
-            tdiff = t1 - t0;
-            res_stream << res.size() << "\t" << tdiff << "\n";
-            sum = (sum + res.size()) % MAXSUM;
-        }
-        fprintf(stderr, "Measure chksum = %lu\n", sum);
-        fprintf(stderr, "Measure complete.\n");
-
-        res_stream.close();
-
-    }
-
-    void benchmark_extract(std::string res_path) {
-
-        time_t t0, t1, tdiff;
-        count_t sum;
-        uint64_t extract_length = 1000;
         std::ofstream res_stream(res_path);
 
         // Warmup
@@ -142,7 +122,7 @@ public:
         fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
         for(uint64_t i = 0; i < WARMUP_N; i++) {
             std::string res;
-            fd->extract(res, randoms[i], extract_length);
+            fd->get(res, randoms[i]);
             sum = (sum + res.length()) % MAXSUM;
         }
         fprintf(stderr, "Warmup chksum = %lu\n", sum);
@@ -153,11 +133,11 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
-            t0 = get_timestamp();
-            fd->extract(res, randoms[i], extract_length);
-            t1 = get_timestamp();
+            t0 = rdtsc();
+            fd->get(res, randoms[i]);
+            t1 = rdtsc();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << res.length() << "\t" << tdiff << "\n";
+            res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
             sum = (sum + res.length()) % MAXSUM;
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
@@ -168,7 +148,7 @@ public:
         fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
         for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
-            fd->extract(res, randoms[i], extract_length);
+            fd->get(res, randoms[i]);
             sum = (sum + res.length()) % MAXSUM;
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);
@@ -179,26 +159,13 @@ public:
     }
 
     void benchmark_functions() {
-        fprintf(stderr, "Benchmarking File Functions...\n\n");
-        fprintf(stderr, "Benchmarking extract...\n");
-        benchmark_extract(filename + ".res_extract");
+        fprintf(stderr, "Benchmarking get...\n");
+        benchmark_latency_get(filename + ".res_get");
         fprintf(stderr, "Done!\n\n");
-        if(queries.size() == 0) {
-            fprintf(stderr, "[WARNING]: No queries have been loaded.\n");
-            fprintf(stderr, "[WARNING]: Skipping count and search benchmarks.\n");
-        } else {
-            fprintf(stderr, "Benchmarking count...\n");
-            benchmark_count(filename + ".res_count");
-            fprintf(stderr, "Done!\n\n");
-            fprintf(stderr, "Benchmarking search...\n");
-            benchmark_search(filename + ".res_search");
-            fprintf(stderr, "Done!\n\n");
-        }
     }
 
 private:
     std::vector<uint64_t> randoms;
-    std::vector<std::string> queries;
     std::string filename;
     SuccinctServiceClient *fd;
 };
