@@ -83,19 +83,25 @@ private:
     void generate_randoms() {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
         int64_t MAX_KEYS = 1L << 32;
+
+        fprintf(stderr, "Generating random keys...\n");
+        uint64_t num_hosts = fd->get_num_hosts();
+
         for(count_t i = 0; i < q_cnt; i++) {
             // Pick a host
-            uint64_t host_id = rand() % fd->get_num_hosts();
+            uint64_t host_id = rand() % num_hosts;
 
             // Pick a shard
-            uint64_t shard_id = host_id * fd->get_num_shards(host_id) + rand() % fd->get_num_shards(host_id);
+            uint64_t num_shards = fd->get_num_shards(host_id);
+            uint64_t shard_id = host_id * num_shards  + rand() % num_shards;
 
             // Pick a key
-            uint64_t key = rand() % fd->get_num_keys(shard_id);
+            uint64_t num_keys = fd->get_num_keys(shard_id);
+            uint64_t key = rand() % num_keys;
 
             randoms.push_back(shard_id * MAX_KEYS + key);
         }
-        fprintf(stderr, "Generated %lu random integers\n", q_cnt);
+        fprintf(stderr, "Generated %lu random keys\n", q_cnt);
     }
 
 public:
@@ -103,11 +109,15 @@ public:
     SuccinctServerBenchmark(std::string filename) {
         this->filename = filename;
         int port = QUERY_HANDLER_PORT;
+
+        fprintf(stderr, "Connecting to server...\n");
         boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         this->fd = new SuccinctServiceClient(protocol);
         transport->open();
+        fprintf(stderr, "Connected!\n");
+        fd->connect_to_handlers();
         generate_randoms();
     }
 

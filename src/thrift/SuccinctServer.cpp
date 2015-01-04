@@ -78,9 +78,6 @@ public:
             transport->open();
             fprintf(stderr, "Connected to QueryServer %u!\n ", i);
             int32_t shard_id = local_host_id * num_shards + i;
-            for(int t = 0; t < 100000; t++) {
-            fprintf(stderr, "Initializing shard %d\n", shard_id);
-            }
             int32_t status = client.init(shard_id);
             if(status == 0) {
                 fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
@@ -113,7 +110,7 @@ public:
     }
 
     int32_t get_num_keys(const int32_t shard_id) {
-        int32_t host_id = shard_id / hostnames.size();
+        int32_t host_id = shard_id / num_shards;
         int32_t num;
         if(host_id == local_host_id) {
             return qservers.at(shard_id % num_shards).get_num_keys();
@@ -226,6 +223,35 @@ private:
     uint32_t local_host_id;
 };
 
+class HandlerProcessorFactory : public TProcessorFactory {
+public:
+    HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
+            uint32_t num_shards, std::string qserver_exec,
+            std::vector<std::string> hostnames, bool construct) {
+        this->filename = filename;
+        this->local_host_id = local_host_id;
+        this->num_shards = num_shards;
+        this->qserver_exec = qserver_exec;
+        this->hostnames = hostnames;
+        this->construct = construct;
+    }
+
+    boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
+        boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
+                local_host_id, num_shards, qserver_exec, hostnames, construct));
+        boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
+        return handlerProcessor;
+    }
+
+private:
+    std::vector<std::string> hostnames;
+    std::string filename;
+    std::string qserver_exec;
+    uint32_t local_host_id;
+    uint32_t num_shards;
+    bool construct;
+};
+
 void print_usage(char *exec) {
     fprintf(stderr, "Usage: %s [-m mode] [-s num_shards] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
 }
@@ -283,14 +309,13 @@ int main(int argc, char **argv) {
     }
 
     int port = QUERY_HANDLER_PORT;
-    shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename, local_host_id, num_shards, qserver_exec, hostnames, construct));
-    shared_ptr<TProcessor> processor(new SuccinctServiceProcessor(handler));
-
     try {
+        shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
+                local_host_id, num_shards, qserver_exec, hostnames, construct));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
-        TThreadedServer server(processor,
+        TThreadedServer server(handlerFactory,
                          server_transport,
                          transport_factory,
                          protocol_factory);

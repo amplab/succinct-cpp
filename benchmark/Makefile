@@ -37,6 +37,6 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_SS)"; $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_SS)
 	
 .PHONY: clean
