@@ -32,13 +32,12 @@ private:
 public:
     SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames, bool construct) {
+            std::vector<std::string> hostnames) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->hostnames = hostnames;
         this->filename = filename;
         this->qserver_exec = qserver_exec;
-        this->construct = construct;
     }
 
     int32_t start_servers() {
@@ -53,8 +52,6 @@ public:
             std::string split_file = filename + underscore + std::to_string(i);
             std::string log_path = split_file + underscore + std::string("log");
             std::string start_cmd = std::string("nohup ") + qserver_exec +
-                                    std::string(" -m ") +
-                                    std::to_string((int)(!construct)) +
                                     std::string(" -p ") +
                                     std::to_string(QUERY_SERVER_PORT + i) +
                                     std::string(" ") +
@@ -213,7 +210,6 @@ public:
 private:
     std::string filename;
     std::string qserver_exec;
-    bool construct;
     std::vector<std::string> hostnames;
     std::vector<QueryServiceClient> qservers;
     std::vector<boost::shared_ptr<TTransport>> qserver_transports;
@@ -227,18 +223,17 @@ class HandlerProcessorFactory : public TProcessorFactory {
 public:
     HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames, bool construct) {
+            std::vector<std::string> hostnames) {
         this->filename = filename;
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->qserver_exec = qserver_exec;
         this->hostnames = hostnames;
-        this->construct = construct;
     }
 
     boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
         boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct));
+                local_host_id, num_shards, qserver_exec, hostnames));
         boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
         return handlerProcessor;
     }
@@ -249,15 +244,14 @@ private:
     std::string qserver_exec;
     uint32_t local_host_id;
     uint32_t num_shards;
-    bool construct;
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s num_shards] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
+    fprintf(stderr, "Usage: %s [-s num_shards] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 12) {
+    if(argc < 2 || argc > 10) {
         print_usage(argv[0]);
         return -1;
     }
@@ -267,11 +261,8 @@ int main(int argc, char **argv) {
     std::string qserver_exec = "./bin/qserver";
     std::string hostsfile = "./conf/hosts";
     uint32_t local_host_id = 0;
-    while((c = getopt(argc, argv, "m:s:q:h:i:")) != -1) {
+    while((c = getopt(argc, argv, "s:q:h:i:")) != -1) {
         switch(c) {
-        case 'm':
-            mode = atoi(optarg);
-            break;
         case 's':
             num_shards = atoi(optarg);
             break;
@@ -311,7 +302,7 @@ int main(int argc, char **argv) {
     int port = QUERY_HANDLER_PORT;
     try {
         shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct));
+                local_host_id, num_shards, qserver_exec, hostnames));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());

@@ -5,29 +5,37 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <fstream>
 
-#include "succinct/SuccinctCore.hpp"
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
-class SuccinctShard : public SuccinctCore {
+#include <assert.h>
+
+class KVStoreShard {
 private:
     std::string input_datafile;
-    std::string succinct_datafile;
+    char *data;
 
     std::vector<int64_t> keys;
     std::vector<int64_t> value_offsets;
-    BitMap *invalid_offsets;
 
     uint32_t id;
 
     int64_t MAX_KEYS = 1L << 32;
+    size_t input_size;
 
 public:
-    SuccinctShard(uint32_t id, std::string datafile, uint32_t num_keys, bool construct = true,
-            uint32_t isa_sampling_rate = 32, uint32_t npa_sampling_rate = 128);
+    KVStoreShard(uint32_t id, std::string datafile, uint32_t num_keys);
 
     std::string name();
 
     size_t num_keys();
+
+    size_t size();
 
     /*
      * Random access into the Succinct file with the specified offset

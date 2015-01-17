@@ -2,61 +2,24 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/succinct/SuccinctShard.hpp"
+#include "../include/succinct/KVStoreShard.hpp"
 #include "succinct/bench/SuccinctBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 5) {
+    if(argc != 2) {
         print_usage(argv[0]);
         return -1;
     }
 
-    int c;
-    uint32_t mode = 0;
-    while((c = getopt(argc, argv, "m:")) != -1) {
-        switch(c) {
-        case 'm':
-            mode = atoi(optarg);
-            break;
-        default:
-            mode = 0;
-        }
-    }
+    std::string inputpath = std::string(argv[1]);
 
-    if(optind == argc) {
-        print_usage(argv[0]);
-        return -1;
-    }
-
-    std::string inputpath = std::string(argv[optind]);
-
-    if(mode == 0) {
-        std::ifstream input(inputpath);
-        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>(), '\n');
-        SuccinctShard fd(0, inputpath, num_keys);
-
-        // Serialize and save to file
-        std::ofstream s_out(inputpath + ".succinct");
-        fd.serialize(s_out);
-        s_out.close();
-
-        // Benchmark core functions
-        SuccinctBenchmark s_bench(&fd);
-        s_bench.benchmark_core();
-        s_bench.benchmark_file();
-    } else if(mode == 1) {
-        // Benchmark core functions
-        SuccinctBenchmark s_bench(inputpath);
-        s_bench.benchmark_file();
-    } else {
-        // Only modes 0, 1 supported for now
-        assert(0);
-    }
+    // Benchmark core functions
+    SuccinctBenchmark s_bench(inputpath);
+    s_bench.benchmark_file();
 
     return 0;
 }

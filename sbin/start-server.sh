@@ -30,4 +30,4 @@ if [ "$QUERY_SERVER_PORT" = "" ]; then
 	QUERY_SERVER_PORT=$(( $2 + 11002 )) # Hard-coded -- fix
 fi
 
-"$bin/qserver" -m 1 -p $QUERY_SERVER_PORT 2>"$SUCCINCT_LOG_PATH/server__${1}_${2}.log" &
+"$bin/qserver" -p $QUERY_SERVER_PORT 2>"$SUCCINCT_LOG_PATH/server__${1}_${2}.log" &

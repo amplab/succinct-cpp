@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/succinct/SuccinctShard.hpp"
+#include "../include/succinct/KVStoreShard.hpp"
 #include "thrift/bench/SuccinctServerBenchmark.hpp"
 
 void print_usage(char *exec) {

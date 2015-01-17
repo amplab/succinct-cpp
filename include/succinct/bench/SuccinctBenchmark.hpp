@@ -7,7 +7,7 @@
 
 #include <sys/time.h>
 
-#include "../SuccinctShard.hpp"
+#include "../KVStoreShard.hpp"
 
 #if defined(__i386__)
 
@@ -82,59 +82,15 @@ public:
         std::ifstream input(filename);
         uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
                 std::istreambuf_iterator<char>(), '\n');
-        shard = new SuccinctShard(0, filename, num_keys, false);
+        shard = new KVStoreShard(0, filename, num_keys);
         generate_randoms();
     }
 
-    SuccinctBenchmark(SuccinctShard *shard) {
+    SuccinctBenchmark(KVStoreShard *shard) {
         this->shard = shard;
         generate_randoms();
     }
 
-    void benchmark_idx_fn(uint64_t (SuccinctShard::*f)(uint64_t), std::string res_path) {
-
-        time_t t0, t1, tdiff;
-        uint64_t res;
-        count_t sum;
-        std::ofstream res_stream(res_path);
-
-        // Warmup
-        sum = 0;
-        fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-        for(uint64_t i = 0; i < WARMUP_N; i++) {
-            res = (shard->*f)(randoms[i]);
-            sum = (sum + res) % shard->original_size();
-        }
-        fprintf(stderr, "Warmup chksum = %lu\n", sum);
-        fprintf(stderr, "Warmup complete.\n");
-
-        // Measure
-        sum = 0;
-        fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
-            t0 = rdtsc();
-            res = (shard->*f)(randoms[i]);
-            t1 = rdtsc();
-            tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
-            sum = (sum + res) % shard->original_size();
-        }
-        fprintf(stderr, "Measure chksum = %lu\n", sum);
-        fprintf(stderr, "Measure complete.\n");
-
-        // Cooldown
-        sum = 0;
-        fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
-            res = (shard->*f)(randoms[i]);
-            sum = (sum + res) % shard->original_size();
-        }
-        fprintf(stderr, "Cooldown chksum = %lu\n", sum);
-        fprintf(stderr, "Cooldown complete.\n");
-
-        res_stream.close();
-
-    }
 
     void benchmark_get_latency(std::string res_path) {
 
@@ -148,7 +104,7 @@ public:
         for(uint64_t i = 0; i < WARMUP_N; i++) {
             std::string res;
             shard->get(res, randoms[i]);
-            sum = (sum + res.length()) % shard->original_size();
+            sum = (sum + res.length()) % shard->size();
         }
         fprintf(stderr, "Warmup chksum = %lu\n", sum);
         fprintf(stderr, "Warmup complete.\n");
@@ -158,12 +114,12 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
-            t0 = rdtsc();
+            t0 = get_timestamp();
             shard->get(res, randoms[i]);
-            t1 = rdtsc();
+            t1 = get_timestamp();
             tdiff = t1 - t0;
             res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
-            sum = (sum + res.length()) % shard->original_size();
+            sum = (sum + res.length()) % shard->size();
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
         fprintf(stderr, "Measure complete.\n");
@@ -174,23 +130,13 @@ public:
         for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
             shard->get(res, randoms[i]);
-            sum = (sum + res.length()) % shard->original_size();
+            sum = (sum + res.length()) % shard->size();
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);
         fprintf(stderr, "Cooldown complete.\n");
 
         res_stream.close();
 
-    }
-
-    void benchmark_core() {
-        fprintf(stderr, "Benchmarking Core Functions...\n\n");
-        fprintf(stderr, "Benchmarking lookupNPA...\n");
-        benchmark_idx_fn(&SuccinctShard::lookupNPA, shard->name() + ".res_npa");
-        fprintf(stderr, "Done!\n\n");
-        fprintf(stderr, "Benchmarking lookupISA...\n");
-        benchmark_idx_fn(&SuccinctShard::lookupISA, shard->name() + ".res_isa");
-        fprintf(stderr, "Done!\n\n");
     }
 
     void benchmark_file() {
@@ -202,7 +148,7 @@ public:
 
 private:
     std::vector<uint64_t> randoms;
-    SuccinctShard *shard;
+    KVStoreShard *shard;
 };
 
 #endif
