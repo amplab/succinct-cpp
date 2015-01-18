@@ -6,11 +6,11 @@
 #include "succinct/bench/SuccinctBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-i isa_sampling_rate] [-n npa_sampling_rate] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 5) {
+    if(argc < 2 || argc > 8) {
         print_usage(argv[0]);
         return -1;
     }
