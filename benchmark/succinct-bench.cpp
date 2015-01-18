@@ -17,13 +17,23 @@ int main(int argc, char **argv) {
 
     int c;
     uint32_t mode = 0;
-    while((c = getopt(argc, argv, "m:")) != -1) {
+    uint32_t isa_sampling_rate = 32;
+    uint32_t npa_sampling_rate = 128;
+    while((c = getopt(argc, argv, "m:i:n:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
             break;
+        case 'i':
+            isa_sampling_rate = atoi(optarg);
+            break;
+        case 'n':
+            npa_sampling_rate = atoi(optarg);
+            break;
         default:
             mode = 0;
+            isa_sampling_rate = 32;
+            npa_sampling_rate = 128;
         }
     }
 
@@ -38,7 +48,7 @@ int main(int argc, char **argv) {
         std::ifstream input(inputpath);
         uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
                 std::istreambuf_iterator<char>(), '\n');
-        SuccinctShard fd(0, inputpath, num_keys);
+        SuccinctShard fd(0, inputpath, num_keys, isa_sampling_rate, npa_sampling_rate);
 
         // Serialize and save to file
         std::ofstream s_out(inputpath + ".succinct");
