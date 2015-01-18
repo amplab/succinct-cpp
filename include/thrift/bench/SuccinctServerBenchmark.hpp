@@ -71,8 +71,6 @@ private:
     const count_t MEASURE_N = 100000;
     const count_t MAXSUM = 10000;
 
-    const count_t MIN_KEY_COUNT = 1000; // TODO: REMOVE!!
-
     static time_t get_timestamp() {
         struct timeval now;
         gettimeofday (&now, NULL);

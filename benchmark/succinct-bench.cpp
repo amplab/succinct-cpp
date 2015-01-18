@@ -42,13 +42,15 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+
+
     std::string inputpath = std::string(argv[optind]);
 
     if(mode == 0) {
         std::ifstream input(inputpath);
         uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
                 std::istreambuf_iterator<char>(), '\n');
-        SuccinctShard fd(0, inputpath, num_keys, isa_sampling_rate, npa_sampling_rate);
+        SuccinctShard fd(0, inputpath, num_keys, true, isa_sampling_rate, npa_sampling_rate);
 
         // Serialize and save to file
         std::ofstream s_out(inputpath + ".succinct");
