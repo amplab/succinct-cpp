@@ -30,6 +30,10 @@ public:
         }
         return 0;
     }
+
+    uint32_t num_replicas() {
+        return cum_dist.size();
+    }
 };
 
 #endif /* LOAD_BALANCER_HPP */

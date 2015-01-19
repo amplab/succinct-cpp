@@ -55,7 +55,10 @@ public:
 
         // Start QueryServer(s)
         for(uint32_t i = 0; i < num_shards; i++) {
-            std::string split_file = filename + underscore + std::to_string(i);
+            int32_t shard_id = i * hostnames.size() + local_host_id;
+            int32_t shard_type = shard_id % balancer->num_replicas();
+            // FIXME: Hacky way
+            std::string split_file = filename + underscore + std::to_string(shard_type);
             std::string log_path = split_file + underscore + std::string("log");
             std::string start_cmd = std::string("nohup ") + qserver_exec +
                                     std::string(" -m ") +
@@ -100,17 +103,16 @@ public:
     void get(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
         uint32_t host_id = shard_id % hostnames.size();
+        uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
-            get_local(_return, key);
+            get_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
         } else {
-            qhandlers.at(host_id).get_local(_return, key);
+            qhandlers.at(host_id).get_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
         }
     }
 
-    void get_local(std::string& _return, const int64_t key) {
-        uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
-        uint32_t qserver_id = shard_id / hostnames.size();
-        qservers.at(qserver_id).get(_return, key % SuccinctShard::MAX_KEYS);
+    void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) {
+        qservers.at(qserver_id).get(_return, key);
     }
 
     int32_t get_num_hosts() {

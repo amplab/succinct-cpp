@@ -22,7 +22,7 @@ class SuccinctServiceIf {
   virtual int32_t start_servers() = 0;
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
-  virtual void get_local(std::string& _return, const int64_t key) = 0;
+  virtual void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
@@ -82,7 +82,7 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   void get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
-  void get_local(std::string& /* _return */, const int64_t /* key */) {
+  void get_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
     return;
   }
   int32_t get_num_hosts() {
@@ -786,21 +786,27 @@ class SuccinctService_get_presult {
 };
 
 typedef struct _SuccinctService_get_local_args__isset {
-  _SuccinctService_get_local_args__isset() : key(false) {}
+  _SuccinctService_get_local_args__isset() : qserver_id(false), key(false) {}
+  bool qserver_id;
   bool key;
 } _SuccinctService_get_local_args__isset;
 
 class SuccinctService_get_local_args {
  public:
 
-  SuccinctService_get_local_args() : key(0) {
+  SuccinctService_get_local_args() : qserver_id(0), key(0) {
   }
 
   virtual ~SuccinctService_get_local_args() throw() {}
 
+  int32_t qserver_id;
   int64_t key;
 
   _SuccinctService_get_local_args__isset __isset;
+
+  void __set_qserver_id(const int32_t val) {
+    qserver_id = val;
+  }
 
   void __set_key(const int64_t val) {
     key = val;
@@ -808,6 +814,8 @@ class SuccinctService_get_local_args {
 
   bool operator == (const SuccinctService_get_local_args & rhs) const
   {
+    if (!(qserver_id == rhs.qserver_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     return true;
@@ -830,6 +838,7 @@ class SuccinctService_get_local_pargs {
 
   virtual ~SuccinctService_get_local_pargs() throw() {}
 
+  const int32_t* qserver_id;
   const int64_t* key;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1244,8 +1253,8 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
-  void get_local(std::string& _return, const int64_t key);
-  void send_get_local(const int64_t key);
+  void get_local(std::string& _return, const int32_t qserver_id, const int64_t key);
+  void send_get_local(const int32_t qserver_id, const int64_t key);
   void recv_get_local(std::string& _return);
   int32_t get_num_hosts();
   void send_get_num_hosts();
@@ -1388,13 +1397,13 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return;
   }
 
-  void get_local(std::string& _return, const int64_t key) {
+  void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_local(_return, key);
+      ifaces_[i]->get_local(_return, qserver_id, key);
     }
-    ifaces_[i]->get_local(_return, key);
+    ifaces_[i]->get_local(_return, qserver_id, key);
     return;
   }
 

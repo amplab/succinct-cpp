@@ -1058,6 +1058,14 @@ uint32_t SuccinctService_get_local_args::read(::apache::thrift::protocol::TProto
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->qserver_id);
+          this->__isset.qserver_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->key);
           this->__isset.key = true;
@@ -1081,7 +1089,11 @@ uint32_t SuccinctService_get_local_args::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_get_local_args");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->qserver_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
   xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
@@ -1094,7 +1106,11 @@ uint32_t SuccinctService_get_local_pargs::write(::apache::thrift::protocol::TPro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_get_local_pargs");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->qserver_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
   xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
@@ -2065,18 +2081,19 @@ void SuccinctServiceClient::recv_get(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
 }
 
-void SuccinctServiceClient::get_local(std::string& _return, const int64_t key)
+void SuccinctServiceClient::get_local(std::string& _return, const int32_t qserver_id, const int64_t key)
 {
-  send_get_local(key);
+  send_get_local(qserver_id, key);
   recv_get_local(_return);
 }
 
-void SuccinctServiceClient::send_get_local(const int64_t key)
+void SuccinctServiceClient::send_get_local(const int32_t qserver_id, const int64_t key)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_local", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_get_local_pargs args;
+  args.qserver_id = &qserver_id;
   args.key = &key;
   args.write(oprot_);
 
@@ -2716,7 +2733,7 @@ void SuccinctServiceProcessor::process_get_local(int32_t seqid, ::apache::thrift
 
   SuccinctService_get_local_result result;
   try {
-    iface_->get_local(result.success, args.key);
+    iface_->get_local(result.success, args.qserver_id, args.key);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
