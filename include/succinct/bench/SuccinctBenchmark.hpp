@@ -158,9 +158,9 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
-            t0 = rdtsc();
+            t0 = get_timestamp();
             shard->get(res, randoms[i]);
-            t1 = rdtsc();
+            t1 = get_timestamp();
             tdiff = t1 - t0;
             res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
             sum = (sum + res.length()) % shard->original_size();
