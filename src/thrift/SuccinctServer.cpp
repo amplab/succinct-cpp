@@ -96,16 +96,15 @@ public:
     void get(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / KVStoreShard::MAX_KEYS);
         uint32_t host_id = shard_id % hostnames.size();
+        uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
-            get_local(_return, key);
+            get_local(_return, qserver_id, key);
         } else {
-            qhandlers.at(host_id).get_local(_return, key);
+            qhandlers.at(host_id).get_local(_return, qserver_id, key);
         }
     }
 
-    void get_local(std::string& _return, const int64_t key) {
-        uint32_t shard_id = (uint32_t)(key / KVStoreShard::MAX_KEYS);
-        uint32_t qserver_id = shard_id / hostnames.size();
+    void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) {
         qservers.at(qserver_id).get(_return, key % KVStoreShard::MAX_KEYS);
     }
 
