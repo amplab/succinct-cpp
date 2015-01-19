@@ -331,4 +331,8 @@ test-driver
 /external/thrift-0.9.1/tutorial/py.twisted/Makefile
 /external/thrift-0.9.1/tutorial/py/Makefile
 /external/thrift-0.9.1/tutorial/rb/Makefile
+/external/thrift-0.9.1/lib/Makefile
+/external/thrift-0.9.1/lib/d/Makefile
+/external/thrift-0.9.1/lib/d/test/Makefile
+/external/thrift-0.9.1/lib/rb/Makefile
 /Debug/
