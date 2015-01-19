@@ -19,9 +19,9 @@ private:
 
     uint32_t id;
 
-    int64_t MAX_KEYS = 1L << 32;
-
 public:
+    static const int64_t MAX_KEYS = 1L << 32;
+
     SuccinctShard(uint32_t id, std::string datafile, uint32_t num_keys, bool construct = true,
             uint32_t isa_sampling_rate = 32, uint32_t npa_sampling_rate = 128);
 

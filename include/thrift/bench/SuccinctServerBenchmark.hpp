@@ -80,7 +80,6 @@ private:
 
     void generate_randoms() {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
-        int64_t MAX_KEYS = 1L << 32;
 
         fprintf(stderr, "Generating random keys...\n");
         uint64_t num_hosts = fd->get_num_hosts();
@@ -91,13 +90,13 @@ private:
 
             // Pick a shard
             uint64_t num_shards = fd->get_num_shards(host_id);
-            uint64_t shard_id = host_id * num_shards  + rand() % num_shards;
+            uint64_t shard_id = host_id * num_shards + rand() % num_shards;
 
             // Pick a key
             uint64_t num_keys = fd->get_num_keys(shard_id);
             uint64_t key = rand() % num_keys;
 
-            randoms.push_back(shard_id * MAX_KEYS + key);
+            randoms.push_back(shard_id * SuccinctShard::MAX_KEYS + key);
         }
         fprintf(stderr, "Generated %lu random keys\n", q_cnt);
     }
@@ -141,9 +140,9 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
-            t0 = rdtsc();
+            t0 = get_timestamp();
             fd->get(res, randoms[i]);
-            t1 = rdtsc();
+            t1 = get_timestamp();
             tdiff = t1 - t0;
             res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
             sum = (sum + res.length()) % MAXSUM;

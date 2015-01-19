@@ -9,6 +9,9 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "thrift/ports.h"
+#include "thrift/LoadBalancer.hpp"
+
+#include "succinct/SuccinctShard.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -33,15 +36,14 @@ public:
     SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
             std::vector<std::string> hostnames, bool construct,
-            uint32_t replication, uint32_t* sampling_rates) {
+            std::vector<double> distribution) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->hostnames = hostnames;
         this->filename = filename;
         this->qserver_exec = qserver_exec;
         this->construct = construct;
-        this->replication = replication;
-        this->sampling_rates = sampling_rates;
+        this->balancer = new LoadBalancer(distribution);
     }
 
     int32_t start_servers() {
@@ -96,7 +98,18 @@ public:
     }
 
     void get(std::string& _return, const int64_t key) {
-        uint32_t qserver_id = key % num_shards;
+        uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
+        uint32_t host_id = shard_id / num_shards;
+        if(host_id == local_host_id) {
+            get_local(_return, key);
+        } else {
+            qhandlers.at(host_id).get_local(_return, key);
+        }
+    }
+
+    void get_local(std::string& _return, const int64_t key) {
+        uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
+        uint32_t qserver_id = shard_id % num_shards;
         qservers.at(qserver_id).get(_return, key);
     }
 
@@ -224,8 +237,7 @@ private:
     std::map<int, SuccinctServiceClient> qhandlers;
     uint32_t num_shards;
     uint32_t local_host_id;
-    uint32_t replication;
-    uint32_t *sampling_rates;
+    LoadBalancer *balancer;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {
@@ -233,20 +245,19 @@ public:
     HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
             std::vector<std::string> hostnames, bool construct,
-            uint32_t num_replicas, uint32_t *sampling_rates) {
+            std::vector<double> distribution) {
         this->filename = filename;
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->qserver_exec = qserver_exec;
         this->hostnames = hostnames;
         this->construct = construct;
-        this->num_replicas = num_replicas;
-        this->sampling_rates = sampling_rates;
+        this->distribution = distribution;
     }
 
     boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
         boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct, num_replicas, sampling_rates));
+                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution));
         boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
         return handlerProcessor;
     }
@@ -257,8 +268,7 @@ private:
     std::string qserver_exec;
     uint32_t local_host_id;
     uint32_t num_shards;
-    uint32_t num_replicas;
-    uint32_t *sampling_rates;
+    std::vector<double> distribution;
     bool construct;
 
 };
@@ -278,8 +288,8 @@ int main(int argc, char **argv) {
     std::string qserver_exec = "./bin/qserver";
     std::string hostsfile = "./conf/hosts";
     uint32_t local_host_id = 0;
-    uint32_t num_replicas = 3;
-    uint32_t *sampling_rates = NULL;
+    std::vector<double> distribution;
+    distribution.push_back(1.0);
 
     while((c = getopt(argc, argv, "m:s:r:q:h:i:")) != -1) {
         switch(c) {
@@ -295,18 +305,17 @@ int main(int argc, char **argv) {
         }
         case 'r':
         {
+            distribution.clear();
+
             std::string s = optarg;
             std::string delimiter = ",";
 
             size_t pos = 0;
-            std::vector<uint32_t> isa_sampling_rates;
             while ((pos = s.find(delimiter)) != std::string::npos) {
-                isa_sampling_rates.push_back(atoi(s.substr(0, pos).c_str()));
+                distribution.push_back(atof(s.substr(0, pos).c_str()));
                 s.erase(0, pos + delimiter.length());
             }
-            std::sort(isa_sampling_rates.begin(), isa_sampling_rates.end());
-            sampling_rates = &(isa_sampling_rates[0]);
-            num_replicas = isa_sampling_rates.size();
+            std::sort(distribution.begin(), distribution.end());
             break;
         }
         case 'q':
@@ -331,16 +340,8 @@ int main(int argc, char **argv) {
             qserver_exec = "./bin/qserver";
             hostsfile = "./conf/hosts";
             local_host_id = 0;
-            sampling_rates = NULL;
         }
         }
-    }
-
-    if(sampling_rates == NULL) {
-        sampling_rates = new uint32_t[3];
-        sampling_rates[0] = 32;
-        sampling_rates[1] = 16;
-        sampling_rates[2] = 8;
     }
 
     if(optind == argc) {
@@ -361,7 +362,7 @@ int main(int argc, char **argv) {
     int port = QUERY_HANDLER_PORT;
     try {
         shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct, num_replicas, sampling_rates));
+                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
