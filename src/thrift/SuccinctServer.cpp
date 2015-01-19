@@ -82,7 +82,7 @@ public:
             QueryServiceClient client(protocol);
             transport->open();
             fprintf(stderr, "Connected to QueryServer %u!\n ", i);
-            int32_t shard_id = local_host_id * num_shards + i;
+            int32_t shard_id = i * hostnames.size() + local_host_id;
             int32_t status = client.init(shard_id);
             if(status == 0) {
                 fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
@@ -99,7 +99,7 @@ public:
 
     void get(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
-        uint32_t host_id = shard_id / num_shards;
+        uint32_t host_id = shard_id % hostnames.size();
         if(host_id == local_host_id) {
             get_local(_return, key);
         } else {
@@ -109,7 +109,7 @@ public:
 
     void get_local(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
-        uint32_t qserver_id = shard_id % num_shards;
+        uint32_t qserver_id = shard_id / hostnames.size();
         qservers.at(qserver_id).get(_return, key % SuccinctShard::MAX_KEYS);
     }
 
@@ -126,10 +126,10 @@ public:
     }
 
     int32_t get_num_keys(const int32_t shard_id) {
-        int32_t host_id = shard_id / num_shards;
+        int32_t host_id = shard_id % hostnames.size();
         int32_t num;
         if(host_id == local_host_id) {
-            return qservers.at(shard_id % num_shards).get_num_keys();
+            return qservers.at(shard_id / hostnames.size()).get_num_keys();
         }
         return qhandlers.at(host_id).get_num_keys(shard_id);
     }
