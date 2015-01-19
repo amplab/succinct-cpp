@@ -60,6 +60,10 @@ public:
         return data_size;
     }
 
+    uint64_t get_sampling_rate() {
+        return sampling_rate;
+    }
+
     void set_npa(NPA *npa) {
         this->npa = npa;
     }

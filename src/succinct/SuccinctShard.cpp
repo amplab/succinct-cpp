@@ -50,6 +50,11 @@ void SuccinctShard::get(std::string& result, int64_t key) {
     uint64_t idx = lookupISA(start);
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
-        idx = lookupNPA(idx);
+        uint64_t next_pos = start + i + 1;
+        if((next_pos % ISA->get_sampling_rate()) == 0) {
+            idx = lookupISA(next_pos);
+        } else {
+            idx = lookupNPA(idx);
+        }
     }
 }
