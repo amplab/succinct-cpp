@@ -71,8 +71,6 @@ private:
     const count_t MEASURE_N = 100000;
     const count_t MAXSUM = 10000;
 
-    const count_t MIN_KEY_COUNT = 1000; // TODO: REMOVE!!
-
     static time_t get_timestamp() {
         struct timeval now;
         gettimeofday (&now, NULL);
@@ -82,7 +80,6 @@ private:
 
     void generate_randoms() {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
-        int64_t MAX_KEYS = 1L << 32;
 
         fprintf(stderr, "Generating random keys...\n");
         uint64_t num_hosts = fd->get_num_hosts();
@@ -99,7 +96,7 @@ private:
             uint64_t num_keys = fd->get_num_keys(shard_id);
             uint64_t key = rand() % num_keys;
 
-            randoms.push_back(shard_id * MAX_KEYS + key);
+            randoms.push_back(shard_id * KVStoreShard::MAX_KEYS + key);
         }
         fprintf(stderr, "Generated %lu random keys\n", q_cnt);
     }

@@ -25,10 +25,11 @@ private:
 
     uint32_t id;
 
-    int64_t MAX_KEYS = 1L << 32;
     size_t input_size;
 
 public:
+    static const int64_t MAX_KEYS = 1L << 32;
+
     KVStoreShard(uint32_t id, std::string datafile, uint32_t num_keys);
 
     std::string name();
