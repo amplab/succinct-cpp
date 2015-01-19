@@ -110,7 +110,7 @@ public:
     void get_local(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
         uint32_t qserver_id = shard_id % num_shards;
-        qservers.at(qserver_id).get(_return, key);
+        qservers.at(qserver_id).get(_return, key % SuccinctShard::MAX_KEYS);
     }
 
     int32_t get_num_hosts() {
