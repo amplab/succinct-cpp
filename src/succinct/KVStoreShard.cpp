@@ -8,7 +8,7 @@ KVStoreShard::KVStoreShard(uint32_t id, std::string filename, uint32_t num_keys)
     std::ifstream input(filename);
     int64_t value_offset = 0;
     for(uint32_t i = 0; i < num_keys; i++) {
-        keys.push_back(id * MAX_KEYS + i);
+        keys.push_back(i);
         value_offsets.push_back(value_offset);
         std::string line;
         std::getline(input, line, '\n');

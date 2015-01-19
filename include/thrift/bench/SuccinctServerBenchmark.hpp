@@ -90,7 +90,7 @@ private:
 
             // Pick a shard
             uint64_t num_shards = fd->get_num_shards(host_id);
-            uint64_t shard_id = host_id * num_shards  + rand() % num_shards;
+            uint64_t shard_id = num_hosts * (rand() % num_shards) + host_id;
 
             // Pick a key
             uint64_t num_keys = fd->get_num_keys(shard_id);
