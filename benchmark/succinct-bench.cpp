@@ -42,39 +42,30 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-
-
     std::string inputpath = std::string(argv[optind]);
+    std::ifstream input(inputpath);
+            uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
+                    std::istreambuf_iterator<char>(), '\n');
 
+    SuccinctShard *fd;
     if(mode == 0) {
-        std::ifstream input(inputpath);
-        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>(), '\n');
-        SuccinctShard fd(0, inputpath, num_keys, true, isa_sampling_rate, npa_sampling_rate);
+        fd = new SuccinctShard(0, inputpath, num_keys, true, isa_sampling_rate, npa_sampling_rate);
 
         // Serialize and save to file
         std::ofstream s_out(inputpath + ".succinct");
-        fd.serialize(s_out);
+        fd->serialize(s_out);
         s_out.close();
-
-        // Benchmark core functions
-        SuccinctBenchmark s_bench(&fd);
-        s_bench.benchmark_core();
-        s_bench.benchmark_file();
     } else if(mode == 1) {
-        std::ifstream input(inputpath);
-        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>(), '\n');
-        SuccinctShard fd(0, inputpath, num_keys, false, isa_sampling_rate, npa_sampling_rate);
-
-        // Benchmark core functions
-        SuccinctBenchmark s_bench(&fd);
-        s_bench.benchmark_core();
-        s_bench.benchmark_file();
+        fd = new SuccinctShard(0, inputpath, num_keys, false, isa_sampling_rate, npa_sampling_rate);
     } else {
         // Only modes 0, 1 supported for now
         assert(0);
     }
+
+    // Benchmark core functions
+    SuccinctBenchmark s_bench(fd);
+    s_bench.benchmark_core();
+    s_bench.benchmark_file();
 
     return 0;
 }
