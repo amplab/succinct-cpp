@@ -22,6 +22,7 @@ class SuccinctServiceIf {
   virtual int32_t start_servers() = 0;
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
+  virtual void get_local(std::string& _return, const int64_t key) = 0;
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
@@ -79,6 +80,9 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     return _return;
   }
   void get(std::string& /* _return */, const int64_t /* key */) {
+    return;
+  }
+  void get_local(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
   int32_t get_num_hosts() {
@@ -781,6 +785,114 @@ class SuccinctService_get_presult {
 
 };
 
+typedef struct _SuccinctService_get_local_args__isset {
+  _SuccinctService_get_local_args__isset() : key(false) {}
+  bool key;
+} _SuccinctService_get_local_args__isset;
+
+class SuccinctService_get_local_args {
+ public:
+
+  SuccinctService_get_local_args() : key(0) {
+  }
+
+  virtual ~SuccinctService_get_local_args() throw() {}
+
+  int64_t key;
+
+  _SuccinctService_get_local_args__isset __isset;
+
+  void __set_key(const int64_t val) {
+    key = val;
+  }
+
+  bool operator == (const SuccinctService_get_local_args & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_get_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_get_local_pargs() throw() {}
+
+  const int64_t* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_local_result__isset {
+  _SuccinctService_get_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_local_result__isset;
+
+class SuccinctService_get_local_result {
+ public:
+
+  SuccinctService_get_local_result() : success() {
+  }
+
+  virtual ~SuccinctService_get_local_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_get_local_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_get_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_local_presult__isset {
+  _SuccinctService_get_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_local_presult__isset;
+
+class SuccinctService_get_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_get_local_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_get_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class SuccinctService_get_num_hosts_args {
  public:
@@ -1132,6 +1244,9 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
+  void get_local(std::string& _return, const int64_t key);
+  void send_get_local(const int64_t key);
+  void recv_get_local(std::string& _return);
   int32_t get_num_hosts();
   void send_get_num_hosts();
   int32_t recv_get_num_hosts();
@@ -1163,6 +1278,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_start_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1176,6 +1292,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["start_servers"] = &SuccinctServiceProcessor::process_start_servers;
     processMap_["initialize"] = &SuccinctServiceProcessor::process_initialize;
     processMap_["get"] = &SuccinctServiceProcessor::process_get;
+    processMap_["get_local"] = &SuccinctServiceProcessor::process_get_local;
     processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
     processMap_["get_num_shards"] = &SuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &SuccinctServiceProcessor::process_get_num_keys;
@@ -1268,6 +1385,16 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->get(_return, key);
     }
     ifaces_[i]->get(_return, key);
+    return;
+  }
+
+  void get_local(std::string& _return, const int64_t key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_local(_return, key);
+    }
+    ifaces_[i]->get_local(_return, key);
     return;
   }
 
