@@ -118,6 +118,7 @@ test-driver
 /external/thrift-0.9.1/contrib/fb303/py/fb303/__init__.py
 /external/thrift-0.9.1/contrib/fb303/py/fb303/constants.py
 /external/thrift-0.9.1/contrib/fb303/py/fb303/ttypes.py
+/external/thrift-0.9.1/lib/Makefile
 /external/thrift-0.9.1/lib/cpp/Debug/
 /external/thrift-0.9.1/lib/cpp/Debug-mt/
 /external/thrift-0.9.1/lib/cpp/Release/
@@ -173,7 +174,9 @@ test-driver
 /external/thrift-0.9.1/lib/c_glib/thrift_c_glib.pc
 /external/thrift-0.9.1/lib/csharp/**/bin/
 /external/thrift-0.9.1/lib/csharp/**/obj/
+/external/thrift-0.9.1/lib/d/Makefile
 /external/thrift-0.9.1/lib/d/libthriftd.a
+/external/thrift-0.9.1/lib/d/test/Makefile
 /external/thrift-0.9.1/lib/d/test/serialization_benchmark
 /external/thrift-0.9.1/lib/d/test/transport_test
 /external/thrift-0.9.1/lib/d/unittest/
@@ -220,6 +223,7 @@ test-driver
 /external/thrift-0.9.1/lib/py/build
 /external/thrift-0.9.1/lib/py/thrift.egg-info/
 /external/thrift-0.9.1/lib/rb/Gemfile.lock
+/external/thrift-0.9.1/lib/rb/Makefile
 /external/thrift-0.9.1/lib/rb/debug_proto_test
 /external/thrift-0.9.1/lib/rb/.config
 /external/thrift-0.9.1/lib/rb/ext/conftest.dSYM/
