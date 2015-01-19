@@ -62,8 +62,14 @@ int main(int argc, char **argv) {
         s_bench.benchmark_core();
         s_bench.benchmark_file();
     } else if(mode == 1) {
+        std::ifstream input(inputpath);
+        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
+                std::istreambuf_iterator<char>(), '\n');
+        SuccinctShard fd(0, inputpath, num_keys, false, isa_sampling_rate, npa_sampling_rate);
+
         // Benchmark core functions
-        SuccinctBenchmark s_bench(inputpath);
+        SuccinctBenchmark s_bench(&fd);
+        s_bench.benchmark_core();
         s_bench.benchmark_file();
     } else {
         // Only modes 0, 1 supported for now
