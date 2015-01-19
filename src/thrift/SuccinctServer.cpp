@@ -9,6 +9,7 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "thrift/ports.h"
+#include "thrift/LoadBalancer.h"
 
 #include "succinct/KVStoreShard.hpp"
 
@@ -34,12 +35,13 @@ private:
 public:
     SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames) {
+            std::vector<std::string> hostnames, std::vector<double> distribution) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->hostnames = hostnames;
         this->filename = filename;
         this->qserver_exec = qserver_exec;
+        this->balancer = new LoadBalancer(distribution);
     }
 
     int32_t start_servers() {
@@ -230,23 +232,25 @@ private:
     std::map<int, SuccinctServiceClient> qhandlers;
     uint32_t num_shards;
     uint32_t local_host_id;
+    LoadBalancer *balancer;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {
 public:
     HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames) {
+            std::vector<std::string> hostnames, std::vector<double> distribution) {
         this->filename = filename;
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->qserver_exec = qserver_exec;
         this->hostnames = hostnames;
+        this->distribution = distribution;
     }
 
     boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
         boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
-                local_host_id, num_shards, qserver_exec, hostnames));
+                local_host_id, num_shards, qserver_exec, hostnames, distribution));
         boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
         return handlerProcessor;
     }
@@ -257,14 +261,15 @@ private:
     std::string qserver_exec;
     uint32_t local_host_id;
     uint32_t num_shards;
+    std::vector<double> distribution;
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-s num_shards] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
+    fprintf(stderr, "Usage: %s [-s num_shards] [-r distribution] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 10) {
+    if(argc < 2 || argc > 12) {
         print_usage(argv[0]);
         return -1;
     }
@@ -274,26 +279,54 @@ int main(int argc, char **argv) {
     std::string qserver_exec = "./bin/qserver";
     std::string hostsfile = "./conf/hosts";
     uint32_t local_host_id = 0;
-    while((c = getopt(argc, argv, "s:q:h:i:")) != -1) {
+    std::vector<double> distribution;
+    distribution.push_back(1.0);
+
+    while((c = getopt(argc, argv, "s:q:h:r:i:")) != -1) {
         switch(c) {
         case 's':
+        {
             num_shards = atoi(optarg);
             break;
+        }
         case 'q':
+        {
             qserver_exec = optarg;
             break;
+        }
         case 'h':
+        {
             hostsfile = optarg;
             break;
+        }
+        case 'r':
+        {
+            distribution.clear();
+
+            std::string s = optarg;
+            std::string delimiter = ",";
+
+            size_t pos = 0;
+            while ((pos = s.find(delimiter)) != std::string::npos) {
+               distribution.push_back(atof(s.substr(0, pos).c_str()));
+               s.erase(0, pos + delimiter.length());
+            }
+            std::sort(distribution.begin(), distribution.end());
+            break;
+        }
         case 'i':
+        {
             local_host_id = atoi(optarg);
             break;
+        }
         default:
+        {
             mode = 0;
             num_shards = 1;
             qserver_exec = "./bin/qserver";
             hostsfile = "./conf/hosts";
             local_host_id = 0;
+        }
         }
     }
 
@@ -315,7 +348,7 @@ int main(int argc, char **argv) {
     int port = QUERY_HANDLER_PORT;
     try {
         shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
-                local_host_id, num_shards, qserver_exec, hostnames));
+                local_host_id, num_shards, qserver_exec, hostnames, distribution));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
