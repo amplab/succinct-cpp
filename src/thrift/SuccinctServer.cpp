@@ -337,6 +337,7 @@ int main(int argc, char **argv) {
             num_shards = 1;
             qserver_exec = "./bin/qserver";
             hostsfile = "./conf/hosts";
+            replfile = "./conf/repl";
             local_host_id = 0;
         }
         }
@@ -366,7 +367,6 @@ int main(int argc, char **argv) {
         std::string sr, dist;
         iss >> sr;
         iss >> dist;
-        fprintf(stderr, "Sampling rate: %s, Distribution: %s\n", sr.c_str(), dist.c_str());
         sampling_rates.push_back(atoi(sr.c_str()));
         distribution.push_back(atof(dist.c_str()));
     }

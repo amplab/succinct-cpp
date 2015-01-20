@@ -28,4 +28,4 @@ fi
 
 mkdir -p $SUCCINCT_LOG_PATH
 
-nohup "$bin/qhandler" -m 1 -s "$1" -q "$bin/qserver" -h "$SUCCINCT_CONF_DIR/hosts" -i "$2" "$SUCCINCT_DATA_PATH/data" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
+nohup "$bin/qhandler" -m 1 -s "$1" -q "$bin/qserver" -h "$SUCCINCT_CONF_DIR/hosts" -r "$SUCCINCT_CONF_DIR/repl" -i "$2" "$SUCCINCT_DATA_PATH/data" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
