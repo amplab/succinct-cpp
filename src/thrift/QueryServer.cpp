@@ -23,7 +23,7 @@ using boost::shared_ptr;
 
 class QueryServiceHandler : virtual public QueryServiceIf {
 public:
-    QueryServiceHandler(std::string filename, bool construct) {
+    QueryServiceHandler(std::string filename, bool construct, uint32_t isa_sampling_rate) {
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
@@ -32,13 +32,14 @@ public:
         this->num_keys = std::count(std::istreambuf_iterator<char>(input),
                         std::istreambuf_iterator<char>(), '\n');
         input.close();
+        this->isa_sampling_rate = isa_sampling_rate;
     }
 
     int32_t init(int32_t id) {
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new SuccinctShard(id, filename, num_keys, construct);
+        fd = new SuccinctShard(id, filename, num_keys, construct, isa_sampling_rate);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
@@ -68,15 +69,16 @@ private:
     std::string filename;
     bool is_init;
     uint32_t num_keys;
+    uint32_t isa_sampling_rate;
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-p port] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-p port] [-i isa_sampling_rate] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
 
-    if(argc < 2 || argc > 6) {
+    if(argc < 2 || argc > 8) {
         print_usage(argv[0]);
         return -1;
     }
@@ -88,8 +90,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "\n");
 
     int c;
-    uint32_t mode = 0, port = QUERY_SERVER_PORT;
-    while((c = getopt(argc, argv, "m:p:")) != -1) {
+    uint32_t mode = 0, port = QUERY_SERVER_PORT, isa_sampling_rate = 32;
+    while((c = getopt(argc, argv, "m:p:i:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -97,9 +99,13 @@ int main(int argc, char **argv) {
         case 'p':
             port = atoi(optarg);
             break;
+        case 'i':
+            isa_sampling_rate = atoi(optarg);
+            break;
         default:
             mode = 0;
             port = QUERY_SERVER_PORT;
+            isa_sampling_rate = 32;
         }
     }
 
@@ -111,7 +117,7 @@ int main(int argc, char **argv) {
     std::string filename = std::string(argv[optind]);
     bool construct = (mode == 0) ? true : false;
 
-    shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct));
+    shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct, isa_sampling_rate));
     shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
     try {
