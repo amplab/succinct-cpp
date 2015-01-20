@@ -53,7 +53,10 @@ public:
 
         // Start QueryServer(s)
         for(uint32_t i = 0; i < num_shards; i++) {
-            std::string split_file = filename + underscore + std::to_string(i);
+            int32_t shard_id = i * hostnames.size() + local_host_id;
+            int32_t shard_type = shard_id % balancer->num_replicas();
+            // FIXME: Hacky way
+            std::string split_file = filename + underscore + std::to_string(shard_type);
             std::string log_path = split_file + underscore + std::string("log");
             std::string start_cmd = std::string("nohup ") + qserver_exec +
                                     std::string(" -p ") +
