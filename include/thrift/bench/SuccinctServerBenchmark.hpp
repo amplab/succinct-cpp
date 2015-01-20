@@ -26,7 +26,7 @@ static __inline__ unsigned long long rdtsc(void) {
 static __inline__ unsigned long long rdtsc(void) {
     unsigned hi, lo;
     __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
-    return ( (unsigned long long)lo)|( ((unsigned long long)hi)<<32 );
+    return ((unsigned long long) lo) | (((unsigned long long) hi) << 32);
 }
 
 #elif defined(__powerpc__)
@@ -35,14 +35,14 @@ static __inline__ unsigned long long rdtsc(void) {
     unsigned long long int result=0;
     unsigned long int upper, lower,tmp;
     __asm__ volatile(
-                "0:                  \n"
-                "\tmftbu   %0           \n"
-                "\tmftb    %1           \n"
-                "\tmftbu   %2           \n"
-                "\tcmpw    %2,%0        \n"
-                "\tbne     0b         \n"
-                : "=r"(upper),"=r"(lower),"=r"(tmp)
-                );
+            "0:                  \n"
+            "\tmftbu   %0           \n"
+            "\tmftb    %1           \n"
+            "\tmftbu   %2           \n"
+            "\tcmpw    %2,%0        \n"
+            "\tbne     0b         \n"
+            : "=r"(upper),"=r"(lower),"=r"(tmp)
+    );
     result = upper;
     result = result<<32;
     result = result|lower;
@@ -66,36 +66,37 @@ private:
     typedef unsigned long long int time_t;
     typedef unsigned long count_t;
 
-    const count_t WARMUP_N = 10000;
-    const count_t COOLDOWN_N = 10000;
-    const count_t MEASURE_N = 100000;
-    const count_t MAXSUM = 10000;
+    typedef struct {
+        SuccinctServiceClient *client;
+        boost::shared_ptr<TTransport> transport;
+        std::vector<int64_t> randoms;
+    } thread_data_t;
+
+    static const count_t WARMUP_N = 10000;
+    static const count_t COOLDOWN_N = 10000;
+    static const count_t MEASURE_N = 100000;
+    static const count_t MAXSUM = 10000;
+
+    static const count_t WARMUPTIME = 10000000;
+    static const count_t MEASURETIME = 60000000;
+    static const count_t COOLDOWNTIME = 10000000;
 
     static time_t get_timestamp() {
         struct timeval now;
-        gettimeofday (&now, NULL);
+        gettimeofday(&now, NULL);
 
-        return  now.tv_usec + (time_t)now.tv_sec * 1000000;
+        return now.tv_usec + (time_t) now.tv_sec * 1000000;
     }
 
-    void generate_randoms() {
+    void generate_randoms(uint32_t num_shards, uint32_t num_keys) {
         count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
 
         fprintf(stderr, "Generating random keys...\n");
-        uint64_t num_hosts = fd->get_num_hosts();
 
-        for(count_t i = 0; i < q_cnt; i++) {
+        for (count_t i = 0; i < q_cnt; i++) {
             // Pick a host
-            uint64_t host_id = rand() % num_hosts;
-
-            // Pick a shard
-            uint64_t num_shards = fd->get_num_shards(host_id);
-            uint64_t shard_id = num_hosts * (rand() % num_shards) + host_id;
-
-            // Pick a key
-            uint64_t num_keys = fd->get_num_keys(shard_id);
-            uint64_t key = rand() % num_keys;
-
+            int64_t shard_id = rand() % num_shards;
+            int64_t key = rand() % num_keys;
             randoms.push_back(shard_id * SuccinctShard::MAX_KEYS + key);
         }
         fprintf(stderr, "Generated %lu random keys\n", q_cnt);
@@ -103,22 +104,31 @@ private:
 
 public:
 
-    SuccinctServerBenchmark(std::string filename) {
-        this->filename = filename;
+    SuccinctServerBenchmark(std::string bench_type, uint32_t num_shards, uint32_t num_keys) {
+        this->benchmark_type = bench_type;
         int port = QUERY_HANDLER_PORT;
 
-        fprintf(stderr, "Connecting to server...\n");
-        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        this->fd = new SuccinctServiceClient(protocol);
-        transport->open();
-        fprintf(stderr, "Connected!\n");
-        fd->connect_to_handlers();
-        generate_randoms();
+        if (bench_type == "latency") {
+            fprintf(stderr, "Connecting to server...\n");
+            boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+            boost::shared_ptr<TTransport> transport(
+                    new TBufferedTransport(socket));
+            boost::shared_ptr<TProtocol> protocol(
+                    new TBinaryProtocol(transport));
+            this->fd = new SuccinctServiceClient(protocol);
+            transport->open();
+            fprintf(stderr, "Connected!\n");
+            fd->connect_to_handlers();
+        } else {
+            fd = NULL;
+        }
+
+        generate_randoms(num_shards, num_keys);
     }
 
     void benchmark_latency_get(std::string res_path) {
+
+        assert(fd != NULL);
 
         time_t t0, t1, tdiff;
         count_t sum;
@@ -127,7 +137,7 @@ public:
         // Warmup
         sum = 0;
         fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-        for(uint64_t i = 0; i < WARMUP_N; i++) {
+        for (uint64_t i = 0; i < WARMUP_N; i++) {
             std::string res;
             fd->get(res, randoms[i]);
             sum = (sum + res.length()) % MAXSUM;
@@ -138,7 +148,7 @@ public:
         // Measure
         sum = 0;
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+        for (uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
             std::string res;
             t0 = get_timestamp();
             fd->get(res, randoms[i]);
@@ -153,7 +163,7 @@ public:
         // Cooldown
         sum = 0;
         fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
+        for (uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
             fd->get(res, randoms[i]);
             sum = (sum + res.length()) % MAXSUM;
@@ -165,15 +175,105 @@ public:
 
     }
 
-    void benchmark_functions() {
-        fprintf(stderr, "Benchmarking get...\n");
-        benchmark_latency_get(filename + ".res_get");
-        fprintf(stderr, "Done!\n\n");
+    static void *getth(void *ptr) {
+        thread_data_t data = *((thread_data_t*) ptr);
+        std::cout << "GET\n";
+
+        SuccinctServiceClient client = *(data.client);
+        std::string value;
+
+        double thput = 0;
+        try {
+            // Warmup phase
+            long i = 0;
+            time_t warmup_start = get_timestamp();
+            while (get_timestamp() - warmup_start < WARMUPTIME) {
+                client.get(value, data.randoms[i % data.randoms.size()]);
+                i++;
+            }
+
+            // Measure phase
+            i = 0;
+            time_t start = get_timestamp();
+            while (get_timestamp() - start < MEASURETIME) {
+                client.get(value, data.randoms[i % data.randoms.size()]);
+                i++;
+            }
+            time_t end = get_timestamp();
+            double totsecs = (double) (end - start) / (1000.0 * 1000.0);
+            thput = ((double) i / totsecs);
+
+            i = 0;
+            time_t cooldown_start = get_timestamp();
+            while (get_timestamp() - cooldown_start < COOLDOWNTIME) {
+                client.get(value, data.randoms[i % data.randoms.size()]);
+                i++;
+            }
+
+        } catch (std::exception &e) {
+            fprintf(stderr, "Throughput test ends...\n");
+        }
+
+        printf("Get throughput: %lf\n", thput);
+
+        std::ofstream ofs;
+        ofs.open("throughput_results_get",
+                std::ofstream::out | std::ofstream::app);
+        ofs << thput << "\n";
+        ofs.close();
+
+        return 0;
+    }
+
+    int benchmark_throughput_get(uint32_t num_threads) {
+        pthread_t thread[num_threads];
+        std::vector<thread_data_t> data;
+        fprintf(stderr, "Starting all threads...\n");
+        for (int i = 0; i < num_threads; i++) {
+            try {
+                boost::shared_ptr<TSocket> socket(new TSocket("localhost", QUERY_HANDLER_PORT));
+                boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+                boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+                SuccinctServiceClient *client = new SuccinctServiceClient(protocol);
+                transport->open();
+                client->connect_to_handlers();
+                thread_data_t th_data;
+                th_data.client = client;
+                th_data.transport = transport;
+                th_data.randoms = randoms;
+                data.push_back(th_data);
+            } catch (std::exception& e) {
+                fprintf(stderr, "Could not connect to handler on localhost : %s\n", e.what());
+                return -1;
+            }
+        }
+        fprintf(stderr, "Started %lu clients.\n", data.size());
+
+        for (int current_t = 0; current_t < num_threads; current_t++) {
+            int result = 0;
+            result = pthread_create(&thread[current_t], NULL, SuccinctServerBenchmark::getth,
+                    static_cast<void*>(&(data[current_t])));
+            if (result != 0) {
+                fprintf(stderr, "Error creating thread %d; return code = %d\n", current_t, result);
+            }
+        }
+
+        for (int current_t = 0; current_t < num_threads; current_t++) {
+            pthread_join(thread[current_t], NULL);
+        }
+        fprintf(stderr, "All threads completed.\n");
+
+        for (int i = 0; i < num_threads; i++) {
+            data[i].transport->close();
+        }
+
+        data.clear();
+        return 0;
     }
 
 private:
-    std::vector<uint64_t> randoms;
-    std::string filename;
+    std::vector<int64_t> randoms;
+    std::string benchmark_type;
     SuccinctServiceClient *fd;
 };
 
