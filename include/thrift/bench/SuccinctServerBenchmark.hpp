@@ -77,9 +77,9 @@ private:
     static const count_t MEASURE_N = 100000;
     static const count_t MAXSUM = 10000;
 
-    static const count_t WARMUPTIME = 10000000;
-    static const count_t MEASURETIME = 60000000;
-    static const count_t COOLDOWNTIME = 10000000;
+    static const count_t WARMUP_T = 10000000;
+    static const count_t MEASURE_T = 60000000;
+    static const count_t COOLDOWN_T = 10000000;
 
     static time_t get_timestamp() {
         struct timeval now;
@@ -187,7 +187,7 @@ public:
             // Warmup phase
             long i = 0;
             time_t warmup_start = get_timestamp();
-            while (get_timestamp() - warmup_start < WARMUPTIME) {
+            while (get_timestamp() - warmup_start < WARMUP_T) {
                 client.get(value, data.randoms[i % data.randoms.size()]);
                 i++;
             }
@@ -195,7 +195,7 @@ public:
             // Measure phase
             i = 0;
             time_t start = get_timestamp();
-            while (get_timestamp() - start < MEASURETIME) {
+            while (get_timestamp() - start < MEASURE_T) {
                 client.get(value, data.randoms[i % data.randoms.size()]);
                 i++;
             }
@@ -205,7 +205,7 @@ public:
 
             i = 0;
             time_t cooldown_start = get_timestamp();
-            while (get_timestamp() - cooldown_start < COOLDOWNTIME) {
+            while (get_timestamp() - cooldown_start < COOLDOWN_T) {
                 client.get(value, data.randoms[i % data.randoms.size()]);
                 i++;
             }

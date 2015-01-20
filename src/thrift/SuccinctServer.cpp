@@ -101,7 +101,7 @@ public:
     }
 
     void get(std::string& _return, const int64_t key) {
-        uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS);
+        uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS) * balancer->num_replicas() + balancer->get_replica();
         uint32_t host_id = shard_id % hostnames.size();
         uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
