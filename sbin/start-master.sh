@@ -10,6 +10,8 @@ sbin="`cd "$sbin"; pwd`"
 bin="$SUCCINCT_HOME/bin"
 bin="`cd "$bin"; pwd`"
 
+export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
+
 if [ "$SUCCINCT_LOG_PATH" = "" ]; then
 	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
