@@ -14,4 +14,12 @@ fi
 
 . "$SUCCINCT_PREFIX/bin/load-succinct-env.sh"
 
-exec "$sbin/hosts.sh" cd "$SUCCINCT_HOME" \; "$sbin/start-thputbench-local.sh" "$@"
+if [ "$SUCCINCT_RES_PATH" = "" ]; then
+	SUCCINCT_RES_PATH="$SUCCINCT_HOME/res"
+fi
+
+mkdir -p $SUCCINCT_RES_PATH
+
+"$sbin/hosts.sh" cd "$SUCCINCT_HOME" \; "$sbin/start-thputbench-local.sh" "$@"
+"$sbin/hosts.sh" cd "$SUCCINCT_HOME" \; awk '{ sum += \$1 } END { print sum }' throughput_results_get > "$SUCCINCT_RES_PATH/thput"
+"$sbin/hosts.sh" cd "$SUCCINCT_HOME" \; rm throughput_results_get
