@@ -49,29 +49,6 @@ public:
     }
 
     int32_t initialize(const int32_t mode) {
-        std::string underscore = "_";
-
-        // Start QueryServer(s)
-        for(uint32_t i = 0; i < num_shards; i++) {
-            int32_t shard_id = i * hostnames.size() + local_host_id;
-            int32_t shard_type = shard_id % balancer->num_replicas();
-            // FIXME: Hacky way
-            std::string split_file = filename + underscore + std::to_string(shard_type);
-            std::string log_path = split_file + underscore + std::string("log");
-            std::string start_cmd = std::string("nohup ") + qserver_exec +
-                                    std::string(" -p ") +
-                                    std::to_string(QUERY_SERVER_PORT + i) +
-                                    std::string(" ") +
-                                    split_file + std::string(" 2>&1 > ") +
-                                    log_path +
-                                    std::string("&");
-            fprintf(stderr, "Launching QueryServer: [%s]\n", start_cmd.c_str());
-            system(start_cmd.c_str());
-        }
-
-        // FIXME: This is a hacky workaround, and could fail. Fix it.
-        sleep(5);
-
         // Connect to query servers and start initialization
         for(uint32_t i = 0; i < num_shards; i++) {
             int port = QUERY_SERVER_PORT + i;
@@ -267,7 +244,7 @@ private:
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-s num_shards] [-r distribution] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
+    fprintf(stderr, "Usage: %s [-s num_shards] [-r replfile] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
 }
 
 int main(int argc, char **argv) {
@@ -280,9 +257,8 @@ int main(int argc, char **argv) {
     uint32_t mode = 0, num_shards = 1;
     std::string qserver_exec = "./bin/qserver";
     std::string hostsfile = "./conf/hosts";
+    std::string replfile = "./conf/repl";
     uint32_t local_host_id = 0;
-    std::vector<double> distribution;
-    distribution.push_back(1.0);
 
     while((c = getopt(argc, argv, "s:q:h:r:i:")) != -1) {
         switch(c) {
@@ -303,17 +279,7 @@ int main(int argc, char **argv) {
         }
         case 'r':
         {
-            distribution.clear();
-
-            std::string s = optarg;
-            std::string delimiter = ",";
-
-            size_t pos = 0;
-            while ((pos = s.find(delimiter)) != std::string::npos) {
-               distribution.push_back(atof(s.substr(0, pos).c_str()));
-               s.erase(0, pos + delimiter.length());
-            }
-            std::sort(distribution.begin(), distribution.end());
+            replfile = optarg;
             break;
         }
         case 'i':
@@ -327,6 +293,7 @@ int main(int argc, char **argv) {
             num_shards = 1;
             qserver_exec = "./bin/qserver";
             hostsfile = "./conf/hosts";
+            replfile = "./conf/repl";
             local_host_id = 0;
         }
         }
@@ -345,6 +312,13 @@ int main(int argc, char **argv) {
     std::vector<std::string> hostnames;
     while(std::getline(hosts, host, '\n')) {
         hostnames.push_back(host);
+    }
+
+    std::ifstream repl(replfile);
+    std::string dist;
+    std::vector<double> distribution;
+    while(std::getline(repl, dist, '\n')) {
+        distribution.push_back(atof(dist.c_str()));
     }
 
     int port = QUERY_HANDLER_PORT;
