@@ -78,11 +78,12 @@ public:
     void get(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + balancer->get_replica();
         uint32_t host_id = shard_id % hostnames.size();
-        // Currently only supports single failure
+        // Currently only supports single failure emulation
         if(host_id < num_failures) {
             // Get new replica#
             uint32_t replica_num = (shard_id % balancer->num_replicas() == 0) ? 1 : 0;
             shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + replica_num;
+            assert(shard_id % hostnames.size() != host_id);
             host_id = shard_id % hostnames.size();
         }
         uint32_t qserver_id = shard_id / hostnames.size();
