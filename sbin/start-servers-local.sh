@@ -31,6 +31,13 @@ if [ "$QUERY_SERVER_PORT" = "" ]; then
 	QUERY_SERVER_PORT=11002
 fi
 
+i=0
+while read sr dist; do
+	((sampling_rates[$i] = $sr))
+	echo "Sampling rate = $sr"
+	i=$(($i + 1))
+done < ${SUCCINCT_CONF_DIR}/repl
+
 num_shards=$1
 num_hosts=$2
 local_host_id=$3
@@ -42,5 +49,5 @@ for i in `seq 0 $limit`; do
 	shard_id=$(($i * $num_hosts + local_host_id))
 	shard_type=$(($shard_id % $num_replicas))
 	data_file="$SUCCINCT_DATA_PATH/data_${shard_type}"
-	nohup "$bin/qserver" -m 1 -p $port $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
+	nohup "$bin/qserver" -m 1 -p $port -i ${sampling_rates[$shard_type]} $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
 done
