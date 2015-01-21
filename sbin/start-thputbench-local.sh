@@ -1,4 +1,4 @@
-# Usage: start-thputbench-local.sh [-t <#threads>] [-s <#shards>] [-k <#keys>]
+# Usage: start-thputbench-local.sh [-t <#threads>] [-s <#shards>] [-k <#keys>] [throughput|throughput-all]
 
 sbin="`dirname "$0"`"
 sbin="`cd "$sbin"; pwd`"
@@ -12,4 +12,4 @@ bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-"$bin/ssbench" "$@" throughput 2>&1 &
+"$bin/ssbench" "$@" 2>&1 &
