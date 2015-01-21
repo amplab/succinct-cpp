@@ -37,7 +37,7 @@ if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
 fi
 
 i=0
-num_hosts=$(wc -l <<< `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`)
+num_hosts=$(echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"|wc -l)
 for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
     ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $num_hosts $i \

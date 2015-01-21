@@ -34,7 +34,6 @@ fi
 i=0
 while read sr dist; do
 	((sampling_rates[$i] = $sr))
-	echo "Sampling rate = $sr"
 	i=$(($i + 1))
 done < ${SUCCINCT_CONF_DIR}/repl
 
