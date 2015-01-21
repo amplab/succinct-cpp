@@ -6,6 +6,10 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
+# Start Servers
+echo "Starting servers..."
+"$sbin"/start-servers.sh
+
 # Start Handlers
 echo "Starting handlers..."
 "$sbin"/start-handlers.sh

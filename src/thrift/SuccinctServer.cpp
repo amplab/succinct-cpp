@@ -55,31 +55,6 @@ public:
     }
 
     int32_t initialize(const int32_t mode) {
-        std::string underscore = "_";
-
-        // Start QueryServer(s)
-        for(uint32_t i = 0; i < num_shards; i++) {
-            int32_t shard_id = i * hostnames.size() + local_host_id;
-            int32_t shard_type = shard_id % balancer->num_replicas();
-            // FIXME: Hacky way
-            std::string split_file = filename + underscore + std::to_string(shard_type);
-            std::string log_path = split_file + underscore + std::string("log");
-            std::string start_cmd = std::string("nohup ") + qserver_exec +
-                                    std::string(" -m ") +
-                                    std::to_string((int)(!construct)) +
-                                    std::string(" -p ") +
-                                    std::to_string(QUERY_SERVER_PORT + i) +
-                                    std::string(" ") +
-                                    split_file + std::string(" 2>&1 > ") +
-                                    log_path +
-                                    std::string("&");
-            fprintf(stderr, "Launching QueryServer: [%s]\n", start_cmd.c_str());
-            system(start_cmd.c_str());
-        }
-
-        // FIXME: This is a hacky workaround, and could fail. Fix it.
-        sleep(5);
-
         // Connect to query servers and start initialization
         for(uint32_t i = 0; i < num_shards; i++) {
             int port = QUERY_SERVER_PORT + i;
