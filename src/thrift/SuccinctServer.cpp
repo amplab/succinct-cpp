@@ -39,7 +39,8 @@ public:
     SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
             std::vector<std::string> hostnames, bool construct,
-            std::vector<double> distribution, std::vector<uint32_t> sampling_rates) {
+            std::vector<double> distribution, std::vector<uint32_t> sampling_rates,
+            uint32_t num_failures) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->hostnames = hostnames;
@@ -48,6 +49,7 @@ public:
         this->construct = construct;
         this->balancer = new LoadBalancer(distribution);
         this->sampling_rates = sampling_rates;
+        this->num_failures = num_failures;
     }
 
     int32_t start_servers() {
@@ -82,6 +84,14 @@ public:
     void get(std::string& _return, const int64_t key) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS) * balancer->num_replicas() + balancer->get_replica();
         uint32_t host_id = shard_id % hostnames.size();
+        // Currently only supports single failure emulation
+        if(host_id < num_failures) {
+            // Get new replica#
+            uint32_t replica_num = (shard_id % balancer->num_replicas() == 0) ? 1 : 0;
+            shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + replica_num;
+            assert(host_id != shard_id % hostnames.size());
+            host_id = shard_id % hostnames.size();
+        }
         uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
             get_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
@@ -218,6 +228,7 @@ private:
     std::map<int, SuccinctServiceClient> qhandlers;
     uint32_t num_shards;
     uint32_t local_host_id;
+    uint32_t num_failures;
     LoadBalancer *balancer;
     std::vector<uint32_t> sampling_rates;
 };
@@ -227,7 +238,8 @@ public:
     HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
             std::vector<std::string> hostnames, bool construct,
-            std::vector<double> distribution, std::vector<uint32_t> sampling_rates) {
+            std::vector<double> distribution, std::vector<uint32_t> sampling_rates,
+            uint32_t num_failures) {
         this->filename = filename;
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
@@ -236,11 +248,12 @@ public:
         this->construct = construct;
         this->distribution = distribution;
         this->sampling_rates = sampling_rates;
+        this->num_failures = num_failures;
     }
 
     boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
         boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution, sampling_rates));
+                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution, sampling_rates, num_failures));
         boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
         return handlerProcessor;
     }
@@ -254,15 +267,16 @@ private:
     std::vector<double> distribution;
     std::vector<uint32_t> sampling_rates;
     bool construct;
+    uint32_t num_failures;
 
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s num_shards] [-r replfile] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-s num_shards] [-r replfile] [-q query_server_executible] [-h hostsfile] [-i hostid] [-f num_failures] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 14) {
+    if(argc < 2 || argc > 16) {
         print_usage(argv[0]);
         return -1;
     }
@@ -273,8 +287,9 @@ int main(int argc, char **argv) {
     std::string hostsfile = "./conf/hosts";
     std::string replfile = "./conf/repl";
     uint32_t local_host_id = 0;
+    uint32_t num_failures = 0;
 
-    while((c = getopt(argc, argv, "m:s:r:q:h:i:")) != -1) {
+    while((c = getopt(argc, argv, "m:s:r:q:h:i:f:")) != -1) {
         switch(c) {
         case 'm':
         {
@@ -306,6 +321,11 @@ int main(int argc, char **argv) {
             local_host_id = atoi(optarg);
             break;
         }
+        case 'f':
+        {
+            num_failures = atoi(optarg);
+            break;
+        }
         default:
         {
             mode = 0;
@@ -314,6 +334,7 @@ int main(int argc, char **argv) {
             hostsfile = "./conf/hosts";
             replfile = "./conf/repl";
             local_host_id = 0;
+            num_failures = 0;
         }
         }
     }
@@ -349,7 +370,7 @@ int main(int argc, char **argv) {
     int port = QUERY_HANDLER_PORT;
     try {
         shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution, sampling_rates));
+                local_host_id, num_shards, qserver_exec, hostnames, construct, distribution, sampling_rates, num_failures));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
