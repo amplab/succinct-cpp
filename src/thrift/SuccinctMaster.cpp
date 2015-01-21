@@ -52,16 +52,31 @@ public:
 
         // Start servers at each host
         for(int i = 0; i < hostnames.size(); i++) {
-            fprintf(stderr, "Starting initialization at %s\n", hostnames[i].c_str());
-            clients[i].send_start_servers();
+            try {
+                fprintf(stderr, "Starting initialization at %s\n", hostnames[i].c_str());
+                clients[i].send_start_servers();
+            } catch(std::exception& e) {
+                fprintf(stderr, "Could not send start_servers signal to %s: %s\n", hostnames[i].c_str(), e.what());
+                exit(1);
+            }
         }
 
         // Cleanup connections
         for(int i = 0; i < hostnames.size(); i++) {
-            clients[i].recv_start_servers();
-            fprintf(stderr, "Finished initialization at %s\n", hostnames[i].c_str());
-            transports[i]->close();
-            fprintf(stderr, "Closed connection!\n");
+            try {
+                clients[i].recv_start_servers();
+                fprintf(stderr, "Finished initialization at %s\n", hostnames[i].c_str());
+            } catch(std::exception& e) {
+                fprintf(stderr, "Could not recv start_servers signal to %s: %s\n", hostnames[i].c_str(), e.what());
+                exit(1);
+            }
+            try {
+                transports[i]->close();
+                fprintf(stderr, "Closed connection!\n");
+            } catch(std::exception& e) {
+                fprintf(stderr, "Could not close connection to %s: %s\n", hostnames[i].c_str(), e.what());
+                exit(1);
+            }
         }
 
         fprintf(stderr, "Done!\n");
