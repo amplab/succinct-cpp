@@ -88,7 +88,7 @@ public:
         if(host_id < num_failures) {
             // Get new replica#
             uint32_t replica_num = (shard_id % balancer->num_replicas() == 0) ? 1 : 0;
-            shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + replica_num;
+            shard_id = (uint32_t)((key / SuccinctShard::MAX_KEYS) * balancer->num_replicas()) + replica_num;
             assert(host_id != shard_id % hostnames.size());
             host_id = shard_id % hostnames.size();
         }
