@@ -16,6 +16,7 @@ class MasterServiceIf {
  public:
   virtual ~MasterServiceIf() {}
   virtual void get_client(std::string& _return) = 0;
+  virtual void reconstruct(const int32_t num_hosts) = 0;
 };
 
 class MasterServiceIfFactory {
@@ -46,6 +47,9 @@ class MasterServiceNull : virtual public MasterServiceIf {
  public:
   virtual ~MasterServiceNull() {}
   void get_client(std::string& /* _return */) {
+    return;
+  }
+  void reconstruct(const int32_t /* num_hosts */) {
     return;
   }
 };
@@ -144,6 +148,94 @@ class MasterService_get_client_presult {
 
 };
 
+typedef struct _MasterService_reconstruct_args__isset {
+  _MasterService_reconstruct_args__isset() : num_hosts(false) {}
+  bool num_hosts;
+} _MasterService_reconstruct_args__isset;
+
+class MasterService_reconstruct_args {
+ public:
+
+  MasterService_reconstruct_args() : num_hosts(0) {
+  }
+
+  virtual ~MasterService_reconstruct_args() throw() {}
+
+  int32_t num_hosts;
+
+  _MasterService_reconstruct_args__isset __isset;
+
+  void __set_num_hosts(const int32_t val) {
+    num_hosts = val;
+  }
+
+  bool operator == (const MasterService_reconstruct_args & rhs) const
+  {
+    if (!(num_hosts == rhs.num_hosts))
+      return false;
+    return true;
+  }
+  bool operator != (const MasterService_reconstruct_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const MasterService_reconstruct_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class MasterService_reconstruct_pargs {
+ public:
+
+
+  virtual ~MasterService_reconstruct_pargs() throw() {}
+
+  const int32_t* num_hosts;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class MasterService_reconstruct_result {
+ public:
+
+  MasterService_reconstruct_result() {
+  }
+
+  virtual ~MasterService_reconstruct_result() throw() {}
+
+
+  bool operator == (const MasterService_reconstruct_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const MasterService_reconstruct_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const MasterService_reconstruct_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class MasterService_reconstruct_presult {
+ public:
+
+
+  virtual ~MasterService_reconstruct_presult() throw() {}
+
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class MasterServiceClient : virtual public MasterServiceIf {
  public:
   MasterServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -167,6 +259,9 @@ class MasterServiceClient : virtual public MasterServiceIf {
   void get_client(std::string& _return);
   void send_get_client();
   void recv_get_client(std::string& _return);
+  void reconstruct(const int32_t num_hosts);
+  void send_reconstruct(const int32_t num_hosts);
+  void recv_reconstruct();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -183,10 +278,12 @@ class MasterServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_get_client(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_reconstruct(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   MasterServiceProcessor(boost::shared_ptr<MasterServiceIf> iface) :
     iface_(iface) {
     processMap_["get_client"] = &MasterServiceProcessor::process_get_client;
+    processMap_["reconstruct"] = &MasterServiceProcessor::process_reconstruct;
   }
 
   virtual ~MasterServiceProcessor() {}
@@ -223,6 +320,15 @@ class MasterServiceMultiface : virtual public MasterServiceIf {
     }
     ifaces_[i]->get_client(_return);
     return;
+  }
+
+  void reconstruct(const int32_t num_hosts) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->reconstruct(num_hosts);
+    }
+    ifaces_[i]->reconstruct(num_hosts);
   }
 
 };

@@ -46,6 +46,14 @@ size_t KVStoreShard::size() {
 }
 
 void KVStoreShard::get(std::string& result, int64_t key) {
+    if(key == -1) {
+        result.resize(input_size);
+        for(uint64_t i = 0; i < input_size; i++) {
+            result[i] = data[i];
+        }
+        return;
+    }
+
     result = "";
     int64_t pos = get_value_offset_pos(key);
     if(pos < 0)
