@@ -12,8 +12,6 @@ service SuccinctService {
     string get_local(1:i32 qserver_id, 2:i64 key),
     
     string get_all(1:i64 key),
-    
-    string reconstruct(),
 	
 	i32 get_num_hosts(),
 	i32 get_num_shards(1:i32 host_id),
@@ -29,5 +27,4 @@ service QueryService {
 
 service MasterService {
   	string get_client(),
-  	void reconstruct(1:i32 num_hosts),
 }

@@ -86,61 +86,6 @@ public:
         _return = hostnames[rand() % hostnames.size()];
     }
 
-    void reconstruct(int32_t num_hosts) {
-        std::vector<SuccinctServiceClient> clients;
-        std::vector<boost::shared_ptr<TTransport> > transports;
-
-        uint32_t start_host_id = hostnames.size() - num_hosts;
-        uint32_t end_host_id = hostnames.size() - 1;
-
-        // Initiate client to client connections on selected clients
-        for(int i = start_host_id; i <= end_host_id; i++) {
-            fprintf(stderr, "Connecting to client at %s...\n", hostnames[i].c_str());
-            try {
-                boost::shared_ptr<TSocket> socket(new TSocket(hostnames[i], QUERY_HANDLER_PORT));
-                boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-                boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-                SuccinctServiceClient client(protocol);
-                transport->open();
-                client.connect_to_local_servers();
-                fprintf(stderr, "Connected!\n");
-                clients.push_back(client);
-                transports.push_back(transport);
-            } catch(std::exception& e) {
-                fprintf(stderr, "Could not connect to handler on %s: %s\n", hostnames[i].c_str(), e.what());
-            }
-        }
-
-        // Start reconstruction at relevant hosts
-        for(int i = start_host_id; i <= end_host_id; i++) {
-           try {
-               clients[i - start_host_id].send_reconstruct();
-           } catch(std::exception& e) {
-               fprintf(stderr, "Could not send reconstruct signal to %s: %s\n", hostnames[i].c_str(), e.what());
-           }
-        }
-
-        // Receive data, and close connections
-        size_t sum = 0;
-        for(int i = start_host_id; i <= end_host_id; i++) {
-           try {
-               std::string result;
-               clients[i - start_host_id].recv_reconstruct(result);
-               fprintf(stderr, "Finished reconstruct at %s, sum = %lu\n", hostnames[i].c_str(), sum);
-               sum += result.length();
-           } catch(std::exception& e) {
-               fprintf(stderr, "Could not recv reconstruct signal to %s: %s\n", hostnames[i].c_str(), e.what());
-           }
-           try {
-               clients[i - start_host_id].disconnect_from_local_servers();
-               transports[i - start_host_id]->close();
-               fprintf(stderr, "Closed connection!\n");
-           } catch(std::exception& e) {
-               fprintf(stderr, "Could not close connection to %s: %s\n", hostnames[i].c_str(), e.what());
-           }
-        }
-    }
-
 private:
     std::vector<std::string> hostnames;
 };

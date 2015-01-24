@@ -75,27 +75,54 @@ public:
         return 0;
     }
 
-    void reconstruct(std::string& _return) {
-        _return = "";
-        for(size_t i = 0; i < qservers.size(); i++) {
-            std::string val;
-            qservers.at(i).get(val, -1);
-            _return.append(val);
-            fprintf(stderr, "Read chunk#%lu\n", i);
-        }
-    }
-
     void get(std::string& _return, const int64_t key) {
 
         uint32_t shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + balancer->get_replica();
         uint32_t host_id = shard_id % hostnames.size();
+        uint32_t qserver_id = shard_id / hostnames.size();
 
         // Currently only supports single failure emulation
         if(host_id < num_failures) {
-            // TODO: Add failure handling to read from 10 random machines
+            // Request parity data from the 4 parity machines
+            for(size_t i = 10; i < 14; i++) {
+                if(i == local_host_id) {
+                    qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
+                } else {
+                    qhandlers.at(i).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
+                }
+            }
+
+            // Request non-parity data from 6 random machines
+            for(size_t i = key % 9; i < key % 9 + 6; i++) {
+                size_t j = i % 9 + 1;
+                if(j == local_host_id) {
+                    qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
+                } else {
+                    qhandlers.at(j).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
+                }
+            }
+
+            // Request parity data from the 4 parity machines
+            for(size_t i = 10; i < 14; i++) {
+                if(i == local_host_id) {
+                    qservers.at(qserver_id).recv_get(_return);
+                } else {
+                    qhandlers.at(i).recv_get_local(_return);
+                }
+            }
+
+            // Request non-parity data from 6 random machines
+            for(size_t i = key % 9; i < key % 9 + 6; i++) {
+                size_t j = i % 9 + 1;
+                if(j == local_host_id) {
+                    qservers.at(qserver_id).recv_get(_return);
+                } else {
+                    qhandlers.at(j).recv_get_local(_return);
+                }
+            }
+
         }
 
-        uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
             get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
         } else {
@@ -107,9 +134,17 @@ public:
         uint32_t qserver_id = (uint32_t)(key / KVStoreShard::MAX_KEYS) / hostnames.size();
         for(size_t i = 0; i < hostnames.size(); i++) {
             if(i == local_host_id) {
-                get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
+                qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
             } else {
-                qhandlers.at(i).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
+                qhandlers.at(i).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
+            }
+        }
+
+        for(size_t i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                qservers.at(qserver_id).recv_get(_return);
+            } else {
+                qhandlers.at(i).recv_get_local(_return);
             }
         }
     }
