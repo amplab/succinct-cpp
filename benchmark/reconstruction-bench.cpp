@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    std::string benchmark_type = std::string(argv[0]);
+    std::string benchmark_type = std::string(argv[1]);
 
     try {
         // Connect to master
