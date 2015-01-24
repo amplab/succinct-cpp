@@ -114,7 +114,7 @@ public:
         // Start reconstruction at relevant hosts
         for(int i = start_host_id; i <= end_host_id; i++) {
            try {
-               clients[i].send_reconstruct();
+               clients[i - start_host_id].send_reconstruct();
            } catch(std::exception& e) {
                fprintf(stderr, "Could not send reconstruct signal to %s: %s\n", hostnames[i].c_str(), e.what());
                exit(1);
@@ -126,7 +126,7 @@ public:
         for(int i = start_host_id; i <= end_host_id; i++) {
            try {
                std::string result;
-               clients[i].recv_reconstruct(result);
+               clients[i - start_host_id].recv_reconstruct(result);
                fprintf(stderr, "Finished reconstruct at %s, sum = %lu\n", hostnames[i].c_str(), sum);
                sum += result.length();
            } catch(std::exception& e) {
@@ -134,7 +134,7 @@ public:
                exit(1);
            }
            try {
-               transports[i]->close();
+               transports[i - start_host_id]->close();
                fprintf(stderr, "Closed connection!\n");
            } catch(std::exception& e) {
                fprintf(stderr, "Could not close connection to %s: %s\n", hostnames[i].c_str(), e.what());

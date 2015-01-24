@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
             master->reconstruct(10);
             end = get_timestamp();
             diff = end - start;
-            fprintf(stderr, "Time talen: %ld", diff);
+            fprintf(stderr, "Time taken: %ld", diff);
         } else if(benchmark_type == "repeat") {
             fprintf(stderr, "Entering reconstruction loop...");
             while(true) {
