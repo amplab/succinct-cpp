@@ -108,7 +108,6 @@ public:
                 transports.push_back(transport);
             } catch(std::exception& e) {
                 fprintf(stderr, "Could not connect to handler on %s: %s\n", hostnames[i].c_str(), e.what());
-                exit(1);
             }
         }
 
@@ -118,7 +117,6 @@ public:
                clients[i - start_host_id].send_reconstruct();
            } catch(std::exception& e) {
                fprintf(stderr, "Could not send reconstruct signal to %s: %s\n", hostnames[i].c_str(), e.what());
-               exit(1);
            }
         }
 
@@ -131,8 +129,7 @@ public:
                fprintf(stderr, "Finished reconstruct at %s, sum = %lu\n", hostnames[i].c_str(), sum);
                sum += result.length();
            } catch(std::exception& e) {
-               fprintf(stderr, "Could not recv start_servers signal to %s: %s\n", hostnames[i].c_str(), e.what());
-               exit(1);
+               fprintf(stderr, "Could not recv reconstruct signal to %s: %s\n", hostnames[i].c_str(), e.what());
            }
            try {
                clients[i - start_host_id].disconnect_from_local_servers();
@@ -140,7 +137,6 @@ public:
                fprintf(stderr, "Closed connection!\n");
            } catch(std::exception& e) {
                fprintf(stderr, "Could not close connection to %s: %s\n", hostnames[i].c_str(), e.what());
-               exit(1);
            }
         }
     }
