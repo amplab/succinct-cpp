@@ -10,6 +10,9 @@ sbin="`cd "$sbin"; pwd`"
 echo "Starting servers..."
 "$sbin"/start-servers.sh
 
+# Wait for some time
+sleep 1
+
 # Start Handlers
 echo "Starting handlers..."
 "$sbin"/start-handlers.sh
