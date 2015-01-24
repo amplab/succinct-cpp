@@ -76,6 +76,7 @@ public:
     }
 
     void reconstruct(std::string& _return) {
+        _return = "";
         for(size_t i = 0; i < qservers.size(); i++) {
             std::string val;
             qservers.at(i).get(val, -1);
