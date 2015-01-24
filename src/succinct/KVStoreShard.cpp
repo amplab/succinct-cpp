@@ -47,10 +47,12 @@ size_t KVStoreShard::size() {
 
 void KVStoreShard::get(std::string& result, int64_t key) {
     if(key == -1) {
+        fprintf(stderr, "Received reconstruction request\n");
         result.resize(input_size);
         for(uint64_t i = 0; i < input_size; i++) {
             result[i] = data[i];
         }
+        fprintf(stderr, "Completed extraction reconstruction request\n");
         return;
     }
 

@@ -81,6 +81,7 @@ public:
             std::string val;
             qservers.at(i).get(val, -1);
             _return.append(val);
+            fprintf(stderr, "Read chunk#%lu\n", i);
         }
     }
 
