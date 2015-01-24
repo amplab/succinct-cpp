@@ -40,17 +40,20 @@ int main(int argc, char **argv) {
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         MasterServiceClient *master = new MasterServiceClient(protocol);
-
         transport->open();
 
+        fprintf(stderr, "Connected to master!\n");
+
         if(benchmark_type == "once") {
+            fprintf(stderr, "Benchmarking re-construction...\n");
             time_t start, end, diff;
             start = get_timestamp();
             master->reconstruct(10);
             end = get_timestamp();
             diff = end - start;
-            fprintf(stderr, "%ld", diff);
+            fprintf(stderr, "Time talen: %ld", diff);
         } else if(benchmark_type == "repeat") {
+            fprintf(stderr, "Entering reconstruction loop...");
             while(true) {
                 master->reconstruct(10);
             }
@@ -58,6 +61,8 @@ int main(int argc, char **argv) {
             // Not supported yet
             assert(0);
         }
+
+        transport->close();
     } catch(std::exception& e) {
         fprintf(stderr, "Error: %s\n", e.what());
     }
