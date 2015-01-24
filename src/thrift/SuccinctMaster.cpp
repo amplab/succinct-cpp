@@ -102,6 +102,7 @@ public:
                 boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
                 SuccinctServiceClient client(protocol);
                 transport->open();
+                client.connect_to_local_servers();
                 fprintf(stderr, "Connected!\n");
                 clients.push_back(client);
                 transports.push_back(transport);
@@ -134,6 +135,7 @@ public:
                exit(1);
            }
            try {
+               clients[i - start_host_id].disconnect_from_local_servers();
                transports[i - start_host_id]->close();
                fprintf(stderr, "Closed connection!\n");
            } catch(std::exception& e) {
