@@ -10,8 +10,6 @@ service SuccinctService {
 	
 	string get(1:i64 key),
     string get_local(1:i32 qserver_id, 2:i64 key),
-    
-    string get_all(1:i64 key),
 	
 	i32 get_num_hosts(),
 	i32 get_num_shards(1:i32 host_id),

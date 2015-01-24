@@ -94,17 +94,6 @@ public:
         }
     }
 
-    void get_all(std::string& _return, const int64_t key) {
-        uint32_t qserver_id = (uint32_t)(key / KVStoreShard::MAX_KEYS) / hostnames.size();
-        for(size_t i = 0; i < hostnames.size(); i++) {
-            if(i == local_host_id) {
-                get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
-            } else {
-                qhandlers.at(i).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
-            }
-        }
-    }
-
     void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) {
         qservers.at(qserver_id).get(_return, key);
     }
