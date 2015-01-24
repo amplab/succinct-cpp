@@ -35,14 +35,13 @@ private:
 public:
     SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames, std::vector<double> distribution,
+            std::vector<std::string> hostnames,
             uint32_t num_failures) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->hostnames = hostnames;
         this->filename = filename;
         this->qserver_exec = qserver_exec;
-        this->balancer = new LoadBalancer(distribution);
         this->num_failures = num_failures;
     }
 
@@ -77,13 +76,12 @@ public:
 
     void get(std::string& _return, const int64_t key) {
 
-        uint32_t shard_id = (uint32_t)((key / KVStoreShard::MAX_KEYS) * balancer->num_replicas()) + balancer->get_replica();
+        uint32_t shard_id = (uint32_t)(key / KVStoreShard::MAX_KEYS);
         uint32_t host_id = shard_id % hostnames.size();
         uint32_t qserver_id = shard_id / hostnames.size();
 
         // Currently only supports single failure emulation
         if(host_id < num_failures) {
-
             // Request parity data from the 4 parity machines
             for(size_t i = 10; i < 14; i++) {
                 if(i == local_host_id) {
@@ -102,32 +100,12 @@ public:
                     qhandlers.at(j).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
                 }
             }
-
         }
 
         if(host_id == local_host_id) {
             get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
         } else {
             qhandlers.at(host_id).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
-        }
-    }
-
-    void get_all(std::string& _return, const int64_t key) {
-        uint32_t qserver_id = (uint32_t)(key / KVStoreShard::MAX_KEYS) / hostnames.size();
-        for(size_t i = 0; i < hostnames.size(); i++) {
-            if(i == local_host_id) {
-                qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
-            } else {
-                qhandlers.at(i).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
-            }
-        }
-
-        for(size_t i = 0; i < hostnames.size(); i++) {
-            if(i == local_host_id) {
-                qservers.at(qserver_id).recv_get(_return);
-            } else {
-                qhandlers.at(i).recv_get_local(_return);
-            }
         }
     }
 
@@ -259,27 +237,25 @@ private:
     uint32_t num_shards;
     uint32_t local_host_id;
     uint32_t num_failures;
-    LoadBalancer *balancer;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {
 public:
     HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
             uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames, std::vector<double> distribution,
+            std::vector<std::string> hostnames,
             uint32_t num_failures) {
         this->filename = filename;
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
         this->qserver_exec = qserver_exec;
         this->hostnames = hostnames;
-        this->distribution = distribution;
         this->num_failures = num_failures;
     }
 
     boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
         boost::shared_ptr<SuccinctServiceHandler> handler(new SuccinctServiceHandler(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, distribution, num_failures));
+                local_host_id, num_shards, qserver_exec, hostnames, num_failures));
         boost::shared_ptr<TProcessor> handlerProcessor(new SuccinctServiceProcessor(handler));
         return handlerProcessor;
     }
@@ -290,16 +266,15 @@ private:
     std::string qserver_exec;
     uint32_t local_host_id;
     uint32_t num_shards;
-    std::vector<double> distribution;
     uint32_t num_failures;
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-s num_shards] [-r replfile] [-q query_server_executible] [-h hostsfile] [-i hostid] [-f num_failures] file\n", exec);
+    fprintf(stderr, "Usage: %s [-s num_shards] [-q query_server_executible] [-h hostsfile] [-i hostid] [-f num_failures] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 14) {
+    if(argc < 2 || argc > 12) {
         print_usage(argv[0]);
         return -1;
     }
@@ -308,11 +283,10 @@ int main(int argc, char **argv) {
     uint32_t mode = 0, num_shards = 1;
     std::string qserver_exec = "./bin/qserver";
     std::string hostsfile = "./conf/hosts";
-    std::string replfile = "./conf/repl";
     uint32_t local_host_id = 0;
     uint32_t num_failures = 0;
 
-    while((c = getopt(argc, argv, "s:q:h:r:i:f:")) != -1) {
+    while((c = getopt(argc, argv, "s:q:h:i:f:")) != -1) {
         switch(c) {
         case 's':
         {
@@ -327,11 +301,6 @@ int main(int argc, char **argv) {
         case 'h':
         {
             hostsfile = optarg;
-            break;
-        }
-        case 'r':
-        {
-            replfile = optarg;
             break;
         }
         case 'i':
@@ -350,7 +319,6 @@ int main(int argc, char **argv) {
             num_shards = 1;
             qserver_exec = "./bin/qserver";
             hostsfile = "./conf/hosts";
-            replfile = "./conf/repl";
             local_host_id = 0;
             num_failures = 0;
         }
@@ -372,17 +340,10 @@ int main(int argc, char **argv) {
         hostnames.push_back(host);
     }
 
-    std::ifstream repl(replfile);
-    std::string dist;
-    std::vector<double> distribution;
-    while(std::getline(repl, dist, '\n')) {
-        distribution.push_back(atof(dist.c_str()));
-    }
-
     int port = QUERY_HANDLER_PORT;
     try {
         shared_ptr<HandlerProcessorFactory> handlerFactory(new HandlerProcessorFactory(filename,
-                local_host_id, num_shards, qserver_exec, hostnames, distribution, num_failures));
+                local_host_id, num_shards, qserver_exec, hostnames, num_failures));
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
         shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());

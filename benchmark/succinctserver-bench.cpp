@@ -50,8 +50,6 @@ int main(int argc, char **argv) {
         s_bench.benchmark_latency_get("latency_results_get");
     } else if(benchmark_type == "throughput") {
         s_bench.benchmark_throughput_get(num_threads);
-    } else if(benchmark_type == "throughput-all") {
-        s_bench.benchmark_throughput_get_all(num_threads);
     } else {
         // Not supported yet
         assert(0);
