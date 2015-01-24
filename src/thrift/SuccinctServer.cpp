@@ -83,12 +83,13 @@ public:
 
         // Currently only supports single failure emulation
         if(host_id < num_failures) {
+
             // Request parity data from the 4 parity machines
             for(size_t i = 10; i < 14; i++) {
                 if(i == local_host_id) {
-                    qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
+                    qservers.at(qserver_id).get(_return, key % KVStoreShard::MAX_KEYS);
                 } else {
-                    qhandlers.at(i).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
+                    qhandlers.at(i).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
                 }
             }
 
@@ -96,28 +97,9 @@ public:
             for(size_t i = key % 9; i < key % 9 + 6; i++) {
                 size_t j = i % 9 + 1;
                 if(j == local_host_id) {
-                    qservers.at(qserver_id).send_get(key % KVStoreShard::MAX_KEYS);
+                    qservers.at(qserver_id).get(_return, key % KVStoreShard::MAX_KEYS);
                 } else {
-                    qhandlers.at(j).send_get_local(qserver_id, key % KVStoreShard::MAX_KEYS);
-                }
-            }
-
-            // Request parity data from the 4 parity machines
-            for(size_t i = 10; i < 14; i++) {
-                if(i == local_host_id) {
-                    qservers.at(qserver_id).recv_get(_return);
-                } else {
-                    qhandlers.at(i).recv_get_local(_return);
-                }
-            }
-
-            // Request non-parity data from 6 random machines
-            for(size_t i = key % 9; i < key % 9 + 6; i++) {
-                size_t j = i % 9 + 1;
-                if(j == local_host_id) {
-                    qservers.at(qserver_id).recv_get(_return);
-                } else {
-                    qhandlers.at(j).recv_get_local(_return);
+                    qhandlers.at(j).get_local(_return, qserver_id, key % KVStoreShard::MAX_KEYS);
                 }
             }
 
