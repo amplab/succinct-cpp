@@ -50,12 +50,13 @@ public:
 
     int32_t initialize(const int32_t mode) {
         // Connect to query servers and start initialization
-        std::ifstream input(filename);
-        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                        std::istreambuf_iterator<char>(), '\n');
         for(uint32_t i = 0; i < num_shards; i++) {
             uint32_t id = i * hostnames.size() + local_host_id;
-            shards.push_back(new KVStoreShard(id, filename, num_keys));
+            std::string inputpath = filename + "_" + std::to_string(id % balancer->num_replicas());
+            std::ifstream input(inputpath);
+            uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
+                            std::istreambuf_iterator<char>(), '\n');
+            shards.push_back(new KVStoreShard(id, inputpath, num_keys));
         }
 
         return 0;
