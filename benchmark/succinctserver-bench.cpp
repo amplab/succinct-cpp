@@ -10,7 +10,7 @@ void print_usage(char *exec) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 8) {
+    if(argc < 2 || argc > 10) {
         print_usage(argv[0]);
         return -1;
     }
@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
     uint32_t num_threads = 1;
     uint32_t num_shards = 1;
     uint32_t num_keys = 10000;
-    while((c = getopt(argc, argv, "t:s:k:")) != -1) {
+    int32_t len = 100;
+    while((c = getopt(argc, argv, "t:s:k:l:")) != -1) {
         switch(c) {
         case 't':
             num_threads = atoi(optarg);
@@ -30,10 +31,14 @@ int main(int argc, char **argv) {
         case 'k':
             num_keys = atoi(optarg);
             break;
+        case 'l':
+            len = atoi(optarg);
+            break;
         default:
             num_threads = 1;
             num_shards = 1;
             num_keys = 10000;
+            len = 100;
         }
     }
 
@@ -48,8 +53,10 @@ int main(int argc, char **argv) {
     SuccinctServerBenchmark s_bench(benchmark_type, num_shards, num_keys);
     if(benchmark_type == "latency") {
         s_bench.benchmark_latency_get("latency_results_get");
-    } else if(benchmark_type == "throughput") {
+    } else if(benchmark_type == "throughput-get") {
         s_bench.benchmark_throughput_get(num_threads);
+    } else if(benchmark_type == "throughput-access") {
+        s_bench.benchmark_throughput_access(num_threads, len);
     } else {
         // Not supported yet
         assert(0);

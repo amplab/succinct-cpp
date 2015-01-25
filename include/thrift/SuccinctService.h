@@ -23,6 +23,8 @@ class SuccinctServiceIf {
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
   virtual void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
+  virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
+  virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) = 0;
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
@@ -83,6 +85,12 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     return;
   }
   void get_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
+    return;
+  }
+  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* len */) {
+    return;
+  }
+  void access_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */, const int32_t /* len */) {
     return;
   }
   int32_t get_num_hosts() {
@@ -902,6 +910,249 @@ class SuccinctService_get_local_presult {
 
 };
 
+typedef struct _SuccinctService_access_args__isset {
+  _SuccinctService_access_args__isset() : key(false), len(false) {}
+  bool key;
+  bool len;
+} _SuccinctService_access_args__isset;
+
+class SuccinctService_access_args {
+ public:
+
+  SuccinctService_access_args() : key(0), len(0) {
+  }
+
+  virtual ~SuccinctService_access_args() throw() {}
+
+  int64_t key;
+  int32_t len;
+
+  _SuccinctService_access_args__isset __isset;
+
+  void __set_key(const int64_t val) {
+    key = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
+  bool operator == (const SuccinctService_access_args & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_access_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_access_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_access_pargs {
+ public:
+
+
+  virtual ~SuccinctService_access_pargs() throw() {}
+
+  const int64_t* key;
+  const int32_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_access_result__isset {
+  _SuccinctService_access_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_access_result__isset;
+
+class SuccinctService_access_result {
+ public:
+
+  SuccinctService_access_result() : success() {
+  }
+
+  virtual ~SuccinctService_access_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_access_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_access_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_access_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_access_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_access_presult__isset {
+  _SuccinctService_access_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_access_presult__isset;
+
+class SuccinctService_access_presult {
+ public:
+
+
+  virtual ~SuccinctService_access_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_access_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_access_local_args__isset {
+  _SuccinctService_access_local_args__isset() : qserver_id(false), key(false), len(false) {}
+  bool qserver_id;
+  bool key;
+  bool len;
+} _SuccinctService_access_local_args__isset;
+
+class SuccinctService_access_local_args {
+ public:
+
+  SuccinctService_access_local_args() : qserver_id(0), key(0), len(0) {
+  }
+
+  virtual ~SuccinctService_access_local_args() throw() {}
+
+  int32_t qserver_id;
+  int64_t key;
+  int32_t len;
+
+  _SuccinctService_access_local_args__isset __isset;
+
+  void __set_qserver_id(const int32_t val) {
+    qserver_id = val;
+  }
+
+  void __set_key(const int64_t val) {
+    key = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
+  bool operator == (const SuccinctService_access_local_args & rhs) const
+  {
+    if (!(qserver_id == rhs.qserver_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_access_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_access_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_access_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_access_local_pargs() throw() {}
+
+  const int32_t* qserver_id;
+  const int64_t* key;
+  const int32_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_access_local_result__isset {
+  _SuccinctService_access_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_access_local_result__isset;
+
+class SuccinctService_access_local_result {
+ public:
+
+  SuccinctService_access_local_result() : success() {
+  }
+
+  virtual ~SuccinctService_access_local_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_access_local_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_access_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_access_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_access_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_access_local_presult__isset {
+  _SuccinctService_access_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_access_local_presult__isset;
+
+class SuccinctService_access_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_access_local_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_access_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class SuccinctService_get_num_hosts_args {
  public:
@@ -1256,6 +1507,12 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void get_local(std::string& _return, const int32_t qserver_id, const int64_t key);
   void send_get_local(const int32_t qserver_id, const int64_t key);
   void recv_get_local(std::string& _return);
+  void access(std::string& _return, const int64_t key, const int32_t len);
+  void send_access(const int64_t key, const int32_t len);
+  void recv_access(std::string& _return);
+  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len);
+  void send_access_local(const int32_t qserver_id, const int64_t key, const int32_t len);
+  void recv_access_local(std::string& _return);
   int32_t get_num_hosts();
   void send_get_num_hosts();
   int32_t recv_get_num_hosts();
@@ -1288,6 +1545,8 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_access_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1302,6 +1561,8 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["initialize"] = &SuccinctServiceProcessor::process_initialize;
     processMap_["get"] = &SuccinctServiceProcessor::process_get;
     processMap_["get_local"] = &SuccinctServiceProcessor::process_get_local;
+    processMap_["access"] = &SuccinctServiceProcessor::process_access;
+    processMap_["access_local"] = &SuccinctServiceProcessor::process_access_local;
     processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
     processMap_["get_num_shards"] = &SuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &SuccinctServiceProcessor::process_get_num_keys;
@@ -1404,6 +1665,26 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->get_local(_return, qserver_id, key);
     }
     ifaces_[i]->get_local(_return, qserver_id, key);
+    return;
+  }
+
+  void access(std::string& _return, const int64_t key, const int32_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->access(_return, key, len);
+    }
+    ifaces_[i]->access(_return, key, len);
+    return;
+  }
+
+  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->access_local(_return, qserver_id, key, len);
+    }
+    ifaces_[i]->access_local(_return, qserver_id, key, len);
     return;
   }
 

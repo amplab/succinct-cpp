@@ -29,6 +29,8 @@ public:
 
     size_t num_keys();
 
+    void access(std::string& result, int64_t key, int32_t len);
+
     /*
      * Random access into the Succinct file with the specified offset
      * and length

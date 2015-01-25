@@ -12,4 +12,4 @@ bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-"$bin/ssbench" "$@" throughput 2>&1 &
+"$bin/ssbench" "$@" 2>&1 &

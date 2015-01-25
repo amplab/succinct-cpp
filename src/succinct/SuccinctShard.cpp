@@ -38,6 +38,25 @@ int64_t SuccinctShard::get_value_offset_pos(const int64_t key) {
     return (keys[pos] != key || pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
 }
 
+void SuccinctShard::access(std::string& result, int64_t key, int32_t len) {
+    result = "";
+    int64_t pos = get_value_offset_pos(key);
+    if(pos < 0)
+        return;
+    int64_t start = value_offsets[pos];
+    result.resize(len);
+    uint64_t idx = lookupISA(start);
+    for(int64_t i = 0; i < len; i++) {
+        result[i] = alphabet[lookupC(idx)];
+        uint64_t next_pos = start + i + 1;
+        if((next_pos % ISA->get_sampling_rate()) == 0) {
+            idx = lookupISA(next_pos);
+        } else {
+            idx = lookupNPA(idx);
+        }
+    }
+}
+
 void SuccinctShard::get(std::string& result, int64_t key) {
     result = "";
     int64_t pos = get_value_offset_pos(key);
