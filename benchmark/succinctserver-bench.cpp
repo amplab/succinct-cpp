@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     uint32_t num_shards = 1;
     uint32_t num_keys = 10000;
     int32_t len = 100;
-    while((c = getopt(argc, argv, "t:s:k:")) != -1) {
+    while((c = getopt(argc, argv, "t:s:k:l:")) != -1) {
         switch(c) {
         case 't':
             num_threads = atoi(optarg);
