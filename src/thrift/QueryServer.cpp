@@ -50,6 +50,10 @@ public:
         fd->get(_return, key);
     }
 
+    void access(std::string& _return, const int64_t key, const int32_t len) {
+        fd->access(_return, key, len);
+    }
+
     int32_t get_num_keys() {
         return fd->num_keys();
     }

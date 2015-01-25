@@ -17,6 +17,7 @@ class QueryServiceIf {
   virtual ~QueryServiceIf() {}
   virtual int32_t init(const int32_t id) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
+  virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
   virtual int32_t get_num_keys() = 0;
 };
 
@@ -52,6 +53,9 @@ class QueryServiceNull : virtual public QueryServiceIf {
     return _return;
   }
   void get(std::string& /* _return */, const int64_t /* key */) {
+    return;
+  }
+  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* len */) {
     return;
   }
   int32_t get_num_keys() {
@@ -276,6 +280,123 @@ class QueryService_get_presult {
 
 };
 
+typedef struct _QueryService_access_args__isset {
+  _QueryService_access_args__isset() : key(false), len(false) {}
+  bool key;
+  bool len;
+} _QueryService_access_args__isset;
+
+class QueryService_access_args {
+ public:
+
+  QueryService_access_args() : key(0), len(0) {
+  }
+
+  virtual ~QueryService_access_args() throw() {}
+
+  int64_t key;
+  int32_t len;
+
+  _QueryService_access_args__isset __isset;
+
+  void __set_key(const int64_t val) {
+    key = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
+  bool operator == (const QueryService_access_args & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_access_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_access_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_access_pargs {
+ public:
+
+
+  virtual ~QueryService_access_pargs() throw() {}
+
+  const int64_t* key;
+  const int32_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_access_result__isset {
+  _QueryService_access_result__isset() : success(false) {}
+  bool success;
+} _QueryService_access_result__isset;
+
+class QueryService_access_result {
+ public:
+
+  QueryService_access_result() : success() {
+  }
+
+  virtual ~QueryService_access_result() throw() {}
+
+  std::string success;
+
+  _QueryService_access_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_access_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_access_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_access_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_access_presult__isset {
+  _QueryService_access_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_access_presult__isset;
+
+class QueryService_access_presult {
+ public:
+
+
+  virtual ~QueryService_access_presult() throw() {}
+
+  std::string* success;
+
+  _QueryService_access_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class QueryService_get_num_keys_args {
  public:
@@ -396,6 +517,9 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
+  void access(std::string& _return, const int64_t key, const int32_t len);
+  void send_access(const int64_t key, const int32_t len);
+  void recv_access(std::string& _return);
   int32_t get_num_keys();
   void send_get_num_keys();
   int32_t recv_get_num_keys();
@@ -416,12 +540,14 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   ProcessMap processMap_;
   void process_init(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   QueryServiceProcessor(boost::shared_ptr<QueryServiceIf> iface) :
     iface_(iface) {
     processMap_["init"] = &QueryServiceProcessor::process_init;
     processMap_["get"] = &QueryServiceProcessor::process_get;
+    processMap_["access"] = &QueryServiceProcessor::process_access;
     processMap_["get_num_keys"] = &QueryServiceProcessor::process_get_num_keys;
   }
 
@@ -467,6 +593,16 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
       ifaces_[i]->get(_return, key);
     }
     ifaces_[i]->get(_return, key);
+    return;
+  }
+
+  void access(std::string& _return, const int64_t key, const int32_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->access(_return, key, len);
+    }
+    ifaces_[i]->access(_return, key, len);
     return;
   }
 
