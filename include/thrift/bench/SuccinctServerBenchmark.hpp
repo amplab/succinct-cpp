@@ -326,7 +326,7 @@ public:
         pthread_t thread[num_threads];
         std::vector<thread_data_t> data;
         fprintf(stderr, "Starting all threads...\n");
-        for (int i = 0; i < num_threads; i++) {
+        for (uint32_t i = 0; i < num_threads; i++) {
             try {
                 boost::shared_ptr<TSocket> socket(new TSocket("localhost", QUERY_HANDLER_PORT));
                 boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
