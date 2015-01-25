@@ -34,13 +34,12 @@ fi
 num_shards=$1
 num_hosts=$2
 local_host_id=$3
-num_replicas=$( wc -l < ${SUCCINCT_CONF_DIR}/repl)
 limit=$(($1 - 1))
 
 for i in `seq 0 $limit`; do
 	port=$(($QUERY_SERVER_PORT + $i))
 	shard_id=$(($i * $num_hosts + local_host_id))
-	shard_type=$(($shard_id % $num_replicas))
+	shard_type=0
 	data_file="$SUCCINCT_DATA_PATH/data_${shard_type}"
 	nohup "$bin/qserver" -p $port $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
 done
