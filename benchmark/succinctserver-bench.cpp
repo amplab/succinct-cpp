@@ -51,8 +51,10 @@ int main(int argc, char **argv) {
 
     // Benchmark core functions
     SuccinctServerBenchmark s_bench(benchmark_type, num_shards, num_keys);
-    if(benchmark_type == "latency") {
-        s_bench.benchmark_latency_get("latency_results_get");
+    if(benchmark_type == "latency-get") {
+        s_bench.benchmark_get_latency();
+    } else if(benchmark_type == "latency-access") {
+        s_bench.benchmark_access_latency(len);
     } else if(benchmark_type == "throughput-get") {
         s_bench.benchmark_throughput_get(num_threads);
     } else if(benchmark_type == "throughput-access") {

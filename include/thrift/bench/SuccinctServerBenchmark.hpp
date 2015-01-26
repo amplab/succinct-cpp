@@ -109,7 +109,7 @@ public:
         this->benchmark_type = bench_type;
         int port = QUERY_HANDLER_PORT;
 
-        if (bench_type == "latency") {
+        if (bench_type == "latency-get" || bench_type == "latency-access") {
             fprintf(stderr, "Connecting to server...\n");
             boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
             boost::shared_ptr<TTransport> transport(
@@ -127,13 +127,13 @@ public:
         generate_randoms(num_shards, num_keys);
     }
 
-    void benchmark_latency_get(std::string res_path) {
+    void benchmark_get_latency() {
 
         assert(fd != NULL);
 
         time_t t0, t1, tdiff;
         count_t sum;
-        std::ofstream res_stream(res_path);
+        std::ofstream res_stream("latency_results_get");
 
         // Warmup
         sum = 0;
@@ -167,6 +167,53 @@ public:
         for (uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
             fd->get(res, randoms[i]);
+            sum = (sum + res.length()) % MAXSUM;
+        }
+        fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+        fprintf(stderr, "Cooldown complete.\n");
+
+        res_stream.close();
+
+    }
+
+    void benchmark_access_latency(int32_t len) {
+
+        time_t t0, t1, tdiff;
+        count_t sum;
+        std::ofstream res_stream("latency_results_access");
+
+        // Warmup
+        sum = 0;
+        fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
+        for(uint64_t i = 0; i < WARMUP_N; i++) {
+            std::string res;
+            fd->access(res, randoms[i], len);
+            sum = (sum + res.length()) % MAXSUM;
+        }
+        fprintf(stderr, "Warmup chksum = %lu\n", sum);
+        fprintf(stderr, "Warmup complete.\n");
+
+        // Measure
+        sum = 0;
+        fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
+        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+            std::string res;
+            t0 = get_timestamp();
+            fd->access(res, randoms[i], len);
+            t1 = get_timestamp();
+            tdiff = t1 - t0;
+            res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
+            sum = (sum + res.length()) % MAXSUM;
+        }
+        fprintf(stderr, "Measure chksum = %lu\n", sum);
+        fprintf(stderr, "Measure complete.\n");
+
+        // Cooldown
+        sum = 0;
+        fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
+        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
+            std::string res;
+            fd->access(res, randoms[i], len);
             sum = (sum + res.length()) % MAXSUM;
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);
