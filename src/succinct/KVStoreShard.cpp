@@ -51,7 +51,7 @@ void KVStoreShard::get(std::string& result, int64_t key) {
     if(pos < 0)
         return;
     int64_t start = value_offsets[pos];
-    int64_t end = (pos + 1 < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
+    int64_t end = ((size_t)(pos + 1) < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
     int64_t len = end - start - 1;
     result.resize(len);
     for(int64_t i = start; i < end; i++) {
@@ -67,7 +67,7 @@ void KVStoreShard::access(std::string& result, int64_t key, int32_t len) {
         return;
     int64_t start = value_offsets[pos];
     result.resize(len);
-    for(uint64_t i = start; i < start + len; i++) {
+    for(int64_t i = start; i < start + len; i++) {
         result[i - start] = data[i];
     }
 
