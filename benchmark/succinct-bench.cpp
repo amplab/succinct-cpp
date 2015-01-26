@@ -6,11 +6,11 @@
 #include "succinct/bench/SuccinctBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-i isa_sampling_rate] [-n npa_sampling_rate] [-t type] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-i isa_sampling_rate] [-n npa_sampling_rate] [-t type] [-l len] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 10) {
+    if(argc < 2 || argc > 12) {
         print_usage(argv[0]);
         return -1;
     }
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     uint32_t npa_sampling_rate = 128;
     std::string type = "latency-get";
     int32_t len = 100;
-    while((c = getopt(argc, argv, "m:i:n:t:")) != -1) {
+    while((c = getopt(argc, argv, "m:i:n:t:l:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
