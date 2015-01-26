@@ -62,6 +62,10 @@ private:
     const count_t COOLDOWN_N = 1000;
     const count_t MEASURE_N = 10000;
 
+    static const count_t WARMUP_T = 10000000;
+    static const count_t MEASURE_T = 60000000;
+    static const count_t COOLDOWN_T = 10000000;
+
     static time_t get_timestamp() {
 		struct timeval now;
 		gettimeofday (&now, NULL);
@@ -183,21 +187,47 @@ public:
 
     }
 
-    void benchmark_core() {
-        fprintf(stderr, "Benchmarking Core Functions...\n\n");
-        fprintf(stderr, "Benchmarking lookupNPA...\n");
-        benchmark_idx_fn(&SuccinctShard::lookupNPA, shard->name() + ".res_npa");
-        fprintf(stderr, "Done!\n\n");
-        fprintf(stderr, "Benchmarking lookupISA...\n");
-        benchmark_idx_fn(&SuccinctShard::lookupISA, shard->name() + ".res_isa");
-        fprintf(stderr, "Done!\n\n");
-    }
+    void benchmark_access_throughput(int32_t len) {
+        double thput = 0;
+        std::string value;
+        try {
+            // Warmup phase
+            long i = 0;
+            time_t warmup_start = get_timestamp();
+            while (get_timestamp() - warmup_start < WARMUP_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
 
-    void benchmark_file() {
-        fprintf(stderr, "Benchmarking File Functions...\n\n");
-        fprintf(stderr, "Benchmarking get...\n");
-        benchmark_get_latency(shard->name() + ".res_get");
-        fprintf(stderr, "Done!\n\n");
+            // Measure phase
+            i = 0;
+            time_t start = get_timestamp();
+            while (get_timestamp() - start < MEASURE_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
+            time_t end = get_timestamp();
+            double totsecs = (double) (end - start) / (1000.0 * 1000.0);
+            thput = ((double) i / totsecs);
+
+            i = 0;
+            time_t cooldown_start = get_timestamp();
+            while (get_timestamp() - cooldown_start < COOLDOWN_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
+
+        } catch (std::exception &e) {
+            fprintf(stderr, "Throughput test ends...\n");
+        }
+
+        printf("Get throughput: %lf\n", thput);
+
+        std::ofstream ofs;
+        ofs.open("thput",
+                std::ofstream::out | std::ofstream::app);
+        ofs << thput << "\n";
+        ofs.close();
     }
 
 private:

@@ -6,11 +6,11 @@
 #include "succinct/bench/SuccinctBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-i isa_sampling_rate] [-n npa_sampling_rate] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-i isa_sampling_rate] [-n npa_sampling_rate] [-t type] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 8) {
+    if(argc < 2 || argc > 10) {
         print_usage(argv[0]);
         return -1;
     }
@@ -19,7 +19,9 @@ int main(int argc, char **argv) {
     uint32_t mode = 0;
     uint32_t isa_sampling_rate = 32;
     uint32_t npa_sampling_rate = 128;
-    while((c = getopt(argc, argv, "m:i:n:")) != -1) {
+    std::string type = "latency-get";
+    int32_t len = 100;
+    while((c = getopt(argc, argv, "m:i:n:t:")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -30,10 +32,18 @@ int main(int argc, char **argv) {
         case 'n':
             npa_sampling_rate = atoi(optarg);
             break;
+        case 't':
+            type = std::string(optarg);
+            break;
+        case 'l':
+            len = atoi(optarg);
+            break;
         default:
             mode = 0;
             isa_sampling_rate = 32;
             npa_sampling_rate = 128;
+            type = "latency-get";
+            len = 100;
         }
     }
 
@@ -44,8 +54,8 @@ int main(int argc, char **argv) {
 
     std::string inputpath = std::string(argv[optind]);
     std::ifstream input(inputpath);
-            uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                    std::istreambuf_iterator<char>(), '\n');
+    uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
+            std::istreambuf_iterator<char>(), '\n');
 
     SuccinctShard *fd;
     if(mode == 0) {
@@ -62,10 +72,15 @@ int main(int argc, char **argv) {
         assert(0);
     }
 
-    // Benchmark core functions
     SuccinctBenchmark s_bench(fd);
-    s_bench.benchmark_core();
-    s_bench.benchmark_file();
+    if(type == "latency-get") {
+        s_bench.benchmark_get_latency("latency_results_get");
+    } else if(type == "throughput-access") {
+        s_bench.benchmark_access_throughput(len);
+    } else {
+        // Not supported
+        assert(0);
+    }
 
     return 0;
 }
