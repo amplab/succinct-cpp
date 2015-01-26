@@ -37,7 +37,7 @@ size_t KVStoreShard::num_keys() {
 }
 
 int64_t KVStoreShard::get_value_offset_pos(const int64_t key) {
-    long pos = std::lower_bound(keys.begin(), keys.end(), key) - keys.begin();
+    size_t pos = std::lower_bound(keys.begin(), keys.end(), key) - keys.begin();
     return (keys[pos] != key || pos >= keys.size()) ? -1 : pos;
 }
 
@@ -54,7 +54,7 @@ void KVStoreShard::get(std::string& result, int64_t key) {
     int64_t end = (pos + 1 < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
     int64_t len = end - start - 1;
     result.resize(len);
-    for(uint64_t i = start; i < end; i++) {
+    for(int64_t i = start; i < end; i++) {
         result[i - start] = data[i];
     }
 

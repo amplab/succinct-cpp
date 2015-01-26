@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 #include <sys/time.h>
 
