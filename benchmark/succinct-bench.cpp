@@ -42,9 +42,11 @@ int main(int argc, char **argv) {
     // Benchmark core functions
     SuccinctBenchmark s_bench(inputpath);
     if(type == "latency-get") {
-        s_bench.benchmark_get_latency("latency_results_get");
+        s_bench.benchmark_get_latency();
     } else if(type == "throughput-access") {
         s_bench.benchmark_access_throughput(len);
+    } else if(type == "throughput-access") {
+        s_bench.benchmark_access_latency(len);
     } else {
         // Not supported
         assert(0);
