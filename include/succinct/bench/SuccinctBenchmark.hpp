@@ -58,9 +58,13 @@ private:
     typedef unsigned long long int time_t;
     typedef unsigned long count_t;
 
-    const count_t WARMUP_N = 1000;
-    const count_t COOLDOWN_N = 1000;
-    const count_t MEASURE_N = 10000;
+    static const count_t WARMUP_N = 1000;
+    static const count_t COOLDOWN_N = 1000;
+    static const count_t MEASURE_N = 10000;
+
+    static const count_t WARMUP_T = 10000000;
+    static const count_t MEASURE_T = 60000000;
+    static const count_t COOLDOWN_T = 10000000;
 
     static time_t get_timestamp() {
 		struct timeval now;
@@ -139,11 +143,47 @@ public:
 
     }
 
-    void benchmark_file() {
-        fprintf(stderr, "Benchmarking File Functions...\n\n");
-        fprintf(stderr, "Benchmarking get...\n");
-        benchmark_get_latency(shard->name() + ".res_get");
-        fprintf(stderr, "Done!\n\n");
+    void benchmark_access_throughput(int32_t len) {
+        double thput = 0;
+        std::string value;
+        try {
+            // Warmup phase
+            long i = 0;
+            time_t warmup_start = get_timestamp();
+            while (get_timestamp() - warmup_start < WARMUP_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
+
+            // Measure phase
+            i = 0;
+            time_t start = get_timestamp();
+            while (get_timestamp() - start < MEASURE_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
+            time_t end = get_timestamp();
+            double totsecs = (double) (end - start) / (1000.0 * 1000.0);
+            thput = ((double) i / totsecs);
+
+            i = 0;
+            time_t cooldown_start = get_timestamp();
+            while (get_timestamp() - cooldown_start < COOLDOWN_T) {
+                shard->access(value, randoms[i % randoms.size()], len);
+                i++;
+            }
+
+        } catch (std::exception &e) {
+            fprintf(stderr, "Throughput test ends...\n");
+        }
+
+        printf("Access throughput: %lf\n", thput);
+
+        std::ofstream ofs;
+        ofs.open("thput",
+                std::ofstream::out | std::ofstream::app);
+        ofs << thput << "\n";
+        ofs.close();
     }
 
 private:

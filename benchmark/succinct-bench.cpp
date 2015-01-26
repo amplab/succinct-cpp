@@ -6,20 +6,49 @@
 #include "succinct/bench/SuccinctBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-t type] [-l len] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc != 2) {
+    if(argc != 6) {
         print_usage(argv[0]);
         return -1;
     }
 
-    std::string inputpath = std::string(argv[1]);
+    int c;
+    std::string type = "latency-get";
+    int32_t len = 100;
+    while((c = getopt(argc, argv, "t:l:")) != -1) {
+        switch(c) {
+        case 't':
+            type = std::string(optarg);
+            break;
+        case 'l':
+            len = atoi(optarg);
+            break;
+        default:
+            type = "latency-get";
+            len = 100;
+        }
+    }
+
+    if(optind == argc) {
+        print_usage(argv[0]);
+        return -1;
+    }
+
+    std::string inputpath = std::string(argv[optind]);
 
     // Benchmark core functions
     SuccinctBenchmark s_bench(inputpath);
-    s_bench.benchmark_file();
+    if(type == "latency-get") {
+        s_bench.benchmark_get_latency("latency_results_get");
+    } else if(type == "throughput-access") {
+        s_bench.benchmark_access_throughput(len);
+    } else {
+        // Not supported
+        assert(0);
+    }
 
     return 0;
 }
