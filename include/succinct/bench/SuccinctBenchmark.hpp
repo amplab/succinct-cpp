@@ -190,26 +190,21 @@ public:
     void benchmark_restore_latency(uint32_t target_sampling_rate) {
 
         fprintf(stderr, "File size = %llu\n", shard->original_size());
-        std::vector<uint64_t> ISA;
         time_t start = get_timestamp();
-        for(uint64_t i = 0; i < shard->original_size(); i += target_sampling_rate) {
-            ISA.push_back(shard->lookupISA(i));
-        }
-        time_t end = get_timestamp();
-
         uint64_t sum = 0;
-        for(uint32_t i = 0; i < ISA.size(); i++) {
-            sum += ISA[i];
+        for(uint64_t i = 0; i < shard->original_size(); i += target_sampling_rate) {
+            sum += shard->lookupISA(i);
             sum %= shard->original_size();
         }
+        time_t end = get_timestamp();
+        double diff = ((double)(end - start)) / (1000.0 * 1000.0);
 
-        fprintf(stderr, "Reconstructed %lu values\n", ISA.size());
-        fprintf(stderr, "Sum = %llu, sr = %u, time = %llu\n", sum, target_sampling_rate, (end - start));
+        fprintf(stderr, "Sum = %llu, sr = %u, time = %lf s\n", sum, target_sampling_rate, diff);
 
         std::ofstream ofs;
         std::string of = "restore_" + std::to_string(shard->isa_sampling_rate());
         ofs.open(of, std::ofstream::out | std::ofstream::app);
-        ofs << (end - start) << "\n";
+        ofs << diff << "\n";
         ofs.close();
     }
 
