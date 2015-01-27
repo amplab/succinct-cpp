@@ -103,6 +103,8 @@ public:
                 fprintf(stderr, "Connected!\n");
                 clients.push_back(client);
                 transports.push_back(transport);
+                client.connect_to_local_servers();
+                fprintf(stderr, "Initialized!\n");
             } catch(std::exception& e) {
                 fprintf(stderr, "Could not connect to handler on %s: %s\n", hostnames[i].c_str(), e.what());
                 exit(1);
@@ -130,6 +132,11 @@ public:
             } while(res.length() == len);
         }
         fprintf(stderr, "Reconstructed shard of size = %llu\n", sum);
+
+        for(uint32_t i = 0; i < transports.size(); i++) {
+            transports[i]->close();
+        }
+        fprintf(stderr, "Terminated all connections!\n");
     }
 
 private:
