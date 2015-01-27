@@ -75,6 +75,9 @@ int main(int argc, char **argv) {
     SuccinctBenchmark s_bench(fd);
     if(type == "latency-get") {
         s_bench.benchmark_get_latency("latency_results_get");
+    } else if(type == "latency-restore") {
+        for(uint32_t i = 2; i < isa_sampling_rate; i *= 2)
+            s_bench.benchmark_restore_latency(i);
     } else if(type == "throughput-access") {
         s_bench.benchmark_access_throughput(len);
     } else {

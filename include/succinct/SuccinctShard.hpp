@@ -35,6 +35,10 @@ public:
     SuccinctShard(uint32_t id, std::string datafile, uint32_t num_keys, bool construct = true,
             uint32_t isa_sampling_rate = 32, uint32_t npa_sampling_rate = 128);
 
+    uint32_t isa_sampling_rate();
+
+    uint32_t npa_sampling_rate();
+
     std::string name();
 
     size_t num_keys();

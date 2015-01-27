@@ -33,6 +33,14 @@ size_t SuccinctShard::num_keys() {
     return keys.size();
 }
 
+uint32_t SuccinctShard::isa_sampling_rate() {
+    return ISA->get_sampling_rate();
+}
+
+uint32_t SuccinctShard::npa_sampling_rate() {
+    return npa->get_sampling_rate();
+}
+
 int64_t SuccinctShard::get_value_offset_pos(const int64_t key) {
     long pos = std::lower_bound(keys.begin(), keys.end(), key) - keys.begin();
     return (keys[pos] != key || pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
@@ -95,5 +103,5 @@ void SuccinctShard::fetch(std::string &result, int64_t offset, int32_t len) {
         in.close();
         return;
     }
-    fprintf(stderr, "Could not read file %s!", this->succinct_datafile.c_str());
+    fprintf(stderr, "Could not read file %s!\n", this->succinct_datafile.c_str());
 }

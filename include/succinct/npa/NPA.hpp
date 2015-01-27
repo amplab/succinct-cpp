@@ -58,6 +58,10 @@ public:
         return context_len;
     }
 
+    uint32_t get_sampling_rate() {
+        return sampling_rate;
+    }
+
     // Encode NPA based on the encoding scheme
     virtual void encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
                         bitmap_t *compactISA) = 0;
