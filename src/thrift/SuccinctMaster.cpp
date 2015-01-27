@@ -126,6 +126,7 @@ public:
                 }
 
                 sum += res.length();
+                fprintf(stderr, "Reconstructed chunk of size = %lu\n", res.length());
             } while(res.length() == len);
         }
         fprintf(stderr, "Reconstructed shard of size = %llu\n", sum);

@@ -36,7 +36,9 @@ int main(int argc, char **argv) {
         transport->open();
         fprintf(stderr, "Connected!\n");
 
+        fprintf(stderr, "Starting reconstruction...\n");
         master->reconstruct();
+        fprintf(stderr, "Complete!\n");
     } catch(std::exception& e) {
         fprintf(stderr, "Error: %s\n", e.what());
     }
