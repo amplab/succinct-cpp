@@ -114,7 +114,7 @@ public:
             do {
                 client.fetch(_data, i, offset, len);
                 offset += _data.length();
-                fprintf(stderr, "Fetched chunk of size = %lu", _data.length());
+                fprintf(stderr, "Fetched chunk of size = %lu\n", _data.length());
             } while(_data.length() == len);
             fprintf(stderr, "Fetched shard of size = %llu\n", offset);
             transport->close();
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
                          server_transport,
                          transport_factory,
                          protocol_factory);
-        fprintf(stderr, "Starting Master Daemon...");
+        fprintf(stderr, "Starting Master Daemon...\n");
         server.serve();
     } catch(std::exception& e) {
         fprintf(stderr, "Exception at SuccinctMaster:main(): %s\n", e.what());
