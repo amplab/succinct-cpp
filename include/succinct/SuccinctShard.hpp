@@ -12,6 +12,10 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <string>
+#include <fstream>
+#include <streambuf>
+
 #include "succinct/SuccinctCore.hpp"
 
 class SuccinctShard : public SuccinctCore {
