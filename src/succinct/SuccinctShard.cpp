@@ -77,3 +77,17 @@ void SuccinctShard::get(std::string& result, int64_t key) {
         }
     }
 }
+
+void SuccinctShard::fetch(std::string &result) {
+    // Memory map file
+    struct stat st;
+    stat(succinct_datafile.c_str(), &st);
+    size_t succinct_size = st.st_size;
+
+    // Memory map file
+    int fd = open(succinct_datafile.c_str(), O_RDONLY, 0);
+    assert(fd != -1);
+
+    char *data = (char *)mmap(NULL, succinct_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    result = std::string(data);
+}

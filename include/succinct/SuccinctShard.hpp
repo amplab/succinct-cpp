@@ -6,6 +6,12 @@
 #include <cstring>
 #include <vector>
 
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
 #include "succinct/SuccinctCore.hpp"
 
 class SuccinctShard : public SuccinctCore {
@@ -29,13 +35,11 @@ public:
 
     size_t num_keys();
 
+    void get(std::string& result, int64_t key);
+
     void access(std::string& result, int64_t key, int32_t len);
 
-    /*
-     * Random access into the Succinct file with the specified offset
-     * and length
-     */
-    void get(std::string& result, int64_t key);
+    void fetch(std::string& result);
 
 private:
     int64_t get_value_offset_pos(const int64_t key);

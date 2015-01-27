@@ -127,6 +127,10 @@ public:
         qservers.at(qserver_id).access(_return, key, len);
     }
 
+    void fetch(std::string& _return, const int32_t qserver_id) {
+        qservers.at(qserver_id).fetch(_return);
+    }
+
     int32_t get_num_hosts() {
         return hostnames.size();
     }

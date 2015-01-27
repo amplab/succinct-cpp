@@ -19,6 +19,7 @@ class QueryServiceIf {
   virtual void get(std::string& _return, const int64_t key) = 0;
   virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
   virtual int32_t get_num_keys() = 0;
+  virtual void fetch(std::string& _return) = 0;
 };
 
 class QueryServiceIfFactory {
@@ -61,6 +62,9 @@ class QueryServiceNull : virtual public QueryServiceIf {
   int32_t get_num_keys() {
     int32_t _return = 0;
     return _return;
+  }
+  void fetch(std::string& /* _return */) {
+    return;
   }
 };
 
@@ -491,6 +495,100 @@ class QueryService_get_num_keys_presult {
 
 };
 
+
+class QueryService_fetch_args {
+ public:
+
+  QueryService_fetch_args() {
+  }
+
+  virtual ~QueryService_fetch_args() throw() {}
+
+
+  bool operator == (const QueryService_fetch_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const QueryService_fetch_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_fetch_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_fetch_pargs {
+ public:
+
+
+  virtual ~QueryService_fetch_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_fetch_result__isset {
+  _QueryService_fetch_result__isset() : success(false) {}
+  bool success;
+} _QueryService_fetch_result__isset;
+
+class QueryService_fetch_result {
+ public:
+
+  QueryService_fetch_result() : success() {
+  }
+
+  virtual ~QueryService_fetch_result() throw() {}
+
+  std::string success;
+
+  _QueryService_fetch_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_fetch_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_fetch_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_fetch_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_fetch_presult__isset {
+  _QueryService_fetch_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_fetch_presult__isset;
+
+class QueryService_fetch_presult {
+ public:
+
+
+  virtual ~QueryService_fetch_presult() throw() {}
+
+  std::string* success;
+
+  _QueryService_fetch_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class QueryServiceClient : virtual public QueryServiceIf {
  public:
   QueryServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -523,6 +621,9 @@ class QueryServiceClient : virtual public QueryServiceIf {
   int32_t get_num_keys();
   void send_get_num_keys();
   int32_t recv_get_num_keys();
+  void fetch(std::string& _return);
+  void send_fetch();
+  void recv_fetch(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -542,6 +643,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_fetch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   QueryServiceProcessor(boost::shared_ptr<QueryServiceIf> iface) :
     iface_(iface) {
@@ -549,6 +651,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["get"] = &QueryServiceProcessor::process_get;
     processMap_["access"] = &QueryServiceProcessor::process_access;
     processMap_["get_num_keys"] = &QueryServiceProcessor::process_get_num_keys;
+    processMap_["fetch"] = &QueryServiceProcessor::process_fetch;
   }
 
   virtual ~QueryServiceProcessor() {}
@@ -613,6 +716,16 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
       ifaces_[i]->get_num_keys();
     }
     return ifaces_[i]->get_num_keys();
+  }
+
+  void fetch(std::string& _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->fetch(_return);
+    }
+    ifaces_[i]->fetch(_return);
+    return;
   }
 
 };

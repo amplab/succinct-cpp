@@ -86,6 +86,38 @@ public:
         _return = hostnames[rand() % hostnames.size()];
     }
 
+    void reconstruct() {
+        // Fetch shards from required machines
+
+        // qserver 0 on host 1
+        // qserver 1 on host 2
+        // qserver 2 on host 3
+        // ...
+        // qserver i on host i+1
+        // ...
+        // qserver 7 on host 8
+        std::string _data;
+        uint64_t sum = 0;
+        for(int32_t i = 0; i < 7; i++) {
+            boost::shared_ptr<TSocket> socket(new TSocket(hostnames[i + 1], QUERY_HANDLER_PORT));
+            boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+            boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+
+            SuccinctServiceClient client(protocol);
+            transport->open();
+
+            fprintf(stderr, "Connected to host %s!\n", hostnames[i + 1].c_str());
+            client.connect_to_local_servers();
+
+            client.fetch(_data, i);
+            fprintf(stderr, "Fetched shard of size = %lu\n", _data.length());
+            transport->close();
+
+            sum += _data.length();
+        }
+        fprintf(stderr, "Fetched a total of %llu bytes\n", sum);
+    }
+
 private:
     std::vector<std::string> hostnames;
 };
