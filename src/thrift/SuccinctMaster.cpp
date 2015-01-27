@@ -86,6 +86,51 @@ public:
         _return = hostnames[rand() % hostnames.size()];
     }
 
+    void reconstruct() {
+        // Connect to last 10 nodes
+        std::vector<SuccinctServiceClient> clients;
+        std::vector<boost::shared_ptr<TTransport> > transports;
+
+        // Initiate client to client connections on all clients
+        for(int i = 4; i < 14; i++) {
+            fprintf(stderr, "Connecting to client at %s...\n", hostnames[i].c_str());
+            try {
+                boost::shared_ptr<TSocket> socket(new TSocket(hostnames[i], QUERY_HANDLER_PORT));
+                boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+                boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+                SuccinctServiceClient client(protocol);
+                transport->open();
+                fprintf(stderr, "Connected!\n");
+                clients.push_back(client);
+                transports.push_back(transport);
+            } catch(std::exception& e) {
+                fprintf(stderr, "Could not connect to handler on %s: %s\n", hostnames[i].c_str(), e.what());
+                exit(1);
+            }
+        }
+
+        uint64_t sum = 0; // Sum simulates computation
+        // Loop through all the shards
+        for(uint32_t i = 0; i < 4; i++) {
+            int64_t offset = 0;
+            int32_t len = 1024 * 1024 * 1024; // 1GB at a time
+            std::string res;
+            do {
+                // Loop through the clients
+                for(uint32_t j = 0; j < clients.size(); j++) {
+                    clients.at(i).send_fetch(i, offset, len);
+                }
+
+                for(uint32_t j = 0; j < clients.size(); j++) {
+                    clients.at(i).recv_fetch(res);
+                }
+
+                sum += res.length();
+            } while(res.length() == len);
+        }
+        fprintf(stderr, "Reconstructed shard of size = %llu\n", sum);
+    }
+
 private:
     std::vector<std::string> hostnames;
 };
@@ -132,7 +177,7 @@ int main(int argc, char **argv) {
                          server_transport,
                          transport_factory,
                          protocol_factory);
-        fprintf(stderr, "Starting Master Daemon...");
+        fprintf(stderr, "Starting Master Daemon...\n");
         server.serve();
     } catch(std::exception& e) {
         fprintf(stderr, "Exception at SuccinctMaster:main(): %s\n", e.what());

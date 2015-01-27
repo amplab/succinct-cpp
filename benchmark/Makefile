@@ -6,9 +6,11 @@ BINDIR := ../bin
 LIBDIR := ../lib
 TARGET_S := $(BINDIR)/sbench
 TARGET_SS := $(BINDIR)/ssbench
+TARGET_MS := $(BINDIR)/rbench
 
 OBJ_S := $(BUILDDIR)/succinct-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
+OBJ_MS := $(BUILDDIR)/reconstruct-bench.o
 
 CFLAGS := -O3 -std=c++11 -Wall -g
 LIB := -L $(LIBDIR) -lsuccinct
@@ -21,12 +23,19 @@ sbench: $(TARGET_S)
 
 ssbench: $(TARGET_SS)
 
+rbench: $(TARGET_MS)
+
 $(TARGET_S): $(OBJ_S)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_S) $(LIB)"; $(CC) $^ -o $(TARGET_S) $(LIB)
 	
 $(TARGET_SS): $(OBJ_SS)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_SS) $(LIBT)"; $(CC) $^ -o $(TARGET_SS) $(LIBT)
+	
+$(TARGET_MS): $(OBJ_MS)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_SS) $(LIBT)"; $(CC) $^ -o $(TARGET_SS) $(LIBT)
