@@ -128,10 +128,12 @@ public:
                 }
 
                 sum += res.length();
+                offset += res.length();
                 fprintf(stderr, "Reconstructed chunk of size = %lu\n", res.length());
             } while(res.length() == len);
+            fprintf(stderr, "Reconstructed shard\n");
         }
-        fprintf(stderr, "Reconstructed shard of size = %llu\n", sum);
+        fprintf(stderr, "Reconstructed data of size = %llu\n", sum);
 
         for(uint32_t i = 0; i < transports.size(); i++) {
             transports[i]->close();
