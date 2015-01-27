@@ -38,7 +38,7 @@ $(TARGET_SS): $(OBJ_SS)
 $(TARGET_MS): $(OBJ_MS)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
-	@echo " $(CC) $^ -o $(TARGET_SS) $(LIBT)"; $(CC) $^ -o $(TARGET_SS) $(LIBT)
+	@echo " $(CC) $^ -o $(TARGET_MS) $(LIBT)"; $(CC) $^ -o $(TARGET_MS) $(LIBT)
 	
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(BUILDDIR)
