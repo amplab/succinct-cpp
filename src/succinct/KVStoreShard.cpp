@@ -73,7 +73,7 @@ void KVStoreShard::access(std::string& result, int64_t key, int32_t len) {
 
 void KVStoreShard::fetch(std::string& result, int64_t offset, int32_t len) {
     result = "";
-    if(offset + len > input_size) {
+    if((size_t)(offset + len) > input_size) {
         len = input_size - offset;
     }
     result.resize(len);
