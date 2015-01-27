@@ -97,6 +97,7 @@ public:
         // ...
         // qserver 7 on host 8
         std::string _data;
+        int32_t len = 1024 * 1024 * 1024; // Fetch 1GB at a time
         uint64_t sum = 0;
         for(int32_t i = 0; i < 7; i++) {
             boost::shared_ptr<TSocket> socket(new TSocket(hostnames[i + 1], QUERY_HANDLER_PORT));
@@ -109,11 +110,16 @@ public:
             fprintf(stderr, "Connected to host %s!\n", hostnames[i + 1].c_str());
             client.connect_to_local_servers();
 
-            client.fetch(_data, i);
-            fprintf(stderr, "Fetched shard of size = %lu\n", _data.length());
+            int64_t offset = 0;
+            do {
+                client.fetch(_data, i, offset, len);
+                offset += _data.length();
+                fprintf(stderr, "Fetched chunk of size = %lu", _data.length());
+            } while(_data.length() == len);
+            fprintf(stderr, "Fetched shard of size = %llu\n", offset);
             transport->close();
 
-            sum += _data.length();
+            sum += offset;
         }
         fprintf(stderr, "Fetched a total of %llu bytes\n", sum);
     }

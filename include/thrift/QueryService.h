@@ -19,7 +19,7 @@ class QueryServiceIf {
   virtual void get(std::string& _return, const int64_t key) = 0;
   virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
   virtual int32_t get_num_keys() = 0;
-  virtual void fetch(std::string& _return) = 0;
+  virtual void fetch(std::string& _return, const int64_t offset, const int32_t len) = 0;
 };
 
 class QueryServiceIfFactory {
@@ -63,7 +63,7 @@ class QueryServiceNull : virtual public QueryServiceIf {
     int32_t _return = 0;
     return _return;
   }
-  void fetch(std::string& /* _return */) {
+  void fetch(std::string& /* _return */, const int64_t /* offset */, const int32_t /* len */) {
     return;
   }
 };
@@ -495,18 +495,39 @@ class QueryService_get_num_keys_presult {
 
 };
 
+typedef struct _QueryService_fetch_args__isset {
+  _QueryService_fetch_args__isset() : offset(false), len(false) {}
+  bool offset;
+  bool len;
+} _QueryService_fetch_args__isset;
 
 class QueryService_fetch_args {
  public:
 
-  QueryService_fetch_args() {
+  QueryService_fetch_args() : offset(0), len(0) {
   }
 
   virtual ~QueryService_fetch_args() throw() {}
 
+  int64_t offset;
+  int32_t len;
 
-  bool operator == (const QueryService_fetch_args & /* rhs */) const
+  _QueryService_fetch_args__isset __isset;
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
+  bool operator == (const QueryService_fetch_args & rhs) const
   {
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(len == rhs.len))
+      return false;
     return true;
   }
   bool operator != (const QueryService_fetch_args &rhs) const {
@@ -527,6 +548,8 @@ class QueryService_fetch_pargs {
 
   virtual ~QueryService_fetch_pargs() throw() {}
 
+  const int64_t* offset;
+  const int32_t* len;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -621,8 +644,8 @@ class QueryServiceClient : virtual public QueryServiceIf {
   int32_t get_num_keys();
   void send_get_num_keys();
   int32_t recv_get_num_keys();
-  void fetch(std::string& _return);
-  void send_fetch();
+  void fetch(std::string& _return, const int64_t offset, const int32_t len);
+  void send_fetch(const int64_t offset, const int32_t len);
   void recv_fetch(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -718,13 +741,13 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
     return ifaces_[i]->get_num_keys();
   }
 
-  void fetch(std::string& _return) {
+  void fetch(std::string& _return, const int64_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->fetch(_return);
+      ifaces_[i]->fetch(_return, offset, len);
     }
-    ifaces_[i]->fetch(_return);
+    ifaces_[i]->fetch(_return, offset, len);
     return;
   }
 

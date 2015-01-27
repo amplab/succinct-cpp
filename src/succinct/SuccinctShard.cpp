@@ -78,9 +78,22 @@ void SuccinctShard::get(std::string& result, int64_t key) {
     }
 }
 
-void SuccinctShard::fetch(std::string &result) {
-    std::ifstream input(this->succinct_datafile);
+void SuccinctShard::fetch(std::string &result, int64_t offset, int32_t len) {
+    // Memory map file
+    struct stat st;
+    stat(succinct_datafile.c_str(), &st);
+    size_t succinct_size = st.st_size;
+    if(offset + len > succinct_size) {
+        len = succinct_size - offset;
+    }
+    result.resize(len);
 
-    result = std::string((std::istreambuf_iterator<char>(input)),
-            std::istreambuf_iterator<char>());
+    std::ifstream in(this->succinct_datafile, std::ios::in | std::ios::binary);
+    if (in) {
+        in.seekg(offset);
+        in.read(&result[0], result.size());
+        in.close();
+        return;
+    }
+    fprintf(stderr, "Could not read file %s!", this->succinct_datafile.c_str());
 }

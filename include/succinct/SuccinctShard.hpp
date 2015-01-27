@@ -43,7 +43,7 @@ public:
 
     void access(std::string& result, int64_t key, int32_t len);
 
-    void fetch(std::string& result);
+    void fetch(std::string& result, int64_t offset, int32_t len);
 
 private:
     int64_t get_value_offset_pos(const int64_t key);

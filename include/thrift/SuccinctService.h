@@ -25,7 +25,7 @@ class SuccinctServiceIf {
   virtual void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
   virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
   virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) = 0;
-  virtual void fetch(std::string& _return, const int32_t qserver_id) = 0;
+  virtual void fetch(std::string& _return, const int32_t qserver_id, const int64_t offset, const int32_t len) = 0;
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
@@ -94,7 +94,7 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   void access_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */, const int32_t /* len */) {
     return;
   }
-  void fetch(std::string& /* _return */, const int32_t /* qserver_id */) {
+  void fetch(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* offset */, const int32_t /* len */) {
     return;
   }
   int32_t get_num_hosts() {
@@ -1158,19 +1158,23 @@ class SuccinctService_access_local_presult {
 };
 
 typedef struct _SuccinctService_fetch_args__isset {
-  _SuccinctService_fetch_args__isset() : qserver_id(false) {}
+  _SuccinctService_fetch_args__isset() : qserver_id(false), offset(false), len(false) {}
   bool qserver_id;
+  bool offset;
+  bool len;
 } _SuccinctService_fetch_args__isset;
 
 class SuccinctService_fetch_args {
  public:
 
-  SuccinctService_fetch_args() : qserver_id(0) {
+  SuccinctService_fetch_args() : qserver_id(0), offset(0), len(0) {
   }
 
   virtual ~SuccinctService_fetch_args() throw() {}
 
   int32_t qserver_id;
+  int64_t offset;
+  int32_t len;
 
   _SuccinctService_fetch_args__isset __isset;
 
@@ -1178,9 +1182,21 @@ class SuccinctService_fetch_args {
     qserver_id = val;
   }
 
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
   bool operator == (const SuccinctService_fetch_args & rhs) const
   {
     if (!(qserver_id == rhs.qserver_id))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(len == rhs.len))
       return false;
     return true;
   }
@@ -1203,6 +1219,8 @@ class SuccinctService_fetch_pargs {
   virtual ~SuccinctService_fetch_pargs() throw() {}
 
   const int32_t* qserver_id;
+  const int64_t* offset;
+  const int32_t* len;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -1625,8 +1643,8 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len);
   void send_access_local(const int32_t qserver_id, const int64_t key, const int32_t len);
   void recv_access_local(std::string& _return);
-  void fetch(std::string& _return, const int32_t qserver_id);
-  void send_fetch(const int32_t qserver_id);
+  void fetch(std::string& _return, const int32_t qserver_id, const int64_t offset, const int32_t len);
+  void send_fetch(const int32_t qserver_id, const int64_t offset, const int32_t len);
   void recv_fetch(std::string& _return);
   int32_t get_num_hosts();
   void send_get_num_hosts();
@@ -1805,13 +1823,13 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return;
   }
 
-  void fetch(std::string& _return, const int32_t qserver_id) {
+  void fetch(std::string& _return, const int32_t qserver_id, const int64_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->fetch(_return, qserver_id);
+      ifaces_[i]->fetch(_return, qserver_id, offset, len);
     }
-    ifaces_[i]->fetch(_return, qserver_id);
+    ifaces_[i]->fetch(_return, qserver_id, offset, len);
     return;
   }
 

@@ -63,8 +63,8 @@ public:
         fd->access(_return, key, len);
     }
 
-    void fetch(std::string& _return) {
-        fd->fetch(_return);
+    void fetch(std::string& _return, const int64_t offset, const int32_t len) {
+        fd->fetch(_return, offset, len);
     }
 
     int32_t get_num_keys() {

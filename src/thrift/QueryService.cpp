@@ -669,7 +669,28 @@ uint32_t QueryService_fetch_args::read(::apache::thrift::protocol::TProtocol* ip
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->offset);
+          this->__isset.offset = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->len);
+          this->__isset.len = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -682,6 +703,14 @@ uint32_t QueryService_fetch_args::write(::apache::thrift::protocol::TProtocol* o
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("QueryService_fetch_args");
 
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->offset);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->len);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -690,6 +719,14 @@ uint32_t QueryService_fetch_args::write(::apache::thrift::protocol::TProtocol* o
 uint32_t QueryService_fetch_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("QueryService_fetch_pargs");
+
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->offset)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((*(this->len)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -1024,18 +1061,20 @@ int32_t QueryServiceClient::recv_get_num_keys()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_keys failed: unknown result");
 }
 
-void QueryServiceClient::fetch(std::string& _return)
+void QueryServiceClient::fetch(std::string& _return, const int64_t offset, const int32_t len)
 {
-  send_fetch();
+  send_fetch(offset, len);
   recv_fetch(_return);
 }
 
-void QueryServiceClient::send_fetch()
+void QueryServiceClient::send_fetch(const int64_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("fetch", ::apache::thrift::protocol::T_CALL, cseqid);
 
   QueryService_fetch_pargs args;
+  args.offset = &offset;
+  args.len = &len;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1339,7 +1378,7 @@ void QueryServiceProcessor::process_fetch(int32_t seqid, ::apache::thrift::proto
 
   QueryService_fetch_result result;
   try {
-    iface_->fetch(result.success);
+    iface_->fetch(result.success, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
