@@ -42,7 +42,7 @@ uint32_t SuccinctShard::npa_sampling_rate() {
 }
 
 int64_t SuccinctShard::get_value_offset_pos(const int64_t key) {
-    long pos = std::lower_bound(keys.begin(), keys.end(), key) - keys.begin();
+    size_t pos = std::lower_bound(keys.begin(), keys.end(), key) - keys.begin();
     return (keys[pos] != key || pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
 }
 
@@ -71,7 +71,7 @@ void SuccinctShard::get(std::string& result, int64_t key) {
     if(pos < 0)
         return;
     int64_t start = value_offsets[pos];
-    int64_t end = (pos + 1 < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
+    int64_t end = ((size_t)(pos + 1) < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
     int64_t len = end - start - 1;
     result.resize(len);
     uint64_t idx = lookupISA(start);
@@ -91,7 +91,7 @@ void SuccinctShard::fetch(std::string &result, int64_t offset, int32_t len) {
     struct stat st;
     stat(succinct_datafile.c_str(), &st);
     size_t succinct_size = st.st_size;
-    if(offset + len > succinct_size) {
+    if((size_t)(offset + len) > succinct_size) {
         len = succinct_size - offset;
     }
     result.resize(len);
