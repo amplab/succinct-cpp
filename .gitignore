@@ -32,6 +32,8 @@ bin/*
 # Directories
 build
 scratch
+dat
+log
 
 # Eclipse files
 .settings
