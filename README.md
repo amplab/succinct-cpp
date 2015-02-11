@@ -1,7 +1,7 @@
-SUCCINCT
+Succinct
 ========
 
-C++ Implementation of Succinct (succinct.cs.berkeley.edu).
+C++ Implementation of Succinct (http://succinct.cs.berkeley.edu).
 
 Succinct is a data-store than enables queries directly on a compressed
 representation of data. With basic primitives of random acces, search
