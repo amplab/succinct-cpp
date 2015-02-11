@@ -49,7 +49,7 @@ public:
 
     void access(std::string& result, int64_t key, int32_t len);
 
-    uint64_t count(std::string str);
+    int64_t count(std::string str);
 
     void search(std::vector<int64_t>& result, std::string str);
 
