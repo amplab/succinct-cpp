@@ -52,6 +52,11 @@ public:
         return scheme;
     }
 
+    // Return sampling rate
+    uint32_t get_sampling_rate() {
+        return sampling_rate;
+    }
+
     uint64_t size() {
         return original_size;
     }
