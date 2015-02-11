@@ -89,3 +89,12 @@ void SuccinctShard::get(std::string& result, int64_t key) {
         }
     }
 }
+
+void SuccinctShard::search(std::vector<int64_t> &result, std::string str) {
+    // TODO: Implement
+}
+
+int64_t SuccinctShard::count(std::string str) {
+    // TODO: Implement
+    return 0;
+}
