@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <set>
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -51,9 +52,10 @@ public:
 
     int64_t count(std::string str);
 
-    void search(std::vector<int64_t>& result, std::string str);
+    void search(std::set<int64_t>& result, std::string str);
 
 private:
+    int64_t get_key_pos(const int64_t value_offset);
     int64_t get_value_offset_pos(const int64_t key);
 
     std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);

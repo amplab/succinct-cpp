@@ -90,11 +90,26 @@ void SuccinctShard::get(std::string& result, int64_t key) {
     }
 }
 
-void SuccinctShard::search(std::vector<int64_t> &result, std::string str) {
-    // TODO: Implement
+int64_t SuccinctShard::get_key_pos(const int64_t value_offset) {
+    int64_t pos = std::prev(std::upper_bound(value_offsets.begin(),
+                                            value_offsets.end(),
+                                            value_offset)) - value_offsets.begin();
+    return (pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
+}
+
+void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
+    std::pair<int64_t, int64_t> range = get_range(str.c_str(), str.length());
+    if(range.first > range.second) return;
+    for(int64_t i = range.first; i <= range.second; i++) {
+        int64_t key_pos = get_key_pos((int64_t)lookupSA(i));
+        if(key_pos >= 0) {
+           result.insert(keys[key_pos]);
+        }
+    }
 }
 
 int64_t SuccinctShard::count(std::string str) {
-    // TODO: Implement
-    return 0;
+    std::set<int64_t> result;
+    search(result, str);
+    return result.size();
 }
