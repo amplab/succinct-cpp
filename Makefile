@@ -111,8 +111,8 @@ bench: succinct
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/* $(BINDIR)/*";\
-		$(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/* $(BINDIR)/*
+	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/*";\
+		$(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/*
 	@echo "Cleaning thrift..."
 	@echo " cd external/thrift-0.9.1; ./cleanup.sh";\
 		cd external/thrift-0.9.1; ./cleanup.sh
