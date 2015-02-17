@@ -38,6 +38,9 @@ log
 # Eclipse files
 .settings
 
+# Netbeans files
+nbproject
+
 # Thrift files
 /include/thrift/TApplicationException.h
 /include/thrift/TDispatchProcessor.h
