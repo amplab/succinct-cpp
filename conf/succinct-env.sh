@@ -1,0 +1,3 @@
+#export SUCCINCT_DATA_PATH="/dat"
+export SHARDS_PER_SERVER="8"
+export NUM_FAILURES="0"
