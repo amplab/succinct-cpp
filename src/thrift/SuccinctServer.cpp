@@ -126,6 +126,83 @@ public:
     void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) {
         qservers.at(qserver_id).access(_return, key, len);
     }
+    
+    void search_local(std::set<int64_t> & _return, const std::string& query) {
+        for(int j = 0; j < qservers.size(); j++) {
+            qservers[j].send_search(query);
+        }
+
+        for(int j = 0; j < qservers.size(); j++) {
+            std::set<int64_t> keys;
+            qservers[j].recv_search(keys);
+            _return.insert(keys.begin(), keys.end());
+        }
+    }
+
+    void search(std::set<int64_t> & _return, const std::string& query) {
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    qservers[j].send_search(query);
+                }
+            } else {
+                qhandlers.at(i).send_search_local(query);
+            }
+        }
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    std::set<int64_t> keys;
+                    qservers[j].recv_search(keys);
+                    _return.insert(keys.begin(), keys.end());
+                }
+            } else {
+                std::set<int64_t> keys;
+                qhandlers.at(i).recv_search(keys);
+                _return.insert(keys.begin(), keys.end());
+            }
+        }
+}
+
+    int64_t count_local(const std::string& query) {
+        int64_t ret = 0;
+        for(int j = 0; j < qservers.size(); j++) {
+            qservers[j].send_count(query);
+        }
+
+        for(int j = 0; j < qservers.size(); j++) {
+            ret += qservers[j].recv_count();
+        }
+        return ret;
+    }
+
+    int64_t count(const std::string& query) {
+        int64_t ret = 0;
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    qservers[j].send_count(query);
+                }
+            } else {
+                qhandlers.at(i).send_count_local(query);
+            }
+        }
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    ret += qservers[j].recv_count();
+                }
+            } else {
+                ret += qhandlers.at(i).recv_count_local();
+            }
+        }
+        
+        return ret;
+    }
 
     int32_t get_num_hosts() {
         return hostnames.size();

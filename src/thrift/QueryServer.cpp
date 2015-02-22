@@ -63,6 +63,14 @@ public:
         fd->access(_return, key, len);
     }
     
+    void search(std::set<int64_t>& _return, const std::string& query) {
+        fd->search(_return, query);
+    }
+    
+    int64_t count(const std::string& query) {
+        return fd->count(query);
+    }
+    
     int32_t get_num_keys() {
         return fd->num_keys();
     }
