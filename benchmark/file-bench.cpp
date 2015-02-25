@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "succinct/bench/SuccinctBenchmark.hpp"
+#include "FileBenchmark.hpp"
 #include "succinct/SuccinctFile.hpp"
 
 void print_usage(char *exec) {

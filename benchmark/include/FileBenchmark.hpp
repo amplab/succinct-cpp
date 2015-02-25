@@ -1,5 +1,5 @@
-#ifndef SUCCINCT_BENCHMARK_H
-#define SUCCINCT_BENCHMARK_H
+#ifndef FILE_BENCHMARK_HPP
+#define FILE_BENCHMARK_HPP
 
 #include <cstdio>
 #include <fstream>

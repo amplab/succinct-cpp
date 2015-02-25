@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "thrift/bench/SuccinctServerBenchmark.hpp"
+#include "SuccinctServerBenchmark.hpp"
 #include "succinct/SuccinctFile.hpp"
 
 void print_usage(char *exec) {
