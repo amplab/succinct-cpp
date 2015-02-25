@@ -2,7 +2,7 @@
 
 SampledByIndexISA::SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
             bitmap_t *SA, uint64_t sa_n, SuccinctAllocator &s_allocator) :
-            SampledArray(sampling_rate, SamplingScheme::SAMPLE_BY_INDEX,
+            FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_INDEX,
                     npa, s_allocator) {
 
     this->original_size = sa_n;
@@ -11,8 +11,8 @@ SampledByIndexISA::SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
 }
 
 SampledByIndexISA::SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
-        SuccinctAllocator &s_allocator) : SampledArray(sampling_rate,
-                SamplingScheme::SAMPLE_BY_INDEX, npa, s_allocator) {
+        SuccinctAllocator &s_allocator) : FlatSampledArray(sampling_rate,
+                SamplingScheme::FLAT_SAMPLE_BY_INDEX, npa, s_allocator) {
 
     this->original_size = 0;
     this->data_bits = 0;

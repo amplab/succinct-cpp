@@ -1,9 +1,9 @@
 #ifndef SAMPLED_BY_VALUE_ISA_H
 #define SAMPLED_BY_VALUE_ISA_H
 
-#include "succinct/sampledarray/SampledArray.hpp"
+#include "FlatSampledArray.hpp"
 
-class SampledByValueISA : public SampledArray {
+class SampledByValueISA : public FlatSampledArray {
 protected:
     // Sample by value for ISA using original SA
     virtual void sample(bitmap_t *original, uint64_t n);

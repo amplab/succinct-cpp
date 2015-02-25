@@ -2,8 +2,8 @@
 
 SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
         bitmap_t *SA, uint64_t sa_n, SuccinctAllocator &s_allocator,
-        SuccinctBase *s_base) : SampledArray(sampling_rate,
-                SamplingScheme::SAMPLE_BY_VALUE, npa, s_allocator) {
+        SuccinctBase *s_base) : FlatSampledArray(sampling_rate,
+                SamplingScheme::FLAT_SAMPLE_BY_VALUE, npa, s_allocator) {
 
     assert(ISPOWOF2(sampling_rate));
 
@@ -15,7 +15,7 @@ SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
 
 SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
         SuccinctAllocator &s_allocator, SuccinctBase *s_base) :
-                SampledArray(sampling_rate, SamplingScheme::SAMPLE_BY_VALUE,
+                FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_VALUE,
                         npa, s_allocator) {
 
     assert(ISPOWOF2(sampling_rate));

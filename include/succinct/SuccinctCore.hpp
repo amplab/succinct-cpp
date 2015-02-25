@@ -9,11 +9,14 @@
 #include "succinct/npa/EliasDeltaEncodedNPA.hpp"
 #include "succinct/npa/WaveletTreeEncodedNPA.hpp"
 
-#include "succinct/sampledarray/SampledArray.hpp"
+#include "succinct/sampledarray/FlatSampledArray.hpp"
+#include "succinct/sampledarray/LayeredSampledArray.hpp"
 #include "succinct/sampledarray/SampledByIndexSA.hpp"
 #include "succinct/sampledarray/SampledByIndexISA.hpp"
 #include "succinct/sampledarray/SampledByValueSA.hpp"
 #include "succinct/sampledarray/SampledByValueISA.hpp"
+#include "succinct/sampledarray/LayeredSampledSA.hpp"
+#include "succinct/sampledarray/LayeredSampledISA.hpp"
 
 #include "succinct/utils/divsufsortxx.hpp"
 #include "succinct/utils/divsufsortxx_utility.hpp"
@@ -47,9 +50,9 @@ public:
                 uint32_t npa_sampling_rate = 128,
                 uint32_t context_len = 3,
                 SamplingScheme sa_sampling_scheme =
-                        SamplingScheme::SAMPLE_BY_INDEX,
+                        SamplingScheme::FLAT_SAMPLE_BY_INDEX,
                 SamplingScheme isa_sampling_scheme =
-                        SamplingScheme::SAMPLE_BY_INDEX,
+                        SamplingScheme::FLAT_SAMPLE_BY_INDEX,
                 NPA::NPAEncodingScheme npa_encoding_scheme =
                         NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED);
 

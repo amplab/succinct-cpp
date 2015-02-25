@@ -2,7 +2,7 @@
 
 SampledByIndexSA::SampledByIndexSA(uint32_t sampling_rate, NPA *npa,
             bitmap_t *SA, uint64_t sa_n, SuccinctAllocator &s_allocator) :
-            SampledArray(sampling_rate, SamplingScheme::SAMPLE_BY_INDEX,
+            FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_INDEX,
                     npa, s_allocator) {
 
     this->original_size = sa_n;
@@ -11,8 +11,8 @@ SampledByIndexSA::SampledByIndexSA(uint32_t sampling_rate, NPA *npa,
 }
 
 SampledByIndexSA::SampledByIndexSA(uint32_t sampling_rate, NPA *npa,
-        SuccinctAllocator &s_allocator) : SampledArray(sampling_rate,
-                SamplingScheme::SAMPLE_BY_INDEX, npa, s_allocator) {
+        SuccinctAllocator &s_allocator) : FlatSampledArray(sampling_rate,
+                SamplingScheme::FLAT_SAMPLE_BY_INDEX, npa, s_allocator) {
 
     this->original_size = 0;
     this->data_bits = 0;
@@ -35,12 +35,6 @@ void SampledByIndexSA::sample(bitmap_t *SA, uint64_t n) {
             SuccinctBase::set_bitmap_array(&data, (i / sampling_rate), sa_val,
                                             data_bits);
         }
-        /*
-        if(sa_val % sampling_rate == 0) {
-            SuccinctBase::set_bitmap_array(&data, (sa_val / sampling_rate), i,
-                                            data_bits);
-        }
-        */
     }
 }
 

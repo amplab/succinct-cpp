@@ -43,11 +43,14 @@ SuccinctCore::SuccinctCore(const char *filename,
         assert(npa != NULL);
 
         switch(sa_sampling_scheme) {
-        case SamplingScheme::SAMPLE_BY_INDEX:
+        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
             SA = new SampledByIndexSA(sa_sampling_rate, npa, s_allocator);
             break;
-        case SamplingScheme::SAMPLE_BY_VALUE:
+        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
             SA = new SampledByValueSA(sa_sampling_rate, npa, s_allocator, this);
+            break;
+        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+            SA = new LayeredSampledSA(sa_sampling_scheme, sa_sampling_rate, npa, s_allocator);
             break;
         default:
             SA = NULL;
@@ -56,12 +59,15 @@ SuccinctCore::SuccinctCore(const char *filename,
         assert(SA != NULL);
 
         switch(isa_sampling_scheme) {
-        case SamplingScheme::SAMPLE_BY_INDEX:
+        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
             ISA = new SampledByIndexISA(isa_sampling_rate, npa, s_allocator);
             break;
-        case SamplingScheme::SAMPLE_BY_VALUE:
-            assert(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
+        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
+            assert(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
             ISA = new SampledByValueISA(sa_sampling_rate, npa, s_allocator, this);
+            break;
+        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+            ISA = new LayeredSampledISA(isa_sampling_scheme, isa_sampling_rate, npa, s_allocator);
             break;
         default:
             ISA = NULL;
@@ -85,6 +91,9 @@ void SuccinctCore::construct(const char* filename,
         SamplingScheme sa_sampling_scheme,
         SamplingScheme isa_sampling_scheme,
         NPA::NPAEncodingScheme npa_encoding_scheme) {
+
+    // TODO: Parameterize this!
+    uint32_t sampling_range = 64;
 
     // Read input from file
     FILE *f = fopen(filename, "r");
@@ -157,11 +166,15 @@ void SuccinctCore::construct(const char* filename,
     destroy_bitmap(&data_bitmap, s_allocator);
 
     switch(sa_sampling_scheme) {
-    case SamplingScheme::SAMPLE_BY_INDEX:
+    case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         SA = new SampledByIndexSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator);
         break;
-    case SamplingScheme::SAMPLE_BY_VALUE:
+    case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
         SA = new SampledByValueSA(sa_sampling_rate, npa, compactSA, input_size, s_allocator, this);
+        break;
+    case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+        SA = new LayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
+                npa, compactSA, input_size, s_allocator);
         break;
     default:
         SA = NULL;
@@ -170,13 +183,17 @@ void SuccinctCore::construct(const char* filename,
     assert(SA != NULL);
 
     switch(isa_sampling_scheme) {
-    case SamplingScheme::SAMPLE_BY_INDEX:
+    case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         ISA = new SampledByIndexISA(isa_sampling_rate, npa, compactSA, input_size, s_allocator);
         break;
-    case SamplingScheme::SAMPLE_BY_VALUE:
-        assert(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
+    case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
+        assert(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
         ISA = new SampledByValueISA(sa_sampling_rate, npa, compactSA, input_size,
                 ((SampledByValueSA *)SA)->get_d_bpos(), s_allocator, this);
+        break;
+    case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+        ISA = new LayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
+                npa, compactSA, input_size, s_allocator);
         break;
     default:
         ISA = NULL;
@@ -265,8 +282,8 @@ size_t SuccinctCore::serialize(std::ostream& out) {
     out_size += SA->serialize(out);
     out_size += ISA->serialize(out);
 
-    if(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE) {
-        assert(ISA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
+    if(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
+        assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
         out_size += serialize_dictionary(((SampledByValueSA *)SA)->get_d_bpos(), out);
     }
 
@@ -311,9 +328,9 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     in_size += SA->deserialize(in);
     in_size += ISA->deserialize(in);
 
-    if(SA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE) {
+    if(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
     	Dictionary *d_bpos = new Dictionary;
-        assert(ISA->get_sampling_scheme() == SamplingScheme::SAMPLE_BY_VALUE);
+        assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
         in_size += deserialize_dictionary(&d_bpos, in);
         ((SampledByValueSA *)SA)->set_d_bpos(d_bpos);
         ((SampledByValueISA *)ISA)->set_d_bpos(d_bpos);

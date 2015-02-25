@@ -1,11 +1,10 @@
 #ifndef SAMPLING_SCHEME_H
 #define SAMPLING_SCHEME_H
 
-#include "succinct/sampledarray/SampledArray.hpp"
-
 typedef enum sampling_scheme {
-    SAMPLE_BY_INDEX,
-    SAMPLE_BY_VALUE
+    FLAT_SAMPLE_BY_INDEX,
+    FLAT_SAMPLE_BY_VALUE,
+    LAYERED_SAMPLE_BY_INDEX
 } SamplingScheme;
 
 #endif
