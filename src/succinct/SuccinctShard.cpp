@@ -1,11 +1,18 @@
 #include "../../include/succinct/SuccinctShard.hpp"
 
 SuccinctShard::SuccinctShard(uint32_t id, std::string filename, bool construct, uint32_t sa_sampling_rate,
-        uint32_t isa_sampling_rate, uint32_t npa_sampling_rate)
+        uint32_t isa_sampling_rate, uint32_t npa_sampling_rate, SamplingScheme sa_sampling_scheme,
+        SamplingScheme isa_sampling_scheme, NPA::NPAEncodingScheme npa_encoding_scheme, uint32_t context_len)
     : SuccinctCore(filename.c_str(),
             construct,
+            sa_sampling_rate,
             isa_sampling_rate,
-            npa_sampling_rate) {
+            npa_sampling_rate,
+            context_len,
+            sa_sampling_scheme,
+            isa_sampling_scheme,
+            npa_encoding_scheme) {
+
     this->id = id;
     this->input_datafile = filename;
     this->succinct_datafile = filename + ".succinct";
