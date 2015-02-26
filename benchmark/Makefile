@@ -4,10 +4,13 @@ SRCDIR := src
 BUILDDIR := ../build/bench
 BINDIR := ../bin
 LIBDIR := ../lib
+
+TARGET_S := $(BINDIR)/sbench
 TARGET_F := $(BINDIR)/fbench
 TARGET_SS := $(BINDIR)/ssbench
 TARGET_SURE := $(BINDIR)/surebench
 
+OBJ_S := $(BUILDDIR)/shard-bench.o
 OBJ_F := $(BUILDDIR)/file-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
 OBJ_SURE := $(BUILDDIR)/sure-bench.o
@@ -17,13 +20,20 @@ LIB := -L $(LIBDIR) -lsuccinct
 LIBT := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -lsuccinctclient
 INC := -I ../include -I include
 
-all: fbench ssbench surebench
+all: sbench fbench ssbench surebench
+
+sbench: $(TARGET_S)
 
 fbench: $(TARGET_F)
 
 ssbench: $(TARGET_SS)
 
 surebench: $(TARGET_SURE)
+
+$(TARGET_S): $(OBJ_S)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_S) $(LIB)"; $(CC) $^ -o $(TARGET_S) $(LIB)
 
 $(TARGET_F): $(OBJ_F)
 	@echo "Linking..."
@@ -46,7 +56,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET_F) $(TARGET_SS) $(TARGET_SURE)";\
-		$(RM) -r $(BUILDDIR) $(TARGET_F) $(TARGET_SS) $(TARGET_SURE)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_SURE)";\
+		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_SURE)
 	
 .PHONY: clean

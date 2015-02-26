@@ -52,7 +52,7 @@ static __inline__ unsigned long long rdtsc(void) {
 #endif
 
 
-class SuccinctBenchmark {
+class FileBenchmark {
 
 private:
     typedef unsigned long long int time_t;
@@ -97,7 +97,7 @@ private:
 
 public:
 
-    SuccinctBenchmark(std::string filename, std::string queryfile = "") {
+    FileBenchmark(std::string filename, std::string queryfile = "") {
         fd = new SuccinctFile(filename, false);
         generate_randoms();
         if(queryfile != "") {
@@ -105,7 +105,7 @@ public:
         }
     }
 
-    SuccinctBenchmark(SuccinctFile *fd, std::string queryfile = "") {
+    FileBenchmark(SuccinctFile *fd, std::string queryfile = "") {
         this->fd = fd;
         generate_randoms();
         if(queryfile != "") {

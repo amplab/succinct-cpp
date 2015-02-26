@@ -47,12 +47,12 @@ int main(int argc, char **argv) {
         s_out.close();
 
         // Benchmark core functions
-        SuccinctBenchmark s_bench(&fd, querypath);
+        FileBenchmark s_bench(&fd, querypath);
         s_bench.benchmark_core();
         s_bench.benchmark_file();
     } else if(mode == 1) {
         // Benchmark core functions
-        SuccinctBenchmark s_bench(inputpath, querypath);
+        FileBenchmark s_bench(inputpath, querypath);
         s_bench.benchmark_file();
     } else {
         // Only modes 0, 1 supported for now
