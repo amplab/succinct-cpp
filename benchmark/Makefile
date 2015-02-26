@@ -1,6 +1,6 @@
 CC := g++
 
-SRCDIR := ../benchmark
+SRCDIR := src
 BUILDDIR := ../build/bench
 BINDIR := ../bin
 LIBDIR := ../lib
