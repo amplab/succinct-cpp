@@ -81,6 +81,12 @@ public:
     // Get succinct size
     uint64_t size();
 
+    // Get SA
+    SampledArray *getSA();
+
+    // Get ISA
+    SampledArray *getISA();
+
 private:
     /* Construct functions */
     // Create all auxiliary data structures

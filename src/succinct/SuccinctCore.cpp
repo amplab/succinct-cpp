@@ -369,3 +369,11 @@ uint64_t SuccinctCore::size() {
     // TODO: Compute and return size
     return 0;
 }
+
+SampledArray *SuccinctCore::getSA() {
+    return SA;
+}
+
+SampledArray *SuccinctCore::getISA() {
+    return ISA;
+}

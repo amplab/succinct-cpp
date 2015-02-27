@@ -6,7 +6,7 @@
 #include "ShardBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-n npa_sampling_rate] [-t type] [-l len] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d deleted-layers] [-n npa_sampling_rate] [-t type] [-l len] [file]\n", exec);
 }
 
 SamplingScheme scheme_from_opt(int opt) {
@@ -23,12 +23,13 @@ SamplingScheme scheme_from_opt(int opt) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 16) {
+    if(argc < 2 || argc > 18) {
         print_usage(argv[0]);
         return -1;
     }
 
     int c;
+    std::vector<uint32_t> deleted_layers;
     uint32_t mode = 0;
     uint32_t sa_sampling_rate = 32;
     uint32_t isa_sampling_rate = 32;
@@ -37,30 +38,59 @@ int main(int argc, char **argv) {
     int32_t len = 100;
     SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
 
-    while((c = getopt(argc, argv, "m:s:i:x:n:t:l:")) != -1) {
+    while((c = getopt(argc, argv, "m:s:i:x:d:n:t:l:")) != -1) {
         switch(c) {
         case 'm':
+        {
             mode = atoi(optarg);
             break;
+        }
         case 's':
+        {
             sa_sampling_rate = atoi(optarg);
             break;
+        }
         case 'i':
+        {
             isa_sampling_rate = atoi(optarg);
             break;
+        }
         case 'x':
+        {
             scheme = scheme_from_opt(atoi(optarg));
             break;
+        }
+        case 'd':
+        {
+            std::string del_list = std::string(optarg);
+            size_t pos = 0;
+            std::string token;
+            std::string delimiter = ",";
+            while ((pos = del_list.find(delimiter)) != std::string::npos) {
+                token = del_list.substr(0, pos);
+                deleted_layers.push_back(atoi(token.c_str()));
+                del_list.erase(0, pos + delimiter.length());
+            }
+            deleted_layers.push_back(atoi(del_list.c_str()));
+            break;
+        }
         case 'n':
+        {
             npa_sampling_rate = atoi(optarg);
             break;
+        }
         case 't':
+        {
             type = std::string(optarg);
             break;
+        }
         case 'l':
+        {
             len = atoi(optarg);
             break;
+        }
         default:
+        {
             mode = 0;
             sa_sampling_rate = 32;
             isa_sampling_rate = 32;
@@ -68,6 +98,7 @@ int main(int argc, char **argv) {
             type = "latency-get";
             len = 100;
             scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
+        }
         }
     }
 
@@ -91,6 +122,19 @@ int main(int argc, char **argv) {
     } else {
         // Only modes 0, 1 supported for now
         assert(0);
+    }
+
+    if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+        if(!deleted_layers.empty()) {
+            LayeredSampledArray *SA = (LayeredSampledArray *)fd->getSA();
+            LayeredSampledArray *ISA = (LayeredSampledArray *)fd->getISA();
+
+            for(size_t i = 0; i < deleted_layers.size(); i++) {
+                uint32_t layer_id = deleted_layers.at(i);
+                SA->delete_layer(layer_id);
+                ISA->delete_layer(layer_id);
+            }
+        }
     }
 
     ShardBenchmark s_bench(fd);

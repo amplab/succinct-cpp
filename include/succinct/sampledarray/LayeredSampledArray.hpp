@@ -18,6 +18,7 @@ protected:
     typedef SuccinctBase::Dictionary dictionary_t;
 
 #define CREATE_LAYER(i)    SETBIT((this->LAYER_MAP), (i))
+#define DELETE_LAYER(i)    CLEARBIT((this->LAYER_MAP), (i))
 #define EXISTS_LAYER(i)    GETBIT((this->LAYER_MAP), (i))
 
     uint32_t num_layers;                // Number of layers (Do not serialize)
@@ -32,6 +33,7 @@ protected:
     bitmap_t **layer_data;              // All of the layered data content
     uint8_t data_bits;                  // Width of each data entry in bits
     uint64_t original_size;             // Number of elements in original array
+    SuccinctAllocator s_allocator;
 
 public:
 
@@ -72,6 +74,8 @@ public:
             uint64_t num_entries = (n / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap(&layer_data[i], num_entries * data_bits, s_allocator);
         }
+
+        this->s_allocator = s_allocator;
     }
 
     LayeredSampledArray(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
@@ -97,6 +101,7 @@ public:
         this->layer_data = NULL;
         this->original_size = 0;
         this->data_bits = 0;
+        this->s_allocator = s_allocator;
     }
 
     inline void get_layer(layer_t *l, uint64_t i) {
@@ -108,7 +113,7 @@ public:
     inline void get_layer_leq(layer_t *l, uint64_t i) {
         int32_t layer_offset = (i / target_sampling_rate) % sampling_range;
         while(!EXISTS_LAYER(layer[layer_offset])) {
-            fprintf(stderr, "Layer does not exist! layer = %u\n", layer[layer_offset]);
+            // fprintf(stderr, "Layer does not exist! layer = %u\n", layer[layer_offset]);
             layer_offset--; i--;
             if(layer_offset < 0) layer_offset += num_layers;
         }
@@ -152,6 +157,23 @@ public:
         get_layer(&l, i);
         return SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id],
                 l.layer_idx, data_bits);
+    }
+
+    void delete_layer(uint32_t layer_id) {
+        if(EXISTS_LAYER(layer_id)) {
+            DELETE_LAYER(layer_id);
+            SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
+        }
+    }
+
+    void reconstruct_layer(uint32_t layer_id) {
+        if(!EXISTS_LAYER(layer_id)) {
+            layer_data[layer_id] = new bitmap_t;
+            uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate;
+            uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
+            SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
+            CREATE_LAYER(layer_id);
+        }
     }
 
     virtual uint64_t operator[](uint64_t i) = 0;

@@ -10,6 +10,7 @@
 /* Bitwise operations */
 #define GETBIT(n, i)    ((n >> (63UL - i)) & 1UL)
 #define SETBIT(n, i)    n = (n | (1UL << (63UL - i)))
+#define CLEARBIT(n, i)  n = (n & ~(1UL << (63UL - i)))
 
 #define GETBIT16(n, i)  ((n >> (15UL - i)) & 1UL)
 #define SETBIT16(n, i)  n = (n | (1UL << (15UL - i)))
