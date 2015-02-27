@@ -183,6 +183,7 @@ public:
         in.read(reinterpret_cast<char *>(&original_size), sizeof(uint64_t));
         in_size += sizeof(uint64_t);
 
+        layer_data = new bitmap_t*[this->num_layers];
         for(uint32_t i = 0; i < this->num_layers; i++) {
             in_size += SuccinctBase::deserialize_bitmap(&layer_data[i], in);
         }

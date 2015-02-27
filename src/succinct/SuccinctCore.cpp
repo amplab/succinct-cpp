@@ -18,6 +18,9 @@ SuccinctCore::SuccinctCore(const char *filename,
     this->alphabet_size = 0;
     this->input_size = 0;
 
+    // TODO: parameterize this!
+    uint32_t sampling_range = 64;
+
     if(construct_succinct) {
         construct(filename, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
             context_len, sa_sampling_scheme, isa_sampling_scheme,
@@ -50,7 +53,8 @@ SuccinctCore::SuccinctCore(const char *filename,
             SA = new SampledByValueSA(sa_sampling_rate, npa, s_allocator, this);
             break;
         case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-            SA = new LayeredSampledSA(sa_sampling_scheme, sa_sampling_rate, npa, s_allocator);
+            SA = new LayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
+                    npa, s_allocator);
             break;
         default:
             SA = NULL;
@@ -67,7 +71,8 @@ SuccinctCore::SuccinctCore(const char *filename,
             ISA = new SampledByValueISA(sa_sampling_rate, npa, s_allocator, this);
             break;
         case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-            ISA = new LayeredSampledISA(isa_sampling_scheme, isa_sampling_rate, npa, s_allocator);
+            ISA = new LayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
+                    npa, s_allocator);
             break;
         default:
             ISA = NULL;
