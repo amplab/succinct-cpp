@@ -12,6 +12,8 @@ SUCCINCTSRCDIR := $(SRCDIR)/succinct
 SUCCINCTBUILDDIR := $(BUILDDIR)/succinct
 SUCCINCTTARGET := $(LIBDIR)/libsuccinct.a
 
+BENCHBUILDDIR := $(BUILDDIR)/bench
+
 THRIFTSRCDIR := $(SRCDIR)/thrift
 THRIFTBUILDDIR := $(BUILDDIR)/thrift
 THRIFTTARGET_QS := $(BINDIR)/qserver
@@ -117,14 +119,14 @@ build-gtest:
 	@echo " cd external/gtest-1.7.0/make; make";\
 		cd external/gtest-1.7.0/make; make
 
-bench: succinct
+sbench: succinct
 	@echo "Building benchmarks..."
-	@echo " cd benchmark; make"; cd benchmark; make
+	@echo " cd benchmark; make sbench"; cd benchmark; make sbench
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/*";\
-		$(RM) -r $(SUCCINCTBUILDDIR) $(LIBDIR)/*
+	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(BENCHBUILDDIR) $(LIBDIR)/*";\
+		$(RM) -r $(SUCCINCTBUILDDIR) $(BENCHBUILDDIR) $(LIBDIR)/*
 	@echo "Cleaning thrift..."
 	@echo " cd external/thrift-0.9.1; ./cleanup.sh";\
 		cd external/thrift-0.9.1; ./cleanup.sh
