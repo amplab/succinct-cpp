@@ -112,11 +112,12 @@ public:
         l->layer_idx = (i / base_sampling_rate) * count[l->layer_id] + layer_idx[layer_offset];
     }
 
-    inline void get_layer_leq(layer_t *l, uint64_t i) {
+    inline void get_layer_leq(layer_t *l, int64_t i) {
         int32_t layer_offset = (i / target_sampling_rate) % sampling_range;
         while(!EXISTS_LAYER(layer[layer_offset])) {
             layer_offset--; i--;
             if(layer_offset < 0) layer_offset += num_layers;
+            if(i < 0) i += original_size;
         }
         l->layer_id = layer[layer_offset];
         l->layer_idx = (i / base_sampling_rate) * count[l->layer_id] + layer_idx[layer_offset];
