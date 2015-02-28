@@ -213,6 +213,7 @@ public:
         layer_data = new bitmap_t*[this->num_layers];
         for(uint32_t i = 0; i < this->num_layers; i++) {
             in_size += SuccinctBase::deserialize_bitmap(&layer_data[i], in);
+            fprintf(stderr, "Deserialized layer %u of size %llu bits\n", layer_data[i]->size);
         }
 
         return in_size;
