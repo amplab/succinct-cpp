@@ -119,9 +119,21 @@ build-gtest:
 	@echo " cd external/gtest-1.7.0/make; make";\
 		cd external/gtest-1.7.0/make; make
 
+fbench: succinct
+	@echo "Building file benchmark..."
+	@echo " cd benchmark; make fbench"; cd benchmark; make fbench
+
 sbench: succinct
-	@echo "Building benchmarks..."
+	@echo "Building shard benchmark..."
 	@echo " cd benchmark; make sbench"; cd benchmark; make sbench
+
+surebench: succinct
+	@echo "Building sure benchmark..."
+	@echo " cd benchmark; make surebench"; cd benchmark; make surebench
+
+ssbench: succinct
+	@echo "Building succinct-server benchmark..."
+	@echo " cd benchmark; make ssbench"; cd benchmark; make ssbench
 
 clean:
 	@echo "Cleaning..."; 
