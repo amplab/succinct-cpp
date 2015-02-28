@@ -129,11 +129,14 @@ int main(int argc, char **argv) {
             LayeredSampledArray *SA = (LayeredSampledArray *)fd->getSA();
             LayeredSampledArray *ISA = (LayeredSampledArray *)fd->getISA();
 
+            size_t deleted_size = 0;
             for(size_t i = 0; i < deleted_layers.size(); i++) {
                 uint32_t layer_id = deleted_layers.at(i);
-                SA->delete_layer(layer_id);
-                ISA->delete_layer(layer_id);
+                deleted_size += SA->delete_layer(layer_id);
+                deleted_size += ISA->delete_layer(layer_id);
             }
+
+            fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
         }
     }
 

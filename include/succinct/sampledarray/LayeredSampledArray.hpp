@@ -175,7 +175,7 @@ public:
             uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate;
             uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
-            size_t size = layer_data[layer_id]->size;
+            size = layer_data[layer_id]->size;
             CREATE_LAYER(layer_id);
         }
         return size;
@@ -213,7 +213,7 @@ public:
         layer_data = new bitmap_t*[this->num_layers];
         for(uint32_t i = 0; i < this->num_layers; i++) {
             in_size += SuccinctBase::deserialize_bitmap(&layer_data[i], in);
-            fprintf(stderr, "Deserialized layer %u of size %llu bits\n", layer_data[i]->size);
+            fprintf(stderr, "Deserialized layer %u of size %llu bits\n", i, layer_data[i]->size);
         }
 
         return in_size;
