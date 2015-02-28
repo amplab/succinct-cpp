@@ -158,21 +158,27 @@ public:
                 l.layer_idx, data_bits);
     }
 
-    void delete_layer(uint32_t layer_id) {
+    size_t delete_layer(uint32_t layer_id) {
+        size_t size = 0;
         if(EXISTS_LAYER(layer_id)) {
             DELETE_LAYER(layer_id);
+            size = layer_data[layer_id]->size;
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
         }
+        return size;
     }
 
-    void reconstruct_layer(uint32_t layer_id) {
+    size_t reconstruct_layer(uint32_t layer_id) {
+        size_t size = 0;
         if(!EXISTS_LAYER(layer_id)) {
             layer_data[layer_id] = new bitmap_t;
             uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate;
             uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
+            size_t size = layer_data[layer_id]->size;
             CREATE_LAYER(layer_id);
         }
+        return size;
     }
 
     virtual uint64_t operator[](uint64_t i) = 0;
