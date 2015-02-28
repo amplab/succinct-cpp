@@ -113,7 +113,6 @@ public:
     inline void get_layer_leq(layer_t *l, uint64_t i) {
         int32_t layer_offset = (i / target_sampling_rate) % sampling_range;
         while(!EXISTS_LAYER(layer[layer_offset])) {
-            // fprintf(stderr, "Layer does not exist! layer = %u\n", layer[layer_offset]);
             layer_offset--; i--;
             if(layer_offset < 0) layer_offset += num_layers;
         }
