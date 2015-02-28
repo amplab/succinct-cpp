@@ -71,6 +71,8 @@ public:
             CREATE_LAYER(i);
             layer_data[i] = new bitmap_t;
             uint32_t layer_sampling_rate = (1 << i) * target_sampling_rate;
+            layer_sampling_rate = (i == (num_layers - 1)) ?
+                    layer_sampling_rate : layer_sampling_rate * 2;
             uint64_t num_entries = (n / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap(&layer_data[i], num_entries * data_bits, s_allocator);
         }
@@ -173,6 +175,8 @@ public:
         if(!EXISTS_LAYER(layer_id)) {
             layer_data[layer_id] = new bitmap_t;
             uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate;
+            layer_sampling_rate = (layer_id == (num_layers - 1)) ?
+                    layer_sampling_rate : layer_sampling_rate * 2;
             uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
             size = layer_data[layer_id]->size;
