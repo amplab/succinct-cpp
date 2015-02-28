@@ -6,7 +6,7 @@
 #include "ShardBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d deleted-layers] [-n npa_sampling_rate] [-t type] [-l len] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d deleted-layers] [-n npa_sampling_rate] [-t type] [-l len] [-q queryfile] [file]\n", exec);
 }
 
 SamplingScheme scheme_from_opt(int opt) {
@@ -23,7 +23,7 @@ SamplingScheme scheme_from_opt(int opt) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 18) {
+    if(argc < 2 || argc > 20) {
         print_usage(argv[0]);
         return -1;
     }
@@ -37,8 +37,9 @@ int main(int argc, char **argv) {
     std::string type = "latency-get";
     int32_t len = 100;
     SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
+    std::string querypath = "";
 
-    while((c = getopt(argc, argv, "m:s:i:x:d:n:t:l:")) != -1) {
+    while((c = getopt(argc, argv, "m:s:i:x:d:n:t:l:q:")) != -1) {
         switch(c) {
         case 'm':
         {
@@ -89,6 +90,11 @@ int main(int argc, char **argv) {
             len = atoi(optarg);
             break;
         }
+        case 'q':
+        {
+            querypath = std::string(optarg);
+            break;
+        }
         default:
         {
             mode = 0;
@@ -98,6 +104,7 @@ int main(int argc, char **argv) {
             type = "latency-get";
             len = 100;
             scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
+            querypath = "";
         }
         }
     }
@@ -140,7 +147,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    ShardBenchmark s_bench(fd);
+    ShardBenchmark s_bench(fd, querypath);
     if(type == "latency-sa") {
         s_bench.benchmark_idx_fn(&SuccinctShard::lookupSA, "latency_results_sa");
     } else if(type == "latency-isa") {
