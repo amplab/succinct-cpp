@@ -300,8 +300,6 @@ size_t SuccinctCore::serialize(std::ostream& out) {
 size_t SuccinctCore::deserialize(std::istream& in) {
     size_t in_size = 0;
 
-    typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
-
     // Read size of input file
     in.read(reinterpret_cast<char *>(&(input_size)), sizeof(uint64_t));
     in_size += sizeof(uint64_t);
