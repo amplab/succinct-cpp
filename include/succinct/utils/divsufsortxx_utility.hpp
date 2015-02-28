@@ -320,7 +320,6 @@ int
 reverseBWT_lf(const StringIterator1_type T, const StringIterator1_type T_last,
               StringIterator2_type U, StringIterator2_type U_last,
               pos_type pidx, alphabetsize_type alphabetsize = 256) {
-typedef typename std::iterator_traits<StringIterator1_type>::value_type value_type;
 typedef typename std::iterator_traits<StringIterator1_type>::difference_type difference1_type;
 typedef typename std::iterator_traits<StringIterator2_type>::difference_type difference2_type;
   pos_type *counts = NULL, *lf = NULL;

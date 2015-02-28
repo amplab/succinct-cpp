@@ -400,7 +400,6 @@ void
 mintrosort(stack_type &stack, const StringIterator_type T, const SAIterator_type PA,
            SAIterator_type first, SAIterator_type last,
            typename std::iterator_traits<SAIterator_type>::value_type depth) {
-typedef typename std::iterator_traits<SAIterator_type>::value_type pos_type;
 typedef typename std::iterator_traits<StringIterator_type>::value_type value_type;
 typedef substring_wrapper<StringIterator_type, SAIterator_type> wrapper_type;
 typedef typename stack_type::value_type stackinfo_type;
@@ -1114,7 +1113,6 @@ pos_type
 sort_typeBstar(const StringIterator_type T, SAIterator_type SA,
                pos_type *bucket_A, pos_type *bucket_B,
                pos_type n, pos_type SAsize, alphabetsize_type alphabetsize) {
-typedef typename std::iterator_traits<StringIterator_type>::value_type value_type;
   pos_type i, j, k, t, m, bufsize;
   alphabetsize_type c0, c1;
 
@@ -1250,7 +1248,6 @@ void
 constructSA_from_typeBstar(const StringIterator_type T, SAIterator_type SA,
                            pos_type *bucket_A, pos_type *bucket_B,
                            pos_type n, pos_type m, alphabetsize_type alphabetsize) {
-typedef typename std::iterator_traits<StringIterator_type>::value_type value_type;
   SAIterator_type i, j, t = SA;
   pos_type s;
   alphabetsize_type c0, c1, c2;
@@ -1311,7 +1308,6 @@ SAIterator_type
 constructBWT_from_typeBstar(const StringIterator_type T, SAIterator_type SA,
                             pos_type *bucket_A, pos_type *bucket_B,
                             pos_type n, pos_type m, alphabetsize_type alphabetsize) {
-typedef typename std::iterator_traits<StringIterator_type>::value_type value_type;
   SAIterator_type i, j, t = SA, orig;
   pos_type s;
   alphabetsize_type c0, c1, c2;
