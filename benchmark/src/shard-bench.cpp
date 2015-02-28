@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/succinct/SuccinctShard.hpp"
+#include "succinct/SuccinctShard.hpp"
 #include "ShardBenchmark.hpp"
 
 void print_usage(char *exec) {
@@ -144,6 +144,8 @@ int main(int argc, char **argv) {
         s_bench.benchmark_idx_fn(&SuccinctShard::lookupISA, "latency_results_isa");
     } else if(type == "latency-npa") {
         s_bench.benchmark_idx_fn(&SuccinctShard::lookupNPA, "latency_results_npa");
+    } else if(type == "latency-access") {
+        s_bench.benchmark_access_latency("latency_results_access", len);
     } else if(type == "latency-get") {
         s_bench.benchmark_get_latency("latency_results_get");
     } else if(type == "throughput-access") {

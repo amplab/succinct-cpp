@@ -166,7 +166,7 @@ public:
             shard->get(res, randoms[i]);
             t1 = get_timestamp();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
+            res_stream << randoms[i] << "\t" << tdiff << "\n";
             sum = (sum + res.length()) % shard->original_size();
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
@@ -178,6 +178,53 @@ public:
         for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
             std::string res;
             shard->get(res, randoms[i]);
+            sum = (sum + res.length()) % shard->original_size();
+        }
+        fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+        fprintf(stderr, "Cooldown complete.\n");
+
+        res_stream.close();
+
+    }
+
+    void benchmark_access_latency(std::string res_path, int32_t len) {
+
+        time_t t0, t1, tdiff;
+        count_t sum;
+        std::ofstream res_stream(res_path);
+
+        // Warmup
+        sum = 0;
+        fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
+        for(uint64_t i = 0; i < WARMUP_N; i++) {
+            std::string res;
+            shard->access(res, randoms[i], 0, len);
+            sum = (sum + res.length()) % shard->original_size();
+        }
+        fprintf(stderr, "Warmup chksum = %lu\n", sum);
+        fprintf(stderr, "Warmup complete.\n");
+
+        // Measure
+        sum = 0;
+        fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
+        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+            std::string res;
+            t0 = get_timestamp();
+            shard->access(res, randoms[i], 0, len);
+            t1 = get_timestamp();
+            tdiff = t1 - t0;
+            res_stream << randoms[i] << "\t" << tdiff << "\n";
+            sum = (sum + res.length()) % shard->original_size();
+        }
+        fprintf(stderr, "Measure chksum = %lu\n", sum);
+        fprintf(stderr, "Measure complete.\n");
+
+        // Cooldown
+        sum = 0;
+        fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
+        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
+            std::string res;
+            shard->access(res, randoms[i], 0, len);
             sum = (sum + res.length()) % shard->original_size();
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);
