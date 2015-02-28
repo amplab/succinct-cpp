@@ -11,8 +11,8 @@ service SuccinctService {
     string get(1:i64 key),
     string get_local(1:i32 qserver_id, 2:i64 key),
 
-    string access(1:i64 key, 2:i32 len),
-    string access_local(1:i32 qserver_id, 2:i64 key, 3:i32 len),
+    string access(1:i64 key, 2:i32 offset, 3:i32 len),
+    string access_local(1:i32 qserver_id, 2:i64 key, 3:i32 offset, 4:i32 len),
 
     set<i64> search(1:string query),
     set<i64> search_local(1:string query),
@@ -28,7 +28,7 @@ service SuccinctService {
 service QueryService {
     i32 init(1:i32 id),
     string get(1:i64 key),
-    string access(1:i64 key, 2:i32 len),
+    string access(1:i64 key, 2:i32 offset, 3:i32 len),
     set<i64> search(1:string query),
     i64 count(1:string query),
     i32 get_num_keys(),

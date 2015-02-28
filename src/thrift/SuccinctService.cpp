@@ -1245,6 +1245,14 @@ uint32_t SuccinctService_access_args::read(::apache::thrift::protocol::TProtocol
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->offset);
+          this->__isset.offset = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->len);
           this->__isset.len = true;
         } else {
@@ -1271,7 +1279,11 @@ uint32_t SuccinctService_access_args::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->offset);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32(this->len);
   xfer += oprot->writeFieldEnd();
 
@@ -1288,7 +1300,11 @@ uint32_t SuccinctService_access_pargs::write(::apache::thrift::protocol::TProtoc
   xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((*(this->offset)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->len)));
   xfer += oprot->writeFieldEnd();
 
@@ -1431,6 +1447,14 @@ uint32_t SuccinctService_access_local_args::read(::apache::thrift::protocol::TPr
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->offset);
+          this->__isset.offset = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->len);
           this->__isset.len = true;
         } else {
@@ -1461,7 +1485,11 @@ uint32_t SuccinctService_access_local_args::write(::apache::thrift::protocol::TP
   xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->offset);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->len);
   xfer += oprot->writeFieldEnd();
 
@@ -1482,7 +1510,11 @@ uint32_t SuccinctService_access_local_pargs::write(::apache::thrift::protocol::T
   xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((*(this->offset)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32((*(this->len)));
   xfer += oprot->writeFieldEnd();
 
@@ -3228,19 +3260,20 @@ void SuccinctServiceClient::recv_get_local(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_local failed: unknown result");
 }
 
-void SuccinctServiceClient::access(std::string& _return, const int64_t key, const int32_t len)
+void SuccinctServiceClient::access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len)
 {
-  send_access(key, len);
+  send_access(key, offset, len);
   recv_access(_return);
 }
 
-void SuccinctServiceClient::send_access(const int64_t key, const int32_t len)
+void SuccinctServiceClient::send_access(const int64_t key, const int32_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("access", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_access_pargs args;
   args.key = &key;
+  args.offset = &offset;
   args.len = &len;
   args.write(oprot_);
 
@@ -3287,13 +3320,13 @@ void SuccinctServiceClient::recv_access(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "access failed: unknown result");
 }
 
-void SuccinctServiceClient::access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len)
+void SuccinctServiceClient::access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
 {
-  send_access_local(qserver_id, key, len);
+  send_access_local(qserver_id, key, offset, len);
   recv_access_local(_return);
 }
 
-void SuccinctServiceClient::send_access_local(const int32_t qserver_id, const int64_t key, const int32_t len)
+void SuccinctServiceClient::send_access_local(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("access_local", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -3301,6 +3334,7 @@ void SuccinctServiceClient::send_access_local(const int32_t qserver_id, const in
   SuccinctService_access_local_pargs args;
   args.qserver_id = &qserver_id;
   args.key = &key;
+  args.offset = &offset;
   args.len = &len;
   args.write(oprot_);
 
@@ -4226,7 +4260,7 @@ void SuccinctServiceProcessor::process_access(int32_t seqid, ::apache::thrift::p
 
   SuccinctService_access_result result;
   try {
-    iface_->access(result.success, args.key, args.len);
+    iface_->access(result.success, args.key, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -4280,7 +4314,7 @@ void SuccinctServiceProcessor::process_access_local(int32_t seqid, ::apache::thr
 
   SuccinctService_access_local_result result;
   try {
-    iface_->access_local(result.success, args.qserver_id, args.key, args.len);
+    iface_->access_local(result.success, args.qserver_id, args.key, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

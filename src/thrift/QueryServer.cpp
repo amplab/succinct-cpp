@@ -59,8 +59,8 @@ public:
         fd->get(_return, key);
     }
 
-    void access(std::string& _return, const int64_t key, const int32_t len) {
-        fd->access(_return, key, len);
+    void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
+        fd->access(_return, key, offset, len);
     }
     
     void search(std::set<int64_t>& _return, const std::string& query) {

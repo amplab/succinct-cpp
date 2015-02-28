@@ -23,8 +23,8 @@ class SuccinctServiceIf {
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
   virtual void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
-  virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
-  virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) = 0;
+  virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
+  virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual void search_local(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
@@ -91,10 +91,10 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   void get_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
     return;
   }
-  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* len */) {
+  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
     return;
   }
-  void access_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */, const int32_t /* len */) {
+  void access_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
     return;
   }
   void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
@@ -929,26 +929,32 @@ class SuccinctService_get_local_presult {
 };
 
 typedef struct _SuccinctService_access_args__isset {
-  _SuccinctService_access_args__isset() : key(false), len(false) {}
+  _SuccinctService_access_args__isset() : key(false), offset(false), len(false) {}
   bool key;
+  bool offset;
   bool len;
 } _SuccinctService_access_args__isset;
 
 class SuccinctService_access_args {
  public:
 
-  SuccinctService_access_args() : key(0), len(0) {
+  SuccinctService_access_args() : key(0), offset(0), len(0) {
   }
 
   virtual ~SuccinctService_access_args() throw() {}
 
   int64_t key;
+  int32_t offset;
   int32_t len;
 
   _SuccinctService_access_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
+  }
+
+  void __set_offset(const int32_t val) {
+    offset = val;
   }
 
   void __set_len(const int32_t val) {
@@ -958,6 +964,8 @@ class SuccinctService_access_args {
   bool operator == (const SuccinctService_access_args & rhs) const
   {
     if (!(key == rhs.key))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     if (!(len == rhs.len))
       return false;
@@ -982,6 +990,7 @@ class SuccinctService_access_pargs {
   virtual ~SuccinctService_access_pargs() throw() {}
 
   const int64_t* key;
+  const int32_t* offset;
   const int32_t* len;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1046,22 +1055,24 @@ class SuccinctService_access_presult {
 };
 
 typedef struct _SuccinctService_access_local_args__isset {
-  _SuccinctService_access_local_args__isset() : qserver_id(false), key(false), len(false) {}
+  _SuccinctService_access_local_args__isset() : qserver_id(false), key(false), offset(false), len(false) {}
   bool qserver_id;
   bool key;
+  bool offset;
   bool len;
 } _SuccinctService_access_local_args__isset;
 
 class SuccinctService_access_local_args {
  public:
 
-  SuccinctService_access_local_args() : qserver_id(0), key(0), len(0) {
+  SuccinctService_access_local_args() : qserver_id(0), key(0), offset(0), len(0) {
   }
 
   virtual ~SuccinctService_access_local_args() throw() {}
 
   int32_t qserver_id;
   int64_t key;
+  int32_t offset;
   int32_t len;
 
   _SuccinctService_access_local_args__isset __isset;
@@ -1074,6 +1085,10 @@ class SuccinctService_access_local_args {
     key = val;
   }
 
+  void __set_offset(const int32_t val) {
+    offset = val;
+  }
+
   void __set_len(const int32_t val) {
     len = val;
   }
@@ -1083,6 +1098,8 @@ class SuccinctService_access_local_args {
     if (!(qserver_id == rhs.qserver_id))
       return false;
     if (!(key == rhs.key))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     if (!(len == rhs.len))
       return false;
@@ -1108,6 +1125,7 @@ class SuccinctService_access_local_pargs {
 
   const int32_t* qserver_id;
   const int64_t* key;
+  const int32_t* offset;
   const int32_t* len;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1957,11 +1975,11 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void get_local(std::string& _return, const int32_t qserver_id, const int64_t key);
   void send_get_local(const int32_t qserver_id, const int64_t key);
   void recv_get_local(std::string& _return);
-  void access(std::string& _return, const int64_t key, const int32_t len);
-  void send_access(const int64_t key, const int32_t len);
+  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
+  void send_access(const int64_t key, const int32_t offset, const int32_t len);
   void recv_access(std::string& _return);
-  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len);
-  void send_access_local(const int32_t qserver_id, const int64_t key, const int32_t len);
+  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len);
+  void send_access_local(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len);
   void recv_access_local(std::string& _return);
   void search(std::set<int64_t> & _return, const std::string& query);
   void send_search(const std::string& query);
@@ -2138,23 +2156,23 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return;
   }
 
-  void access(std::string& _return, const int64_t key, const int32_t len) {
+  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access(_return, key, len);
+      ifaces_[i]->access(_return, key, offset, len);
     }
-    ifaces_[i]->access(_return, key, len);
+    ifaces_[i]->access(_return, key, offset, len);
     return;
   }
 
-  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) {
+  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access_local(_return, qserver_id, key, len);
+      ifaces_[i]->access_local(_return, qserver_id, key, offset, len);
     }
-    ifaces_[i]->access_local(_return, qserver_id, key, len);
+    ifaces_[i]->access_local(_return, qserver_id, key, offset, len);
     return;
   }
 

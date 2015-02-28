@@ -158,10 +158,18 @@ int main(int argc, char **argv) {
         s_bench.benchmark_access_latency("latency_results_access", len);
     } else if(type == "latency-get") {
         s_bench.benchmark_get_latency("latency_results_get");
+    } else if(type == "latency-count") {
+        s_bench.benchmark_count_latency("latency_results_count");
+    } else if(type == "latency-search") {
+        s_bench.benchmark_search_latency("latency_results_search");
     } else if(type == "throughput-access") {
         s_bench.benchmark_access_throughput(len);
     } else if(type == "throughput-get") {
         s_bench.benchmark_get_throughput();
+    } else if(type == "throughput-count") {
+        s_bench.benchmark_count_throughput();
+    } else if(type == "throughput-search") {
+        s_bench.benchmark_search_throughput();
     } else {
         // Not supported
         assert(0);

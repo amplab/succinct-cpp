@@ -350,7 +350,6 @@ public:
         res_stream.close();
     }
 
-
     void benchmark_get_throughput() {
         double thput = 0;
         std::string value;

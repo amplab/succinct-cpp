@@ -104,7 +104,7 @@ public:
         qservers.at(qserver_id).get(_return, key);
     }
 
-    void access(std::string& _return, const int64_t key, const int32_t len) {
+    void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
         uint32_t shard_id = (uint32_t)(key / SuccinctShard::MAX_KEYS) * balancer->num_replicas() + balancer->get_replica();
         uint32_t host_id = shard_id % hostnames.size();
         // Currently only supports single failure emulation
@@ -117,14 +117,14 @@ public:
         }
         uint32_t qserver_id = shard_id / hostnames.size();
         if(host_id == local_host_id) {
-            access_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS, len);
+            access_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS, offset, len);
         } else {
-            qhandlers.at(host_id).access_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS, len);
+            qhandlers.at(host_id).access_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS, offset, len);
         }
     }
 
-    void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t len) {
-        qservers.at(qserver_id).access(_return, key, len);
+    void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) {
+        qservers.at(qserver_id).access(_return, key, offset, len);
     }
     
     void search_local(std::set<int64_t> & _return, const std::string& query) {

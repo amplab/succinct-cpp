@@ -362,6 +362,14 @@ uint32_t QueryService_access_args::read(::apache::thrift::protocol::TProtocol* i
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->offset);
+          this->__isset.offset = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->len);
           this->__isset.len = true;
         } else {
@@ -388,7 +396,11 @@ uint32_t QueryService_access_args::write(::apache::thrift::protocol::TProtocol* 
   xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->offset);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32(this->len);
   xfer += oprot->writeFieldEnd();
 
@@ -405,7 +417,11 @@ uint32_t QueryService_access_pargs::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((*(this->offset)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->len)));
   xfer += oprot->writeFieldEnd();
 
@@ -1125,19 +1141,20 @@ void QueryServiceClient::recv_get(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
 }
 
-void QueryServiceClient::access(std::string& _return, const int64_t key, const int32_t len)
+void QueryServiceClient::access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len)
 {
-  send_access(key, len);
+  send_access(key, offset, len);
   recv_access(_return);
 }
 
-void QueryServiceClient::send_access(const int64_t key, const int32_t len)
+void QueryServiceClient::send_access(const int64_t key, const int32_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("access", ::apache::thrift::protocol::T_CALL, cseqid);
 
   QueryService_access_pargs args;
   args.key = &key;
+  args.offset = &offset;
   args.len = &len;
   args.write(oprot_);
 
@@ -1507,7 +1524,7 @@ void QueryServiceProcessor::process_access(int32_t seqid, ::apache::thrift::prot
 
   QueryService_access_result result;
   try {
-    iface_->access(result.success, args.key, args.len);
+    iface_->access(result.success, args.key, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

@@ -17,7 +17,7 @@ class QueryServiceIf {
   virtual ~QueryServiceIf() {}
   virtual int32_t init(const int32_t id) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
-  virtual void access(std::string& _return, const int64_t key, const int32_t len) = 0;
+  virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int32_t get_num_keys() = 0;
@@ -57,7 +57,7 @@ class QueryServiceNull : virtual public QueryServiceIf {
   void get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
-  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* len */) {
+  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
     return;
   }
   void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
@@ -290,26 +290,32 @@ class QueryService_get_presult {
 };
 
 typedef struct _QueryService_access_args__isset {
-  _QueryService_access_args__isset() : key(false), len(false) {}
+  _QueryService_access_args__isset() : key(false), offset(false), len(false) {}
   bool key;
+  bool offset;
   bool len;
 } _QueryService_access_args__isset;
 
 class QueryService_access_args {
  public:
 
-  QueryService_access_args() : key(0), len(0) {
+  QueryService_access_args() : key(0), offset(0), len(0) {
   }
 
   virtual ~QueryService_access_args() throw() {}
 
   int64_t key;
+  int32_t offset;
   int32_t len;
 
   _QueryService_access_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
+  }
+
+  void __set_offset(const int32_t val) {
+    offset = val;
   }
 
   void __set_len(const int32_t val) {
@@ -319,6 +325,8 @@ class QueryService_access_args {
   bool operator == (const QueryService_access_args & rhs) const
   {
     if (!(key == rhs.key))
+      return false;
+    if (!(offset == rhs.offset))
       return false;
     if (!(len == rhs.len))
       return false;
@@ -343,6 +351,7 @@ class QueryService_access_pargs {
   virtual ~QueryService_access_pargs() throw() {}
 
   const int64_t* key;
+  const int32_t* offset;
   const int32_t* len;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -742,8 +751,8 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
-  void access(std::string& _return, const int64_t key, const int32_t len);
-  void send_access(const int64_t key, const int32_t len);
+  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
+  void send_access(const int64_t key, const int32_t offset, const int32_t len);
   void recv_access(std::string& _return);
   void search(std::set<int64_t> & _return, const std::string& query);
   void send_search(const std::string& query);
@@ -831,13 +840,13 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
     return;
   }
 
-  void access(std::string& _return, const int64_t key, const int32_t len) {
+  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access(_return, key, len);
+      ifaces_[i]->access(_return, key, offset, len);
     }
-    ifaces_[i]->access(_return, key, len);
+    ifaces_[i]->access(_return, key, offset, len);
     return;
   }
 
