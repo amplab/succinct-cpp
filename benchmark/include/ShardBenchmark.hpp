@@ -187,24 +187,46 @@ public:
 
     }
 
-    void benchmark_restore_latency(uint32_t target_sampling_rate) {
+    void benchmark_get_throughput() {
+        double thput = 0;
+        std::string value;
+        try {
+            // Warmup phase
+            long i = 0;
+            time_t warmup_start = get_timestamp();
+            while (get_timestamp() - warmup_start < WARMUP_T) {
+                shard->get(value, randoms[i % randoms.size()]);
+                i++;
+            }
 
-        fprintf(stderr, "File size = %llu\n", shard->original_size());
-        time_t start = get_timestamp();
-        uint64_t sum = 0;
-        for(uint64_t i = 0; i < shard->original_size(); i += target_sampling_rate) {
-            sum += shard->lookupISA(i);
-            sum %= shard->original_size();
+            // Measure phase
+            i = 0;
+            time_t start = get_timestamp();
+            while (get_timestamp() - start < MEASURE_T) {
+                shard->get(value, randoms[i % randoms.size()]);
+                i++;
+            }
+            time_t end = get_timestamp();
+            double totsecs = (double) (end - start) / (1000.0 * 1000.0);
+            thput = ((double) i / totsecs);
+
+            i = 0;
+            time_t cooldown_start = get_timestamp();
+            while (get_timestamp() - cooldown_start < COOLDOWN_T) {
+                shard->get(value, randoms[i % randoms.size()]);
+                i++;
+            }
+
+        } catch (std::exception &e) {
+            fprintf(stderr, "Throughput test ends...\n");
         }
-        time_t end = get_timestamp();
-        double diff = ((double)(end - start)) / (1000.0 * 1000.0);
 
-        fprintf(stderr, "Sum = %llu, sr = %u, time = %lf s\n", sum, target_sampling_rate, diff);
+        printf("Get throughput: %lf\n", thput);
 
         std::ofstream ofs;
-        std::string of = "restore_" + std::to_string(shard->isa_sampling_rate());
-        ofs.open(of, std::ofstream::out | std::ofstream::app);
-        ofs << diff << "\n";
+        ofs.open("throughput_results_get",
+                std::ofstream::out | std::ofstream::app);
+        ofs << thput << "\n";
         ofs.close();
     }
 
@@ -216,7 +238,7 @@ public:
             long i = 0;
             time_t warmup_start = get_timestamp();
             while (get_timestamp() - warmup_start < WARMUP_T) {
-                shard->access(value, randoms[i % randoms.size()], len);
+                shard->access(value, randoms[i % randoms.size()], 0, len);
                 i++;
             }
 
@@ -224,7 +246,7 @@ public:
             i = 0;
             time_t start = get_timestamp();
             while (get_timestamp() - start < MEASURE_T) {
-                shard->access(value, randoms[i % randoms.size()], len);
+                shard->access(value, randoms[i % randoms.size()], 0, len);
                 i++;
             }
             time_t end = get_timestamp();
@@ -234,7 +256,7 @@ public:
             i = 0;
             time_t cooldown_start = get_timestamp();
             while (get_timestamp() - cooldown_start < COOLDOWN_T) {
-                shard->access(value, randoms[i % randoms.size()], len);
+                shard->access(value, randoms[i % randoms.size()], 0, len);
                 i++;
             }
 
@@ -242,10 +264,10 @@ public:
             fprintf(stderr, "Throughput test ends...\n");
         }
 
-        printf("Get throughput: %lf\n", thput);
+        printf("Access throughput: %lf\n", thput);
 
         std::ofstream ofs;
-        ofs.open("thput",
+        ofs.open("throughput_results_access",
                 std::ofstream::out | std::ofstream::app);
         ofs << thput << "\n";
         ofs.close();

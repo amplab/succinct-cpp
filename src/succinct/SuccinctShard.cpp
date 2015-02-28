@@ -163,12 +163,12 @@ int64_t SuccinctShard::get_value_offset_pos(const int64_t key) {
     return (keys[pos] != key || pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
 }
 
-void SuccinctShard::access(std::string& result, int64_t key, int32_t len) {
+void SuccinctShard::access(std::string& result, int64_t key, int32_t offset, int32_t len) {
     result = "";
     int64_t pos = get_value_offset_pos(key);
     if(pos < 0)
         return;
-    int64_t start = value_offsets[pos];
+    int64_t start = value_offsets[pos] + offset;
     result.resize(len);
     uint64_t idx = lookupISA(start);
     for(int64_t i = 0; i < len; i++) {

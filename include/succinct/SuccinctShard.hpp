@@ -52,7 +52,7 @@ public:
 
     void get(std::string& result, int64_t key);
 
-    void access(std::string& result, int64_t key, int32_t len);
+    void access(std::string& result, int64_t key, int32_t offset, int32_t len);
 
     int64_t count(std::string str);
 

@@ -138,13 +138,18 @@ int main(int argc, char **argv) {
     }
 
     ShardBenchmark s_bench(fd);
-    if(type == "latency-get") {
+    if(type == "latency-sa") {
+        s_bench.benchmark_idx_fn(&SuccinctShard::lookupSA, "latency_results_sa");
+    } else if(type == "latency-isa") {
+        s_bench.benchmark_idx_fn(&SuccinctShard::lookupISA, "latency_results_isa");
+    } else if(type == "latency-npa") {
+        s_bench.benchmark_idx_fn(&SuccinctShard::lookupNPA, "latency_results_npa");
+    } else if(type == "latency-get") {
         s_bench.benchmark_get_latency("latency_results_get");
-    } else if(type == "latency-restore") {
-        for(uint32_t i = 2; i < isa_sampling_rate; i *= 2)
-            s_bench.benchmark_restore_latency(i);
     } else if(type == "throughput-access") {
         s_bench.benchmark_access_throughput(len);
+    } else if(type == "throughput-get") {
+        s_bench.benchmark_get_throughput();
     } else {
         // Not supported
         assert(0);
