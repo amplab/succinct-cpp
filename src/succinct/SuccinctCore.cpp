@@ -8,7 +8,8 @@ SuccinctCore::SuccinctCore(const char *filename,
                             uint32_t context_len,
                             SamplingScheme sa_sampling_scheme,
                             SamplingScheme isa_sampling_scheme,
-                            NPA::NPAEncodingScheme npa_encoding_scheme) :
+                            NPA::NPAEncodingScheme npa_encoding_scheme,
+                            uint32_t sampling_range) :
                             SuccinctBase() {
 
     this->alphabet = NULL;
@@ -18,13 +19,10 @@ SuccinctCore::SuccinctCore(const char *filename,
     this->alphabet_size = 0;
     this->input_size = 0;
 
-    // TODO: parameterize this!
-    uint32_t sampling_range = 64;
-
     if(construct_succinct) {
         construct(filename, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
             context_len, sa_sampling_scheme, isa_sampling_scheme,
-            npa_encoding_scheme);
+            npa_encoding_scheme, sampling_range);
     } else {
         switch(npa_encoding_scheme) {
         case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
@@ -95,10 +93,8 @@ void SuccinctCore::construct(const char* filename,
         uint32_t context_len,
         SamplingScheme sa_sampling_scheme,
         SamplingScheme isa_sampling_scheme,
-        NPA::NPAEncodingScheme npa_encoding_scheme) {
-
-    // TODO: Parameterize this!
-    uint32_t sampling_range = 64;
+        NPA::NPAEncodingScheme npa_encoding_scheme,
+        uint32_t sampling_range) {
 
     // Read input from file
     FILE *f = fopen(filename, "r");

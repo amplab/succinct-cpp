@@ -54,7 +54,8 @@ public:
                 SamplingScheme isa_sampling_scheme =
                         SamplingScheme::FLAT_SAMPLE_BY_INDEX,
                 NPA::NPAEncodingScheme npa_encoding_scheme =
-                        NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED);
+                        NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
+                uint32_t sampling_range = 1024);
 
     /* Lookup functions for each of the core data structures */
     // Lookup NPA at index i
@@ -100,7 +101,8 @@ private:
             uint32_t context_len,
             SamplingScheme sa_sampling_scheme,
             SamplingScheme isa_sampling_scheme,
-            NPA::NPAEncodingScheme npa_encoding_scheme);
+            NPA::NPAEncodingScheme npa_encoding_scheme,
+            uint32_t sampling_range);
 
     // Helper functions
     bool compare_data_bitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
