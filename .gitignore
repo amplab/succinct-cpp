@@ -35,6 +35,7 @@ scratch
 dat
 log
 res
+benchmark/res
 
 # Eclipse files
 .settings

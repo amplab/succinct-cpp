@@ -16,6 +16,7 @@ BENCHBUILDDIR := $(BUILDDIR)/bench
 
 THRIFTSRCDIR := $(SRCDIR)/thrift
 THRIFTBUILDDIR := $(BUILDDIR)/thrift
+THRIFTTARGET_AS := $(BINDIR)/aserver
 THRIFTTARGET_QS := $(BINDIR)/qserver
 THRIFTTARGET_SS := $(BINDIR)/qhandler
 THRIFTTARGET_MS := $(BINDIR)/smaster
@@ -30,14 +31,16 @@ SUCCINCTCFLAGS := -O3 -std=c++11 -Wall -g
 SUCCINCTLIB :=
 SUCCINCTINC := -I include
 
-THRIFTSOURCES_GEN := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/QueryService.cpp
+THRIFTSOURCES_GEN := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/QueryService.cpp $(THRIFTSRCDIR)/AdaptiveQueryService.cpp
 THRIFTSOURCES_SS := $(THRIFTSRCDIR)/SuccinctServer.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTSOURCES_QS := $(THRIFTSRCDIR)/QueryServer.cpp
+THRIFTSOURCES_AS := $(THRIFTSRCDIR)/AdaptiveQueryServer.cpp
 THRIFTSOURCES_MS := $(THRIFTSRCDIR)/SuccinctMaster.cpp $(THRIFTSRCDIR)/MasterService.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
-THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/SuccinctService.cpp $(THRIFTSRCDIR)/MasterService.cpp
+THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/SuccinctService.cpp $(THRIFTSRCDIR)/MasterService.cpp $(THRIFTSRCDIR)/AdaptiveQueryService.cpp
 THRIFTOBJECTS_GEN := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_GEN:.cpp=.o))
 THRIFTOBJECTS_SS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SS:.cpp=.o))
 THRIFTOBJECTS_QS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_QS:.cpp=.o))
+THRIFTOBJECTS_AS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_AS:.cpp=.o))
 THRIFTOBJECTS_MS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_MS:.cpp=.o))
 THRIFTOBJECTS_SC := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SC:.cpp=.o))
 THRIFTCFLAGS := -O3 -std=c++11 -w -DHAVE_NETINET_IN_H -g
@@ -62,16 +65,20 @@ $(SUCCINCTBUILDDIR)/%.o: $(SUCCINCTSRCDIR)/%.cpp
 
 succinct-thrift: build-thrift succinct-thrift-components
 
-succinct-thrift-components: query-server succinct-server succinct-master succinct-client
+succinct-thrift-components: gen-thrift adaptive-query-server query-server succinct-server succinct-master succinct-client
+
+gen-thrift:
+	@echo " ./bin/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift"; ./bin/thrift -I include/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift
+	@echo " $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/"; $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/
+	@echo " $(RM) src/thrift/*skeleton*"; $(RM) src/thrift/*skeleton*
 
 build-thrift:
 	@echo "Building thrift-0.9.1..."
 	@echo " cd external/thrift-0.9.1; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install";\
 		cd external/thrift-0.9.1; ./configure CXXFLAGS='-O3 -std=c++11' --prefix=`pwd`/../../ --exec-prefix=`pwd`/../../ --with-qt4=no --with-c_glib=no --with-csharp=no --with-java=no --with-erlang=no --with-python=no --with-perl=no --with-php=no --with-php_extension=no --with-ruby=no --with-haskell=no --with-go=no --with-d=no --without-tests && make && make install
-	@echo " ./bin/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift"; ./bin/thrift -I include/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift
-	@echo " $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/"; $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/
-	@echo " $(RM) src/thrift/*skeleton*"; $(RM) src/thrift/*skeleton*
-	
+
+adaptive-query-server: succinct $(THRIFTTARGET_AS)
+
 query-server: succinct $(THRIFTTARGET_QS)
 
 succinct-server: succinct $(THRIFTTARGET_SS)
@@ -84,6 +91,12 @@ $(THRIFTTARGET_SS): $(THRIFTOBJECTS_SS) $(THRIFTOBJECTS_GEN)
 	@echo " $(CC) $^ -o $(THRIFTTARGET_SS) $(THRIFTLIB)";\
 		$(CC) $^ -o $(THRIFTTARGET_SS) $(THRIFTLIB)
 
+$(THRIFTTARGET_AS): $(THRIFTOBJECTS_AS) $(THRIFTOBJECTS_GEN) 
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(THRIFTTARGET_AS) $(THRIFTLIB)";\
+		$(CC) $^ -o $(THRIFTTARGET_AS) $(THRIFTLIB)
+	
 $(THRIFTTARGET_QS): $(THRIFTOBJECTS_QS) $(THRIFTOBJECTS_GEN) 
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)

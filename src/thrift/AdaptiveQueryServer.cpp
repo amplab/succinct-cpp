@@ -1,4 +1,4 @@
-#include "thrift/QueryService.h"
+#include "thrift/AdaptiveQueryService.h"
 #include "thrift/succinct_constants.h"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TServerSocket.h>
@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "../../include/succinct/SuccinctShard.hpp"
+#include "../../include/succinct/LayeredSuccinctShard.hpp"
 #include "thrift/ports.h"
 
 using namespace ::apache::thrift;
@@ -21,9 +21,9 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-class QueryServiceHandler : virtual public QueryServiceIf {
+class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
 public:
-    QueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate) {
+    AdaptiveQueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate) {
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
@@ -32,15 +32,16 @@ public:
         this->num_keys = std::count(std::istreambuf_iterator<char>(input),
                         std::istreambuf_iterator<char>(), '\n');
         input.close();
-        this->sa_sampling_rate = sa_sampling_rate;
         this->isa_sampling_rate = isa_sampling_rate;
+        this->sa_sampling_rate = sa_sampling_rate;
+        init(0);
     }
 
     int32_t init(int32_t id) {
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new SuccinctShard(id, filename, construct, sa_sampling_rate, isa_sampling_rate);
+        fd = new LayeredSuccinctShard(id, filename, num_keys, construct, sa_sampling_rate, isa_sampling_rate);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
@@ -63,21 +64,29 @@ public:
     void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
         fd->access(_return, key, offset, len);
     }
-    
+
     void search(std::set<int64_t>& _return, const std::string& query) {
         fd->search(_return, query);
     }
-    
+
     int64_t count(const std::string& query) {
         return fd->count(query);
     }
-    
+
     int32_t get_num_keys() {
         return fd->num_keys();
     }
 
+    int64_t remove_layer(const int32_t layer_id) {
+        return fd->remove_layer(layer_id);
+    }
+
+    int64_t reconstruct_layer(const int32_t layer_id) {
+        return fd->reconstruct_layer(layer_id);
+    }
+
 private:
-    SuccinctShard *fd;
+    LayeredSuccinctShard *fd;
     bool construct;
     std::string filename;
     bool is_init;
@@ -134,8 +143,8 @@ int main(int argc, char **argv) {
     std::string filename = std::string(argv[optind]);
     bool construct = (mode == 0) ? true : false;
 
-    shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct, sa_sampling_rate, isa_sampling_rate));
-    shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
+    shared_ptr<AdaptiveQueryServiceHandler> handler(new AdaptiveQueryServiceHandler(filename, construct, sa_sampling_rate, isa_sampling_rate));
+    shared_ptr<TProcessor> processor(new AdaptiveQueryServiceProcessor(handler));
 
     try {
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
@@ -147,7 +156,7 @@ int main(int argc, char **argv) {
                          protocol_factory);
         server.serve();
     } catch(std::exception& e) {
-        fprintf(stderr, "Exception at SuccinctServer:main(): %s\n", e.what());
+        fprintf(stderr, "Exception at AdaptiveQueryServer:main(): %s\n", e.what());
     }
     return 0;
 }

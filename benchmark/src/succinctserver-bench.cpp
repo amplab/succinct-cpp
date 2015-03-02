@@ -2,7 +2,6 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/succinct/SuccinctShard.hpp"
 #include "SuccinctServerBenchmark.hpp"
 
 void print_usage(char *exec) {
