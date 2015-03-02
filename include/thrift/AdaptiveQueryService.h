@@ -23,6 +23,7 @@ class AdaptiveQueryServiceIf {
   virtual int32_t get_num_keys() = 0;
   virtual int64_t remove_layer(const int32_t layer_id) = 0;
   virtual int64_t reconstruct_layer(const int32_t layer_id) = 0;
+  virtual int64_t storage_size() = 0;
 };
 
 class AdaptiveQueryServiceIfFactory {
@@ -78,6 +79,10 @@ class AdaptiveQueryServiceNull : virtual public AdaptiveQueryServiceIf {
     return _return;
   }
   int64_t reconstruct_layer(const int32_t /* layer_id */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  int64_t storage_size() {
     int64_t _return = 0;
     return _return;
   }
@@ -951,6 +956,100 @@ class AdaptiveQueryService_reconstruct_layer_presult {
 
 };
 
+
+class AdaptiveQueryService_storage_size_args {
+ public:
+
+  AdaptiveQueryService_storage_size_args() {
+  }
+
+  virtual ~AdaptiveQueryService_storage_size_args() throw() {}
+
+
+  bool operator == (const AdaptiveQueryService_storage_size_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_storage_size_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_storage_size_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveQueryService_storage_size_pargs {
+ public:
+
+
+  virtual ~AdaptiveQueryService_storage_size_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_storage_size_result__isset {
+  _AdaptiveQueryService_storage_size_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_storage_size_result__isset;
+
+class AdaptiveQueryService_storage_size_result {
+ public:
+
+  AdaptiveQueryService_storage_size_result() : success(0) {
+  }
+
+  virtual ~AdaptiveQueryService_storage_size_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveQueryService_storage_size_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_storage_size_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_storage_size_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_storage_size_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_storage_size_presult__isset {
+  _AdaptiveQueryService_storage_size_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_storage_size_presult__isset;
+
+class AdaptiveQueryService_storage_size_presult {
+ public:
+
+
+  virtual ~AdaptiveQueryService_storage_size_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveQueryService_storage_size_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AdaptiveQueryServiceClient : virtual public AdaptiveQueryServiceIf {
  public:
   AdaptiveQueryServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -995,6 +1094,9 @@ class AdaptiveQueryServiceClient : virtual public AdaptiveQueryServiceIf {
   int64_t reconstruct_layer(const int32_t layer_id);
   void send_reconstruct_layer(const int32_t layer_id);
   int64_t recv_reconstruct_layer();
+  int64_t storage_size();
+  void send_storage_size();
+  int64_t recv_storage_size();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1018,6 +1120,7 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_remove_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_reconstruct_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_storage_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AdaptiveQueryServiceProcessor(boost::shared_ptr<AdaptiveQueryServiceIf> iface) :
     iface_(iface) {
@@ -1029,6 +1132,7 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
     processMap_["get_num_keys"] = &AdaptiveQueryServiceProcessor::process_get_num_keys;
     processMap_["remove_layer"] = &AdaptiveQueryServiceProcessor::process_remove_layer;
     processMap_["reconstruct_layer"] = &AdaptiveQueryServiceProcessor::process_reconstruct_layer;
+    processMap_["storage_size"] = &AdaptiveQueryServiceProcessor::process_storage_size;
   }
 
   virtual ~AdaptiveQueryServiceProcessor() {}
@@ -1130,6 +1234,15 @@ class AdaptiveQueryServiceMultiface : virtual public AdaptiveQueryServiceIf {
       ifaces_[i]->reconstruct_layer(layer_id);
     }
     return ifaces_[i]->reconstruct_layer(layer_id);
+  }
+
+  int64_t storage_size() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->storage_size();
+    }
+    return ifaces_[i]->storage_size();
   }
 
 };

@@ -9,7 +9,6 @@
 #include "thrift/AdaptiveQueryService.h"
 #include "thrift/ports.h"
 
-#include "succinct/LayeredSuccinctShard.hpp"
 #include <thread>
 #include <sstream>
 #include <unistd.h>
@@ -21,7 +20,7 @@ using namespace ::apache::thrift::transport;
 class DynamicAdaptBenchmark : public Benchmark {
 private:
     AdaptiveQueryServiceClient *query_client;
-    AdaptiveQueryServiceClient *layer_client;
+    AdaptiveQueryServiceClient *mgmt_client;
     boost::shared_ptr<TTransport> query_transport;
     boost::shared_ptr<TTransport> layer_transport;
     std::vector<uint32_t> request_rates;
@@ -86,7 +85,7 @@ public:
             std::string queryfile = "") : Benchmark() {
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
-        this->layer_client = this->get_client(layer_transport);
+        this->mgmt_client = this->get_client(layer_transport);
         fprintf(stderr, "Created layer client.\n");
         this->reqfile = reqfile;
         this->resfile = resfile;
@@ -138,7 +137,8 @@ public:
         query_transport->close();
     }
 
-    static void measure_responses(AdaptiveQueryServiceClient *client, std::string resfile) {
+    static void measure_responses(AdaptiveQueryServiceClient *query_client,
+            AdaptiveQueryServiceClient *mgmt_client, std::string resfile) {
         std::string res;
         const time_t MEASURE_INTERVAL = 5000000;
         uint32_t num_responses = 0;
@@ -147,12 +147,12 @@ public:
         time_t measure_start_time = get_timestamp();
         while(true) {
             try {
-                client->recv_get(res);
+                query_client->recv_get(res);
                 num_responses++;
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double thput = ((double) num_responses * 1000 * 1000) / ((double)diff);
-                    res_stream << cur_time << "\t" << thput << "\n";
+                    res_stream << cur_time << "\t" << thput << "\t" << mgmt_client->storage_size() << "\n";
                     res_stream.flush();
                     num_responses = 0;
                     measure_start_time = get_timestamp();
@@ -163,14 +163,14 @@ public:
         }
         time_t diff = cur_time - measure_start_time;
         double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
-        res_stream << cur_time << "\t" << thput << "\n";
+        res_stream << cur_time << "\t" << thput << "\t" << mgmt_client->storage_size() << "\n";
         res_stream.close();
     }
 
     void run_benchmark() {
         std::thread req(&DynamicAdaptBenchmark::send_requests, query_client, query_transport,
                 randoms, request_rates, durations, reqfile);
-        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client, resfile);
+        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client, mgmt_client, resfile);
 
         if(req.joinable()) {
             req.join();

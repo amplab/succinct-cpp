@@ -40,6 +40,8 @@ public:
             NPA::NPAEncodingScheme npa_encoding_scheme = NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
             uint32_t context_len = 3, uint32_t sampling_range = 1024);
 
+    virtual ~SuccinctShard() {}
+
     uint32_t sa_sampling_rate();
 
     uint32_t isa_sampling_rate();

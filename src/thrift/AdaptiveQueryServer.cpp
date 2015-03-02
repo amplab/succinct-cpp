@@ -85,6 +85,10 @@ public:
         return fd->reconstruct_layer(layer_id);
     }
 
+    int64_t storage_size() {
+        return fd->storage_size();
+    }
+
 private:
     LayeredSuccinctShard *fd;
     bool construct;

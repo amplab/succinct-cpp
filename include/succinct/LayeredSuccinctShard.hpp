@@ -10,6 +10,8 @@ public:
             NPA::NPAEncodingScheme npa_encoding_scheme = NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
             uint32_t context_len = 3);
 
+    virtual ~LayeredSuccinctShard() {}
+
     size_t remove_layer(uint32_t layer_id);
 
     size_t reconstruct_layer(uint32_t layer_id);
