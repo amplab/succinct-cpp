@@ -1,8 +1,13 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#ifndef MAX
 #define MAX(a, b) (((a) < (b)) ? (b) : (a))
+#endif
+
+#ifndef MIN
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
 /* Check if n is a power of 2 */
 #define ISPOWOF2(n)     ((n != 0) && ((n & (n - 1)) == 0))
