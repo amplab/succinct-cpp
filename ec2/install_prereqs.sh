@@ -1,4 +1,5 @@
 # install prereqs
+yum -y install libtool
 yum -y install libevent
 yum -y install libevent-devel
 yum -y install python-devel
