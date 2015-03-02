@@ -80,7 +80,7 @@ public:
     uint64_t original_size();
 
     // Get succinct size
-    uint64_t size();
+    virtual size_t storage_size();
 
     // Get SA
     SampledArray *getSA();

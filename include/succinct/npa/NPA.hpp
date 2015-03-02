@@ -50,7 +50,7 @@ public:
     }
 
     // Get size of NPA
-    uint64_t size() {
+    uint64_t get_npa_size() {
         return npa_size;
     }
 
@@ -77,6 +77,8 @@ public:
     virtual size_t serialize(std::ostream& out) = 0;
 
     virtual size_t deserialize(std::istream& in) = 0;
+
+    virtual size_t storage_size() = 0;
 
     virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
     									bool flag) {

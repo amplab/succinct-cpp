@@ -58,6 +58,8 @@ public:
 
     void search(std::set<int64_t>& result, std::string str);
 
+    virtual size_t storage_size();
+
 private:
     int64_t get_key_pos(const int64_t value_offset);
     int64_t get_value_offset_pos(const int64_t key);

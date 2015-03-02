@@ -49,6 +49,8 @@ public:
     // Deserialize the wavelet tree encoded NPA
     virtual size_t deserialize(std::istream& in);
 
+    virtual size_t storage_size();
+
 private:
     SuccinctBase *s_base;
     uint64_t *csizes;

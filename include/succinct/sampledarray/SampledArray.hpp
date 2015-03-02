@@ -20,6 +20,8 @@ public:
     SamplingScheme get_sampling_scheme() { return scheme; }
 
     virtual uint32_t get_sampling_rate() = 0;
+
+    virtual size_t storage_size() = 0;
 };
 
 #endif /* SAMPLED_ARRAY_HPP */

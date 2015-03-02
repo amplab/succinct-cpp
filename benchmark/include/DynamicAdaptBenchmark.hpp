@@ -174,12 +174,12 @@ public:
 
         if(req.joinable()) {
             req.join();
-            fprintf(stderr, "Request thread terminated.");
+            fprintf(stderr, "Request thread terminated.\n");
         }
 
         if(res.joinable()) {
             res.join();
-            fprintf(stderr, "Response thread terminated.");
+            fprintf(stderr, "Response thread terminated.\n");
         }
     }
 };

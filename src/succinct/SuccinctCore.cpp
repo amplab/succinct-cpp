@@ -359,9 +359,16 @@ uint64_t SuccinctCore::original_size() {
     return input_size;
 }
 
-uint64_t SuccinctCore::size() {
-    // TODO: Compute and return size
-    return 0;
+size_t SuccinctCore::storage_size() {
+    size_t tot_size = SuccinctBase::storage_size();
+    tot_size += sizeof(uint64_t);
+    tot_size += sizeof(alphabet_map.size()) +
+            alphabet_map.size() * (sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t));
+    tot_size += sizeof(alphabet_size) + alphabet_size * sizeof(char);
+    tot_size += SA->storage_size();
+    tot_size += ISA->storage_size();
+    tot_size += npa->storage_size();
+    return tot_size;
 }
 
 SampledArray *SuccinctCore::getSA() {

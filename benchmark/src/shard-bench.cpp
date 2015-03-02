@@ -131,6 +131,8 @@ int main(int argc, char **argv) {
         assert(0);
     }
 
+    fprintf(stderr, "shard size = %lu\n", fd->storage_size());
+
     if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
         if(!deleted_layers.empty()) {
             LayeredSampledArray *SA = (LayeredSampledArray *)fd->getSA();

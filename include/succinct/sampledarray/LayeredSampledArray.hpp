@@ -228,10 +228,19 @@ public:
         layer_data = new bitmap_t*[this->num_layers];
         for(uint32_t i = 0; i < this->num_layers; i++) {
             in_size += SuccinctBase::deserialize_bitmap(&layer_data[i], in);
-            fprintf(stderr, "Deserialized layer %u of size %llu bits\n", i, layer_data[i]->size);
         }
 
         return in_size;
+    }
+
+    virtual size_t storage_size() {
+        size_t tot_size = sizeof(uint64_t) + sizeof(uint8_t) + sizeof(uint64_t);
+        // TODO: Incorporate size of metadata
+        tot_size += sizeof(bitmap_t*) * this->num_layers;
+        for(uint32_t i = 0; i < this->num_layers; i++) {
+            tot_size += SuccinctBase::bitmap_size(layer_data[i]);
+        }
+        return tot_size;
     }
 
 private:

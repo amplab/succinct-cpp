@@ -403,3 +403,8 @@ size_t WaveletTreeEncodedNPA::deserialize(std::istream& in) {
 
     return in_size;
 }
+
+size_t WaveletTreeEncodedNPA::storage_size() {
+    // TODO: fix
+    return 0;
+}

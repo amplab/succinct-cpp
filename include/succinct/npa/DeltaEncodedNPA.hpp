@@ -52,6 +52,14 @@ public:
         return in_size;
     }
 
+    virtual size_t dev_size(DeltaEncodedVector *dv) {
+        if(dv == NULL) return 0;
+        return sizeof(uint8_t) + sizeof(uint8_t) +
+                SuccinctBase::bitmap_size(dv->samples) +
+                SuccinctBase::bitmap_size(dv->deltas) +
+                SuccinctBase::bitmap_size(dv->delta_offsets);
+    }
+
 protected:
 
     // Return lower bound integer log (base 2) for n
@@ -234,6 +242,31 @@ public:
         assert(column_id < sigma_size);
         uint64_t npa_val = lookupDEV(&(del_npa[column_id]), i - col_offsets[column_id]);
         return npa_val;
+    }
+
+    virtual size_t storage_size() {
+        size_t tot_size = 3 * sizeof(uint64_t) + 2 * sizeof(uint32_t);
+        tot_size += sizeof(contexts.size()) + contexts.size() * (sizeof(uint64_t) * 2);
+        tot_size += SuccinctBase::vector_size(row_offsets);
+        tot_size += SuccinctBase::vector_size(col_offsets);
+
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            tot_size += SuccinctBase::vector_size(col_nec[i]);
+        }
+
+        for(uint64_t i = 0; i < contexts.size(); i++) {
+            tot_size += SuccinctBase::vector_size(row_nec[i]);
+        }
+
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            tot_size += SuccinctBase::vector_size(cell_offsets[i]);
+        }
+
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            tot_size += dev_size(&del_npa[i]);
+        }
+
+        return tot_size;
     }
 
     virtual size_t serialize(std::ostream& out) {

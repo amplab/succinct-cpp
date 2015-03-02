@@ -209,7 +209,7 @@ int64_t SuccinctShard::get_key_pos(const int64_t value_offset) {
     int64_t pos = std::prev(std::upper_bound(value_offsets.begin(),
                                             value_offsets.end(),
                                             value_offset)) - value_offsets.begin();
-    return (pos >= keys.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
+    return (pos >= value_offsets.size() || ACCESSBIT(invalid_offsets, pos) == 1) ? -1 : pos;
 }
 
 void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
@@ -227,4 +227,9 @@ int64_t SuccinctShard::count(std::string str) {
     std::set<int64_t> result;
     search(result, str);
     return result.size();
+}
+
+size_t SuccinctShard::storage_size() {
+    // TODO: Add size of keys, offsets, invalid_offsets bitmap
+    return SuccinctCore::storage_size();
 }

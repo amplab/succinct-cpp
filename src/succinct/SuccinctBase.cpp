@@ -698,3 +698,24 @@ size_t SuccinctBase::deserialize_dictionary(Dictionary **D, std::istream& in) {
 
     return in_size;
 }
+
+size_t SuccinctBase::vector_size(std::vector<uint64_t> &v) {
+    return sizeof(v.size()) + v.size() * sizeof(uint64_t);
+}
+
+size_t SuccinctBase::bitmap_size(BitMap *B) {
+    if(B == NULL) return 0;
+    return sizeof(B->size) + BITS2BLOCKS(B->size) * 8;
+}
+
+size_t SuccinctBase::dictionary_size(Dictionary *D) {
+    if(D == NULL) return 0;
+    return sizeof(D->size) +
+            2 * ((D->size / L3BLKSIZE) + (D->size / L2BLKSIZE) + 2) * sizeof(uint64_t) +
+            bitmap_size(D->B);
+}
+
+size_t SuccinctBase::storage_size() {
+    // Size of tables + size of constants
+    return 1048729 + 8 * 2;
+}

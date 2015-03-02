@@ -96,6 +96,11 @@ public:
         return in_size;
     }
 
+    virtual size_t storage_size() {
+        return sizeof(uint64_t) + sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint32_t)
+                + SuccinctBase::bitmap_size(data);
+    }
+
 };
 
 #endif

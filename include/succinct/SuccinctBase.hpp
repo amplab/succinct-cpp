@@ -41,8 +41,8 @@ public:
     /* ===================================================================== */
     /* Basic data structures used in Succinct */
     // Basic constants
-    const uint64_t two32 = pow(2, 32);
-    const uint64_t all_ones = ~(0ULL);
+    static const uint64_t two32 = 1L << 32;
+    static const uint64_t all_ones = ~(0ULL);
 
     // Bitmap stored as a 64-bit array
     typedef struct _bitmap {
@@ -126,6 +126,18 @@ public:
 
     // Deserialize dictionary from input stream
     size_t deserialize_dictionary(Dictionary **D, std::istream& in);
+
+    // Get size of bitmap
+    static size_t bitmap_size(BitMap *B);
+
+    // Get size of dictionary
+    static size_t dictionary_size(Dictionary *D);
+
+    // Get size of vector
+    static size_t vector_size(std::vector<uint64_t> &v);
+
+    // Get size of SuccinctBase
+    size_t storage_size();
 
 protected:
     SuccinctAllocator s_allocator;
