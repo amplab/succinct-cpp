@@ -61,7 +61,7 @@ size_t LayeredSampledSA::reconstruct_layer_fast(uint32_t layer_id) {
         for(uint64_t i = 0; i < num_entries; i++) {
             idx = i * layer_sampling_rate + offset;
             if(idx > original_size) break;
-            if(is_computed[idx]) continue;
+            if(is_computed[i]) continue;
             uint64_t j = 0;
             std::vector<std::pair<uint64_t, uint64_t>> opt;
             opt.push_back(std::pair<uint64_t, uint64_t>(idx, j));
