@@ -57,7 +57,7 @@ size_t LayeredSampledSA::reconstruct_layer_fast(uint32_t layer_id) {
         SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
         uint64_t idx, offset;
         std::vector<bool> is_computed(num_entries, false);
-        offset = this->num_layers - 1 ? 0 : (layer_sampling_rate / 2);
+        offset = (layer_id == this->num_layers - 1) ? 0 : (layer_sampling_rate / 2);
         for(uint64_t i = 0; i < num_entries; i++) {
             idx = i * layer_sampling_rate + offset;
             if(idx > original_size) break;
