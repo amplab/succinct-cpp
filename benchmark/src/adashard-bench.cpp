@@ -34,7 +34,9 @@ int main(int argc, char **argv) {
     // Benchmark core functions
     std::string reqpath = outpath + "/adashard-bench.req";
     std::string respath = outpath + "/adashard-bench.res";
-    DynamicAdaptBenchmark d_bench(configfile, reqpath, respath);
+    std::string addpath = outpath + "/adashard-bench.add";
+    std::string delpath = outpath + "/adashard-bench.del";
+    DynamicAdaptBenchmark d_bench(configfile, reqpath, respath, addpath, delpath);
     d_bench.run_benchmark();
 
     return 0;
