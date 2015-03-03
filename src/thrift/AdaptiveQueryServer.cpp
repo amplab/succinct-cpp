@@ -41,7 +41,7 @@ public:
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new LayeredSuccinctShard(id, filename, num_keys, construct, sa_sampling_rate, isa_sampling_rate);
+        fd = new LayeredSuccinctShard(id, filename, construct, sa_sampling_rate, isa_sampling_rate);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
@@ -78,11 +78,17 @@ public:
     }
 
     int64_t remove_layer(const int32_t layer_id) {
-        return fd->remove_layer(layer_id);
+        fprintf(stderr, "Received remove layer request for layer_id = %d\n", layer_id);
+        int64_t del_size = fd->remove_layer(layer_id);
+        fprintf(stderr, "Completed remove layer request for layer_id = %d\n", layer_id);
+        return del_size;
     }
 
     int64_t reconstruct_layer(const int32_t layer_id) {
-        return fd->reconstruct_layer(layer_id);
+        fprintf(stderr, "Received create layer request for layer_id = %d\n", layer_id);
+        int64_t add_size = fd->reconstruct_layer(layer_id);
+        fprintf(stderr, "Completed create layer request for layer_id = %d\n", layer_id);
+        return add_size;
     }
 
     int64_t storage_size() {

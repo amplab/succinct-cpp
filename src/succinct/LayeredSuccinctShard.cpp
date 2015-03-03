@@ -5,9 +5,7 @@ LayeredSuccinctShard::LayeredSuccinctShard(uint32_t id, std::string datafile, bo
             NPA::NPAEncodingScheme npa_encoding_scheme, uint32_t context_len)
             : SuccinctShard(id, datafile, construct, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
                     SamplingScheme::LAYERED_SAMPLE_BY_INDEX, SamplingScheme::LAYERED_SAMPLE_BY_INDEX,
-                    npa_encoding_scheme, context_len, sampling_range) {
-
-}
+                    npa_encoding_scheme, context_len, sampling_range) {}
 
 size_t LayeredSuccinctShard::remove_layer(uint32_t layer_id) {
     size_t size = 0;

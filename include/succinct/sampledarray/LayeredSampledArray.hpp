@@ -167,8 +167,9 @@ public:
         if(EXISTS_LAYER(layer_id)) {
             DELETE_LAYER(layer_id);
             size = layer_data[layer_id]->size;
-            sleep(10);                      // TODO: I don't like this!
+            usleep(10000);                      // TODO: I don't like this!
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
+            layer_data[layer_id] = NULL;
         }
         return size;
     }
@@ -181,13 +182,19 @@ public:
             layer_sampling_rate = (layer_id == (num_layers - 1)) ?
                     layer_sampling_rate : layer_sampling_rate * 2;
             uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
-            assert(layer_data[layer_id] == NULL);
             SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
-            for(uint64_t i = 0; i < original_size; i++) {
-                layer_t l;
-                get_layer(&l, i);
-                if(l.layer_id == layer_id) {
-                    SuccinctBase::set_bitmap_array(&layer_data[layer_id], l.layer_idx, at(i), data_bits);
+            uint64_t idx;
+            if(layer_id == this->num_layers - 1) {
+                for(uint64_t i = 0; i < num_entries; i++) {
+                    idx = i * layer_sampling_rate;
+                    if(idx > original_size) break;
+                    SuccinctBase::set_bitmap_array(&layer_data[layer_id], i, at(idx), data_bits);
+                }
+            } else {
+                for(uint64_t i = 0; i < num_entries; i++) {
+                    idx = i * layer_sampling_rate + (layer_sampling_rate / 2);
+                    if(idx > original_size) break;
+                    SuccinctBase::set_bitmap_array(&layer_data[layer_id], i, at(idx), data_bits);
                 }
             }
             size = layer_data[layer_id]->size;
