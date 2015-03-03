@@ -145,12 +145,6 @@ int main(int argc, char **argv) {
                 deleted_size += ISA->delete_layer(layer_id);
             }
 
-            for(size_t i = 0; i < deleted_layers.size(); i++) {
-                uint32_t layer_id = deleted_layers.at(i);
-                deleted_size += SA->reconstruct_layer(layer_id);
-                deleted_size += ISA->reconstruct_layer(layer_id);
-            }
-
             fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
         }
     }

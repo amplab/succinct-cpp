@@ -5,7 +5,7 @@ set term postscript eps color linewidth 4 rounded
 # Line style for axes
 set style line 80 lt rgb "#808080"
 
-set size 0.5, 0.5
+set size 1,1
 
 # Line style for grid
 set style line 81 lt 0  # dashed
@@ -43,6 +43,6 @@ set y2label "Memory Footprint (GB)" font "Helvetica, 16"
 #set yrange [1:]
 max(x,y) = (x > y) ? x : y
 
-plot "../res/adashard-bench.req" using 1:2 title "request-rate" w lp ls 2, \ 
+plot "../res/adashard-bench.req" using 1:2 title "request-rate" w lp ls 1, \
 	"../res/adashard-bench.res" using 1:2 title "response-rate" w lp ls 2, \
-	"../res/adashard-bench.res" using 1:3 axes x1y2 title "memory-footprint" w lp ls 2
+	"../res/adashard-bench.res" using 1:($3/1024/1024/1024) axes x1y2 title "memory-footprint" w lp ls 3
