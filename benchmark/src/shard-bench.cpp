@@ -6,7 +6,7 @@
 #include "ShardBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d deleted-layers] [-n npa_sampling_rate] [-t type] [-l len] [-q queryfile] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d delete-layers] [-c create-layers] [-n npa_sampling_rate] [-t type] [-l len] [-q queryfile] [file]\n", exec);
 }
 
 SamplingScheme scheme_from_opt(int opt) {
@@ -23,13 +23,14 @@ SamplingScheme scheme_from_opt(int opt) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 20) {
+    if(argc < 2 || argc > 22) {
         print_usage(argv[0]);
         return -1;
     }
 
     int c;
     std::vector<uint32_t> deleted_layers;
+    std::vector<uint32_t> created_layers;
     uint32_t mode = 0;
     uint32_t sa_sampling_rate = 32;
     uint32_t isa_sampling_rate = 32;
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
     SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
     std::string querypath = "";
 
-    while((c = getopt(argc, argv, "m:s:i:x:d:n:t:l:q:")) != -1) {
+    while((c = getopt(argc, argv, "m:s:i:x:c:d:n:t:l:q:")) != -1) {
         switch(c) {
         case 'm':
         {
@@ -59,6 +60,20 @@ int main(int argc, char **argv) {
         case 'x':
         {
             scheme = scheme_from_opt(atoi(optarg));
+            break;
+        }
+        case 'c':
+        {
+            std::string add_list = std::string(optarg);
+            size_t pos = 0;
+            std::string token;
+            std::string delimiter = ",";
+            while ((pos = add_list.find(delimiter)) != std::string::npos) {
+                token = add_list.substr(0, pos);
+                created_layers.push_back(atoi(token.c_str()));
+                add_list.erase(0, pos + delimiter.length());
+            }
+            created_layers.push_back(atoi(add_list.c_str()));
             break;
         }
         case 'd':
@@ -172,6 +187,24 @@ int main(int argc, char **argv) {
         s_bench.benchmark_count_throughput();
     } else if(type == "throughput-search") {
         s_bench.benchmark_search_throughput();
+    } else if(type == "reconstruct") {
+        LayeredSampledSA *SA = (LayeredSampledSA *)fd->getSA();
+        for(uint32_t i = 0; i < created_layers.size(); i++) {
+            uint64_t start_time = Benchmark::get_timestamp();
+            SA->reconstruct_layer(created_layers.at(i));
+            uint64_t end_time = Benchmark::get_timestamp();
+            fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
+                    created_layers.at(i), end_time - start_time);
+        }
+    } else if (type == "reconstruct-fast") {
+        LayeredSampledSA *SA = (LayeredSampledSA *)fd->getSA();
+        for(uint32_t i = 0; i < created_layers.size(); i++) {
+            uint64_t start_time = Benchmark::get_timestamp();
+            SA->reconstruct_layer_fast(created_layers.at(i));
+            uint64_t end_time = Benchmark::get_timestamp();
+            fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
+                    created_layers.at(i), end_time - start_time);
+        }
     } else {
         // Not supported
         assert(0);

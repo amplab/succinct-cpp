@@ -19,6 +19,8 @@ public:
     // Access element at index i
     uint64_t operator[](uint64_t i);
 
+    size_t reconstruct_layer_fast(uint32_t layer_id);
+
 };
 
 #endif /* LAYEREDSAMPLEDSA_HPP */

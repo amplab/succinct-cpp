@@ -65,19 +65,19 @@ protected:
     std::vector<int64_t> randoms;
     std::vector<std::string> queries;
 
-    static time_t get_timestamp() {
-        struct timeval now;
-        gettimeofday (&now, NULL);
-
-        return  now.tv_usec + (time_t)now.tv_sec * 1000000;
-    }
-
 public:
     Benchmark() {}
 
     virtual ~Benchmark() {
         randoms.clear();
         queries.clear();
+    }
+
+    static time_t get_timestamp() {
+        struct timeval now;
+        gettimeofday (&now, NULL);
+
+        return  now.tv_usec + (time_t)now.tv_sec * 1000000;
     }
 };
 
