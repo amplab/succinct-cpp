@@ -84,10 +84,21 @@ public:
         return del_size;
     }
 
+    typedef unsigned long long int time_t;
+
+    static time_t get_timestamp() {
+        struct timeval now;
+        gettimeofday (&now, NULL);
+
+        return  now.tv_usec + (time_t)now.tv_sec * 1000000;
+    }
+
     int64_t reconstruct_layer(const int32_t layer_id) {
         fprintf(stderr, "Received create layer request for layer_id = %d\n", layer_id);
+        time_t start_time = get_timestamp();
         int64_t add_size = fd->reconstruct_layer(layer_id);
-        fprintf(stderr, "Completed create layer request for layer_id = %d\n", layer_id);
+        time_t end_time = get_timestamp();
+        fprintf(stderr, "Completed create layer request for layer_id = %d, time = %lu\n", layer_id, end_time - start_time);
         return add_size;
     }
 
