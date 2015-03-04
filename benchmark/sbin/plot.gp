@@ -32,7 +32,10 @@ set style line 2 lt 1 linecolor rgb "#00A000" lw 1 pt 6
 set style line 3 lt 1 linecolor rgb "#5060D0" lw 1 pt 1
 set style line 4 lt 2 linecolor rgb "#FF8C00" lw 1 pt 4
 
-set output "../plot/timescale.eps"
+set output "../plot/timeseries.eps"
+set timefmt "%s"
+set xdata time
+set format x "%H:%M"
 set xlabel "Time (s)" font "Helvetica, 16"
 set ylabel "Query Throughput (ops/sec)" font "Helvetica, 16"
 set y2label "Memory Footprint (GB)" font "Helvetica, 16"
@@ -43,6 +46,6 @@ set y2label "Memory Footprint (GB)" font "Helvetica, 16"
 #set yrange [1:]
 max(x,y) = (x > y) ? x : y
 
-plot "../res/adashard-bench.req" using 1:2 title "request-rate" w lp ls 1, \
-	"../res/adashard-bench.res" using 1:2 title "response-rate" w lp ls 2, \
-	"../res/adashard-bench.res" using 1:($3/1024/1024/1024) axes x1y2 title "memory-footprint" w lp ls 3
+plot "../res/adashard-bench.req" using ($1/1000/1000):2 title "request-rate" w lp ls 1,\
+	"../res/adashard-bench.res" using ($1/1000/1000):2 title "response-rate" w lp ls 2,\
+	"../res/adashard-bench.res" using ($1/1000/1000):($3/1024/1024/1024) axes x1y2 title "memory-footprint" w lp ls 3
