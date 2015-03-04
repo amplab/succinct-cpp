@@ -41,3 +41,36 @@ uint64_t LayeredSampledISA::operator[](uint64_t i) {
     }
     return pos;
 }
+
+size_t LayeredSampledISA::reconstruct_layer_fast(uint32_t layer_id) {
+    size_t size = 0;
+    if(!EXISTS_LAYER(layer_id)) {
+        layer_data[layer_id] = new bitmap_t;
+        uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate;
+        layer_sampling_rate = (layer_id == (num_layers - 1)) ?
+                layer_sampling_rate : layer_sampling_rate * 2;
+        uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
+        SuccinctBase::init_bitmap(&layer_data[layer_id], num_entries * data_bits, s_allocator);
+        uint64_t idx, offset;
+        std::vector<bool> is_computed(num_entries, false);
+        offset = (layer_id == this->num_layers - 1) ? 0 : (layer_sampling_rate / 2);
+        for(uint64_t i = 0; i < num_entries; i++) {
+            idx = i * layer_sampling_rate + offset;
+            if(idx > original_size) break;
+            if(is_computed[i]) continue;
+            uint64_t j = 0;
+            layer_t l;
+            get_layer_leq(&l, idx);
+            uint64_t pos = SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id], l.layer_idx, data_bits);
+            uint32_t layer_sampling_rate = (1 << l.layer_id) * target_sampling_rate;
+            idx %= (layer_sampling_rate);
+            while(idx--) {
+                pos = (*npa)[pos];
+            }
+            SuccinctBase::set_bitmap_array(&layer_data[layer_id], i, pos, data_bits);
+        }
+        size = layer_data[layer_id]->size;
+        CREATE_LAYER(layer_id);
+    }
+    return size;
+}
