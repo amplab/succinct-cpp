@@ -69,10 +69,7 @@ size_t LayeredSampledSA::reconstruct_layer(uint32_t layer_id) {
             }
 
             uint64_t sa_val = sampled_at(idx / target_sampling_rate);
-            if(sa_val < j)
-                return original_size - (j - sa_val);
-            else
-                return sa_val - j;
+            sa_val = (sa_val < j) ? original_size - (j - sa_val) : sa_val - j;
             SuccinctBase::set_bitmap_array(&layer_data[layer_id], i, sa_val, data_bits);
         }
         size = layer_data[layer_id]->size;
