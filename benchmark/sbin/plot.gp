@@ -32,7 +32,7 @@ set style line 2 lt 1 linecolor rgb "#00A000" lw 1 pt 6
 set style line 3 lt 1 linecolor rgb "#5060D0" lw 1 pt 1
 set style line 4 lt 2 linecolor rgb "#FF8C00" lw 1 pt 4
 
-set output "timescale.eps"
+set output "../plot/timescale.eps"
 set xlabel "Time (s)" font "Helvetica, 16"
 set ylabel "Query Throughput (ops/sec)" font "Helvetica, 16"
 set y2label "Memory Footprint (GB)" font "Helvetica, 16"

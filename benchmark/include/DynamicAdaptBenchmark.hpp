@@ -20,11 +20,11 @@ using namespace ::apache::thrift::transport;
 class DynamicAdaptBenchmark : public Benchmark {
 private:
     AdaptiveQueryServiceClient *query_client;
-    AdaptiveQueryServiceClient *size_client;
-    AdaptiveQueryServiceClient *mgmt_client;
+    AdaptiveQueryServiceClient *stats_client;
+    AdaptiveQueryServiceClient *mgmnt_client;
     boost::shared_ptr<TTransport> query_transport;
-    boost::shared_ptr<TTransport> size_transport;
-    boost::shared_ptr<TTransport> mgmt_transport;
+    boost::shared_ptr<TTransport> stats_transport;
+    boost::shared_ptr<TTransport> mgmnt_transport;
     std::vector<uint32_t> request_rates;
     std::vector<uint32_t> durations;
     std::vector<std::vector<uint32_t>> layers_to_delete;
@@ -116,12 +116,14 @@ private:
 public:
     DynamicAdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
             std::string addfile, std::string delfile, std::string queryfile = "") : Benchmark() {
+
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
-        this->size_client = this->get_client(size_transport);
-        fprintf(stderr, "Created size client.\n");
-        this->mgmt_client = this->get_client(mgmt_transport);
+        this->mgmnt_client = this->get_client(mgmnt_transport);
         fprintf(stderr, "Created management client.\n");
+        this->stats_client = this->get_client(stats_transport);
+        fprintf(stderr, "Created stats client.\n");
+
         this->reqfile = reqfile;
         this->resfile = resfile;
         this->addfile = addfile;
@@ -144,25 +146,19 @@ public:
             std::vector<std::vector<uint32_t>> layers_to_create,
             std::vector<std::vector<uint32_t>> layers_to_delete,
             std::string reqfile) {
+
         time_t cur_time;
         const time_t MEASURE_INTERVAL = 5000000;
         time_t measure_start_time = get_timestamp();
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
+
         for(uint32_t stage = 0; stage < request_rates.size(); stage++) {
             time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
             time_t sleep_time = 1000 * 1000 / request_rates[stage];
             uint64_t i = 0;
             fprintf(stderr, "Starting stage %u: request-rate = %u, duration = %u\n",
                     stage, request_rates[stage], durations[stage]);
-            for(uint32_t i = 0; i < layers_to_delete[stage].size(); i++) {
-                fprintf(stderr, "Sent request to delete layer %u\n", layers_to_delete[stage][i]);
-                mgmt_client->send_remove_layer(layers_to_delete[stage][i]);
-            }
-            for(uint32_t i = 0; i < layers_to_create[stage].size(); i++) {
-                fprintf(stderr, "Sent request to create layer %u\n", layers_to_create[stage][i]);
-                mgmt_client->send_reconstruct_layer(layers_to_create[stage][i]);
-            }
             time_t start_time = get_timestamp();
             while(get_timestamp() - start_time < duration) {
                 query_client->send_get(randoms[i % randoms.size()]);
@@ -192,7 +188,7 @@ public:
     }
 
     static void measure_responses(AdaptiveQueryServiceClient *query_client,
-            AdaptiveQueryServiceClient *size_client, std::string resfile) {
+            AdaptiveQueryServiceClient *stats_client, std::string resfile) {
         std::string res;
         const time_t MEASURE_INTERVAL = 5000000;
         uint32_t num_responses = 0;
@@ -206,7 +202,7 @@ public:
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double thput = ((double) num_responses * 1000 * 1000) / ((double)diff);
-                    res_stream << cur_time << "\t" << thput << "\t" << size_client->storage_size() << "\n";
+                    res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size() << "\n";
                     res_stream.flush();
                     num_responses = 0;
                     measure_start_time = get_timestamp();
@@ -217,42 +213,61 @@ public:
         }
         time_t diff = cur_time - measure_start_time;
         double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
-        res_stream << cur_time << "\t" << thput << "\t" << size_client->storage_size() << "\n";
+        res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size() << "\n";
         res_stream.close();
     }
 
-    static void monitor_deletes(AdaptiveQueryServiceClient *mgmt_client,
-            std::vector<std::vector<uint32_t>> layers_to_delete, std::string delfile) {
-        std::ofstream del_stream(delfile);
+    static void create_layers(AdaptiveQueryServiceClient *mgmt_client,
+            std::vector<std::vector<uint32_t>> layers_to_create,
+            std::vector<uint32_t> durations,
+            std::string addfile) {
+        std::ofstream add_stream(addfile);
+        time_t cur_time;
 
-        for(size_t i = 0; i < layers_to_delete.size(); i++) {
-            for(size_t j = 0; j < layers_to_delete[i].size(); j++) {
+        for(size_t stage = 0; stage < layers_to_create.size(); stage++) {
+            time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
+            time_t start_time = get_timestamp();
+            for(size_t i = 0; i < layers_to_create[stage].size(); i++) {
                 try {
-                    size_t del_size = mgmt_client->recv_remove_layer();
+                    size_t add_size = mgmt_client->reconstruct_layer(layers_to_create[stage][i]);
+                    fprintf(stderr, "Created layer with size = %zu\n", add_size);
+                    add_stream << get_timestamp() << "\t" << i << "\t" << add_size << "\n";
+                    add_stream.flush();
+                } catch(std::exception& e) {
+                    break;
+                }
+            }
+            // Sleep if there is still time left
+            if((cur_time = get_timestamp()) - start_time < duration) {
+                usleep(duration - (cur_time - start_time));
+            }
+        }
+    }
+
+    static void delete_layers(AdaptiveQueryServiceClient *mgmt_client,
+                std::vector<std::vector<uint32_t>> layers_to_delete,
+                std::vector<uint32_t> durations,
+                std::string delfile) {
+        std::ofstream del_stream(delfile);
+        time_t cur_time;
+
+        for(size_t stage = 0; stage < layers_to_delete.size(); stage++) {
+            time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
+            time_t start_time = get_timestamp();
+            for(size_t i = 0; i < layers_to_delete[stage].size(); i++) {
+                try {
+                    size_t del_size = mgmt_client->remove_layer(layers_to_delete[stage][i]);
                     fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
-                    del_stream << get_timestamp() << "\t" << del_size << "\n";
+                    del_stream << get_timestamp() << "\t" << i << "\t" << del_size << "\n";
                     del_stream.flush();
                 } catch(std::exception& e) {
                     fprintf(stderr, "Error: %s\n", e.what());
                     break;
                 }
             }
-        }
-    }
-
-    static void monitor_creates(AdaptiveQueryServiceClient *mgmt_client,
-            std::vector<std::vector<uint32_t>> layers_to_create, std::string addfile) {
-        std::ofstream add_stream(addfile);
-        for(size_t i = 0; i < layers_to_create.size(); i++) {
-            for(size_t j = 0; j < layers_to_create[i].size(); j++) {
-                try {
-                    size_t add_size = mgmt_client->recv_reconstruct_layer();
-                    fprintf(stderr, "Created layer with size = %zu\n", add_size);
-                    add_stream << get_timestamp() << "\t" << add_size << "\n";
-                    add_stream.flush();
-                } catch(std::exception& e) {
-                    break;
-                }
+            // Sleep if there is still time left
+            if((cur_time = get_timestamp()) - start_time < duration) {
+                usleep(duration - (cur_time - start_time));
             }
         }
     }
@@ -260,12 +275,15 @@ public:
     void run_benchmark() {
         std::thread req(&DynamicAdaptBenchmark::send_requests,
                 query_client, query_transport,
-                mgmt_client, mgmt_transport,
+                mgmnt_client, mgmnt_transport,
                 randoms, request_rates, durations, layers_to_create, layers_to_delete,
                 reqfile);
-        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client, size_client, resfile);
-        // std::thread add(&DynamicAdaptBenchmark::monitor_creates, mgmt_client, layers_to_create, addfile);
-        // std::thread del(&DynamicAdaptBenchmark::monitor_deletes, mgmt_client, layers_to_delete, delfile);
+        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client,
+                stats_client, resfile);
+        std::thread add(&DynamicAdaptBenchmark::create_layers, mgmnt_client,
+                layers_to_create, durations, addfile);
+        std::thread del(&DynamicAdaptBenchmark::delete_layers, mgmnt_client,
+                layers_to_delete, durations, delfile);
 
         if(req.joinable()) {
             req.join();
@@ -277,18 +295,21 @@ public:
             fprintf(stderr, "Response thread terminated.\n");
         }
 
-//        if(add.joinable()) {
-//            add.join();
-//            fprintf(stderr, "Layer creation monitor thread terminated.\n");
-//        }
-//
-//        if(del.joinable()) {
-//            del.join();
-//            fprintf(stderr, "Layer deletion monitor thread terminated.\n");
-//        }
+        if(add.joinable()) {
+            add.join();
+            fprintf(stderr, "Layer creation thread terminated.\n");
+        }
 
-        mgmt_transport->close();
+        if(del.joinable()) {
+            del.join();
+            fprintf(stderr, "Layer deletion thread terminated.\n");
+        }
+
+        mgmnt_transport->close();
         fprintf(stderr, "Closed management socket.\n");
+
+        stats_transport->close();
+        fprintf(stderr, "Closed stats socket.\n");
     }
 };
 
