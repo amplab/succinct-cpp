@@ -21,8 +21,6 @@ public:
 
     size_t reconstruct_layer(uint32_t layer_id);
 
-    size_t reconstruct_layer_fast(uint32_t layer_id);
-
 };
 
 #endif /* LAYEREDSAMPLEDSA_HPP */

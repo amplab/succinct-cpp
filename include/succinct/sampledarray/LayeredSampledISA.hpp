@@ -20,8 +20,6 @@ public:
     uint64_t operator[](uint64_t i);
 
     size_t reconstruct_layer(uint32_t layer_id);
-
-    size_t reconstruct_layer_fast(uint32_t layer_id);
 };
 
 

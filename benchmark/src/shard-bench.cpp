@@ -200,19 +200,6 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
                     created_layers.at(i), end_time - start_time);
         }
-    } else if (type == "reconstruct-sa-fast") {
-        if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
-            fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
-            return 0;
-        }
-        LayeredSampledSA *SA = (LayeredSampledSA *)fd->getSA();
-        for(uint32_t i = 0; i < created_layers.size(); i++) {
-            uint64_t start_time = Benchmark::get_timestamp();
-            SA->reconstruct_layer_fast(created_layers.at(i));
-            uint64_t end_time = Benchmark::get_timestamp();
-            fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
-                    created_layers.at(i), end_time - start_time);
-        }
     } else if(type == "reconstruct-isa") {
         if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
             fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
