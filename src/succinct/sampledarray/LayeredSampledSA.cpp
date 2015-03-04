@@ -75,7 +75,7 @@ size_t LayeredSampledSA::reconstruct_layer(uint32_t layer_id) {
             uint64_t sa_val = sampled_at(idx / target_sampling_rate);
             for(size_t k = 0; k < opt.size(); k++) {
                 uint64_t count = j - opt[k].second;
-                uint64_t pos = (idx - offset) / layer_sampling_rate;
+                uint64_t pos = (opt[k].first - offset) / layer_sampling_rate;
                 uint64_t cur_val = (sa_val < count) ? original_size - (count - sa_val) : sa_val - count;
                 SuccinctBase::set_bitmap_array(&layer_data[layer_id], pos, cur_val, data_bits);
                 is_computed[pos] = true;
