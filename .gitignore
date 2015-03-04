@@ -36,6 +36,7 @@ dat
 log
 res
 benchmark/res
+benchmark/plot
 
 # Eclipse files
 .settings
