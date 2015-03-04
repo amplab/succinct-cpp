@@ -134,19 +134,28 @@ build-gtest:
 
 fbench: succinct
 	@echo "Building file benchmark..."
-	@echo " cd benchmark; make fbench"; cd benchmark; make fbench
+	@echo " cd benchmark; make clean && make fbench";\
+		cd benchmark; make clean && make fbench
 
 sbench: succinct
 	@echo "Building shard benchmark..."
-	@echo " cd benchmark; make sbench"; cd benchmark; make sbench
+	@echo " cd benchmark; make clean && make sbench";\
+		cd benchmark; make clean && make sbench
 
 surebench: succinct
 	@echo "Building sure benchmark..."
-	@echo " cd benchmark; make surebench"; cd benchmark; make surebench
+	@echo " cd benchmark; make clean && make surebench";\
+		cd benchmark; make clean && make surebench
 
-ssbench: succinct
+ssbench: succinct-thrift-components
 	@echo "Building succinct-server benchmark..."
-	@echo " cd benchmark; make ssbench"; cd benchmark; make ssbench
+	@echo " cd benchmark; make clean && make ssbench";\
+		cd benchmark; make clean && make ssbench
+
+asbench: succinct-thrift-components
+	@echo "Building adashard benchmark..."
+	@echo " cd benchmark; make clean && make asbench";\
+		cd benchmark; make clean && make asbench
 
 clean:
 	@echo "Cleaning..."; 
