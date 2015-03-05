@@ -110,6 +110,17 @@ void SuccinctBase::init_bitmap(SuccinctBase::BitMap **B,
     (*B)->size = size_in_bits;
 }
 
+// Initialize the bitmap with the specified size in bits, with all bits set
+void SuccinctBase::init_bitmap_set(SuccinctBase::BitMap **B,
+                                uint64_t size_in_bits,
+                                SuccinctAllocator s_allocator) {
+    assert(size_in_bits != 0);
+    (*B)->bitmap = (uint64_t *) s_allocator.s_malloc(sizeof(uint64_t) * BITS2BLOCKS(size_in_bits));
+    int set_bits = 0xFF;
+    s_allocator.s_memset((*B)->bitmap, set_bits, sizeof(uint64_t) * BITS2BLOCKS(size_in_bits));
+    (*B)->size = size_in_bits;
+}
+
 void SuccinctBase::destroy_bitmap(SuccinctBase::BitMap **B,
                                     SuccinctAllocator s_allocator) {
     s_allocator.s_free((*B)->bitmap);

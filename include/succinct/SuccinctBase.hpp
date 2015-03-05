@@ -81,6 +81,9 @@ public:
     // Initialize a bitmap with a specified size
     static void init_bitmap(BitMap **B, uint64_t size_in_bits, SuccinctAllocator s_allocator);
 
+    // Initialize a bitmap with a specified size, with all bits set
+    static void init_bitmap_set(BitMap **B, uint64_t size_in_bits, SuccinctAllocator s_allocator);
+
     // Destroy a bitmap
     static void destroy_bitmap(BitMap **B, SuccinctAllocator s_allocator);
 
