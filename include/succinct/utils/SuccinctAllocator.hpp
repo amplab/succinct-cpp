@@ -50,6 +50,13 @@ public:
      */
     void s_free(void* ptr);
 
+    /*
+     * Sets the first num bytes of the block of memory pointed to by ptr to the
+     * specified value (interpreted as unsigned char).
+     *
+     */
+    void *s_memset(void* ptr, int value, size_t num);
+
 };
 #endif
 

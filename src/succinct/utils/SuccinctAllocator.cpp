@@ -64,3 +64,15 @@ void SuccinctAllocator::s_free(void* ptr) {
     }
     free(ptr);
 }
+
+/*
+ * Sets the first num bytes of the block of memory pointed to by ptr to the
+ * specified value (interpreted as unsigned char).
+ *
+ */
+void *SuccinctAllocator::s_memset(void *ptr, int value, size_t num) {
+    if(s_use_hugepages) {
+        return 0;
+    }
+    return memset(ptr, value, num);
+}
