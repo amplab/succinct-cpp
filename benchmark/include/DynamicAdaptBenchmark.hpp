@@ -174,12 +174,13 @@ public:
                     measure_start_time = get_timestamp();
                 }
             }
-            fprintf(stderr, "Finished stage %u, spent %llu us.", stage, (cur_time  - start_time));
+            fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage, (cur_time  - start_time));
         }
         time_t diff = cur_time - measure_start_time;
         double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
         req_stream << cur_time << "\t" << rr << "\n";
         req_stream.flush();
+
         // Sleep for some time and let other threads finish
         fprintf(stderr, "Request thread sleeping for 10 seconds...\n");
         sleep(10);
