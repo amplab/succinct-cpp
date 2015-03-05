@@ -154,7 +154,7 @@ public:
         uint64_t num_requests = 0;
 
         for(uint32_t stage = 0; stage < request_rates.size(); stage++) {
-            time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
+            time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t sleep_time = 1000 * 1000 / request_rates[stage];
             uint64_t i = 0;
             fprintf(stderr, "Starting stage %u: request-rate = %u Ops/sec, duration = %u us\n",
