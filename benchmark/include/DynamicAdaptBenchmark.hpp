@@ -160,7 +160,7 @@ public:
             fprintf(stderr, "Starting stage %u: request-rate = %u, duration = %u\n",
                     stage, request_rates[stage], durations[stage]);
             time_t start_time = get_timestamp();
-            while(get_timestamp() - start_time < duration) {
+            while((cur_time = get_timestamp()) - start_time < duration) {
                 query_client->send_get(randoms[i % randoms.size()]);
                 i++;
                 num_requests++;
@@ -174,6 +174,7 @@ public:
                     measure_start_time = get_timestamp();
                 }
             }
+            fprintf(stderr, "Finished stage %u, spent %llu us.", stage, (cur_time  - start_time));
         }
         time_t diff = cur_time - measure_start_time;
         double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);

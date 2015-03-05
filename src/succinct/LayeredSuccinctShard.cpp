@@ -16,7 +16,7 @@ size_t LayeredSuccinctShard::remove_layer(uint32_t layer_id) {
 
 size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
     size_t size = 0;
-    size += ((LayeredSampledSA *)SA)->reconstruct_layer(layer_id);
     size += ((LayeredSampledISA *)ISA)->reconstruct_layer(layer_id);
+    size += ((LayeredSampledSA *)SA)->reconstruct_layer(layer_id);
     return size;
 }
