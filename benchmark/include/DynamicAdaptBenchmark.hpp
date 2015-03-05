@@ -157,10 +157,10 @@ public:
             time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
             time_t sleep_time = 1000 * 1000 / request_rates[stage];
             uint64_t i = 0;
-            fprintf(stderr, "Starting stage %u: request-rate = %u, duration = %u\n",
-                    stage, request_rates[stage], durations[stage]);
+            fprintf(stderr, "Starting stage %u: request-rate = %u Ops/sec, duration = %u us\n",
+                    stage, request_rates[stage], duration);
             time_t start_time = get_timestamp();
-            while((cur_time = get_timestamp()) - start_time < duration) {
+            while((cur_time = get_timestamp()) - start_time <= duration) {
                 query_client->send_get(randoms[i % randoms.size()]);
                 i++;
                 num_requests++;
