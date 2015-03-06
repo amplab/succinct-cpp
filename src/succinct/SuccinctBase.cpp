@@ -121,6 +121,11 @@ void SuccinctBase::init_bitmap_set(SuccinctBase::BitMap **B,
     (*B)->size = size_in_bits;
 }
 
+// Clear the contents of the bitmap and unset all bits
+void SuccinctBase::clear_bitmap(BitMap **B, SuccinctAllocator s_allocator) {
+    s_allocator.s_memset((*B)->bitmap, 0, BITS2BLOCKS((*B)->size) * sizeof(uint64_t));
+}
+
 void SuccinctBase::destroy_bitmap(SuccinctBase::BitMap **B,
                                     SuccinctAllocator s_allocator) {
     s_allocator.s_free((*B)->bitmap);
