@@ -241,6 +241,8 @@ public:
             }
             // Sleep if there is still time left
             if((cur_time = get_timestamp()) - start_time < duration) {
+                fprintf(stderr, "Done with layer creations for stage %u, took %llu us, sleeping for %llu us.\n", 
+                    stage, (cur_time - start_time), (duration - (cur_time - start_time)));
                 usleep(duration - (cur_time - start_time));
             }
         }
@@ -269,6 +271,8 @@ public:
             }
             // Sleep if there is still time left
             if((cur_time = get_timestamp()) - start_time < duration) {
+                fprintf(stderr, "Done with layer deletions for stage %u, took %llu us, sleeping for %llu us.\n", 
+                    stage, (cur_time - start_time), (duration - (cur_time - start_time)));
                 usleep(duration - (cur_time - start_time));
             }
         }
