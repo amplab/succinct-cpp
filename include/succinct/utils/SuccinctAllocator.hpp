@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 
 class SuccinctAllocator {
 
