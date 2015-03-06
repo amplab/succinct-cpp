@@ -227,7 +227,7 @@ public:
         time_t cur_time;
 
         for(size_t stage = 0; stage < layers_to_create.size(); stage++) {
-            time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
+            time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t start_time = get_timestamp();
             for(size_t i = 0; i < layers_to_create[stage].size(); i++) {
                 try {
@@ -254,7 +254,7 @@ public:
         time_t cur_time;
 
         for(size_t stage = 0; stage < layers_to_delete.size(); stage++) {
-            time_t duration = durations[stage] * 1000 * 1000;   // Seconds to microseconds
+            time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t start_time = get_timestamp();
             for(size_t i = 0; i < layers_to_delete[stage].size(); i++) {
                 try {
