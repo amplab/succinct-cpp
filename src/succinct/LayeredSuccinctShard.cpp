@@ -37,7 +37,6 @@ size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
 void LayeredSuccinctShard::get(std::string& result, int64_t key) {
 
     if(!opportunistic) {
-        LayeredSampledISA *ISA_layered = (LayeredSampledISA *)ISA;
         result = "";
         int64_t pos = get_value_offset_pos(key);
         if(pos < 0)
@@ -60,7 +59,6 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
     }
 
     OpportunisticLayeredSampledISA *ISA_opp = (OpportunisticLayeredSampledISA *)ISA;
-    OpportunisticLayeredSampledSA *SA_opp = (OpportunisticLayeredSampledSA *)SA;
 
     result = "";
     int64_t pos = get_value_offset_pos(key);
