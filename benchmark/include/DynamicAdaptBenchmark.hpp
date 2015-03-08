@@ -71,7 +71,6 @@ private:
         }
         if(csv_entry != "-") {
             out.push_back(atoi(csv_entry.c_str()));
-            std::sort(out.begin(), out.end(), std::greater<uint32_t>());
         } else {
             assert(out.empty());
         }
@@ -96,6 +95,8 @@ private:
             durations.push_back(atoi(dur.c_str()));
             parse_csv_entry(l_add, add);
             parse_csv_entry(l_del, del);
+            std::sort(l_add.begin(), l_add.end(), std::greater<uint32_t>());
+            std::sort(l_del.begin(), l_del.end());
             layers_to_create.push_back(l_add);
             layers_to_delete.push_back(l_del);
         }
