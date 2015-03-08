@@ -14,20 +14,6 @@ private:
 #define UNMARK_FOR_CREATION(i)      CLEARBIT((this->LAYER_TO_CREATE), (i))
 #define IS_MARKED_FOR_CREATION(i)   GETBIT((this->LAYER_TO_CREATE), (i))
 
-    void display_bitmap(bitmap_t *B) {
-        for(uint32_t i = 0; i < B->size; i++) {
-            fprintf(stderr, "%llu", ACCESSBIT(B, i));
-        }
-        fprintf(stderr, "\n");
-    }
-
-    void display_layer_map() {
-        for(uint32_t i = 0; i < this->num_layers; i++) {
-            fprintf(stderr, "%llu", EXISTS_LAYER(i));
-        }
-        fprintf(stderr, "\n");
-    }
-
 public:
     OpportunisticLayeredSampledArray(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
             bitmap_t *SA, uint64_t n, SuccinctAllocator &s_allocator) :
