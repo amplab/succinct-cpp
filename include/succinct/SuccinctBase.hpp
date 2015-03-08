@@ -15,8 +15,8 @@
 #include "succinct/utils/SuccinctUtils.hpp"
 
 /* Bitmap Operations */
-#define ACCESSBIT(B, i) GETBIT(B->bitmap[(i) / 64], (i) % 64)
-#define SETBITVAL(B, i) SETBIT(B->bitmap[(i) / 64], (i) % 64)
+#define ACCESSBIT(B, i) GETBIT((B)->bitmap[(i) / 64], (i) % 64)
+#define SETBITVAL(B, i) SETBIT((B)->bitmap[(i) / 64], (i) % 64)
 
 /* Get rank operations */
 #define GETRANKL2(n)    (n >> 32)

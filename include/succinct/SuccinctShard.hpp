@@ -20,7 +20,7 @@
 #include "succinct/SuccinctCore.hpp"
 
 class SuccinctShard : public SuccinctCore {
-private:
+protected:
     std::string input_datafile;
     std::string succinct_datafile;
 
@@ -62,7 +62,7 @@ public:
 
     virtual size_t storage_size();
 
-private:
+protected:
     int64_t get_key_pos(const int64_t value_offset);
     int64_t get_value_offset_pos(const int64_t key);
 

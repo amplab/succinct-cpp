@@ -54,6 +54,10 @@ SuccinctCore::SuccinctCore(const char *filename,
             SA = new LayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
                     npa, s_allocator);
             break;
+        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+            SA = new OpportunisticLayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
+                                npa, s_allocator);
+            break;
         default:
             SA = NULL;
         }
@@ -70,6 +74,10 @@ SuccinctCore::SuccinctCore(const char *filename,
             break;
         case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
             ISA = new LayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
+                    npa, s_allocator);
+            break;
+        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+            ISA = new OpportunisticLayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
                     npa, s_allocator);
             break;
         default:
@@ -177,6 +185,10 @@ void SuccinctCore::construct(const char* filename,
         SA = new LayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
                 npa, compactSA, input_size, s_allocator);
         break;
+    case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+        SA = new OpportunisticLayeredSampledSA(sa_sampling_rate, sa_sampling_rate * sampling_range,
+                npa, compactSA, input_size, s_allocator);
+        break;
     default:
         SA = NULL;
     }
@@ -194,6 +206,10 @@ void SuccinctCore::construct(const char* filename,
         break;
     case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
         ISA = new LayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
+                npa, compactSA, input_size, s_allocator);
+        break;
+    case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+        ISA = new OpportunisticLayeredSampledISA(isa_sampling_rate, isa_sampling_rate * sampling_range,
                 npa, compactSA, input_size, s_allocator);
         break;
     default:

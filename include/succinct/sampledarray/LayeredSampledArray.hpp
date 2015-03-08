@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <map>
 #include <unistd.h>
+#include <atomic>
 
 class LayeredSampledArray : public SampledArray {
 protected:
@@ -23,7 +24,7 @@ protected:
 #define EXISTS_LAYER(i)    GETBIT((this->LAYER_MAP), (i))
 
     uint32_t num_layers;                // Number of layers (Do not serialize)
-    uint64_t LAYER_MAP;                 // Bitmap indicating which layers are stored
+    std::atomic<uint64_t> LAYER_MAP;                 // Bitmap indicating which layers are stored
     std::map<uint32_t, uint64_t> count; // Count of each layer in the sampling_ranges (Do not serialize)
     uint32_t *layer;                    // Sample offset to layer mapping (Do not serialize)
     uint64_t *layer_idx;                // Sample offset to index into layer mapping (Do not serialize)
@@ -34,7 +35,7 @@ protected:
     bitmap_t **layer_data;              // All of the layered data content
     uint8_t data_bits;                  // Width of each data entry in bits
     uint64_t original_size;             // Number of elements in original array
-    SuccinctAllocator s_allocator;
+    SuccinctAllocator s_allocator;      // Allocator for allocating memory
 
 public:
 
@@ -113,15 +114,20 @@ public:
         l->layer_idx = (i / base_sampling_rate) * count[l->layer_id] + layer_idx[layer_offset];
     }
 
-    inline void get_layer_leq(layer_t *l, int64_t i) {
+    virtual inline uint64_t get_layer_leq(layer_t *l, int64_t i) {
         int32_t layer_offset = (i / target_sampling_rate) % sampling_range;
+        uint64_t n_hops = (i % target_sampling_rate);
+        i -= n_hops;
         while(!EXISTS_LAYER(layer[layer_offset])) {
-            layer_offset--; i--;
+            layer_offset--;
+            i -= target_sampling_rate;
+            n_hops += target_sampling_rate;
             if(layer_offset < 0) layer_offset += num_layers;
             if(i < 0) i += original_size;
         }
         l->layer_id = layer[layer_offset];
         l->layer_idx = (i / base_sampling_rate) * count[l->layer_id] + layer_idx[layer_offset];
+        return n_hops;
     }
 
     inline uint32_t get_base_sampling_rate() {
@@ -148,7 +154,7 @@ public:
         return data_bits;
     }
 
-    bool is_sampled(uint64_t i) {
+    virtual bool is_sampled(uint64_t i) {
         return (i % target_sampling_rate == 0) &&
                 EXISTS_LAYER(layer[(i / target_sampling_rate) % sampling_range]);
     }
@@ -162,10 +168,11 @@ public:
                 l.layer_idx, data_bits);
     }
 
-    size_t delete_layer(uint32_t layer_id) {
+    virtual size_t delete_layer(uint32_t layer_id) {
         size_t size = 0;
         if(EXISTS_LAYER(layer_id)) {
             DELETE_LAYER(layer_id);
+            fprintf(stderr, "delete_layer: layer_id = %u, exists layer = %llu\n", layer_id, EXISTS_LAYER(layer_id));
             size = layer_data[layer_id]->size;
             usleep(10000);                      // TODO: I don't like this!
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
@@ -174,7 +181,7 @@ public:
         return size;
     }
 
-    size_t reconstruct_layer(uint32_t layer_id) {
+    virtual size_t reconstruct_layer(uint32_t layer_id) {
         size_t size = 0;
         if(!EXISTS_LAYER(layer_id)) {
             layer_data[layer_id] = new bitmap_t;
@@ -242,7 +249,8 @@ public:
 
     virtual size_t storage_size() {
         size_t tot_size = sizeof(uint64_t) + sizeof(uint8_t) + sizeof(uint64_t);
-        // TODO: Incorporate size of metadata
+        tot_size += 4 * sizeof(uint32_t) + this->num_layers * (sizeof(uint32_t) + sizeof(uint64_t));
+        tot_size += this->sampling_range * (sizeof(uint32_t) + sizeof(uint64_t));
         tot_size += sizeof(bitmap_t*) * this->num_layers;
         for(uint32_t i = 0; i < this->num_layers; i++) {
             tot_size += SuccinctBase::bitmap_size(layer_data[i]);

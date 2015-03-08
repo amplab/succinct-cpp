@@ -32,10 +32,9 @@ uint64_t LayeredSampledISA::operator[](uint64_t i) {
     assert(i < original_size);
 
     layer_t l;
-    get_layer_leq(&l, i);
+    i = get_layer_leq(&l, i);
     uint64_t pos = SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id], l.layer_idx, data_bits);
-    uint32_t layer_sampling_rate = (1 << l.layer_id) * target_sampling_rate;
-    i %= (layer_sampling_rate);
+
     while(i--) {
         pos = (*npa)[pos];
     }

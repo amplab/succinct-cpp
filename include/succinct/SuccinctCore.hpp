@@ -11,12 +11,15 @@
 
 #include "succinct/sampledarray/FlatSampledArray.hpp"
 #include "succinct/sampledarray/LayeredSampledArray.hpp"
+#include "succinct/sampledarray/OpportunisticLayeredSampledArray.hpp"
 #include "succinct/sampledarray/SampledByIndexSA.hpp"
 #include "succinct/sampledarray/SampledByIndexISA.hpp"
 #include "succinct/sampledarray/SampledByValueSA.hpp"
 #include "succinct/sampledarray/SampledByValueISA.hpp"
 #include "succinct/sampledarray/LayeredSampledSA.hpp"
 #include "succinct/sampledarray/LayeredSampledISA.hpp"
+#include "succinct/sampledarray/OpportunisticLayeredSampledSA.hpp"
+#include "succinct/sampledarray/OpportunisticLayeredSampledISA.hpp"
 
 #include "succinct/utils/divsufsortxx.hpp"
 #include "succinct/utils/divsufsortxx_utility.hpp"
@@ -56,6 +59,8 @@ public:
                 NPA::NPAEncodingScheme npa_encoding_scheme =
                         NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
                 uint32_t sampling_range = 1024);
+
+    virtual ~SuccinctCore() {}
 
     /* Lookup functions for each of the core data structures */
     // Lookup NPA at index i

@@ -64,6 +64,10 @@ uint64_t SampledByValueISA::operator [](uint64_t i) {
     return pos;
 }
 
+bool SampledByValueISA::is_sampled(uint64_t i) {
+    return i % sampling_rate == 0;
+}
+
 void SampledByValueISA::set_d_bpos(SampledByValueISA::dictionary_t *d_bpos) {
     this->d_bpos = d_bpos;
 }

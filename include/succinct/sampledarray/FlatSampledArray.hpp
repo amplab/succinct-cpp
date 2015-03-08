@@ -47,6 +47,10 @@ public:
         return sampling_rate;
     }
 
+    bool is_sampled(uint64_t i) {
+        return i % sampling_rate == 0;
+    }
+
     uint64_t size() {
         return original_size;
     }

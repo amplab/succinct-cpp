@@ -33,7 +33,8 @@ private:
     }
 
 public:
-    AdaptiveQueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate) {
+    AdaptiveQueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate,
+            uint32_t isa_sampling_rate, uint32_t sampling_range, bool opportunistic) {
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
@@ -44,6 +45,8 @@ public:
         input.close();
         this->isa_sampling_rate = isa_sampling_rate;
         this->sa_sampling_rate = sa_sampling_rate;
+        this->sampling_range = sampling_range;
+        this->opportunistic = opportunistic;
         init(0);
     }
 
@@ -51,7 +54,7 @@ public:
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new LayeredSuccinctShard(id, filename, construct, sa_sampling_rate, isa_sampling_rate);
+        fd = new LayeredSuccinctShard(id, filename, construct, sa_sampling_rate, isa_sampling_rate, sampling_range, opportunistic);
         if(construct) {
             fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
@@ -119,6 +122,8 @@ private:
     uint32_t num_keys;
     uint32_t sa_sampling_rate;
     uint32_t isa_sampling_rate;
+    uint32_t sampling_range;
+    bool opportunistic;
 };
 
 void print_usage(char *exec) {
@@ -127,7 +132,7 @@ void print_usage(char *exec) {
 
 int main(int argc, char **argv) {
 
-    if(argc < 2 || argc > 10) {
+    if(argc < 2 || argc > 12) {
         print_usage(argv[0]);
         return -1;
     }
@@ -139,8 +144,9 @@ int main(int argc, char **argv) {
     fprintf(stderr, "\n");
 
     int c;
-    uint32_t mode = 0, port = QUERY_SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32;
-    while((c = getopt(argc, argv, "m:p:s:i:")) != -1) {
+    uint32_t mode = 0, port = QUERY_SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32, sampling_range = 1024;
+    bool opportunistic = false;
+    while((c = getopt(argc, argv, "m:p:s:i:r:o")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -154,10 +160,18 @@ int main(int argc, char **argv) {
         case 'i':
             isa_sampling_rate = atoi(optarg);
             break;
+        case 'r':
+            sampling_range = atoi(optarg);
+            break;
+        case 'o':
+            opportunistic = true;
+            break;
         default:
             mode = 0;
             port = QUERY_SERVER_PORT;
+            sa_sampling_rate = 32;
             isa_sampling_rate = 32;
+            sampling_range = 1024;
         }
     }
 
@@ -169,7 +183,8 @@ int main(int argc, char **argv) {
     std::string filename = std::string(argv[optind]);
     bool construct = (mode == 0) ? true : false;
 
-    shared_ptr<AdaptiveQueryServiceHandler> handler(new AdaptiveQueryServiceHandler(filename, construct, sa_sampling_rate, isa_sampling_rate));
+    shared_ptr<AdaptiveQueryServiceHandler> handler(new AdaptiveQueryServiceHandler(filename, construct,
+            sa_sampling_rate, isa_sampling_rate, sampling_range, opportunistic));
     shared_ptr<TProcessor> processor(new AdaptiveQueryServiceProcessor(handler));
 
     try {

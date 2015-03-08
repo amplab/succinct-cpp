@@ -17,6 +17,8 @@ SamplingScheme scheme_from_opt(int opt) {
         return SamplingScheme::FLAT_SAMPLE_BY_VALUE;
     case 2:
         return SamplingScheme::LAYERED_SAMPLE_BY_INDEX;
+    case 3:
+        return SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX;
     default:
         return SamplingScheme::FLAT_SAMPLE_BY_INDEX;
     }
@@ -147,6 +149,7 @@ int main(int argc, char **argv) {
     }
 
     fprintf(stderr, "shard size = %lu\n", fd->storage_size());
+    fprintf(stderr, "sampling scheme = %u\n", scheme);
 
     if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
         if(!deleted_layers.empty()) {
@@ -161,6 +164,18 @@ int main(int argc, char **argv) {
             }
 
             fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
+        }
+    } else if(scheme == SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {
+        if(!deleted_layers.empty()) {
+            OpportunisticLayeredSampledArray *SA = (OpportunisticLayeredSampledArray *)fd->getSA();
+            OpportunisticLayeredSampledArray *ISA = (OpportunisticLayeredSampledArray *)fd->getISA();
+
+            size_t deleted_size = 0;
+            for(size_t i = 0; i < deleted_layers.size(); i++) {
+                uint32_t layer_id = deleted_layers.at(i);
+                deleted_size += SA->delete_layer(layer_id);
+                deleted_size += ISA->delete_layer(layer_id);
+            }
         }
     }
 
@@ -188,27 +203,37 @@ int main(int argc, char **argv) {
     } else if(type == "throughput-search") {
         s_bench.benchmark_search_throughput();
     } else if(type == "reconstruct-sa") {
-        if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+        if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX &&
+                scheme != SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {
             fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
             return 0;
         }
-        LayeredSampledSA *SA = (LayeredSampledSA *)fd->getSA();
+        LayeredSampledArray *SA = (LayeredSampledArray *)fd->getSA();
         for(uint32_t i = 0; i < created_layers.size(); i++) {
             uint64_t start_time = Benchmark::get_timestamp();
-            SA->reconstruct_layer(created_layers.at(i));
+            if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+                ((LayeredSampledSA *)SA)->reconstruct_layer(created_layers.at(i));
+            } else {
+                ((OpportunisticLayeredSampledSA *)SA)->reconstruct_layer(created_layers.at(i));
+            }
             uint64_t end_time = Benchmark::get_timestamp();
             fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
                     created_layers.at(i), end_time - start_time);
         }
     } else if(type == "reconstruct-isa") {
-        if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+        if(scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX &&
+                scheme != SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {
             fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
             return 0;
         }
-        LayeredSampledISA *ISA = (LayeredSampledISA *)fd->getISA();
+        LayeredSampledArray *ISA = (LayeredSampledArray *)fd->getISA();
         for(uint32_t i = 0; i < created_layers.size(); i++) {
             uint64_t start_time = Benchmark::get_timestamp();
-            ISA->reconstruct_layer(created_layers.at(i));
+            if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+                ((LayeredSampledISA *)ISA)->reconstruct_layer(created_layers.at(i));
+            } else {
+                ((OpportunisticLayeredSampledISA *)ISA)->reconstruct_layer(created_layers.at(i));
+            }
             uint64_t end_time = Benchmark::get_timestamp();
             fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
                     created_layers.at(i), end_time - start_time);

@@ -21,6 +21,8 @@ public:
 
     virtual uint32_t get_sampling_rate() = 0;
 
+    virtual bool is_sampled(uint64_t i) = 0;
+
     virtual size_t storage_size() = 0;
 };
 

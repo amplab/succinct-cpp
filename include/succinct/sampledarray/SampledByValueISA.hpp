@@ -20,6 +20,9 @@ public:
     // Access element at index i
     virtual uint64_t operator[](uint64_t i);
 
+    // Is the value sampled at index i
+    virtual bool is_sampled(uint64_t i);
+
     // Set d_bpos
     void set_d_bpos(dictionary_t *d_bpos);
 
