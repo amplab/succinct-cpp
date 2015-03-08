@@ -159,8 +159,8 @@ asbench: succinct-thrift-components
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(BENCHBUILDDIR) $(LIBDIR)/*";\
-		$(RM) -r $(SUCCINCTBUILDDIR) $(BENCHBUILDDIR) $(LIBDIR)/*
+	@echo " $(RM) -r $(SUCCINCTBUILDDIR) $(THRIFTBUILDDIR) $(BENCHBUILDDIR) $(SUCCINCTTARGET) $(THRIFTTARGET_AS) $(THRIFTTARGET_QS) $(THRIFTTARGET_MS) $(THRIFTTARGET_SS) $(THRIFTTARGET_SC)";\
+		$(RM) -r $(SUCCINCTBUILDDIR) $(THRIFTBUILDDIR) $(BENCHBUILDDIR) $(SUCCINCTTARGET) $(THRIFTTARGET_AS) $(THRIFTTARGET_QS) $(THRIFTTARGET_MS) $(THRIFTTARGET_SS) $(THRIFTTARGET_SC)
 	@echo "Cleaning thrift..."
 	@echo " cd external/thrift-0.9.1; ./cleanup.sh";\
 		cd external/thrift-0.9.1; ./cleanup.sh
