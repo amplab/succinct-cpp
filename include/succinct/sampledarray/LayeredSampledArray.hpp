@@ -172,7 +172,6 @@ public:
         size_t size = 0;
         if(EXISTS_LAYER(layer_id)) {
             DELETE_LAYER(layer_id);
-            fprintf(stderr, "delete_layer: layer_id = %u, exists layer = %llu\n", layer_id, EXISTS_LAYER(layer_id));
             size = layer_data[layer_id]->size;
             usleep(10000);                      // TODO: I don't like this!
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
