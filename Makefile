@@ -68,8 +68,10 @@ succinct-thrift: build-thrift succinct-thrift-components
 succinct-thrift-components: gen-thrift adaptive-query-server query-server succinct-server succinct-master succinct-client
 
 gen-thrift:
-	@echo " ./bin/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift"; ./bin/thrift -I include/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift
-	@echo " $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/"; $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/
+	@echo " ./bin/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift";\
+		./bin/thrift -I include/thrift -gen cpp:include_prefix -out thrift thrift/succinct.thrift
+	@echo " $(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/";\
+		$(MV) thrift/*.cpp src/thrift/ && mv thrift/*.h include/thrift/
 	@echo " $(RM) src/thrift/*skeleton*"; $(RM) src/thrift/*skeleton*
 
 build-thrift:
