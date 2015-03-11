@@ -1,4 +1,4 @@
-#include "../../include/succinct/SuccinctShard.hpp"
+#include "succinct/SuccinctShard.hpp"
 
 SuccinctShard::SuccinctShard(uint32_t id, std::string filename, bool construct, uint32_t sa_sampling_rate,
         uint32_t isa_sampling_rate, uint32_t npa_sampling_rate, SamplingScheme sa_sampling_scheme,
@@ -197,7 +197,7 @@ void SuccinctShard::get(std::string& result, int64_t key) {
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
         uint64_t next_pos = start + i + 1;
-        if(ISA->is_sampled(next_pos)) {
+        if(next_pos % ISA->get_sampling_rate() == 0) {
             idx = lookupISA(next_pos);
         } else {
             idx = lookupNPA(idx);
