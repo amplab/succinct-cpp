@@ -79,6 +79,7 @@ public:
                 SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
                 SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
                 this->num_sampled_values++;
+                assert(val == SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id], l.layer_idx, data_bits));
                 return true;
             }
         }
@@ -141,13 +142,6 @@ public:
     }
 
     uint64_t get_num_sampled_values() {
-        uint64_t count = 0;
-        for(uint32_t i = 0; i< num_layers; i++) {
-            for(uint64_t j = 0; j < is_layer_value_sampled[i]->size; j++) {
-                count += IS_LAYER_VAL_SAMPLED(i, j);
-            }
-        }
-        fprintf(stderr, "Count = %lu\n", count);
         return this->num_sampled_values;
     }
 };
