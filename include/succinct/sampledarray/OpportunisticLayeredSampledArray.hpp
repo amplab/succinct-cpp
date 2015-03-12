@@ -144,7 +144,7 @@ public:
         uint64_t count = 0;
         for(uint32_t i = 0; i< num_layers; i++) {
             for(uint64_t j = 0; j < is_layer_value_sampled[i]->size; j++) {
-                count++;
+                count += IS_LAYER_VAL_SAMPLED(i, j);
             }
         }
         fprintf(stderr, "Count = %lu\n", count);
