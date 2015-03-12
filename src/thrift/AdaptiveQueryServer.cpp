@@ -1,5 +1,5 @@
 #include "thrift/AdaptiveQueryService.h"
-#include "thrift/succinct_constants.h"
+#include "thrift/adaptive_constants.h"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "../../include/succinct/LayeredSuccinctShard.hpp"
+#include "succinct/LayeredSuccinctShard.hpp"
 #include "thrift/ports.h"
 
 using namespace ::apache::thrift;
@@ -34,7 +34,7 @@ private:
 
 public:
     AdaptiveQueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate,
-            uint32_t isa_sampling_rate, uint32_t sampling_range, bool opportunistic) {
+            uint32_t isa_sampling_rate, uint32_t sampling_range, bool opportunistic, bool standalone) {
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
@@ -47,7 +47,8 @@ public:
         this->sa_sampling_rate = sa_sampling_rate;
         this->sampling_range = sampling_range;
         this->opportunistic = opportunistic;
-        init(0);
+        if(standalone)
+            init(0);
     }
 
     int32_t init(int32_t id) {
@@ -132,7 +133,7 @@ void print_usage(char *exec) {
 
 int main(int argc, char **argv) {
 
-    if(argc < 2 || argc > 12) {
+    if(argc < 2 || argc > 14) {
         print_usage(argv[0]);
         return -1;
     }
@@ -145,8 +146,8 @@ int main(int argc, char **argv) {
 
     int c;
     uint32_t mode = 0, port = QUERY_SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32, sampling_range = 1024;
-    bool opportunistic = false;
-    while((c = getopt(argc, argv, "m:p:s:i:r:o")) != -1) {
+    bool opportunistic = false, standalone = false;
+    while((c = getopt(argc, argv, "m:p:s:i:r:od")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -166,6 +167,9 @@ int main(int argc, char **argv) {
         case 'o':
             opportunistic = true;
             break;
+        case 'd':
+            standalone = true;
+            break;
         default:
             mode = 0;
             port = QUERY_SERVER_PORT;
@@ -184,7 +188,7 @@ int main(int argc, char **argv) {
     bool construct = (mode == 0) ? true : false;
 
     shared_ptr<AdaptiveQueryServiceHandler> handler(new AdaptiveQueryServiceHandler(filename, construct,
-            sa_sampling_rate, isa_sampling_rate, sampling_range, opportunistic));
+            sa_sampling_rate, isa_sampling_rate, sampling_range, opportunistic, standalone));
     shared_ptr<TProcessor> processor(new AdaptiveQueryServiceProcessor(handler));
 
     try {

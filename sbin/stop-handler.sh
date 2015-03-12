@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep qhandler`"
+pids="`pgrep shandler`"
 
 for pid in $pids
 do

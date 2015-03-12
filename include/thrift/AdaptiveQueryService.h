@@ -8,7 +8,7 @@
 #define AdaptiveQueryService_H
 
 #include <thrift/TDispatchProcessor.h>
-#include "thrift/succinct_types.h"
+#include "thrift/adaptive_types.h"
 
 
 

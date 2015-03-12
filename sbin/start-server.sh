@@ -34,4 +34,4 @@ fi
 
 port=$(( $QUERY_SERVER_PORT + $2 ))
 
-nohup "$bin/qserver" -m 1 -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &
+nohup "$bin/sserver" -m 1 -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &

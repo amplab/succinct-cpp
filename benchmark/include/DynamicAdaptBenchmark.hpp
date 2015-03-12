@@ -37,7 +37,7 @@ private:
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
         for(count_t i = 0; i < q_cnt; i++) {
-            randoms.push_back(rand() % query_client->get_num_keys());
+            randoms.push_back(rand() % q_cnt);
         }
     }
 

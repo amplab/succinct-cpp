@@ -616,15 +616,15 @@ uint32_t AdaptiveQueryService_search_result::read(::apache::thrift::protocol::TP
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             this->success.clear();
-            uint32_t _size39;
-            ::apache::thrift::protocol::TType _etype42;
-            xfer += iprot->readSetBegin(_etype42, _size39);
-            uint32_t _i43;
-            for (_i43 = 0; _i43 < _size39; ++_i43)
+            uint32_t _size26;
+            ::apache::thrift::protocol::TType _etype29;
+            xfer += iprot->readSetBegin(_etype29, _size26);
+            uint32_t _i30;
+            for (_i30 = 0; _i30 < _size26; ++_i30)
             {
-              int64_t _elem44;
-              xfer += iprot->readI64(_elem44);
-              this->success.insert(_elem44);
+              int64_t _elem31;
+              xfer += iprot->readI64(_elem31);
+              this->success.insert(_elem31);
             }
             xfer += iprot->readSetEnd();
           }
@@ -655,10 +655,10 @@ uint32_t AdaptiveQueryService_search_result::write(::apache::thrift::protocol::T
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
     {
       xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::set<int64_t> ::const_iterator _iter45;
-      for (_iter45 = this->success.begin(); _iter45 != this->success.end(); ++_iter45)
+      std::set<int64_t> ::const_iterator _iter32;
+      for (_iter32 = this->success.begin(); _iter32 != this->success.end(); ++_iter32)
       {
-        xfer += oprot->writeI64((*_iter45));
+        xfer += oprot->writeI64((*_iter32));
       }
       xfer += oprot->writeSetEnd();
     }
@@ -693,15 +693,15 @@ uint32_t AdaptiveQueryService_search_presult::read(::apache::thrift::protocol::T
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             (*(this->success)).clear();
-            uint32_t _size46;
-            ::apache::thrift::protocol::TType _etype49;
-            xfer += iprot->readSetBegin(_etype49, _size46);
-            uint32_t _i50;
-            for (_i50 = 0; _i50 < _size46; ++_i50)
+            uint32_t _size33;
+            ::apache::thrift::protocol::TType _etype36;
+            xfer += iprot->readSetBegin(_etype36, _size33);
+            uint32_t _i37;
+            for (_i37 = 0; _i37 < _size33; ++_i37)
             {
-              int64_t _elem51;
-              xfer += iprot->readI64(_elem51);
-              (*(this->success)).insert(_elem51);
+              int64_t _elem38;
+              xfer += iprot->readI64(_elem38);
+              (*(this->success)).insert(_elem38);
             }
             xfer += iprot->readSetEnd();
           }
