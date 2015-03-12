@@ -530,43 +530,6 @@ class AdaptiveSuccinctService_get_request_pargs {
 
 };
 
-
-class AdaptiveSuccinctService_get_request_result {
- public:
-
-  AdaptiveSuccinctService_get_request_result() {
-  }
-
-  virtual ~AdaptiveSuccinctService_get_request_result() throw() {}
-
-
-  bool operator == (const AdaptiveSuccinctService_get_request_result & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_get_request_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_get_request_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_get_request_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_get_request_presult() throw() {}
-
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
 typedef struct _AdaptiveSuccinctService_get_response_args__isset {
   _AdaptiveSuccinctService_get_response_args__isset() : key(false) {}
   bool key;
@@ -1019,7 +982,6 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   int32_t recv_initialize();
   void get_request(const int64_t key);
   void send_get_request(const int64_t key);
-  void recv_get_request();
   void get_response(std::string& _return, const int64_t key);
   void send_get_response(const int64_t key);
   void recv_get_response(std::string& _return);

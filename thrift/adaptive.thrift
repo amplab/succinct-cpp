@@ -5,7 +5,7 @@ service AdaptiveSuccinctService {
     i32 start_servers(),
     i32 initialize(1:i32 mode),
 
-    void get_request(1:i64 key),
+    oneway void get_request(1:i64 key),
     string get_response(1:i64 key),
    
     i32 get_num_shards(),
