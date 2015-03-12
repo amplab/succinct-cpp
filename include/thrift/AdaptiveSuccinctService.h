@@ -15,23 +15,15 @@
 class AdaptiveSuccinctServiceIf {
  public:
   virtual ~AdaptiveSuccinctServiceIf() {}
-  virtual int32_t connect_to_handlers() = 0;
-  virtual int32_t disconnect_from_handlers() = 0;
   virtual int32_t connect_to_local_servers() = 0;
   virtual int32_t disconnect_from_local_servers() = 0;
   virtual int32_t start_servers() = 0;
   virtual int32_t initialize(const int32_t mode) = 0;
-  virtual void get(std::string& _return, const int64_t key) = 0;
-  virtual void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
-  virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
-  virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) = 0;
-  virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void search_local(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual int64_t count(const std::string& query) = 0;
-  virtual int64_t count_local(const std::string& query) = 0;
-  virtual int32_t get_num_hosts() = 0;
-  virtual int32_t get_num_shards(const int32_t host_id) = 0;
+  virtual void get_request(const int64_t key) = 0;
+  virtual void get_response(std::string& _return, const int64_t key) = 0;
+  virtual int32_t get_num_shards() = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
+  virtual int64_t get_queue_length(const int32_t shard_id) = 0;
 };
 
 class AdaptiveSuccinctServiceIfFactory {
@@ -61,14 +53,6 @@ class AdaptiveSuccinctServiceIfSingletonFactory : virtual public AdaptiveSuccinc
 class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
  public:
   virtual ~AdaptiveSuccinctServiceNull() {}
-  int32_t connect_to_handlers() {
-    int32_t _return = 0;
-    return _return;
-  }
-  int32_t disconnect_from_handlers() {
-    int32_t _return = 0;
-    return _return;
-  }
   int32_t connect_to_local_servers() {
     int32_t _return = 0;
     return _return;
@@ -85,37 +69,13 @@ class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
     int32_t _return = 0;
     return _return;
   }
-  void get(std::string& /* _return */, const int64_t /* key */) {
+  void get_request(const int64_t /* key */) {
     return;
   }
-  void get_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
+  void get_response(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
-  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
-    return;
-  }
-  void access_local(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
-    return;
-  }
-  void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
-    return;
-  }
-  void search_local(std::set<int64_t> & /* _return */, const std::string& /* query */) {
-    return;
-  }
-  int64_t count(const std::string& /* query */) {
-    int64_t _return = 0;
-    return _return;
-  }
-  int64_t count_local(const std::string& /* query */) {
-    int64_t _return = 0;
-    return _return;
-  }
-  int32_t get_num_hosts() {
-    int32_t _return = 0;
-    return _return;
-  }
-  int32_t get_num_shards(const int32_t /* host_id */) {
+  int32_t get_num_shards() {
     int32_t _return = 0;
     return _return;
   }
@@ -123,194 +83,10 @@ class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
     int32_t _return = 0;
     return _return;
   }
-};
-
-
-class AdaptiveSuccinctService_connect_to_handlers_args {
- public:
-
-  AdaptiveSuccinctService_connect_to_handlers_args() {
+  int64_t get_queue_length(const int32_t /* shard_id */) {
+    int64_t _return = 0;
+    return _return;
   }
-
-  virtual ~AdaptiveSuccinctService_connect_to_handlers_args() throw() {}
-
-
-  bool operator == (const AdaptiveSuccinctService_connect_to_handlers_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_connect_to_handlers_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_connect_to_handlers_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_connect_to_handlers_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_connect_to_handlers_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_connect_to_handlers_result__isset {
-  _AdaptiveSuccinctService_connect_to_handlers_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_connect_to_handlers_result__isset;
-
-class AdaptiveSuccinctService_connect_to_handlers_result {
- public:
-
-  AdaptiveSuccinctService_connect_to_handlers_result() : success(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_connect_to_handlers_result() throw() {}
-
-  int32_t success;
-
-  _AdaptiveSuccinctService_connect_to_handlers_result__isset __isset;
-
-  void __set_success(const int32_t val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_connect_to_handlers_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_connect_to_handlers_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_connect_to_handlers_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_connect_to_handlers_presult__isset {
-  _AdaptiveSuccinctService_connect_to_handlers_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_connect_to_handlers_presult__isset;
-
-class AdaptiveSuccinctService_connect_to_handlers_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_connect_to_handlers_presult() throw() {}
-
-  int32_t* success;
-
-  _AdaptiveSuccinctService_connect_to_handlers_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class AdaptiveSuccinctService_disconnect_from_handlers_args {
- public:
-
-  AdaptiveSuccinctService_disconnect_from_handlers_args() {
-  }
-
-  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_args() throw() {}
-
-
-  bool operator == (const AdaptiveSuccinctService_disconnect_from_handlers_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_disconnect_from_handlers_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_disconnect_from_handlers_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_disconnect_from_handlers_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_disconnect_from_handlers_result__isset {
-  _AdaptiveSuccinctService_disconnect_from_handlers_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_disconnect_from_handlers_result__isset;
-
-class AdaptiveSuccinctService_disconnect_from_handlers_result {
- public:
-
-  AdaptiveSuccinctService_disconnect_from_handlers_result() : success(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_result() throw() {}
-
-  int32_t success;
-
-  _AdaptiveSuccinctService_disconnect_from_handlers_result__isset __isset;
-
-  void __set_success(const int32_t val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_disconnect_from_handlers_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_disconnect_from_handlers_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_disconnect_from_handlers_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset {
-  _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset;
-
-class AdaptiveSuccinctService_disconnect_from_handlers_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_presult() throw() {}
-
-  int32_t* success;
-
-  _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
 };
 
 
@@ -703,38 +479,38 @@ class AdaptiveSuccinctService_initialize_presult {
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_args__isset {
-  _AdaptiveSuccinctService_get_args__isset() : key(false) {}
+typedef struct _AdaptiveSuccinctService_get_request_args__isset {
+  _AdaptiveSuccinctService_get_request_args__isset() : key(false) {}
   bool key;
-} _AdaptiveSuccinctService_get_args__isset;
+} _AdaptiveSuccinctService_get_request_args__isset;
 
-class AdaptiveSuccinctService_get_args {
+class AdaptiveSuccinctService_get_request_args {
  public:
 
-  AdaptiveSuccinctService_get_args() : key(0) {
+  AdaptiveSuccinctService_get_request_args() : key(0) {
   }
 
-  virtual ~AdaptiveSuccinctService_get_args() throw() {}
+  virtual ~AdaptiveSuccinctService_get_request_args() throw() {}
 
   int64_t key;
 
-  _AdaptiveSuccinctService_get_args__isset __isset;
+  _AdaptiveSuccinctService_get_request_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
   }
 
-  bool operator == (const AdaptiveSuccinctService_get_args & rhs) const
+  bool operator == (const AdaptiveSuccinctService_get_request_args & rhs) const
   {
     if (!(key == rhs.key))
       return false;
     return true;
   }
-  bool operator != (const AdaptiveSuccinctService_get_args &rhs) const {
+  bool operator != (const AdaptiveSuccinctService_get_request_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AdaptiveSuccinctService_get_args & ) const;
+  bool operator < (const AdaptiveSuccinctService_get_request_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -742,11 +518,11 @@ class AdaptiveSuccinctService_get_args {
 };
 
 
-class AdaptiveSuccinctService_get_pargs {
+class AdaptiveSuccinctService_get_request_pargs {
  public:
 
 
-  virtual ~AdaptiveSuccinctService_get_pargs() throw() {}
+  virtual ~AdaptiveSuccinctService_get_request_pargs() throw() {}
 
   const int64_t* key;
 
@@ -754,103 +530,75 @@ class AdaptiveSuccinctService_get_pargs {
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_result__isset {
-  _AdaptiveSuccinctService_get_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_get_result__isset;
 
-class AdaptiveSuccinctService_get_result {
+class AdaptiveSuccinctService_get_request_result {
  public:
 
-  AdaptiveSuccinctService_get_result() : success() {
+  AdaptiveSuccinctService_get_request_result() {
   }
 
-  virtual ~AdaptiveSuccinctService_get_result() throw() {}
+  virtual ~AdaptiveSuccinctService_get_request_result() throw() {}
 
-  std::string success;
 
-  _AdaptiveSuccinctService_get_result__isset __isset;
-
-  void __set_success(const std::string& val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_get_result & rhs) const
+  bool operator == (const AdaptiveSuccinctService_get_request_result & /* rhs */) const
   {
-    if (!(success == rhs.success))
-      return false;
     return true;
   }
-  bool operator != (const AdaptiveSuccinctService_get_result &rhs) const {
+  bool operator != (const AdaptiveSuccinctService_get_request_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AdaptiveSuccinctService_get_result & ) const;
+  bool operator < (const AdaptiveSuccinctService_get_request_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_presult__isset {
-  _AdaptiveSuccinctService_get_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_get_presult__isset;
 
-class AdaptiveSuccinctService_get_presult {
+class AdaptiveSuccinctService_get_request_presult {
  public:
 
 
-  virtual ~AdaptiveSuccinctService_get_presult() throw() {}
+  virtual ~AdaptiveSuccinctService_get_request_presult() throw() {}
 
-  std::string* success;
-
-  _AdaptiveSuccinctService_get_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_local_args__isset {
-  _AdaptiveSuccinctService_get_local_args__isset() : qserver_id(false), key(false) {}
-  bool qserver_id;
+typedef struct _AdaptiveSuccinctService_get_response_args__isset {
+  _AdaptiveSuccinctService_get_response_args__isset() : key(false) {}
   bool key;
-} _AdaptiveSuccinctService_get_local_args__isset;
+} _AdaptiveSuccinctService_get_response_args__isset;
 
-class AdaptiveSuccinctService_get_local_args {
+class AdaptiveSuccinctService_get_response_args {
  public:
 
-  AdaptiveSuccinctService_get_local_args() : qserver_id(0), key(0) {
+  AdaptiveSuccinctService_get_response_args() : key(0) {
   }
 
-  virtual ~AdaptiveSuccinctService_get_local_args() throw() {}
+  virtual ~AdaptiveSuccinctService_get_response_args() throw() {}
 
-  int32_t qserver_id;
   int64_t key;
 
-  _AdaptiveSuccinctService_get_local_args__isset __isset;
-
-  void __set_qserver_id(const int32_t val) {
-    qserver_id = val;
-  }
+  _AdaptiveSuccinctService_get_response_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
   }
 
-  bool operator == (const AdaptiveSuccinctService_get_local_args & rhs) const
+  bool operator == (const AdaptiveSuccinctService_get_response_args & rhs) const
   {
-    if (!(qserver_id == rhs.qserver_id))
-      return false;
     if (!(key == rhs.key))
       return false;
     return true;
   }
-  bool operator != (const AdaptiveSuccinctService_get_local_args &rhs) const {
+  bool operator != (const AdaptiveSuccinctService_get_response_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AdaptiveSuccinctService_get_local_args & ) const;
+  bool operator < (const AdaptiveSuccinctService_get_response_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -858,888 +606,87 @@ class AdaptiveSuccinctService_get_local_args {
 };
 
 
-class AdaptiveSuccinctService_get_local_pargs {
+class AdaptiveSuccinctService_get_response_pargs {
  public:
 
 
-  virtual ~AdaptiveSuccinctService_get_local_pargs() throw() {}
+  virtual ~AdaptiveSuccinctService_get_response_pargs() throw() {}
 
-  const int32_t* qserver_id;
   const int64_t* key;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_local_result__isset {
-  _AdaptiveSuccinctService_get_local_result__isset() : success(false) {}
+typedef struct _AdaptiveSuccinctService_get_response_result__isset {
+  _AdaptiveSuccinctService_get_response_result__isset() : success(false) {}
   bool success;
-} _AdaptiveSuccinctService_get_local_result__isset;
+} _AdaptiveSuccinctService_get_response_result__isset;
 
-class AdaptiveSuccinctService_get_local_result {
+class AdaptiveSuccinctService_get_response_result {
  public:
 
-  AdaptiveSuccinctService_get_local_result() : success() {
+  AdaptiveSuccinctService_get_response_result() : success() {
   }
 
-  virtual ~AdaptiveSuccinctService_get_local_result() throw() {}
+  virtual ~AdaptiveSuccinctService_get_response_result() throw() {}
 
   std::string success;
 
-  _AdaptiveSuccinctService_get_local_result__isset __isset;
+  _AdaptiveSuccinctService_get_response_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const AdaptiveSuccinctService_get_local_result & rhs) const
+  bool operator == (const AdaptiveSuccinctService_get_response_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const AdaptiveSuccinctService_get_local_result &rhs) const {
+  bool operator != (const AdaptiveSuccinctService_get_response_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AdaptiveSuccinctService_get_local_result & ) const;
+  bool operator < (const AdaptiveSuccinctService_get_response_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_local_presult__isset {
-  _AdaptiveSuccinctService_get_local_presult__isset() : success(false) {}
+typedef struct _AdaptiveSuccinctService_get_response_presult__isset {
+  _AdaptiveSuccinctService_get_response_presult__isset() : success(false) {}
   bool success;
-} _AdaptiveSuccinctService_get_local_presult__isset;
+} _AdaptiveSuccinctService_get_response_presult__isset;
 
-class AdaptiveSuccinctService_get_local_presult {
+class AdaptiveSuccinctService_get_response_presult {
  public:
 
 
-  virtual ~AdaptiveSuccinctService_get_local_presult() throw() {}
+  virtual ~AdaptiveSuccinctService_get_response_presult() throw() {}
 
   std::string* success;
 
-  _AdaptiveSuccinctService_get_local_presult__isset __isset;
+  _AdaptiveSuccinctService_get_response_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _AdaptiveSuccinctService_access_args__isset {
-  _AdaptiveSuccinctService_access_args__isset() : key(false), offset(false), len(false) {}
-  bool key;
-  bool offset;
-  bool len;
-} _AdaptiveSuccinctService_access_args__isset;
-
-class AdaptiveSuccinctService_access_args {
- public:
-
-  AdaptiveSuccinctService_access_args() : key(0), offset(0), len(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_access_args() throw() {}
-
-  int64_t key;
-  int32_t offset;
-  int32_t len;
-
-  _AdaptiveSuccinctService_access_args__isset __isset;
-
-  void __set_key(const int64_t val) {
-    key = val;
-  }
-
-  void __set_offset(const int32_t val) {
-    offset = val;
-  }
-
-  void __set_len(const int32_t val) {
-    len = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_access_args & rhs) const
-  {
-    if (!(key == rhs.key))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    if (!(len == rhs.len))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_access_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_access_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_access_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_access_pargs() throw() {}
-
-  const int64_t* key;
-  const int32_t* offset;
-  const int32_t* len;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_access_result__isset {
-  _AdaptiveSuccinctService_access_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_access_result__isset;
-
-class AdaptiveSuccinctService_access_result {
- public:
-
-  AdaptiveSuccinctService_access_result() : success() {
-  }
-
-  virtual ~AdaptiveSuccinctService_access_result() throw() {}
-
-  std::string success;
-
-  _AdaptiveSuccinctService_access_result__isset __isset;
-
-  void __set_success(const std::string& val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_access_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_access_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_access_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_access_presult__isset {
-  _AdaptiveSuccinctService_access_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_access_presult__isset;
-
-class AdaptiveSuccinctService_access_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_access_presult() throw() {}
-
-  std::string* success;
-
-  _AdaptiveSuccinctService_access_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_access_local_args__isset {
-  _AdaptiveSuccinctService_access_local_args__isset() : qserver_id(false), key(false), offset(false), len(false) {}
-  bool qserver_id;
-  bool key;
-  bool offset;
-  bool len;
-} _AdaptiveSuccinctService_access_local_args__isset;
-
-class AdaptiveSuccinctService_access_local_args {
- public:
-
-  AdaptiveSuccinctService_access_local_args() : qserver_id(0), key(0), offset(0), len(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_access_local_args() throw() {}
-
-  int32_t qserver_id;
-  int64_t key;
-  int32_t offset;
-  int32_t len;
-
-  _AdaptiveSuccinctService_access_local_args__isset __isset;
-
-  void __set_qserver_id(const int32_t val) {
-    qserver_id = val;
-  }
-
-  void __set_key(const int64_t val) {
-    key = val;
-  }
-
-  void __set_offset(const int32_t val) {
-    offset = val;
-  }
-
-  void __set_len(const int32_t val) {
-    len = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_access_local_args & rhs) const
-  {
-    if (!(qserver_id == rhs.qserver_id))
-      return false;
-    if (!(key == rhs.key))
-      return false;
-    if (!(offset == rhs.offset))
-      return false;
-    if (!(len == rhs.len))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_access_local_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_access_local_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_access_local_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_access_local_pargs() throw() {}
-
-  const int32_t* qserver_id;
-  const int64_t* key;
-  const int32_t* offset;
-  const int32_t* len;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_access_local_result__isset {
-  _AdaptiveSuccinctService_access_local_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_access_local_result__isset;
-
-class AdaptiveSuccinctService_access_local_result {
- public:
-
-  AdaptiveSuccinctService_access_local_result() : success() {
-  }
-
-  virtual ~AdaptiveSuccinctService_access_local_result() throw() {}
-
-  std::string success;
-
-  _AdaptiveSuccinctService_access_local_result__isset __isset;
-
-  void __set_success(const std::string& val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_access_local_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_access_local_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_access_local_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_access_local_presult__isset {
-  _AdaptiveSuccinctService_access_local_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_access_local_presult__isset;
-
-class AdaptiveSuccinctService_access_local_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_access_local_presult() throw() {}
-
-  std::string* success;
-
-  _AdaptiveSuccinctService_access_local_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_args__isset {
-  _AdaptiveSuccinctService_search_args__isset() : query(false) {}
-  bool query;
-} _AdaptiveSuccinctService_search_args__isset;
-
-class AdaptiveSuccinctService_search_args {
- public:
-
-  AdaptiveSuccinctService_search_args() : query() {
-  }
-
-  virtual ~AdaptiveSuccinctService_search_args() throw() {}
-
-  std::string query;
-
-  _AdaptiveSuccinctService_search_args__isset __isset;
-
-  void __set_query(const std::string& val) {
-    query = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_search_args & rhs) const
-  {
-    if (!(query == rhs.query))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_search_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_search_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_search_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_search_pargs() throw() {}
-
-  const std::string* query;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_result__isset {
-  _AdaptiveSuccinctService_search_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_search_result__isset;
-
-class AdaptiveSuccinctService_search_result {
- public:
-
-  AdaptiveSuccinctService_search_result() {
-  }
-
-  virtual ~AdaptiveSuccinctService_search_result() throw() {}
-
-  std::set<int64_t>  success;
-
-  _AdaptiveSuccinctService_search_result__isset __isset;
-
-  void __set_success(const std::set<int64_t> & val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_search_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_search_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_search_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_presult__isset {
-  _AdaptiveSuccinctService_search_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_search_presult__isset;
-
-class AdaptiveSuccinctService_search_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_search_presult() throw() {}
-
-  std::set<int64_t> * success;
-
-  _AdaptiveSuccinctService_search_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_local_args__isset {
-  _AdaptiveSuccinctService_search_local_args__isset() : query(false) {}
-  bool query;
-} _AdaptiveSuccinctService_search_local_args__isset;
-
-class AdaptiveSuccinctService_search_local_args {
- public:
-
-  AdaptiveSuccinctService_search_local_args() : query() {
-  }
-
-  virtual ~AdaptiveSuccinctService_search_local_args() throw() {}
-
-  std::string query;
-
-  _AdaptiveSuccinctService_search_local_args__isset __isset;
-
-  void __set_query(const std::string& val) {
-    query = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_search_local_args & rhs) const
-  {
-    if (!(query == rhs.query))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_search_local_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_search_local_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_search_local_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_search_local_pargs() throw() {}
-
-  const std::string* query;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_local_result__isset {
-  _AdaptiveSuccinctService_search_local_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_search_local_result__isset;
-
-class AdaptiveSuccinctService_search_local_result {
- public:
-
-  AdaptiveSuccinctService_search_local_result() {
-  }
-
-  virtual ~AdaptiveSuccinctService_search_local_result() throw() {}
-
-  std::set<int64_t>  success;
-
-  _AdaptiveSuccinctService_search_local_result__isset __isset;
-
-  void __set_success(const std::set<int64_t> & val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_search_local_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_search_local_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_search_local_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_search_local_presult__isset {
-  _AdaptiveSuccinctService_search_local_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_search_local_presult__isset;
-
-class AdaptiveSuccinctService_search_local_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_search_local_presult() throw() {}
-
-  std::set<int64_t> * success;
-
-  _AdaptiveSuccinctService_search_local_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_args__isset {
-  _AdaptiveSuccinctService_count_args__isset() : query(false) {}
-  bool query;
-} _AdaptiveSuccinctService_count_args__isset;
-
-class AdaptiveSuccinctService_count_args {
- public:
-
-  AdaptiveSuccinctService_count_args() : query() {
-  }
-
-  virtual ~AdaptiveSuccinctService_count_args() throw() {}
-
-  std::string query;
-
-  _AdaptiveSuccinctService_count_args__isset __isset;
-
-  void __set_query(const std::string& val) {
-    query = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_count_args & rhs) const
-  {
-    if (!(query == rhs.query))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_count_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_count_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_count_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_count_pargs() throw() {}
-
-  const std::string* query;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_result__isset {
-  _AdaptiveSuccinctService_count_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_count_result__isset;
-
-class AdaptiveSuccinctService_count_result {
- public:
-
-  AdaptiveSuccinctService_count_result() : success(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_count_result() throw() {}
-
-  int64_t success;
-
-  _AdaptiveSuccinctService_count_result__isset __isset;
-
-  void __set_success(const int64_t val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_count_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_count_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_count_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_presult__isset {
-  _AdaptiveSuccinctService_count_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_count_presult__isset;
-
-class AdaptiveSuccinctService_count_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_count_presult() throw() {}
-
-  int64_t* success;
-
-  _AdaptiveSuccinctService_count_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_local_args__isset {
-  _AdaptiveSuccinctService_count_local_args__isset() : query(false) {}
-  bool query;
-} _AdaptiveSuccinctService_count_local_args__isset;
-
-class AdaptiveSuccinctService_count_local_args {
- public:
-
-  AdaptiveSuccinctService_count_local_args() : query() {
-  }
-
-  virtual ~AdaptiveSuccinctService_count_local_args() throw() {}
-
-  std::string query;
-
-  _AdaptiveSuccinctService_count_local_args__isset __isset;
-
-  void __set_query(const std::string& val) {
-    query = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_count_local_args & rhs) const
-  {
-    if (!(query == rhs.query))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_count_local_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_count_local_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_count_local_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_count_local_pargs() throw() {}
-
-  const std::string* query;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_local_result__isset {
-  _AdaptiveSuccinctService_count_local_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_count_local_result__isset;
-
-class AdaptiveSuccinctService_count_local_result {
- public:
-
-  AdaptiveSuccinctService_count_local_result() : success(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_count_local_result() throw() {}
-
-  int64_t success;
-
-  _AdaptiveSuccinctService_count_local_result__isset __isset;
-
-  void __set_success(const int64_t val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_count_local_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_count_local_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_count_local_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_count_local_presult__isset {
-  _AdaptiveSuccinctService_count_local_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_count_local_presult__isset;
-
-class AdaptiveSuccinctService_count_local_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_count_local_presult() throw() {}
-
-  int64_t* success;
-
-  _AdaptiveSuccinctService_count_local_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class AdaptiveSuccinctService_get_num_hosts_args {
- public:
-
-  AdaptiveSuccinctService_get_num_hosts_args() {
-  }
-
-  virtual ~AdaptiveSuccinctService_get_num_hosts_args() throw() {}
-
-
-  bool operator == (const AdaptiveSuccinctService_get_num_hosts_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_get_num_hosts_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_get_num_hosts_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class AdaptiveSuccinctService_get_num_hosts_pargs {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_get_num_hosts_pargs() throw() {}
-
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_get_num_hosts_result__isset {
-  _AdaptiveSuccinctService_get_num_hosts_result__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_get_num_hosts_result__isset;
-
-class AdaptiveSuccinctService_get_num_hosts_result {
- public:
-
-  AdaptiveSuccinctService_get_num_hosts_result() : success(0) {
-  }
-
-  virtual ~AdaptiveSuccinctService_get_num_hosts_result() throw() {}
-
-  int32_t success;
-
-  _AdaptiveSuccinctService_get_num_hosts_result__isset __isset;
-
-  void __set_success(const int32_t val) {
-    success = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_get_num_hosts_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const AdaptiveSuccinctService_get_num_hosts_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const AdaptiveSuccinctService_get_num_hosts_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _AdaptiveSuccinctService_get_num_hosts_presult__isset {
-  _AdaptiveSuccinctService_get_num_hosts_presult__isset() : success(false) {}
-  bool success;
-} _AdaptiveSuccinctService_get_num_hosts_presult__isset;
-
-class AdaptiveSuccinctService_get_num_hosts_presult {
- public:
-
-
-  virtual ~AdaptiveSuccinctService_get_num_hosts_presult() throw() {}
-
-  int32_t* success;
-
-  _AdaptiveSuccinctService_get_num_hosts_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _AdaptiveSuccinctService_get_num_shards_args__isset {
-  _AdaptiveSuccinctService_get_num_shards_args__isset() : host_id(false) {}
-  bool host_id;
-} _AdaptiveSuccinctService_get_num_shards_args__isset;
 
 class AdaptiveSuccinctService_get_num_shards_args {
  public:
 
-  AdaptiveSuccinctService_get_num_shards_args() : host_id(0) {
+  AdaptiveSuccinctService_get_num_shards_args() {
   }
 
   virtual ~AdaptiveSuccinctService_get_num_shards_args() throw() {}
 
-  int32_t host_id;
 
-  _AdaptiveSuccinctService_get_num_shards_args__isset __isset;
-
-  void __set_host_id(const int32_t val) {
-    host_id = val;
-  }
-
-  bool operator == (const AdaptiveSuccinctService_get_num_shards_args & rhs) const
+  bool operator == (const AdaptiveSuccinctService_get_num_shards_args & /* rhs */) const
   {
-    if (!(host_id == rhs.host_id))
-      return false;
     return true;
   }
   bool operator != (const AdaptiveSuccinctService_get_num_shards_args &rhs) const {
@@ -1760,7 +707,6 @@ class AdaptiveSuccinctService_get_num_shards_pargs {
 
   virtual ~AdaptiveSuccinctService_get_num_shards_pargs() throw() {}
 
-  const int32_t* host_id;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -1931,6 +877,114 @@ class AdaptiveSuccinctService_get_num_keys_presult {
 
 };
 
+typedef struct _AdaptiveSuccinctService_get_queue_length_args__isset {
+  _AdaptiveSuccinctService_get_queue_length_args__isset() : shard_id(false) {}
+  bool shard_id;
+} _AdaptiveSuccinctService_get_queue_length_args__isset;
+
+class AdaptiveSuccinctService_get_queue_length_args {
+ public:
+
+  AdaptiveSuccinctService_get_queue_length_args() : shard_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_queue_length_args() throw() {}
+
+  int32_t shard_id;
+
+  _AdaptiveSuccinctService_get_queue_length_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_queue_length_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_queue_length_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_queue_length_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_get_queue_length_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_queue_length_pargs() throw() {}
+
+  const int32_t* shard_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_queue_length_result__isset {
+  _AdaptiveSuccinctService_get_queue_length_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_queue_length_result__isset;
+
+class AdaptiveSuccinctService_get_queue_length_result {
+ public:
+
+  AdaptiveSuccinctService_get_queue_length_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_queue_length_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveSuccinctService_get_queue_length_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_queue_length_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_queue_length_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_queue_length_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_queue_length_presult__isset {
+  _AdaptiveSuccinctService_get_queue_length_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_queue_length_presult__isset;
+
+class AdaptiveSuccinctService_get_queue_length_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_queue_length_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveSuccinctService_get_queue_length_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
  public:
   AdaptiveSuccinctServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -1951,12 +1005,6 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  int32_t connect_to_handlers();
-  void send_connect_to_handlers();
-  int32_t recv_connect_to_handlers();
-  int32_t disconnect_from_handlers();
-  void send_disconnect_from_handlers();
-  int32_t recv_disconnect_from_handlers();
   int32_t connect_to_local_servers();
   void send_connect_to_local_servers();
   int32_t recv_connect_to_local_servers();
@@ -1969,39 +1017,21 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   int32_t initialize(const int32_t mode);
   void send_initialize(const int32_t mode);
   int32_t recv_initialize();
-  void get(std::string& _return, const int64_t key);
-  void send_get(const int64_t key);
-  void recv_get(std::string& _return);
-  void get_local(std::string& _return, const int32_t qserver_id, const int64_t key);
-  void send_get_local(const int32_t qserver_id, const int64_t key);
-  void recv_get_local(std::string& _return);
-  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
-  void send_access(const int64_t key, const int32_t offset, const int32_t len);
-  void recv_access(std::string& _return);
-  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len);
-  void send_access_local(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len);
-  void recv_access_local(std::string& _return);
-  void search(std::set<int64_t> & _return, const std::string& query);
-  void send_search(const std::string& query);
-  void recv_search(std::set<int64_t> & _return);
-  void search_local(std::set<int64_t> & _return, const std::string& query);
-  void send_search_local(const std::string& query);
-  void recv_search_local(std::set<int64_t> & _return);
-  int64_t count(const std::string& query);
-  void send_count(const std::string& query);
-  int64_t recv_count();
-  int64_t count_local(const std::string& query);
-  void send_count_local(const std::string& query);
-  int64_t recv_count_local();
-  int32_t get_num_hosts();
-  void send_get_num_hosts();
-  int32_t recv_get_num_hosts();
-  int32_t get_num_shards(const int32_t host_id);
-  void send_get_num_shards(const int32_t host_id);
+  void get_request(const int64_t key);
+  void send_get_request(const int64_t key);
+  void recv_get_request();
+  void get_response(std::string& _return, const int64_t key);
+  void send_get_response(const int64_t key);
+  void recv_get_response(std::string& _return);
+  int32_t get_num_shards();
+  void send_get_num_shards();
   int32_t recv_get_num_shards();
   int32_t get_num_keys(const int32_t shard_id);
   void send_get_num_keys(const int32_t shard_id);
   int32_t recv_get_num_keys();
+  int64_t get_queue_length(const int32_t shard_id);
+  void send_get_queue_length(const int32_t shard_id);
+  int64_t recv_get_queue_length();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -2017,43 +1047,27 @@ class AdaptiveSuccinctServiceProcessor : public ::apache::thrift::TDispatchProce
   typedef  void (AdaptiveSuccinctServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_connect_to_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_disconnect_from_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_connect_to_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_disconnect_from_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_start_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_access_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_request(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_response(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_queue_length(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AdaptiveSuccinctServiceProcessor(boost::shared_ptr<AdaptiveSuccinctServiceIf> iface) :
     iface_(iface) {
-    processMap_["connect_to_handlers"] = &AdaptiveSuccinctServiceProcessor::process_connect_to_handlers;
-    processMap_["disconnect_from_handlers"] = &AdaptiveSuccinctServiceProcessor::process_disconnect_from_handlers;
     processMap_["connect_to_local_servers"] = &AdaptiveSuccinctServiceProcessor::process_connect_to_local_servers;
     processMap_["disconnect_from_local_servers"] = &AdaptiveSuccinctServiceProcessor::process_disconnect_from_local_servers;
     processMap_["start_servers"] = &AdaptiveSuccinctServiceProcessor::process_start_servers;
     processMap_["initialize"] = &AdaptiveSuccinctServiceProcessor::process_initialize;
-    processMap_["get"] = &AdaptiveSuccinctServiceProcessor::process_get;
-    processMap_["get_local"] = &AdaptiveSuccinctServiceProcessor::process_get_local;
-    processMap_["access"] = &AdaptiveSuccinctServiceProcessor::process_access;
-    processMap_["access_local"] = &AdaptiveSuccinctServiceProcessor::process_access_local;
-    processMap_["search"] = &AdaptiveSuccinctServiceProcessor::process_search;
-    processMap_["search_local"] = &AdaptiveSuccinctServiceProcessor::process_search_local;
-    processMap_["count"] = &AdaptiveSuccinctServiceProcessor::process_count;
-    processMap_["count_local"] = &AdaptiveSuccinctServiceProcessor::process_count_local;
-    processMap_["get_num_hosts"] = &AdaptiveSuccinctServiceProcessor::process_get_num_hosts;
+    processMap_["get_request"] = &AdaptiveSuccinctServiceProcessor::process_get_request;
+    processMap_["get_response"] = &AdaptiveSuccinctServiceProcessor::process_get_response;
     processMap_["get_num_shards"] = &AdaptiveSuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &AdaptiveSuccinctServiceProcessor::process_get_num_keys;
+    processMap_["get_queue_length"] = &AdaptiveSuccinctServiceProcessor::process_get_queue_length;
   }
 
   virtual ~AdaptiveSuccinctServiceProcessor() {}
@@ -2082,24 +1096,6 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
     ifaces_.push_back(iface);
   }
  public:
-  int32_t connect_to_handlers() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->connect_to_handlers();
-    }
-    return ifaces_[i]->connect_to_handlers();
-  }
-
-  int32_t disconnect_from_handlers() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->disconnect_from_handlers();
-    }
-    return ifaces_[i]->disconnect_from_handlers();
-  }
-
   int32_t connect_to_local_servers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -2136,100 +1132,32 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
     return ifaces_[i]->initialize(mode);
   }
 
-  void get(std::string& _return, const int64_t key) {
+  void get_request(const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get(_return, key);
+      ifaces_[i]->get_request(key);
     }
-    ifaces_[i]->get(_return, key);
+    ifaces_[i]->get_request(key);
+  }
+
+  void get_response(std::string& _return, const int64_t key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_response(_return, key);
+    }
+    ifaces_[i]->get_response(_return, key);
     return;
   }
 
-  void get_local(std::string& _return, const int32_t qserver_id, const int64_t key) {
+  int32_t get_num_shards() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_local(_return, qserver_id, key);
+      ifaces_[i]->get_num_shards();
     }
-    ifaces_[i]->get_local(_return, qserver_id, key);
-    return;
-  }
-
-  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access(_return, key, offset, len);
-    }
-    ifaces_[i]->access(_return, key, offset, len);
-    return;
-  }
-
-  void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access_local(_return, qserver_id, key, offset, len);
-    }
-    ifaces_[i]->access_local(_return, qserver_id, key, offset, len);
-    return;
-  }
-
-  void search(std::set<int64_t> & _return, const std::string& query) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->search(_return, query);
-    }
-    ifaces_[i]->search(_return, query);
-    return;
-  }
-
-  void search_local(std::set<int64_t> & _return, const std::string& query) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->search_local(_return, query);
-    }
-    ifaces_[i]->search_local(_return, query);
-    return;
-  }
-
-  int64_t count(const std::string& query) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->count(query);
-    }
-    return ifaces_[i]->count(query);
-  }
-
-  int64_t count_local(const std::string& query) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->count_local(query);
-    }
-    return ifaces_[i]->count_local(query);
-  }
-
-  int32_t get_num_hosts() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_num_hosts();
-    }
-    return ifaces_[i]->get_num_hosts();
-  }
-
-  int32_t get_num_shards(const int32_t host_id) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_num_shards(host_id);
-    }
-    return ifaces_[i]->get_num_shards(host_id);
+    return ifaces_[i]->get_num_shards();
   }
 
   int32_t get_num_keys(const int32_t shard_id) {
@@ -2239,6 +1167,15 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
       ifaces_[i]->get_num_keys(shard_id);
     }
     return ifaces_[i]->get_num_keys(shard_id);
+  }
+
+  int64_t get_queue_length(const int32_t shard_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_queue_length(shard_id);
+    }
+    return ifaces_[i]->get_queue_length(shard_id);
   }
 
 };

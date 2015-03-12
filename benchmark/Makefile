@@ -9,12 +9,14 @@ TARGET_S := $(BINDIR)/sbench
 TARGET_F := $(BINDIR)/fbench
 TARGET_SS := $(BINDIR)/ssbench
 TARGET_AS := $(BINDIR)/asbench
+TARGET_Q := $(BINDIR)/qbench
 TARGET_SURE := $(BINDIR)/surebench
 
 OBJ_S := $(BUILDDIR)/shard-bench.o
 OBJ_F := $(BUILDDIR)/file-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
 OBJ_AS := $(BUILDDIR)/adashard-bench.o
+OBJ_Q := $(BUILDDIR)/queue-bench.o
 OBJ_SURE := $(BUILDDIR)/sure-bench.o
 
 CFLAGS := -O3 -std=c++11 -Wall -g
@@ -32,6 +34,8 @@ fbench: $(TARGET_F)
 ssbench: $(TARGET_SS)
 
 asbench: $(TARGET_AS)
+
+qbench: $(TARGET_Q)
 
 surebench: $(TARGET_SURE)
 
@@ -54,6 +58,11 @@ $(TARGET_AS): $(OBJ_AS)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_AS) $(LIBA)"; $(CC) $^ -o $(TARGET_AS) $(LIBA)
+
+$(TARGET_Q): $(OBJ_Q)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_Q) $(LIBA)"; $(CC) $^ -o $(TARGET_Q) $(LIBA)
 
 $(TARGET_SURE): $(OBJ_SURE)
 	@echo "Linking..."

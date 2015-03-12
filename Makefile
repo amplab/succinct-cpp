@@ -216,6 +216,11 @@ asbench: adaptive-thrift-components
 	@echo " cd benchmark; make clean && make asbench";\
 		cd benchmark; make clean && make asbench
 
+qbench: adaptive-thrift-components
+	@echo "Building adashard benchmark..."
+	@echo " cd benchmark; make clean && make qbench";\
+		cd benchmark; make clean && make qbench
+
 clean:
 	@echo "Cleaning..."; 
 	@echo " $(RM) -r $(BUILDDIRS) $(TARGETS)"; $(RM) -r $(BUILDDIRS) $(TARGETS)

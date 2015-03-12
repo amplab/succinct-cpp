@@ -8,288 +8,6 @@
 
 
 
-uint32_t AdaptiveSuccinctService_connect_to_handlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_connect_to_handlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_connect_to_handlers_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_connect_to_handlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_connect_to_handlers_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_connect_to_handlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_connect_to_handlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_connect_to_handlers_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
-    xfer += oprot->writeI32(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_connect_to_handlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_disconnect_from_handlers_args");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_disconnect_from_handlers_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_disconnect_from_handlers_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
-    xfer += oprot->writeI32(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_disconnect_from_handlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
 uint32_t AdaptiveSuccinctService_connect_to_local_servers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -875,7 +593,7 @@ uint32_t AdaptiveSuccinctService_initialize_presult::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t AdaptiveSuccinctService_get_request_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -915,9 +633,9 @@ uint32_t AdaptiveSuccinctService_get_args::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t AdaptiveSuccinctService_get_request_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_args");
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_request_args");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64(this->key);
@@ -928,9 +646,9 @@ uint32_t AdaptiveSuccinctService_get_args::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t AdaptiveSuccinctService_get_request_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_pargs");
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_request_pargs");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->key)));
@@ -941,1401 +659,7 @@ uint32_t AdaptiveSuccinctService_get_pargs::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->qserver_id);
-          this->__isset.qserver_id = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->key);
-          this->__isset.key = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_local_args");
-
-  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->qserver_id);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
-  xfer += oprot->writeI64(this->key);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_local_pargs");
-
-  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->qserver_id)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
-  xfer += oprot->writeI64((*(this->key)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_local_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->key);
-          this->__isset.key = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->offset);
-          this->__isset.offset = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->len);
-          this->__isset.len = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_args");
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64(this->key);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32(this->offset);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32(this->len);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_pargs");
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64((*(this->key)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 2);
-  xfer += oprot->writeI32((*(this->offset)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32((*(this->len)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->qserver_id);
-          this->__isset.qserver_id = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->key);
-          this->__isset.key = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->offset);
-          this->__isset.offset = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->len);
-          this->__isset.len = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_local_args");
-
-  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->qserver_id);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
-  xfer += oprot->writeI64(this->key);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32(this->offset);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 4);
-  xfer += oprot->writeI32(this->len);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_local_pargs");
-
-  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->qserver_id)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
-  xfer += oprot->writeI64((*(this->key)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32((*(this->offset)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I32, 4);
-  xfer += oprot->writeI32((*(this->len)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_access_local_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_access_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->query);
-          this->__isset.query = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_args");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->query);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_pargs");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->query)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_SET) {
-          {
-            this->success.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readSetBegin(_etype3, _size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
-            {
-              int64_t _elem5;
-              xfer += iprot->readI64(_elem5);
-              this->success.insert(_elem5);
-            }
-            xfer += iprot->readSetEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
-    {
-      xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::set<int64_t> ::const_iterator _iter6;
-      for (_iter6 = this->success.begin(); _iter6 != this->success.end(); ++_iter6)
-      {
-        xfer += oprot->writeI64((*_iter6));
-      }
-      xfer += oprot->writeSetEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_SET) {
-          {
-            (*(this->success)).clear();
-            uint32_t _size7;
-            ::apache::thrift::protocol::TType _etype10;
-            xfer += iprot->readSetBegin(_etype10, _size7);
-            uint32_t _i11;
-            for (_i11 = 0; _i11 < _size7; ++_i11)
-            {
-              int64_t _elem12;
-              xfer += iprot->readI64(_elem12);
-              (*(this->success)).insert(_elem12);
-            }
-            xfer += iprot->readSetEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->query);
-          this->__isset.query = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_local_args");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->query);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_local_pargs");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->query)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_SET) {
-          {
-            this->success.clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readSetBegin(_etype16, _size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
-            {
-              int64_t _elem18;
-              xfer += iprot->readI64(_elem18);
-              this->success.insert(_elem18);
-            }
-            xfer += iprot->readSetEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_search_local_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
-    {
-      xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::set<int64_t> ::const_iterator _iter19;
-      for (_iter19 = this->success.begin(); _iter19 != this->success.end(); ++_iter19)
-      {
-        xfer += oprot->writeI64((*_iter19));
-      }
-      xfer += oprot->writeSetEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_search_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_SET) {
-          {
-            (*(this->success)).clear();
-            uint32_t _size20;
-            ::apache::thrift::protocol::TType _etype23;
-            xfer += iprot->readSetBegin(_etype23, _size20);
-            uint32_t _i24;
-            for (_i24 = 0; _i24 < _size20; ++_i24)
-            {
-              int64_t _elem25;
-              xfer += iprot->readI64(_elem25);
-              (*(this->success)).insert(_elem25);
-            }
-            xfer += iprot->readSetEnd();
-          }
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->query);
-          this->__isset.query = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_args");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->query);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_pargs");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->query)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
-    xfer += oprot->writeI64(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->query);
-          this->__isset.query = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_local_args");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->query);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_local_pargs");
-
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->query)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_count_local_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
-    xfer += oprot->writeI64(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_count_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t AdaptiveSuccinctService_get_num_hosts_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t AdaptiveSuccinctService_get_request_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2362,25 +686,111 @@ uint32_t AdaptiveSuccinctService_get_num_hosts_args::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_num_hosts_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t AdaptiveSuccinctService_get_request_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_num_hosts_args");
+
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_request_result");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_num_hosts_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t AdaptiveSuccinctService_get_request_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_num_hosts_pargs");
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t AdaptiveSuccinctService_get_response_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->key);
+          this->__isset.key = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t AdaptiveSuccinctService_get_response_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_response_args");
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->key);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_num_hosts_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t AdaptiveSuccinctService_get_response_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_response_pargs");
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->key)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t AdaptiveSuccinctService_get_response_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2401,8 +811,8 @@ uint32_t AdaptiveSuccinctService_get_num_hosts_result::read(::apache::thrift::pr
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2420,15 +830,15 @@ uint32_t AdaptiveSuccinctService_get_num_hosts_result::read(::apache::thrift::pr
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_num_hosts_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t AdaptiveSuccinctService_get_response_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_num_hosts_result");
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_response_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
-    xfer += oprot->writeI32(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -2436,7 +846,7 @@ uint32_t AdaptiveSuccinctService_get_num_hosts_result::write(::apache::thrift::p
   return xfer;
 }
 
-uint32_t AdaptiveSuccinctService_get_num_hosts_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t AdaptiveSuccinctService_get_response_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2457,8 +867,8 @@ uint32_t AdaptiveSuccinctService_get_num_hosts_presult::read(::apache::thrift::p
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2494,20 +904,7 @@ uint32_t AdaptiveSuccinctService_get_num_shards_args::read(::apache::thrift::pro
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->host_id);
-          this->__isset.host_id = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -2520,10 +917,6 @@ uint32_t AdaptiveSuccinctService_get_num_shards_args::write(::apache::thrift::pr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_num_shards_args");
 
-  xfer += oprot->writeFieldBegin("host_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->host_id);
-  xfer += oprot->writeFieldEnd();
-
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2532,10 +925,6 @@ uint32_t AdaptiveSuccinctService_get_num_shards_args::write(::apache::thrift::pr
 uint32_t AdaptiveSuccinctService_get_num_shards_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_num_shards_pargs");
-
-  xfer += oprot->writeFieldBegin("host_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->host_id)));
-  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -2800,118 +1189,166 @@ uint32_t AdaptiveSuccinctService_get_num_keys_presult::read(::apache::thrift::pr
   return xfer;
 }
 
-int32_t AdaptiveSuccinctServiceClient::connect_to_handlers()
-{
-  send_connect_to_handlers();
-  return recv_connect_to_handlers();
-}
+uint32_t AdaptiveSuccinctService_get_queue_length_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
-void AdaptiveSuccinctServiceClient::send_connect_to_handlers()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_connect_to_handlers_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int32_t AdaptiveSuccinctServiceClient::recv_connect_to_handlers()
-{
-
-  int32_t rseqid = 0;
+  uint32_t xfer = 0;
   std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
 
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("connect_to_handlers") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int32_t _return;
-  AdaptiveSuccinctService_connect_to_handlers_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
+  xfer += iprot->readStructBegin(fname);
 
-  if (result.__isset.success) {
-    return _return;
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->shard_id);
+          this->__isset.shard_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "connect_to_handlers failed: unknown result");
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
 }
 
-int32_t AdaptiveSuccinctServiceClient::disconnect_from_handlers()
-{
-  send_disconnect_from_handlers();
-  return recv_disconnect_from_handlers();
+uint32_t AdaptiveSuccinctService_get_queue_length_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_queue_length_args");
+
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->shard_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
 }
 
-void AdaptiveSuccinctServiceClient::send_disconnect_from_handlers()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_CALL, cseqid);
+uint32_t AdaptiveSuccinctService_get_queue_length_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_queue_length_pargs");
 
-  AdaptiveSuccinctService_disconnect_from_handlers_pargs args;
-  args.write(oprot_);
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->shard_id)));
+  xfer += oprot->writeFieldEnd();
 
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
 }
 
-int32_t AdaptiveSuccinctServiceClient::recv_disconnect_from_handlers()
-{
+uint32_t AdaptiveSuccinctService_get_queue_length_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
-  int32_t rseqid = 0;
+  uint32_t xfer = 0;
   std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
 
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("disconnect_from_handlers") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int32_t _return;
-  AdaptiveSuccinctService_disconnect_from_handlers_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
+  xfer += iprot->readStructBegin(fname);
 
-  if (result.__isset.success) {
-    return _return;
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "disconnect_from_handlers failed: unknown result");
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t AdaptiveSuccinctService_get_queue_length_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("AdaptiveSuccinctService_get_queue_length_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
+    xfer += oprot->writeI64(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t AdaptiveSuccinctService_get_queue_length_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
 }
 
 int32_t AdaptiveSuccinctServiceClient::connect_to_local_servers()
@@ -3143,18 +1580,18 @@ int32_t AdaptiveSuccinctServiceClient::recv_initialize()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "initialize failed: unknown result");
 }
 
-void AdaptiveSuccinctServiceClient::get(std::string& _return, const int64_t key)
+void AdaptiveSuccinctServiceClient::get_request(const int64_t key)
 {
-  send_get(key);
-  recv_get(_return);
+  send_get_request(key);
+  recv_get_request();
 }
 
-void AdaptiveSuccinctServiceClient::send_get(const int64_t key)
+void AdaptiveSuccinctServiceClient::send_get_request(const int64_t key)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("get_request", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  AdaptiveSuccinctService_get_pargs args;
+  AdaptiveSuccinctService_get_request_pargs args;
   args.key = &key;
   args.write(oprot_);
 
@@ -3163,7 +1600,7 @@ void AdaptiveSuccinctServiceClient::send_get(const int64_t key)
   oprot_->getTransport()->flush();
 }
 
-void AdaptiveSuccinctServiceClient::recv_get(std::string& _return)
+void AdaptiveSuccinctServiceClient::recv_get_request()
 {
 
   int32_t rseqid = 0;
@@ -3183,37 +1620,31 @@ void AdaptiveSuccinctServiceClient::recv_get(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get") != 0) {
+  if (fname.compare("get_request") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  AdaptiveSuccinctService_get_presult result;
-  result.success = &_return;
+  AdaptiveSuccinctService_get_request_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
+  return;
 }
 
-void AdaptiveSuccinctServiceClient::get_local(std::string& _return, const int32_t qserver_id, const int64_t key)
+void AdaptiveSuccinctServiceClient::get_response(std::string& _return, const int64_t key)
 {
-  send_get_local(qserver_id, key);
-  recv_get_local(_return);
+  send_get_response(key);
+  recv_get_response(_return);
 }
 
-void AdaptiveSuccinctServiceClient::send_get_local(const int32_t qserver_id, const int64_t key)
+void AdaptiveSuccinctServiceClient::send_get_response(const int64_t key)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("get_response", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  AdaptiveSuccinctService_get_local_pargs args;
-  args.qserver_id = &qserver_id;
+  AdaptiveSuccinctService_get_response_pargs args;
   args.key = &key;
   args.write(oprot_);
 
@@ -3222,7 +1653,7 @@ void AdaptiveSuccinctServiceClient::send_get_local(const int32_t qserver_id, con
   oprot_->getTransport()->flush();
 }
 
-void AdaptiveSuccinctServiceClient::recv_get_local(std::string& _return)
+void AdaptiveSuccinctServiceClient::recv_get_response(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -3242,12 +1673,12 @@ void AdaptiveSuccinctServiceClient::recv_get_local(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_local") != 0) {
+  if (fname.compare("get_response") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  AdaptiveSuccinctService_get_local_presult result;
+  AdaptiveSuccinctService_get_response_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -3257,432 +1688,21 @@ void AdaptiveSuccinctServiceClient::recv_get_local(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_response failed: unknown result");
 }
 
-void AdaptiveSuccinctServiceClient::access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len)
+int32_t AdaptiveSuccinctServiceClient::get_num_shards()
 {
-  send_access(key, offset, len);
-  recv_access(_return);
-}
-
-void AdaptiveSuccinctServiceClient::send_access(const int64_t key, const int32_t offset, const int32_t len)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("access", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_access_pargs args;
-  args.key = &key;
-  args.offset = &offset;
-  args.len = &len;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void AdaptiveSuccinctServiceClient::recv_access(std::string& _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("access") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  AdaptiveSuccinctService_access_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "access failed: unknown result");
-}
-
-void AdaptiveSuccinctServiceClient::access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
-{
-  send_access_local(qserver_id, key, offset, len);
-  recv_access_local(_return);
-}
-
-void AdaptiveSuccinctServiceClient::send_access_local(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("access_local", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_access_local_pargs args;
-  args.qserver_id = &qserver_id;
-  args.key = &key;
-  args.offset = &offset;
-  args.len = &len;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void AdaptiveSuccinctServiceClient::recv_access_local(std::string& _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("access_local") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  AdaptiveSuccinctService_access_local_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "access_local failed: unknown result");
-}
-
-void AdaptiveSuccinctServiceClient::search(std::set<int64_t> & _return, const std::string& query)
-{
-  send_search(query);
-  recv_search(_return);
-}
-
-void AdaptiveSuccinctServiceClient::send_search(const std::string& query)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("search", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_search_pargs args;
-  args.query = &query;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void AdaptiveSuccinctServiceClient::recv_search(std::set<int64_t> & _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("search") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  AdaptiveSuccinctService_search_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "search failed: unknown result");
-}
-
-void AdaptiveSuccinctServiceClient::search_local(std::set<int64_t> & _return, const std::string& query)
-{
-  send_search_local(query);
-  recv_search_local(_return);
-}
-
-void AdaptiveSuccinctServiceClient::send_search_local(const std::string& query)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("search_local", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_search_local_pargs args;
-  args.query = &query;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void AdaptiveSuccinctServiceClient::recv_search_local(std::set<int64_t> & _return)
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("search_local") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  AdaptiveSuccinctService_search_local_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "search_local failed: unknown result");
-}
-
-int64_t AdaptiveSuccinctServiceClient::count(const std::string& query)
-{
-  send_count(query);
-  return recv_count();
-}
-
-void AdaptiveSuccinctServiceClient::send_count(const std::string& query)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("count", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_count_pargs args;
-  args.query = &query;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int64_t AdaptiveSuccinctServiceClient::recv_count()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("count") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int64_t _return;
-  AdaptiveSuccinctService_count_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    return _return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "count failed: unknown result");
-}
-
-int64_t AdaptiveSuccinctServiceClient::count_local(const std::string& query)
-{
-  send_count_local(query);
-  return recv_count_local();
-}
-
-void AdaptiveSuccinctServiceClient::send_count_local(const std::string& query)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("count_local", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_count_local_pargs args;
-  args.query = &query;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int64_t AdaptiveSuccinctServiceClient::recv_count_local()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("count_local") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int64_t _return;
-  AdaptiveSuccinctService_count_local_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    return _return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "count_local failed: unknown result");
-}
-
-int32_t AdaptiveSuccinctServiceClient::get_num_hosts()
-{
-  send_get_num_hosts();
-  return recv_get_num_hosts();
-}
-
-void AdaptiveSuccinctServiceClient::send_get_num_hosts()
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  AdaptiveSuccinctService_get_num_hosts_pargs args;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-int32_t AdaptiveSuccinctServiceClient::recv_get_num_hosts()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("get_num_hosts") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  int32_t _return;
-  AdaptiveSuccinctService_get_num_hosts_presult result;
-  result.success = &_return;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  if (result.__isset.success) {
-    return _return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_hosts failed: unknown result");
-}
-
-int32_t AdaptiveSuccinctServiceClient::get_num_shards(const int32_t host_id)
-{
-  send_get_num_shards(host_id);
+  send_get_num_shards();
   return recv_get_num_shards();
 }
 
-void AdaptiveSuccinctServiceClient::send_get_num_shards(const int32_t host_id)
+void AdaptiveSuccinctServiceClient::send_get_num_shards()
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("get_num_shards", ::apache::thrift::protocol::T_CALL, cseqid);
 
   AdaptiveSuccinctService_get_num_shards_pargs args;
-  args.host_id = &host_id;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3786,6 +1806,64 @@ int32_t AdaptiveSuccinctServiceClient::recv_get_num_keys()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_keys failed: unknown result");
 }
 
+int64_t AdaptiveSuccinctServiceClient::get_queue_length(const int32_t shard_id)
+{
+  send_get_queue_length(shard_id);
+  return recv_get_queue_length();
+}
+
+void AdaptiveSuccinctServiceClient::send_get_queue_length(const int32_t shard_id)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("get_queue_length", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  AdaptiveSuccinctService_get_queue_length_pargs args;
+  args.shard_id = &shard_id;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+int64_t AdaptiveSuccinctServiceClient::recv_get_queue_length()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("get_queue_length") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  int64_t _return;
+  AdaptiveSuccinctService_get_queue_length_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_queue_length failed: unknown result");
+}
+
 bool AdaptiveSuccinctServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
@@ -3803,114 +1881,6 @@ bool AdaptiveSuccinctServiceProcessor::dispatchCall(::apache::thrift::protocol::
   }
   (this->*(pfn->second))(seqid, iprot, oprot, callContext);
   return true;
-}
-
-void AdaptiveSuccinctServiceProcessor::process_connect_to_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.connect_to_handlers", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.connect_to_handlers");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.connect_to_handlers");
-  }
-
-  AdaptiveSuccinctService_connect_to_handlers_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.connect_to_handlers", bytes);
-  }
-
-  AdaptiveSuccinctService_connect_to_handlers_result result;
-  try {
-    result.success = iface_->connect_to_handlers();
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.connect_to_handlers");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.connect_to_handlers");
-  }
-
-  oprot->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.connect_to_handlers", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_disconnect_from_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.disconnect_from_handlers", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.disconnect_from_handlers");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.disconnect_from_handlers");
-  }
-
-  AdaptiveSuccinctService_disconnect_from_handlers_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.disconnect_from_handlers", bytes);
-  }
-
-  AdaptiveSuccinctService_disconnect_from_handlers_result result;
-  try {
-    result.success = iface_->disconnect_from_handlers();
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.disconnect_from_handlers");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.disconnect_from_handlers");
-  }
-
-  oprot->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.disconnect_from_handlers", bytes);
-  }
 }
 
 void AdaptiveSuccinctServiceProcessor::process_connect_to_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
@@ -4129,38 +2099,37 @@ void AdaptiveSuccinctServiceProcessor::process_initialize(int32_t seqid, ::apach
   }
 }
 
-void AdaptiveSuccinctServiceProcessor::process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void AdaptiveSuccinctServiceProcessor::process_get_request(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get", callContext);
+    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get_request", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get_request");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get");
+    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get_request");
   }
 
-  AdaptiveSuccinctService_get_args args;
+  AdaptiveSuccinctService_get_request_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get", bytes);
+    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get_request", bytes);
   }
 
-  AdaptiveSuccinctService_get_result result;
+  AdaptiveSuccinctService_get_request_result result;
   try {
-    iface_->get(result.success, args.key);
-    result.__isset.success = true;
+    iface_->get_request(args.key);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get");
+      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get_request");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("get_request", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -4169,52 +2138,52 @@ void AdaptiveSuccinctServiceProcessor::process_get(int32_t seqid, ::apache::thri
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get");
+    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get_request");
   }
 
-  oprot->writeMessageBegin("get", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("get_request", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get", bytes);
+    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_request", bytes);
   }
 }
 
-void AdaptiveSuccinctServiceProcessor::process_get_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void AdaptiveSuccinctServiceProcessor::process_get_response(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get_local", callContext);
+    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get_response", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get_response");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get_local");
+    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get_response");
   }
 
-  AdaptiveSuccinctService_get_local_args args;
+  AdaptiveSuccinctService_get_response_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get_local", bytes);
+    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get_response", bytes);
   }
 
-  AdaptiveSuccinctService_get_local_result result;
+  AdaptiveSuccinctService_get_response_result result;
   try {
-    iface_->get_local(result.success, args.qserver_id, args.key);
+    iface_->get_response(result.success, args.key);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get_local");
+      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get_response");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("get_response", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -4223,395 +2192,17 @@ void AdaptiveSuccinctServiceProcessor::process_get_local(int32_t seqid, ::apache
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get_local");
+    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get_response");
   }
 
-  oprot->writeMessageBegin("get_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("get_response", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_local", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.access", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.access");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.access");
-  }
-
-  AdaptiveSuccinctService_access_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.access", bytes);
-  }
-
-  AdaptiveSuccinctService_access_result result;
-  try {
-    iface_->access(result.success, args.key, args.offset, args.len);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.access");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("access", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.access");
-  }
-
-  oprot->writeMessageBegin("access", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.access", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_access_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.access_local", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.access_local");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.access_local");
-  }
-
-  AdaptiveSuccinctService_access_local_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.access_local", bytes);
-  }
-
-  AdaptiveSuccinctService_access_local_result result;
-  try {
-    iface_->access_local(result.success, args.qserver_id, args.key, args.offset, args.len);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.access_local");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("access_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.access_local");
-  }
-
-  oprot->writeMessageBegin("access_local", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.access_local", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.search", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.search");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.search");
-  }
-
-  AdaptiveSuccinctService_search_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.search", bytes);
-  }
-
-  AdaptiveSuccinctService_search_result result;
-  try {
-    iface_->search(result.success, args.query);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.search");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("search", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.search");
-  }
-
-  oprot->writeMessageBegin("search", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.search", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.search_local", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.search_local");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.search_local");
-  }
-
-  AdaptiveSuccinctService_search_local_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.search_local", bytes);
-  }
-
-  AdaptiveSuccinctService_search_local_result result;
-  try {
-    iface_->search_local(result.success, args.query);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.search_local");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("search_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.search_local");
-  }
-
-  oprot->writeMessageBegin("search_local", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.search_local", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.count", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.count");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.count");
-  }
-
-  AdaptiveSuccinctService_count_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.count", bytes);
-  }
-
-  AdaptiveSuccinctService_count_result result;
-  try {
-    result.success = iface_->count(args.query);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.count");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.count");
-  }
-
-  oprot->writeMessageBegin("count", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.count", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.count_local", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.count_local");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.count_local");
-  }
-
-  AdaptiveSuccinctService_count_local_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.count_local", bytes);
-  }
-
-  AdaptiveSuccinctService_count_local_result result;
-  try {
-    result.success = iface_->count_local(args.query);
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.count_local");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("count_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.count_local");
-  }
-
-  oprot->writeMessageBegin("count_local", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.count_local", bytes);
-  }
-}
-
-void AdaptiveSuccinctServiceProcessor::process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get_num_hosts", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get_num_hosts");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get_num_hosts");
-  }
-
-  AdaptiveSuccinctService_get_num_hosts_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get_num_hosts", bytes);
-  }
-
-  AdaptiveSuccinctService_get_num_hosts_result result;
-  try {
-    result.success = iface_->get_num_hosts();
-    result.__isset.success = true;
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get_num_hosts");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get_num_hosts");
-  }
-
-  oprot->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_num_hosts", bytes);
+    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_response", bytes);
   }
 }
 
@@ -4638,7 +2229,7 @@ void AdaptiveSuccinctServiceProcessor::process_get_num_shards(int32_t seqid, ::a
 
   AdaptiveSuccinctService_get_num_shards_result result;
   try {
-    result.success = iface_->get_num_shards(args.host_id);
+    result.success = iface_->get_num_shards();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -4720,6 +2311,60 @@ void AdaptiveSuccinctServiceProcessor::process_get_num_keys(int32_t seqid, ::apa
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_num_keys", bytes);
+  }
+}
+
+void AdaptiveSuccinctServiceProcessor::process_get_queue_length(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("AdaptiveSuccinctService.get_queue_length", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "AdaptiveSuccinctService.get_queue_length");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "AdaptiveSuccinctService.get_queue_length");
+  }
+
+  AdaptiveSuccinctService_get_queue_length_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "AdaptiveSuccinctService.get_queue_length", bytes);
+  }
+
+  AdaptiveSuccinctService_get_queue_length_result result;
+  try {
+    result.success = iface_->get_queue_length(args.shard_id);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "AdaptiveSuccinctService.get_queue_length");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("get_queue_length", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "AdaptiveSuccinctService.get_queue_length");
+  }
+
+  oprot->writeMessageBegin("get_queue_length", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "AdaptiveSuccinctService.get_queue_length", bytes);
   }
 }
 
