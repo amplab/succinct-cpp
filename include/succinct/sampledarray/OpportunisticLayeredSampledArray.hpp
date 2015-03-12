@@ -76,8 +76,6 @@ public:
             get_layer(&l, i);
             if(IS_MARKED_FOR_CREATION(l.layer_id) &&
                     !IS_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx)) {
-//                fprintf(stderr, "[layer_id = %u, layer_idx = %llu] Storing value = %llu at index = %llu\n",
-//                        l.layer_id, l.layer_idx, val, i);
                 SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
                 SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
                 this->num_sampled_values++;
@@ -139,6 +137,13 @@ public:
     }
 
     uint64_t get_num_sampled_values() {
+        uint64_t count = 0;
+        for(uint32_t i = 0; i< num_layers; i++) {
+            for(uint64_t j = 0; j < is_layer_value_sampled[i]->size; i++) {
+                count++;
+            }
+        }
+        fprintf(stderr, "Count = %lu\n", count);
         return this->num_sampled_values;
     }
 };
