@@ -1,5 +1,5 @@
-#ifndef DYNAMIC_ADAPT_BENCHMARK_HPP
-#define DYNAMIC_ADAPT_BENCHMARK_HPP
+#ifndef ADAPT_BENCHMARK_HPP
+#define ADAPT_BENCHMARK_HPP
 
 #include <thrift/transport/TSocket.h>
 #include <thrift/protocol/TBinaryProtocol.h>
@@ -17,7 +17,7 @@ using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
-class DynamicAdaptBenchmark : public Benchmark {
+class AdaptBenchmark : public Benchmark {
 private:
     AdaptiveQueryServiceClient *query_client;
     AdaptiveQueryServiceClient *stats_client;
@@ -115,7 +115,7 @@ private:
     }
 
 public:
-    DynamicAdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
+    AdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
             std::string addfile, std::string delfile, std::string queryfile = "") : Benchmark() {
 
         this->query_client = this->get_client(query_transport);
@@ -217,7 +217,8 @@ public:
         }
         time_t diff = cur_time - measure_start_time;
         double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
-        res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size() << "\n";
+        res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size()
+                                    << "\t" << stats_client->num_sampled_values() << "\n";
         res_stream.close();
     }
 
@@ -267,14 +268,14 @@ public:
     }
 
     void run_benchmark() {
-        std::thread req(&DynamicAdaptBenchmark::send_requests,
+        std::thread req(&AdaptBenchmark::send_requests,
                 query_client, query_transport,
                 mgmnt_client, mgmnt_transport,
                 randoms, request_rates, durations, layers_to_create, layers_to_delete,
                 reqfile);
-        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client,
+        std::thread res(&AdaptBenchmark::measure_responses, query_client,
                 stats_client, resfile);
-        std::thread lay(&DynamicAdaptBenchmark::manage_layers, mgmnt_client,
+        std::thread lay(&AdaptBenchmark::manage_layers, mgmnt_client,
                 layers_to_create, layers_to_delete, durations, addfile, delfile);
 
         if(req.joinable()) {
