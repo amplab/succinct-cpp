@@ -44,13 +44,13 @@ THRIFTSOURCES_GEN := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succ
 THRIFTSOURCES_SS := $(THRIFTSRCDIR)/QueryServer.cpp
 THRIFTSOURCES_SH := $(THRIFTSRCDIR)/SuccinctServer.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
 THRIFTSOURCES_SM := $(THRIFTSRCDIR)/SuccinctMaster.cpp $(THRIFTSRCDIR)/MasterService.cpp $(THRIFTSRCDIR)/SuccinctService.cpp
-THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/SuccinctService.cpp $(THRIFTSRCDIR)/MasterService.cpp
+THRIFTSOURCES_SC := $(THRIFTSRCDIR)/succinct_constants.cpp $(THRIFTSRCDIR)/succinct_types.cpp $(THRIFTSRCDIR)/QueryService.cpp $(THRIFTSRCDIR)/SuccinctService.cpp $(THRIFTSRCDIR)/MasterService.cpp
 
 THRIFTSOURCES_AGEN := $(THRIFTSRCDIR)/adaptive_constants.cpp $(THRIFTSRCDIR)/adaptive_types.cpp $(THRIFTSRCDIR)/AdaptiveQueryService.cpp
 THRIFTSOURCES_AS := $(THRIFTSRCDIR)/AdaptiveQueryServer.cpp
 THRIFTSOURCES_AH := $(THRIFTSRCDIR)/AdaptiveSuccinctServer.cpp $(THRIFTSRCDIR)/AdaptiveSuccinctService.cpp
 THRIFTSOURCES_AM := $(THRIFTSRCDIR)/AdaptiveSuccinctMaster.cpp $(THRIFTSRCDIR)/AdaptiveMasterService.cpp $(THRIFTSRCDIR)/AdaptiveSuccinctService.cpp
-THRIFTSOURCES_AC := $(THRIFTSRCDIR)/adaptive_constants.cpp $(THRIFTSRCDIR)/adaptive_types.cpp $(THRIFTSRCDIR)/AdaptiveSuccinctService.cpp $(THRIFTSRCDIR)/AdaptiveMasterService.cpp
+THRIFTSOURCES_AC := $(THRIFTSRCDIR)/adaptive_constants.cpp $(THRIFTSRCDIR)/adaptive_types.cpp $(THRIFTSRCDIR)/AdaptiveQueryService.cpp $(THRIFTSRCDIR)/AdaptiveSuccinctService.cpp $(THRIFTSRCDIR)/AdaptiveMasterService.cpp
 
 THRIFTOBJECTS_GEN := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_GEN:.cpp=.o))
 THRIFTOBJECTS_SS := $(patsubst $(THRIFTSRCDIR)/%,$(THRIFTBUILDDIR)/%,$(THRIFTSOURCES_SS:.cpp=.o))

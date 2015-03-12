@@ -80,3 +80,10 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
         ISA_opp->store(next_pos, idx);
     }
 }
+
+uint64_t LayeredSuccinctShard::num_sampled_values() {
+    if(opportunistic) {
+        return ((OpportunisticLayeredSampledISA *)ISA)->get_num_sampled_values();
+    }
+    return 0;
+}

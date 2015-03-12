@@ -20,6 +20,7 @@ OBJ_SURE := $(BUILDDIR)/sure-bench.o
 CFLAGS := -O3 -std=c++11 -Wall -g
 LIB := -L $(LIBDIR) -lsuccinct
 LIBT := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -lsuccinctclient
+LIBA := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -ladaptsuccinctclient
 INC := -I ../include -I include
 
 all: sbench fbench ssbench asbench surebench
@@ -47,12 +48,12 @@ $(TARGET_F): $(OBJ_F)
 $(TARGET_SS): $(OBJ_SS)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
-	@echo " $(CC) $^ -o $(TARGET_SS) $(LIB)"; $(CC) $^ -o $(TARGET_SS) $(LIBT)
+	@echo " $(CC) $^ -o $(TARGET_SS) $(LIBT)"; $(CC) $^ -o $(TARGET_SS) $(LIBT)
 
 $(TARGET_AS): $(OBJ_AS)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
-	@echo " $(CC) $^ -o $(TARGET_AS) $(LIB)"; $(CC) $^ -o $(TARGET_AS) $(LIBT)
+	@echo " $(CC) $^ -o $(TARGET_AS) $(LIBA)"; $(CC) $^ -o $(TARGET_AS) $(LIBA)
 
 $(TARGET_SURE): $(OBJ_SURE)
 	@echo "Linking..."

@@ -21,6 +21,8 @@ public:
     size_t reconstruct_layer(uint32_t layer_id);
 
     void get(std::string &result, int64_t key);
+
+    uint64_t num_sampled_values();
 };
 
 #endif

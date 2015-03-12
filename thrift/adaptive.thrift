@@ -35,6 +35,7 @@ service AdaptiveQueryService {
     i64 remove_layer(1:i32 layer_id),
     i64 reconstruct_layer(1:i32 layer_id),
     i64 storage_size(),
+    i64 num_sampled_values(),
 }
 
 service AdaptiveMasterService {

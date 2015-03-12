@@ -115,6 +115,10 @@ public:
         return fd->storage_size();
     }
 
+    int64_t num_sampled_values() {
+        return fd->num_sampled_values();
+    }
+
 private:
     LayeredSuccinctShard *fd;
     bool construct;

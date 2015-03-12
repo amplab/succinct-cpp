@@ -205,7 +205,8 @@ public:
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double thput = ((double) num_responses * 1000 * 1000) / ((double)diff);
-                    res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size() << "\n";
+                    res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size()
+                            << "\t" << stats_client->num_sampled_values() << "\n";
                     res_stream.flush();
                     num_responses = 0;
                     measure_start_time = get_timestamp();

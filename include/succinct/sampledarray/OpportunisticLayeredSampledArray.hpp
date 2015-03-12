@@ -8,6 +8,8 @@ private:
     bitmap_t **is_layer_value_sampled;
     uint64_t LAYER_TO_CREATE;
 
+    std::atomic<uint64_t> num_sampled_values;
+
 #define IS_LAYER_VAL_SAMPLED(l, i)  ACCESSBIT(this->is_layer_value_sampled[(l)], (i))
 #define SET_LAYER_VAL_SAMPLED(l, i) SETBITVAL(this->is_layer_value_sampled[(l)], (i))
 #define MARK_FOR_CREATION(i)        SETBIT((this->LAYER_TO_CREATE), (i))
@@ -20,12 +22,14 @@ public:
             LayeredSampledArray(target_sampling_rate, base_sampling_rate, SA, n, s_allocator) {
         this->is_layer_value_sampled = new bitmap_t*[this->num_layers];
         this->LAYER_TO_CREATE = 0;
+        this->num_sampled_values = 0;
         for(uint32_t i = 0; i < this->num_layers; i++) {
             this->is_layer_value_sampled[i] = new bitmap_t;
             uint32_t layer_sampling_rate = (1 << i) * target_sampling_rate;
             layer_sampling_rate = (i == (this->num_layers - 1)) ?
                     layer_sampling_rate : layer_sampling_rate * 2;
             uint64_t num_entries = (n / layer_sampling_rate) + 1;
+            this->num_sampled_values += num_entries;
             SuccinctBase::init_bitmap_set(&is_layer_value_sampled[i], num_entries, s_allocator);
         }
     }
@@ -35,6 +39,7 @@ public:
             LayeredSampledArray(target_sampling_rate, base_sampling_rate, s_allocator) {
         this->is_layer_value_sampled = NULL;
         this->LAYER_TO_CREATE = 0;
+        this->num_sampled_values = 0;
     }
 
     virtual inline uint64_t get_layer_leq(layer_t *l, int64_t i) {
@@ -75,6 +80,7 @@ public:
 //                        l.layer_id, l.layer_idx, val, i);
                 SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
                 SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
+                this->num_sampled_values++;
             }
         }
         return false;
@@ -88,6 +94,9 @@ public:
             }
             DELETE_LAYER(layer_id);
             size = layer_data[layer_id]->size;
+            for(uint64_t i = 0; i < is_layer_value_sampled[layer_id]->size; i++) {
+                this->num_sampled_values -= IS_LAYER_VAL_SAMPLED(layer_id, i);
+            }
             SuccinctBase::clear_bitmap(&is_layer_value_sampled[layer_id], s_allocator);
             usleep(10000);                      // TODO: I don't like this!
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
@@ -124,8 +133,13 @@ public:
                     layer_sampling_rate : layer_sampling_rate * 2;
             uint64_t num_entries = (original_size / layer_sampling_rate) + 1;
             SuccinctBase::init_bitmap_set(&is_layer_value_sampled[i], num_entries, s_allocator);
+            this->num_sampled_values += num_entries;
         }
         return in_size;
+    }
+
+    uint64_t get_num_sampled_values() {
+        return this->num_sampled_values;
     }
 };
 #endif
