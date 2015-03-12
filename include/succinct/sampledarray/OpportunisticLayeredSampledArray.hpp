@@ -79,6 +79,7 @@ public:
                 SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
                 SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
                 this->num_sampled_values++;
+                return true;
             }
         }
         return false;
@@ -96,6 +97,9 @@ public:
                 this->num_sampled_values -= IS_LAYER_VAL_SAMPLED(layer_id, i);
             }
             SuccinctBase::clear_bitmap(&is_layer_value_sampled[layer_id], s_allocator);
+            for(uint64_t i = 0; i < is_layer_value_sampled[layer_id]->size; i++) {
+                assert(!IS_LAYER_VAL_SAMPLED(layer_id, i));
+            }
             usleep(10000);                      // TODO: I don't like this!
             SuccinctBase::destroy_bitmap(&layer_data[layer_id], s_allocator);
             layer_data[layer_id] = NULL;
@@ -139,7 +143,7 @@ public:
     uint64_t get_num_sampled_values() {
         uint64_t count = 0;
         for(uint32_t i = 0; i< num_layers; i++) {
-            for(uint64_t j = 0; j < is_layer_value_sampled[i]->size; i++) {
+            for(uint64_t j = 0; j < is_layer_value_sampled[i]->size; j++) {
                 count++;
             }
         }
