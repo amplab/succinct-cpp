@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
                 del_list.erase(0, pos + delimiter.length());
             }
             deleted_layers.push_back(atoi(del_list.c_str()));
+            fprintf(stderr, "Number of layers to be deleted = %u\n", deleted_layers.size());
             break;
         }
         case 'n':
@@ -152,6 +153,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "sampling scheme = %u\n", scheme);
 
     if(scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
+        fprintf(stderr, "Scheme = LayeredSampledByIndex\n");
         if(!deleted_layers.empty()) {
             LayeredSampledArray *SA = (LayeredSampledArray *)fd->getSA();
             LayeredSampledArray *ISA = (LayeredSampledArray *)fd->getISA();
@@ -166,6 +168,7 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
         }
     } else if(scheme == SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {
+        fprintf(stderr, "Scheme = OpportunisticLayeredSampledByIndex\n");
         if(!deleted_layers.empty()) {
             OpportunisticLayeredSampledArray *SA = (OpportunisticLayeredSampledArray *)fd->getSA();
             OpportunisticLayeredSampledArray *ISA = (OpportunisticLayeredSampledArray *)fd->getISA();
