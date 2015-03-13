@@ -58,10 +58,8 @@ size_t LayeredSampledISA::reconstruct_layer(uint32_t layer_id) {
             if(idx > original_size) break;
             if(is_computed[i]) continue;
             layer_t l;
-            get_layer_leq(&l, idx);
+            idx = get_layer_leq(&l, idx);
             uint64_t pos = SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id], l.layer_idx, data_bits);
-            uint32_t layer_sampling_rate = (1 << l.layer_id) * target_sampling_rate;
-            idx %= (layer_sampling_rate);
             while(idx--) {
                 pos = (*npa)[pos];
             }
