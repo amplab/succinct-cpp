@@ -12,6 +12,8 @@
 #include <thread>
 #include <sstream>
 #include <unistd.h>
+#include <atomic>
+#include <functional>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -33,6 +35,7 @@ private:
     std::string resfile;
     std::string addfile;
     std::string delfile;
+    std::atomic<uint64_t> queue_length;
 
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
@@ -130,6 +133,8 @@ public:
         this->addfile = addfile;
         this->delfile = delfile;
 
+        this->queue_length = 0;
+
         generate_randoms();
         if(queryfile != "") {
             read_queries(queryfile);
@@ -144,8 +149,7 @@ public:
             std::vector<int64_t> randoms,
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
-            std::vector<std::vector<uint32_t>> layers_to_create,
-            std::vector<std::vector<uint32_t>> layers_to_delete,
+            std::atomic<uint64_t> &queue_length,
             std::string reqfile) {
 
         time_t cur_time;
@@ -165,6 +169,7 @@ public:
                 query_client->send_get(randoms[i % randoms.size()]);
                 i++;
                 num_requests++;
+                queue_length++;
                 usleep(sleep_time);
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
@@ -191,7 +196,8 @@ public:
     }
 
     static void measure_responses(AdaptiveQueryServiceClient *query_client,
-            AdaptiveQueryServiceClient *stats_client, std::string resfile) {
+            AdaptiveQueryServiceClient *stats_client,
+            std::atomic<uint64_t> &queue_length, std::string resfile) {
         std::string res;
         const time_t MEASURE_INTERVAL = 5000000;
         uint32_t num_responses = 0;
@@ -202,11 +208,12 @@ public:
             try {
                 query_client->recv_get(res);
                 num_responses++;
+                queue_length--;
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double thput = ((double) num_responses * 1000 * 1000) / ((double)diff);
                     res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size()
-                            << "\t" << stats_client->num_sampled_values() << "\n";
+                            << "\t" << queue_length << "\n";
                     res_stream.flush();
                     num_responses = 0;
                     measure_start_time = get_timestamp();
@@ -271,10 +278,10 @@ public:
         std::thread req(&AdaptBenchmark::send_requests,
                 query_client, query_transport,
                 mgmnt_client, mgmnt_transport,
-                randoms, request_rates, durations, layers_to_create, layers_to_delete,
+                randoms, request_rates, durations, std::ref(queue_length),
                 reqfile);
         std::thread res(&AdaptBenchmark::measure_responses, query_client,
-                stats_client, resfile);
+                stats_client, std::ref(queue_length), resfile);
         std::thread lay(&AdaptBenchmark::manage_layers, mgmnt_client,
                 layers_to_create, layers_to_delete, durations, addfile, delfile);
 
