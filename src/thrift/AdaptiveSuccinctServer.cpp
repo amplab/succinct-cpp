@@ -72,8 +72,7 @@ public:
             AdaptiveQueryServiceClient client(protocol);
             transport->open();
             fprintf(stderr, "Connected to QueryServer %u!\n", i);
-            int32_t shard_id = i * hostnames.size() + local_host_id;
-            int32_t status = client.init(shard_id);
+            int32_t status = client.init(i);
             if(status == 0) {
                 fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
                 qservers.push_back(client);
@@ -88,15 +87,55 @@ public:
     }
 
     void get_request(const int64_t key) {
+        // fprintf(stderr, "Received a get request for key = %lu\n", key);
         uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
         queue_lengths[shard_id]++;
         qservers.at(shard_id).send_get(key % LayeredSuccinctShard::MAX_KEYS);
+        // fprintf(stderr, "Completed get request for key = %lu\n", key);
     }
 
     void get_response(std::string& _return, const int64_t key) {
+        // fprintf(stderr, "Received a get response for key = %lu\n", key);
         uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
         qservers.at(shard_id).recv_get(_return);
         queue_lengths[shard_id]--;
+        // fprintf(stderr, "Completed get response for key = %lu\n", key);
+    }
+
+    int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) {
+        int port = QUERY_SERVER_PORT + shard_id;
+        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        AdaptiveQueryServiceClient client(protocol);
+        transport->open();
+        int64_t size = client.remove_layer(layer_id);
+        transport->close();
+        return size;
+    }
+
+    int64_t reconstruct_layer(const int32_t shard_id, const int32_t layer_id) {
+        int port = QUERY_SERVER_PORT + shard_id;
+        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        AdaptiveQueryServiceClient client(protocol);
+        transport->open();
+        int64_t size = client.reconstruct_layer(layer_id);
+        transport->close();
+        return size;
+    }
+
+    int64_t storage_size(const int32_t shard_id) {
+        int port = QUERY_SERVER_PORT + shard_id;
+        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        AdaptiveQueryServiceClient client(protocol);
+        transport->open();
+        int64_t size = client.storage_size();
+        transport->close();
+        return size;
     }
 
     int32_t get_num_shards() {

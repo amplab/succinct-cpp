@@ -10,7 +10,7 @@ echo "Starting adaptive server..."
 "$sbin"/start-aserver.sh $1 0
 
 # Wait for some time
-sleep 1
+sleep 60
 
 # Start Handlers
 echo "Starting adaptive handler..."

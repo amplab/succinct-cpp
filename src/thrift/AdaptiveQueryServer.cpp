@@ -72,9 +72,7 @@ public:
     }
 
     void get(std::string& _return, const int64_t key) {
-        fprintf(stderr, "Received get request for key %lu\n", key);
         fd->get(_return, key);
-        fprintf(stderr, "Get completed for key %lu\n", key);
     }
 
     void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {

@@ -21,6 +21,9 @@ class AdaptiveSuccinctServiceIf {
   virtual int32_t initialize(const int32_t mode) = 0;
   virtual void get_request(const int64_t key) = 0;
   virtual void get_response(std::string& _return, const int64_t key) = 0;
+  virtual int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) = 0;
+  virtual int64_t reconstruct_layer(const int32_t shard_id, const int32_t layer_id) = 0;
+  virtual int64_t storage_size(const int32_t shard_id) = 0;
   virtual int32_t get_num_shards() = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
   virtual int64_t get_queue_length(const int32_t shard_id) = 0;
@@ -74,6 +77,18 @@ class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
   }
   void get_response(std::string& /* _return */, const int64_t /* key */) {
     return;
+  }
+  int64_t remove_layer(const int32_t /* shard_id */, const int32_t /* layer_id */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  int64_t reconstruct_layer(const int32_t /* shard_id */, const int32_t /* layer_id */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  int64_t storage_size(const int32_t /* shard_id */) {
+    int64_t _return = 0;
+    return _return;
   }
   int32_t get_num_shards() {
     int32_t _return = 0;
@@ -638,6 +653,348 @@ class AdaptiveSuccinctService_get_response_presult {
 
 };
 
+typedef struct _AdaptiveSuccinctService_remove_layer_args__isset {
+  _AdaptiveSuccinctService_remove_layer_args__isset() : shard_id(false), layer_id(false) {}
+  bool shard_id;
+  bool layer_id;
+} _AdaptiveSuccinctService_remove_layer_args__isset;
+
+class AdaptiveSuccinctService_remove_layer_args {
+ public:
+
+  AdaptiveSuccinctService_remove_layer_args() : shard_id(0), layer_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_remove_layer_args() throw() {}
+
+  int32_t shard_id;
+  int32_t layer_id;
+
+  _AdaptiveSuccinctService_remove_layer_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  void __set_layer_id(const int32_t val) {
+    layer_id = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_remove_layer_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    if (!(layer_id == rhs.layer_id))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_remove_layer_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_remove_layer_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_remove_layer_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_remove_layer_pargs() throw() {}
+
+  const int32_t* shard_id;
+  const int32_t* layer_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_remove_layer_result__isset {
+  _AdaptiveSuccinctService_remove_layer_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_remove_layer_result__isset;
+
+class AdaptiveSuccinctService_remove_layer_result {
+ public:
+
+  AdaptiveSuccinctService_remove_layer_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_remove_layer_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveSuccinctService_remove_layer_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_remove_layer_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_remove_layer_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_remove_layer_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_remove_layer_presult__isset {
+  _AdaptiveSuccinctService_remove_layer_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_remove_layer_presult__isset;
+
+class AdaptiveSuccinctService_remove_layer_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_remove_layer_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveSuccinctService_remove_layer_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveSuccinctService_reconstruct_layer_args__isset {
+  _AdaptiveSuccinctService_reconstruct_layer_args__isset() : shard_id(false), layer_id(false) {}
+  bool shard_id;
+  bool layer_id;
+} _AdaptiveSuccinctService_reconstruct_layer_args__isset;
+
+class AdaptiveSuccinctService_reconstruct_layer_args {
+ public:
+
+  AdaptiveSuccinctService_reconstruct_layer_args() : shard_id(0), layer_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_reconstruct_layer_args() throw() {}
+
+  int32_t shard_id;
+  int32_t layer_id;
+
+  _AdaptiveSuccinctService_reconstruct_layer_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  void __set_layer_id(const int32_t val) {
+    layer_id = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_reconstruct_layer_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    if (!(layer_id == rhs.layer_id))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_reconstruct_layer_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_reconstruct_layer_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_reconstruct_layer_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_reconstruct_layer_pargs() throw() {}
+
+  const int32_t* shard_id;
+  const int32_t* layer_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_reconstruct_layer_result__isset {
+  _AdaptiveSuccinctService_reconstruct_layer_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_reconstruct_layer_result__isset;
+
+class AdaptiveSuccinctService_reconstruct_layer_result {
+ public:
+
+  AdaptiveSuccinctService_reconstruct_layer_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_reconstruct_layer_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveSuccinctService_reconstruct_layer_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_reconstruct_layer_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_reconstruct_layer_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_reconstruct_layer_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_reconstruct_layer_presult__isset {
+  _AdaptiveSuccinctService_reconstruct_layer_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_reconstruct_layer_presult__isset;
+
+class AdaptiveSuccinctService_reconstruct_layer_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_reconstruct_layer_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveSuccinctService_reconstruct_layer_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveSuccinctService_storage_size_args__isset {
+  _AdaptiveSuccinctService_storage_size_args__isset() : shard_id(false) {}
+  bool shard_id;
+} _AdaptiveSuccinctService_storage_size_args__isset;
+
+class AdaptiveSuccinctService_storage_size_args {
+ public:
+
+  AdaptiveSuccinctService_storage_size_args() : shard_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_storage_size_args() throw() {}
+
+  int32_t shard_id;
+
+  _AdaptiveSuccinctService_storage_size_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_storage_size_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_storage_size_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_storage_size_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_storage_size_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_storage_size_pargs() throw() {}
+
+  const int32_t* shard_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_storage_size_result__isset {
+  _AdaptiveSuccinctService_storage_size_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_storage_size_result__isset;
+
+class AdaptiveSuccinctService_storage_size_result {
+ public:
+
+  AdaptiveSuccinctService_storage_size_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_storage_size_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveSuccinctService_storage_size_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_storage_size_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_storage_size_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_storage_size_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_storage_size_presult__isset {
+  _AdaptiveSuccinctService_storage_size_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_storage_size_presult__isset;
+
+class AdaptiveSuccinctService_storage_size_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_storage_size_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveSuccinctService_storage_size_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class AdaptiveSuccinctService_get_num_shards_args {
  public:
@@ -985,6 +1342,15 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   void get_response(std::string& _return, const int64_t key);
   void send_get_response(const int64_t key);
   void recv_get_response(std::string& _return);
+  int64_t remove_layer(const int32_t shard_id, const int32_t layer_id);
+  void send_remove_layer(const int32_t shard_id, const int32_t layer_id);
+  int64_t recv_remove_layer();
+  int64_t reconstruct_layer(const int32_t shard_id, const int32_t layer_id);
+  void send_reconstruct_layer(const int32_t shard_id, const int32_t layer_id);
+  int64_t recv_reconstruct_layer();
+  int64_t storage_size(const int32_t shard_id);
+  void send_storage_size(const int32_t shard_id);
+  int64_t recv_storage_size();
   int32_t get_num_shards();
   void send_get_num_shards();
   int32_t recv_get_num_shards();
@@ -1015,6 +1381,9 @@ class AdaptiveSuccinctServiceProcessor : public ::apache::thrift::TDispatchProce
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_request(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_response(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_remove_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_reconstruct_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_storage_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_queue_length(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1027,6 +1396,9 @@ class AdaptiveSuccinctServiceProcessor : public ::apache::thrift::TDispatchProce
     processMap_["initialize"] = &AdaptiveSuccinctServiceProcessor::process_initialize;
     processMap_["get_request"] = &AdaptiveSuccinctServiceProcessor::process_get_request;
     processMap_["get_response"] = &AdaptiveSuccinctServiceProcessor::process_get_response;
+    processMap_["remove_layer"] = &AdaptiveSuccinctServiceProcessor::process_remove_layer;
+    processMap_["reconstruct_layer"] = &AdaptiveSuccinctServiceProcessor::process_reconstruct_layer;
+    processMap_["storage_size"] = &AdaptiveSuccinctServiceProcessor::process_storage_size;
     processMap_["get_num_shards"] = &AdaptiveSuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &AdaptiveSuccinctServiceProcessor::process_get_num_keys;
     processMap_["get_queue_length"] = &AdaptiveSuccinctServiceProcessor::process_get_queue_length;
@@ -1111,6 +1483,33 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
     }
     ifaces_[i]->get_response(_return, key);
     return;
+  }
+
+  int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->remove_layer(shard_id, layer_id);
+    }
+    return ifaces_[i]->remove_layer(shard_id, layer_id);
+  }
+
+  int64_t reconstruct_layer(const int32_t shard_id, const int32_t layer_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->reconstruct_layer(shard_id, layer_id);
+    }
+    return ifaces_[i]->reconstruct_layer(shard_id, layer_id);
+  }
+
+  int64_t storage_size(const int32_t shard_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->storage_size(shard_id);
+    }
+    return ifaces_[i]->storage_size(shard_id);
   }
 
   int32_t get_num_shards() {

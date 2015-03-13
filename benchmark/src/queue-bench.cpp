@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "QueueBenchmark.hpp"
+#include "../include/DynamicAdaptBenchmark.hpp"
 
 void print_usage(char *exec) {
     fprintf(stderr, "Usage: %s [-c test-config-file] [-o output-path]\n", exec);
@@ -34,7 +34,9 @@ int main(int argc, char **argv) {
     // Benchmark core functions
     std::string reqpath = outpath + "/adashard-bench.req";
     std::string respath = outpath + "/adashard-bench.res";
-    QueueBenchmark q_bench(configfile, reqpath, respath);
+    std::string addpath = outpath + "/adashard-bench.add";
+    std::string delpath = outpath + "/adashard-bench.del";
+    DynamicAdaptBenchmark q_bench(configfile, reqpath, respath, addpath, delpath);
     q_bench.run_benchmark();
 
     return 0;
