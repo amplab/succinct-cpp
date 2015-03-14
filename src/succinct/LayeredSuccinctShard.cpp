@@ -37,6 +37,7 @@ size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
 void LayeredSuccinctShard::get(std::string& result, int64_t key) {
 
     if(!opportunistic) {
+        LayeredSampledISA *ISA_lay = (LayeredSampledISA *)ISA;
         result = "";
         int64_t pos = get_value_offset_pos(key);
         if(pos < 0)
@@ -49,7 +50,7 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
         for(int64_t i = 0; i < len; i++) {
             result[i] = alphabet[lookupC(idx)];
             uint64_t next_pos = start + i + 1;
-            if(next_pos % ISA->get_sampling_rate() == 0) {
+            if(ISA_lay->is_sampled(next_pos)) {
                 idx = lookupISA(next_pos);
             } else {
                 idx = lookupNPA(idx);
@@ -72,7 +73,7 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
         uint64_t next_pos = start + i + 1;
-        if(next_pos % ISA->get_sampling_rate() == 0) {
+        if(ISA_opp->is_sampled(next_pos)) {
             idx = lookupISA(next_pos);
         } else {
             idx = lookupNPA(idx);
