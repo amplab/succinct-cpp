@@ -179,8 +179,8 @@ int main(int argc, char **argv) {
                 deleted_size += SA->delete_layer(layer_id);
                 deleted_size += ISA->delete_layer(layer_id);
             }
+            fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
         }
-        fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
     }
 
     ShardBenchmark s_bench(fd, querypath);
