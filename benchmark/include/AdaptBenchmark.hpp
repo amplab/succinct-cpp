@@ -41,7 +41,7 @@ private:
 
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
-        fprintf(stderr, "Generating zipf distribution...\n");
+        fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n", skew, q_cnt);
         ZipfGenerator z(skew, q_cnt);
         fprintf(stderr, "Generated zipf distribution, generating keys...\n");
         for(count_t i = 0; i < q_cnt; i++) {
