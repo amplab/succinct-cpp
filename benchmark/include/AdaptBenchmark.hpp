@@ -41,10 +41,13 @@ private:
 
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
+        fprintf(stderr, "Generating zipf distribution...\n");
         ZipfGenerator z(skew, q_cnt);
+        fprintf(stderr, "Generated zipf distribution, generating keys...\n");
         for(count_t i = 0; i < q_cnt; i++) {
             randoms.push_back(z.next());
         }
+        fprintf(stderr, "Generated keys.\n");
     }
 
     void read_queries(std::string filename) {
