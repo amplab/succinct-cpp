@@ -90,7 +90,6 @@ int main(int argc, char **argv) {
                 del_list.erase(0, pos + delimiter.length());
             }
             deleted_layers.push_back(atoi(del_list.c_str()));
-            fprintf(stderr, "Number of layers to be deleted = %u\n", deleted_layers.size());
             break;
         }
         case 'n':
@@ -243,7 +242,6 @@ int main(int argc, char **argv) {
                     created_layers.at(i), end_time - start_time);
         }
     } else {
-        // Not supported
         assert(0);
     }
 
