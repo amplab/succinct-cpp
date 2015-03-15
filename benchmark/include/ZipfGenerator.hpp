@@ -14,7 +14,7 @@ private:
 
     double theta;       // The skew parameter (0=pure zipf, 1=pure uniform)
     uint64_t N;         // The number of objects
-    probvals *zdist;    // The probability distribution
+    double *zdist;
 
     // Generates the zipf probability distribution
     void gen_zipf() {
@@ -37,9 +37,8 @@ private:
         c = 1.0 / sum;
 
         for (i = 0; i < N; i++) {
-            zdist[i].prob = c / pow((double) (i + 1), (double) (expo));
-            sumc +=  zdist[i].prob;
-            zdist[i].cum_prob = sumc;
+            sumc +=  c / pow((double) (i + 1), (double) (expo));
+            zdist[i] = sumc;
         }
     }
 
@@ -54,7 +53,7 @@ public:
 
         this->theta = theta;
         this->N = N;
-        this->zdist = new probvals[N];
+        this->zdist = new double[N];
         this->gen_zipf();
     }
 
@@ -65,19 +64,33 @@ public:
     // Returns the next zipf value
     uint64_t next() {
         double r = ((double) rand() / (RAND_MAX));
+        /*
+        // Inefficient
         for(uint64_t i = 0; i < N; i++) {
-            if(r < zdist[i].cum_prob) {
+            if(r < cum_zdist[i]) {
                 return i;
             }
         }
-        return N;
+        */
+        int64_t lo = 0;
+        int64_t hi = N;
+        while (lo != hi) {
+            int64_t mid = (lo + hi) / 2;
+            if(zdist[mid] <= r) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+
+        return lo;
     }
 
     // Displays the distribution
     void display() {
         fprintf(stderr, "Printing out distribution:\n");
         for(uint64_t i = 0; i < N; i++) {
-            fprintf(stderr, "%f\t%f\n", i, zdist[i].prob, zdist[i].cum_prob);
+            fprintf(stderr, "%f\n", i, zdist[i]);
         }
     }
 
