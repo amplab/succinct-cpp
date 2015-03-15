@@ -6,6 +6,7 @@
 #include <thrift/transport/TBufferTransports.h>
 
 #include "Benchmark.hpp"
+#include "ZipfGenerator.hpp"
 #include "thrift/AdaptiveQueryService.h"
 #include "thrift/ports.h"
 
@@ -36,11 +37,13 @@ private:
     std::string addfile;
     std::string delfile;
     std::atomic<uint64_t> queue_length;
+    double skew;
 
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
+        ZipfGenerator z(skew, q_cnt);
         for(count_t i = 0; i < q_cnt; i++) {
-            randoms.push_back(rand() % q_cnt);
+            randoms.push_back(z.next());
         }
     }
 
@@ -119,7 +122,7 @@ private:
 
 public:
     AdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
-            std::string addfile, std::string delfile, std::string queryfile = "") : Benchmark() {
+            std::string addfile, std::string delfile, double skew, std::string queryfile = "") : Benchmark() {
 
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
@@ -134,6 +137,7 @@ public:
         this->delfile = delfile;
 
         this->queue_length = 0;
+        this->skew = skew;
 
         generate_randoms();
         if(queryfile != "") {

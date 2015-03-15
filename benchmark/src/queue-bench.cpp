@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/DynamicAdaptBenchmark.hpp"
+#include "DynamicAdaptBenchmark.hpp"
 
 void print_usage(char *exec) {
     fprintf(stderr, "Usage: %s [-c test-config-file] [-o output-path]\n", exec);
@@ -17,7 +17,8 @@ int main(int argc, char **argv) {
     int c;
     std::string configfile = "benchmark/conf/adashard-bench.conf";
     std::string outpath = "benchmark/res";
-    while((c = getopt(argc, argv, "c:o:")) != -1) {
+    double skew = 1.0;  // Pure uniform
+    while((c = getopt(argc, argv, "c:o:z:")) != -1) {
         switch(c) {
         case 'c':
             configfile = std::string(optarg);
@@ -25,9 +26,13 @@ int main(int argc, char **argv) {
         case 'o':
             outpath = std::string(optarg);
             break;
+        case 'z':
+            skew = atof(optarg);
+            break;
         default:
             configfile = "benchmark/conf/adashard-bench.conf";
             outpath = "benchmark/res";
+            skew = 1.0;
         }
     }
 
@@ -36,7 +41,7 @@ int main(int argc, char **argv) {
     std::string respath = outpath + "/adashard-bench.res";
     std::string addpath = outpath + "/adashard-bench.add";
     std::string delpath = outpath + "/adashard-bench.del";
-    DynamicAdaptBenchmark q_bench(configfile, reqpath, respath, addpath, delpath);
+    DynamicAdaptBenchmark q_bench(configfile, reqpath, respath, addpath, delpath, skew);
     q_bench.run_benchmark();
 
     return 0;
