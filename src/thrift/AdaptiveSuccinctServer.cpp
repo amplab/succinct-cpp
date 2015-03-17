@@ -87,19 +87,15 @@ public:
     }
 
     void get_request(const int64_t key) {
-        // fprintf(stderr, "Received a get request for key = %lu\n", key);
         uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
         queue_lengths[shard_id]++;
         qservers.at(shard_id).send_get(key % LayeredSuccinctShard::MAX_KEYS);
-        // fprintf(stderr, "Completed get request for key = %lu\n", key);
     }
 
     void get_response(std::string& _return, const int64_t key) {
-        // fprintf(stderr, "Received a get response for key = %lu\n", key);
         uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
         qservers.at(shard_id).recv_get(_return);
         queue_lengths[shard_id]--;
-        // fprintf(stderr, "Completed get response for key = %lu\n", key);
     }
 
     int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) {
