@@ -173,11 +173,13 @@ public:
                     stage, request_rates[stage], duration);
             time_t start_time = get_timestamp();
             while((cur_time = get_timestamp()) - start_time <= duration) {
+                time_t t0 = get_timestamp();
                 query_client->send_get(randoms[i % randoms.size()]);
+                time_t t1 = get_timestamp();
                 i++;
                 num_requests++;
                 queue_length++;
-                usleep(sleep_time);
+                usleep(sleep_time - (t1 - t0));
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
