@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <cmath>
 
 class ZipfGenerator {
 private:
@@ -84,14 +85,6 @@ public:
         }
 
         return lo;
-    }
-
-    // Displays the distribution
-    void display() {
-        fprintf(stderr, "Printing out distribution:\n");
-        for(uint64_t i = 0; i < N; i++) {
-            fprintf(stderr, "%f\n", i, zdist[i]);
-        }
     }
 
 };
