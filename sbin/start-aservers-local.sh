@@ -1,10 +1,9 @@
-# Usage: start-server.sh <datafile> <server#>
-usage="Usage: start-server.sh <datafile> <server#>"
+#!/usr/bin/env bash
 
-if [ $# -le 1 ]; then
-  echo $usage
-  exit 1
-fi
+sbin="`dirname "$0"`"
+sbin="`cd "$sbin"; pwd`"
+
+. "$sbin/succinct-config.sh"
 
 sbin="`dirname "$0"`"
 sbin="`cd "$sbin"; pwd`"
@@ -32,12 +31,10 @@ if [ "$QUERY_SERVER_PORT" = "" ]; then
 	QUERY_SERVER_PORT=11002
 fi
 
-if [ "$OPPORTUNISTIC" = "TRUE" ]; then
-    OPP="-o"
-elif
-    OPP=""
-fi
+LIMIT=$(($1 - 1))
 
-port=$(( $QUERY_SERVER_PORT + $2 ))
-
-nohup "$bin/aserver" -m 1 $OPP -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &
+for i in `seq 0 $LIMIT`; do
+	PORT=$(($QUERY_SERVER_PORT + $i))
+	DATA_FILE="$SUCCINCT_DATA_PATH/data"
+	nohup "$bin/aserver" -m 1 -p $PORT $OPP $DATA_FILE 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
+done

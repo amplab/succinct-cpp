@@ -9,7 +9,7 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "thrift/ports.h"
-#include "thrift/LoadBalancer.hpp"
+#include "thrift/DynamicLoadBalancer.hpp"
 
 #include "succinct/LayeredSuccinctShard.hpp"
 
@@ -22,6 +22,7 @@
 #include <iterator>
 #include <array>
 #include <atomic>
+#include <thread>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -38,47 +39,44 @@ private:
     }
 
 public:
-    AdaptiveSuccinctServiceHandler(std::string filename, uint32_t local_host_id,
-            uint32_t num_shards, std::string qserver_exec,
-            std::vector<std::string> hostnames, bool construct,
-            uint32_t replication,
-            bool standalone) {
+    AdaptiveSuccinctServiceHandler(uint32_t local_host_id,
+            uint32_t num_shards, std::vector<std::string> hostnames, bool construct,
+            uint32_t replication, std::atomic<uint64_t> *local_queue_lengths,
+            std::atomic<uint64_t> *global_queue_lengths) {
         this->local_host_id = local_host_id;
         this->num_shards = num_shards;
+        this->num_hosts = hostnames.size();
         this->hostnames = hostnames;
-        this->filename = filename;
-        this->qserver_exec = qserver_exec;
         this->construct = construct;
         this->replication = replication;
-        for(size_t i = 0; i < 8; i++) {
-            queue_lengths[i] = 0;
-        }
-        if(standalone) {
-            start_servers();
-        }
-    }
-
-    int32_t start_servers() {
-        return initialize(0);
+        this->local_queue_lengths = local_queue_lengths;
+        this->global_queue_lengths = global_queue_lengths;
+        initialize(0);
     }
 
     int32_t initialize(const int32_t mode) {
+        int res = start_servers();
+        this->connect_to_handlers();
+        return res;
+    }
+
+    int32_t start_servers() {
         // Connect to query servers and start initialization
-        for(uint32_t i = 0; i < num_shards; i++) {
-            int port = QUERY_SERVER_PORT + i;
+        for(uint32_t local_shard_id = 0; local_shard_id < num_shards; local_shard_id++) {
+            int port = QUERY_SERVER_PORT + local_shard_id;
             boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
             boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
             boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
             AdaptiveQueryServiceClient client(protocol);
             transport->open();
-            fprintf(stderr, "Connected to QueryServer %u!\n", i);
-            int32_t status = client.init(i);
+            fprintf(stderr, "Connected to QueryServer %u!\n", local_shard_id);
+            uint32_t global_shard_id = (local_shard_id * num_hosts + local_host_id) / replication;
+            int32_t status = client.init(global_shard_id);
+            transport->close();
             if(status == 0) {
-                fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
-                qservers.push_back(client);
-                qserver_transports.push_back(transport);
+                fprintf(stderr, "Initialization complete at QueryServer %u!\n", global_shard_id);
             } else {
-                fprintf(stderr, "Initialization failed at QueryServer %u!\n", i);
+                fprintf(stderr, "Initialization failed at QueryServer %u!\n", global_shard_id);
                 return 1;
             }
         }
@@ -86,16 +84,42 @@ public:
         return 0;
     }
 
-    void get_request(const int64_t key) {
-        uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
-        queue_lengths[shard_id]++;
-        qservers.at(shard_id).send_get(key % LayeredSuccinctShard::MAX_KEYS);
+    int32_t get_request(const int64_t key) {
+        uint32_t primary_shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
+        uint32_t replica_id = (primary_shard_id * replication);   // TODO: Add load balancer code; right now all queries go to primary only
+        uint32_t host_id = replica_id % num_hosts;
+        uint32_t local_shard_id =  replica_id / num_hosts;
+
+        int64_t queue_length;
+        if(host_id == local_host_id)
+            queue_length = get_request_local(local_shard_id, key % LayeredSuccinctShard::MAX_KEYS);
+        else
+            queue_length = qhandlers.at(host_id).get_request_local(local_shard_id, key % LayeredSuccinctShard::MAX_KEYS);
+
+        global_queue_lengths[replica_id] = queue_length;
+
+        return replica_id;
     }
 
-    void get_response(std::string& _return, const int64_t key) {
-        uint32_t shard_id = (uint32_t)(key / LayeredSuccinctShard::MAX_KEYS);
-        qservers.at(shard_id).recv_get(_return);
-        queue_lengths[shard_id]--;
+    int64_t get_request_local(const int32_t local_shard_id, const int64_t key) {
+        local_queue_lengths[local_shard_id]++;
+        qservers.at(local_shard_id).send_get(key);
+        return local_queue_lengths[local_shard_id];
+    }
+
+    void get_response(std::string& _return, const int32_t replica_id) {
+        uint32_t host_id = replica_id % num_hosts;
+        uint32_t local_shard_id =  replica_id / num_hosts;
+
+        if(host_id == local_host_id)
+            get_response_local(_return, local_shard_id);
+        else
+            qhandlers.at(host_id).get_response_local(_return, local_shard_id);
+    }
+
+    void get_response_local(std::string& _return, const int32_t local_shard_id) {
+        qservers.at(local_shard_id).recv_get(_return);
+        local_queue_lengths[local_shard_id]--;
     }
 
     int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) {
@@ -143,7 +167,36 @@ public:
     }
 
     int64_t get_queue_length(const int32_t shard_id) {
-        return queue_lengths[shard_id];
+        return local_queue_lengths[shard_id];
+    }
+
+    int32_t connect_to_handlers() {
+        // Create connections to all Succinct Clients
+        for(int i = 0; i < hostnames.size(); i++) {
+            fprintf(stderr, "Connecting to %s:%d...\n", hostnames[i].c_str(), QUERY_HANDLER_PORT);
+            try {
+                if(i == local_host_id) {
+                    fprintf(stderr, "Self setup:\n");
+                    connect_to_local_servers();
+                } else {
+                    boost::shared_ptr<TSocket> socket(new TSocket(hostnames[i], QUERY_HANDLER_PORT));
+                    boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+                    boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+                    AdaptiveSuccinctServiceClient client(protocol);
+                    transport->open();
+                    fprintf(stderr, "Connected!\n");
+                    qhandler_transports.push_back(transport);
+                    qhandlers.insert(std::pair<int, AdaptiveSuccinctServiceClient>(i, client));
+                    fprintf(stderr, "Asking %s to connect to local servers...\n", hostnames[i].c_str());
+                    client.connect_to_local_servers();
+                }
+            } catch(std::exception& e) {
+                fprintf(stderr, "Client is not up...: %s\n ", e.what());
+                return 1;
+            }
+        }
+        fprintf(stderr, "Currently have %d connections.\n", qhandlers.size());
+        return 0;
     }
 
     int32_t connect_to_local_servers() {
@@ -168,6 +221,31 @@ public:
         return 0;
     }
 
+    int32_t disconnect_from_handlers() {
+        // Destroy connections to all Succinct Handlers
+        for(int i = 0; i < hostnames.size(); i++) {
+            try {
+                if(i == local_host_id) {
+                    fprintf(stderr, "Killing local server connections...\n");
+                    disconnect_from_local_servers();
+                } else {
+                    fprintf(stderr, "Asking client %s:%d to kill local server connections...\n", hostnames[i].c_str(), QUERY_HANDLER_PORT);
+                    qhandlers.at(i).disconnect_from_local_servers();
+                    fprintf(stderr, "Closing connection to %s:%d...", hostnames[i].c_str(), QUERY_HANDLER_PORT);
+                    qhandler_transports[i]->close();
+                    fprintf(stderr, "Closed!\n");
+                }
+            } catch(std::exception& e) {
+                fprintf(stderr, "Could not close connection: %s\n", e.what());
+                return 1;
+            }
+        }
+        qhandler_transports.clear();
+        qhandlers.clear();
+
+        return 0;
+    }
+
     int32_t disconnect_from_local_servers() {
         for(int i = 0; i < qservers.size(); i++) {
             try {
@@ -185,8 +263,6 @@ public:
     }
 
 private:
-    std::string filename;
-    std::string qserver_exec;
     bool construct;
     std::vector<std::string> hostnames;
     std::vector<AdaptiveQueryServiceClient> qservers;
@@ -194,29 +270,150 @@ private:
     std::vector<boost::shared_ptr<TTransport>> qhandler_transports;
     std::map<int, AdaptiveSuccinctServiceClient> qhandlers;
     uint32_t num_shards;
+    uint32_t num_hosts;
     uint32_t local_host_id;
     uint32_t replication;
-    std::array<std::atomic<uint64_t>, 8> queue_lengths;
+    std::atomic<uint64_t> *local_queue_lengths;
+    std::atomic<uint64_t> *global_queue_lengths;
 };
 
+class AdaptiveHandlerProcessorFactory : public TProcessorFactory {
+public:
+    AdaptiveHandlerProcessorFactory(uint32_t local_host_id,
+            uint32_t num_shards, std::vector<std::string> hostnames, bool construct,
+            uint32_t replication, std::atomic<uint64_t> *local_queue_lengths,
+            std::atomic<uint64_t> *global_queue_lengths) {
+        this->local_host_id = local_host_id;
+        this->num_shards = num_shards;
+        this->hostnames = hostnames;
+        this->construct = construct;
+        this->distribution = distribution;
+        this->replication = replication;
+        this->local_queue_lengths = local_queue_lengths;
+        this->global_queue_lengths = global_queue_lengths;
+    }
+
+    boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
+        boost::shared_ptr<AdaptiveSuccinctServiceHandler> handler(new AdaptiveSuccinctServiceHandler(local_host_id,
+                num_shards, hostnames, construct, replication, local_queue_lengths, global_queue_lengths));
+        boost::shared_ptr<TProcessor> handlerProcessor(new AdaptiveSuccinctServiceProcessor(handler));
+        return handlerProcessor;
+    }
+
+private:
+    std::vector<std::string> hostnames;
+    uint32_t local_host_id;
+    uint32_t num_shards;
+    std::vector<double> distribution;
+    std::vector<uint32_t> sampling_rates;
+    bool construct;
+    uint32_t replication;
+    std::atomic<uint64_t> *local_queue_lengths;
+    std::atomic<uint64_t> *global_queue_lengths;
+};
+
+typedef unsigned long long int timestamp_t;
+
+static timestamp_t get_timestamp() {
+    struct timeval now;
+    gettimeofday (&now, NULL);
+
+    return  now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+}
+
+static void monitor_queues_local(std::atomic<uint64_t> *local_queue_lengths, uint64_t num_local_shards) {
+
+    /*
+     * Connect to Query Handler; this would give the local queue monitor daemon it's own
+     * thread at the Query Handler, which would not interfere with the query threads
+     * at the QueryHandler.
+     *
+     */
+
+    double alpha = 0.9;
+    uint32_t delta = 5;
+
+    sleep(delta);
+    std::ofstream output("local_queue_lengths.out");
+
+    int port = QUERY_HANDLER_PORT;
+    boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+    boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+    boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+    AdaptiveSuccinctServiceClient *client = new AdaptiveSuccinctServiceClient(protocol);
+    transport->open();
+
+    double *avg_qlens = new double[num_local_shards];
+    for(uint32_t i = 0; i < num_local_shards; i++) {
+        avg_qlens[i] = 0.0;
+    }
+
+    while(true) {
+        output << get_timestamp();
+        for(uint32_t i = 0; i < num_local_shards; i++) {
+            avg_qlens[i] = local_queue_lengths[i] * alpha + (1.0 - alpha) * avg_qlens[i];
+            output << "\t" << avg_qlens[i];
+        }
+        output << "\n";
+        sleep(delta);
+    }
+}
+
+static void monitor_queues_global(std::atomic<uint64_t> *global_queue_lengths, uint64_t num_global_shards) {
+
+    /*
+     * Connect to Query Handler; this would give the global queue monitor daemon it's own
+     * thread at the Query Handler, which would not interfere with the query threads
+     * at the QueryHandler.
+     *
+     */
+
+    uint32_t delta = 5;
+
+    sleep(delta);
+    std::ofstream output("global_queue_lengths.out");
+
+    int port = QUERY_HANDLER_PORT;
+    boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+    boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+    boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+    AdaptiveSuccinctServiceClient *client = new AdaptiveSuccinctServiceClient(protocol);
+    transport->open();
+
+
+    while(true) {
+        output << get_timestamp();
+        for(uint32_t i = 0; i < num_global_shards; i++) {
+            uint64_t queue_len = global_queue_lengths[i];
+            output << "\t" << queue_len;
+        }
+        output << "\n";
+        sleep(delta);
+    }
+}
+
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-s num_shards] [-r replication] [-q query_server_executible] [-h hostsfile] [-i hostid] file\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-s num_local_shards] [-p num_primary_shards] [-r replication] [-h hostsfile] [-i hostid]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 15) {
+    if(argc > 13) {
         print_usage(argv[0]);
         return -1;
     }
 
+    fprintf(stderr, "Command line: ");
+    for(int i = 0; i < argc; i++) {
+        fprintf(stderr, "%s ", argv[i]);
+    }
+    fprintf(stderr, "\n");
+
     int c;
-    bool standalone = false;
-    uint32_t mode = 0, num_shards = 1, replication = 1;
-    std::string qserver_exec = "./bin/qserver";
+    uint32_t mode = 0, num_local_shards = 1, replication = 1, num_primary_shards = 1;
     std::string hostsfile = "./conf/hosts";
     uint32_t local_host_id = 0;
 
-    while((c = getopt(argc, argv, "m:s:r:q:h:i:d")) != -1) {
+    while((c = getopt(argc, argv, "m:s:r:h:i:p:")) != -1) {
         switch(c) {
         case 'm':
         {
@@ -225,17 +422,17 @@ int main(int argc, char **argv) {
         }
         case 's':
         {
-            num_shards = atoi(optarg);
+            num_local_shards = atoi(optarg);
+            break;
+        }
+        case 'p':
+        {
+            num_primary_shards = atoi(optarg);
             break;
         }
         case 'r':
         {
             replication = atoi(optarg);
-            break;
-        }
-        case 'q':
-        {
-            qserver_exec = optarg;
             break;
         }
         case 'h':
@@ -248,30 +445,18 @@ int main(int argc, char **argv) {
             local_host_id = atoi(optarg);
             break;
         }
-        case 'd':
-        {
-            standalone = true;
-            break;
-        }
         default:
         {
             mode = 0;
-            num_shards = 1;
-            qserver_exec = "./bin/qserver";
+            num_local_shards = 1;
+            num_primary_shards = 1;
             hostsfile = "./conf/hosts";
             replication = 1;
             local_host_id = 0;
-            standalone = false;
         }
         }
     }
 
-    if(optind == argc) {
-        print_usage(argv[0]);
-        return -1;
-    }
-
-    std::string filename = std::string(argv[optind]);
     bool construct = (mode == 0) ? true : false;
 
     std::ifstream hosts(hostsfile);
@@ -281,11 +466,27 @@ int main(int argc, char **argv) {
         hostnames.push_back(host);
     }
 
+    std::atomic<uint64_t> *local_queue_lengths = new std::atomic<uint64_t>[num_local_shards];
+    for(uint32_t i = 0; i < num_local_shards; i++) {
+        local_queue_lengths[i] = 0;
+    }
+
+    std::atomic<uint64_t> *global_queue_lengths = new std::atomic<uint64_t>[num_primary_shards * replication];
+    for(uint32_t i = 0; i < num_primary_shards; i++) {
+        global_queue_lengths[i] = 0;
+    }
+
+    DynamicLoadBalancer *lb = new DynamicLoadBalancer(num_primary_shards, replication);
+
     int port = QUERY_HANDLER_PORT;
-    shared_ptr<AdaptiveSuccinctServiceHandler> handler(new AdaptiveSuccinctServiceHandler(filename,
-            local_host_id, num_shards, qserver_exec, hostnames, construct, replication, standalone));
+//    shared_ptr<AdaptiveHandlerProcessorFactory> handlerFactory(new AdaptiveHandlerProcessorFactory(local_host_id,
+//            num_local_shards, hostnames, construct, replication, local_queue_lengths, global_queue_lengths));
+    shared_ptr<AdaptiveSuccinctServiceHandler> handler(new AdaptiveSuccinctServiceHandler(local_host_id,
+            num_local_shards, hostnames, construct, replication, local_queue_lengths, global_queue_lengths));
     shared_ptr<TProcessor> processor(new AdaptiveSuccinctServiceProcessor(handler));
 
+    std::thread local_queue_monitor_daemon(monitor_queues_local, local_queue_lengths, num_local_shards);
+    std::thread global_queue_monitor_daemon(monitor_queues_global, global_queue_lengths, num_primary_shards * replication);
     try {
         shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
         shared_ptr<TBufferedTransportFactory> transport_factory(new TBufferedTransportFactory());
@@ -299,6 +500,8 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Exception at SuccinctServer:main(): %s\n", e.what());
     }
 
+    if(local_queue_monitor_daemon.joinable())
+        local_queue_monitor_daemon.join();
+
     return 0;
 }
-

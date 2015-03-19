@@ -1,12 +1,17 @@
 service AdaptiveSuccinctService {
+	i32 connect_to_handlers(),
+    i32 disconnect_from_handlers(),
+    
     i32 connect_to_local_servers(),
     i32 disconnect_from_local_servers(),
 
     i32 start_servers(),
     i32 initialize(1:i32 mode),
 
-    oneway void get_request(1:i64 key),
-    string get_response(1:i64 key),
+    i32 get_request(1:i64 key),
+    i64 get_request_local(1:i32 local_shard_id, 2:i64 key),
+    string get_response(1:i32 replica_id),
+    string get_response_local(1:i32 local_shard_id),
     
     i64 remove_layer(1:i32 shard_id, 2:i32 layer_id),
     i64 reconstruct_layer(1:i32 shard_id, 2:i32 layer_id),

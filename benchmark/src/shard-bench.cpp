@@ -5,6 +5,8 @@
 #include "succinct/SuccinctShard.hpp"
 #include "ShardBenchmark.hpp"
 
+#include "thrift/DynamicLoadBalancer.hpp"
+
 void print_usage(char *exec) {
     fprintf(stderr, "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d delete-layers] [-c create-layers] [-n npa_sampling_rate] [-t type] [-l len] [-q queryfile] [file]\n", exec);
 }

@@ -9,10 +9,14 @@
 #include "ZipfGenerator.hpp"
 #include "thrift/AdaptiveSuccinctService.h"
 #include "thrift/ports.h"
+#include "thrift/ResponseQueue.hpp"
+
+#include "succinct/LayeredSuccinctShard.hpp"
 
 #include <thread>
 #include <sstream>
 #include <unistd.h>
+#include <functional>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -37,12 +41,29 @@ private:
     std::string addfile;
     std::string delfile;
     double skew;
+    uint32_t num_partitions;
 
     void generate_randoms() {
-        count_t q_cnt = query_client->get_num_keys(0);
+        count_t q_cnt = 0;
+        std::vector<count_t> cum_q_cnt;
+        for(uint32_t i = 0; i < this->num_partitions; i++) {
+            q_cnt += query_client->get_num_keys(i);
+            cum_q_cnt.push_back(q_cnt);
+        }
         ZipfGenerator z(skew, q_cnt);
         for(count_t i = 0; i < q_cnt; i++) {
-            randoms.push_back(z.next());
+            // Map from Zipf space to key space
+            uint64_t r = z.next();
+            uint64_t key = 0;
+            uint64_t prev_cnt = 0;
+            for(size_t j = 0; j < cum_q_cnt.size(); j++) {
+                if(r < cum_q_cnt[j]) {
+                    key = j * LayeredSuccinctShard::MAX_KEYS + (r - prev_cnt);
+                    break;
+                }
+                prev_cnt = cum_q_cnt[j];
+            }
+            randoms.push_back(key);
         }
     }
 
@@ -121,7 +142,8 @@ private:
 
 public:
     DynamicAdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
-            std::string addfile, std::string delfile, double skew, std::string queryfile = "") : Benchmark() {
+            std::string addfile, std::string delfile, double skew, uint32_t num_partitions,
+            std::string queryfile = "") : Benchmark() {
 
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
@@ -137,6 +159,7 @@ public:
         this->addfile = addfile;
         this->delfile = delfile;
         this->skew = skew;
+        this->num_partitions = num_partitions;
 
         generate_randoms();
         if(queryfile != "") {
@@ -148,6 +171,7 @@ public:
     static void send_requests(AdaptiveSuccinctServiceClient *query_client,
             boost::shared_ptr<TTransport> query_transport,
             boost::shared_ptr<TTransport> resp_transport,
+            ResponseQueue<int32_t> &response_queue,
             std::vector<int64_t> randoms,
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
@@ -167,10 +191,12 @@ public:
                     stage, request_rates[stage], duration);
             time_t start_time = get_timestamp();
             while((cur_time = get_timestamp()) - start_time <= duration) {
-                query_client->get_request(randoms[i % randoms.size()]);
+                time_t t0 = get_timestamp();
+                int32_t res_id = query_client->get_request(randoms[i % randoms.size()]);
+                response_queue.push(res_id);
                 i++;
                 num_requests++;
-                usleep(sleep_time);
+                while(get_timestamp() - t0 < sleep_time);
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
@@ -199,7 +225,7 @@ public:
     }
 
     static void measure_responses(AdaptiveSuccinctServiceClient *query_client,
-            AdaptiveSuccinctServiceClient *stats_client, std::vector<int64_t> randoms,
+            AdaptiveSuccinctServiceClient *stats_client, ResponseQueue<int32_t> &response_queue,
             std::string resfile) {
         std::string res;
         const time_t MEASURE_INTERVAL = 5000000;
@@ -210,14 +236,13 @@ public:
         time_t measure_start_time = get_timestamp();
         while(true) {
             try {
-                query_client->get_response(res, randoms[i % randoms.size()]);
+                query_client->get_response(res, response_queue.pop());
                 num_responses++;
                 i++;
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double thput = ((double) num_responses * 1000 * 1000) / ((double)diff);
-                    res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size(0)
-                            << "\t" << stats_client->get_queue_length(0) << "\n";
+                    res_stream << cur_time << "\t" << thput << "\n";
                     res_stream.flush();
                     num_responses = 0;
                     measure_start_time = get_timestamp();
@@ -228,8 +253,7 @@ public:
         }
         time_t diff = cur_time - measure_start_time;
         double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
-        res_stream << cur_time << "\t" << thput << "\t" << stats_client->storage_size(0)
-                << "\t" << stats_client->get_queue_length(0) << "\n";
+        res_stream << cur_time << "\t" << thput << "\n";
         res_stream.close();
     }
 
@@ -279,15 +303,17 @@ public:
     }
 
     void run_benchmark() {
+        ResponseQueue<int32_t> response_queue;
+
         std::thread req(&DynamicAdaptBenchmark::send_requests,
                 query_client, query_transport,
-                resp_transport,
+                resp_transport, std::ref(response_queue),
                 randoms, request_rates, durations,
                 reqfile);
         fprintf(stderr, "Started request thread!\n");
 
         std::thread res(&DynamicAdaptBenchmark::measure_responses, resp_client,
-                stats_client, randoms, resfile);
+                stats_client, std::ref(response_queue), resfile);
         fprintf(stderr, "Started response thread!\n");
 
         std::thread lay(&DynamicAdaptBenchmark::manage_layers, mgmnt_client,
@@ -298,10 +324,10 @@ public:
             fprintf(stderr, "Request thread terminated.\n");
         }
 
-        if(res.joinable()) {
-            res.join();
-            fprintf(stderr, "Response thread terminated.\n");
-        }
+//        if(res.joinable()) {
+//            res.join();
+//            fprintf(stderr, "Response thread terminated.\n");
+//        }
 
         if(lay.joinable()) {
             lay.join();
@@ -313,6 +339,8 @@ public:
 
         mgmnt_transport->close();
         fprintf(stderr, "Closed management socket.\n");
+
+        std::terminate();
     }
 };
 

@@ -15,12 +15,16 @@
 class AdaptiveSuccinctServiceIf {
  public:
   virtual ~AdaptiveSuccinctServiceIf() {}
+  virtual int32_t connect_to_handlers() = 0;
+  virtual int32_t disconnect_from_handlers() = 0;
   virtual int32_t connect_to_local_servers() = 0;
   virtual int32_t disconnect_from_local_servers() = 0;
   virtual int32_t start_servers() = 0;
   virtual int32_t initialize(const int32_t mode) = 0;
-  virtual void get_request(const int64_t key) = 0;
-  virtual void get_response(std::string& _return, const int64_t key) = 0;
+  virtual int32_t get_request(const int64_t key) = 0;
+  virtual int64_t get_request_local(const int32_t local_shard_id, const int64_t key) = 0;
+  virtual void get_response(std::string& _return, const int32_t replica_id) = 0;
+  virtual void get_response_local(std::string& _return, const int32_t local_shard_id) = 0;
   virtual int64_t remove_layer(const int32_t shard_id, const int32_t layer_id) = 0;
   virtual int64_t reconstruct_layer(const int32_t shard_id, const int32_t layer_id) = 0;
   virtual int64_t storage_size(const int32_t shard_id) = 0;
@@ -56,6 +60,14 @@ class AdaptiveSuccinctServiceIfSingletonFactory : virtual public AdaptiveSuccinc
 class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
  public:
   virtual ~AdaptiveSuccinctServiceNull() {}
+  int32_t connect_to_handlers() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t disconnect_from_handlers() {
+    int32_t _return = 0;
+    return _return;
+  }
   int32_t connect_to_local_servers() {
     int32_t _return = 0;
     return _return;
@@ -72,10 +84,18 @@ class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
     int32_t _return = 0;
     return _return;
   }
-  void get_request(const int64_t /* key */) {
+  int32_t get_request(const int64_t /* key */) {
+    int32_t _return = 0;
+    return _return;
+  }
+  int64_t get_request_local(const int32_t /* local_shard_id */, const int64_t /* key */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  void get_response(std::string& /* _return */, const int32_t /* replica_id */) {
     return;
   }
-  void get_response(std::string& /* _return */, const int64_t /* key */) {
+  void get_response_local(std::string& /* _return */, const int32_t /* local_shard_id */) {
     return;
   }
   int64_t remove_layer(const int32_t /* shard_id */, const int32_t /* layer_id */) {
@@ -102,6 +122,194 @@ class AdaptiveSuccinctServiceNull : virtual public AdaptiveSuccinctServiceIf {
     int64_t _return = 0;
     return _return;
   }
+};
+
+
+class AdaptiveSuccinctService_connect_to_handlers_args {
+ public:
+
+  AdaptiveSuccinctService_connect_to_handlers_args() {
+  }
+
+  virtual ~AdaptiveSuccinctService_connect_to_handlers_args() throw() {}
+
+
+  bool operator == (const AdaptiveSuccinctService_connect_to_handlers_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_connect_to_handlers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_connect_to_handlers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_connect_to_handlers_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_connect_to_handlers_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_connect_to_handlers_result__isset {
+  _AdaptiveSuccinctService_connect_to_handlers_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_connect_to_handlers_result__isset;
+
+class AdaptiveSuccinctService_connect_to_handlers_result {
+ public:
+
+  AdaptiveSuccinctService_connect_to_handlers_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_connect_to_handlers_result() throw() {}
+
+  int32_t success;
+
+  _AdaptiveSuccinctService_connect_to_handlers_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_connect_to_handlers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_connect_to_handlers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_connect_to_handlers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_connect_to_handlers_presult__isset {
+  _AdaptiveSuccinctService_connect_to_handlers_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_connect_to_handlers_presult__isset;
+
+class AdaptiveSuccinctService_connect_to_handlers_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_connect_to_handlers_presult() throw() {}
+
+  int32_t* success;
+
+  _AdaptiveSuccinctService_connect_to_handlers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class AdaptiveSuccinctService_disconnect_from_handlers_args {
+ public:
+
+  AdaptiveSuccinctService_disconnect_from_handlers_args() {
+  }
+
+  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_args() throw() {}
+
+
+  bool operator == (const AdaptiveSuccinctService_disconnect_from_handlers_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_disconnect_from_handlers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_disconnect_from_handlers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_disconnect_from_handlers_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_disconnect_from_handlers_result__isset {
+  _AdaptiveSuccinctService_disconnect_from_handlers_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_disconnect_from_handlers_result__isset;
+
+class AdaptiveSuccinctService_disconnect_from_handlers_result {
+ public:
+
+  AdaptiveSuccinctService_disconnect_from_handlers_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_result() throw() {}
+
+  int32_t success;
+
+  _AdaptiveSuccinctService_disconnect_from_handlers_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_disconnect_from_handlers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_disconnect_from_handlers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_disconnect_from_handlers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset {
+  _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset;
+
+class AdaptiveSuccinctService_disconnect_from_handlers_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_disconnect_from_handlers_presult() throw() {}
+
+  int32_t* success;
+
+  _AdaptiveSuccinctService_disconnect_from_handlers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
 };
 
 
@@ -545,30 +753,204 @@ class AdaptiveSuccinctService_get_request_pargs {
 
 };
 
-typedef struct _AdaptiveSuccinctService_get_response_args__isset {
-  _AdaptiveSuccinctService_get_response_args__isset() : key(false) {}
-  bool key;
-} _AdaptiveSuccinctService_get_response_args__isset;
+typedef struct _AdaptiveSuccinctService_get_request_result__isset {
+  _AdaptiveSuccinctService_get_request_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_request_result__isset;
 
-class AdaptiveSuccinctService_get_response_args {
+class AdaptiveSuccinctService_get_request_result {
  public:
 
-  AdaptiveSuccinctService_get_response_args() : key(0) {
+  AdaptiveSuccinctService_get_request_result() : success(0) {
   }
 
-  virtual ~AdaptiveSuccinctService_get_response_args() throw() {}
+  virtual ~AdaptiveSuccinctService_get_request_result() throw() {}
 
+  int32_t success;
+
+  _AdaptiveSuccinctService_get_request_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_request_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_request_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_request_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_request_presult__isset {
+  _AdaptiveSuccinctService_get_request_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_request_presult__isset;
+
+class AdaptiveSuccinctService_get_request_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_request_presult() throw() {}
+
+  int32_t* success;
+
+  _AdaptiveSuccinctService_get_request_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_request_local_args__isset {
+  _AdaptiveSuccinctService_get_request_local_args__isset() : local_shard_id(false), key(false) {}
+  bool local_shard_id;
+  bool key;
+} _AdaptiveSuccinctService_get_request_local_args__isset;
+
+class AdaptiveSuccinctService_get_request_local_args {
+ public:
+
+  AdaptiveSuccinctService_get_request_local_args() : local_shard_id(0), key(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_request_local_args() throw() {}
+
+  int32_t local_shard_id;
   int64_t key;
 
-  _AdaptiveSuccinctService_get_response_args__isset __isset;
+  _AdaptiveSuccinctService_get_request_local_args__isset __isset;
+
+  void __set_local_shard_id(const int32_t val) {
+    local_shard_id = val;
+  }
 
   void __set_key(const int64_t val) {
     key = val;
   }
 
+  bool operator == (const AdaptiveSuccinctService_get_request_local_args & rhs) const
+  {
+    if (!(local_shard_id == rhs.local_shard_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_request_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_request_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_get_request_local_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_request_local_pargs() throw() {}
+
+  const int32_t* local_shard_id;
+  const int64_t* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_request_local_result__isset {
+  _AdaptiveSuccinctService_get_request_local_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_request_local_result__isset;
+
+class AdaptiveSuccinctService_get_request_local_result {
+ public:
+
+  AdaptiveSuccinctService_get_request_local_result() : success(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_request_local_result() throw() {}
+
+  int64_t success;
+
+  _AdaptiveSuccinctService_get_request_local_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_request_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_request_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_request_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_request_local_presult__isset {
+  _AdaptiveSuccinctService_get_request_local_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_request_local_presult__isset;
+
+class AdaptiveSuccinctService_get_request_local_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_request_local_presult() throw() {}
+
+  int64_t* success;
+
+  _AdaptiveSuccinctService_get_request_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_response_args__isset {
+  _AdaptiveSuccinctService_get_response_args__isset() : replica_id(false) {}
+  bool replica_id;
+} _AdaptiveSuccinctService_get_response_args__isset;
+
+class AdaptiveSuccinctService_get_response_args {
+ public:
+
+  AdaptiveSuccinctService_get_response_args() : replica_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_response_args() throw() {}
+
+  int32_t replica_id;
+
+  _AdaptiveSuccinctService_get_response_args__isset __isset;
+
+  void __set_replica_id(const int32_t val) {
+    replica_id = val;
+  }
+
   bool operator == (const AdaptiveSuccinctService_get_response_args & rhs) const
   {
-    if (!(key == rhs.key))
+    if (!(replica_id == rhs.replica_id))
       return false;
     return true;
   }
@@ -590,7 +972,7 @@ class AdaptiveSuccinctService_get_response_pargs {
 
   virtual ~AdaptiveSuccinctService_get_response_pargs() throw() {}
 
-  const int64_t* key;
+  const int32_t* replica_id;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -648,6 +1030,114 @@ class AdaptiveSuccinctService_get_response_presult {
   std::string* success;
 
   _AdaptiveSuccinctService_get_response_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_response_local_args__isset {
+  _AdaptiveSuccinctService_get_response_local_args__isset() : local_shard_id(false) {}
+  bool local_shard_id;
+} _AdaptiveSuccinctService_get_response_local_args__isset;
+
+class AdaptiveSuccinctService_get_response_local_args {
+ public:
+
+  AdaptiveSuccinctService_get_response_local_args() : local_shard_id(0) {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_response_local_args() throw() {}
+
+  int32_t local_shard_id;
+
+  _AdaptiveSuccinctService_get_response_local_args__isset __isset;
+
+  void __set_local_shard_id(const int32_t val) {
+    local_shard_id = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_response_local_args & rhs) const
+  {
+    if (!(local_shard_id == rhs.local_shard_id))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_response_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_response_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveSuccinctService_get_response_local_pargs {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_response_local_pargs() throw() {}
+
+  const int32_t* local_shard_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_response_local_result__isset {
+  _AdaptiveSuccinctService_get_response_local_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_response_local_result__isset;
+
+class AdaptiveSuccinctService_get_response_local_result {
+ public:
+
+  AdaptiveSuccinctService_get_response_local_result() : success() {
+  }
+
+  virtual ~AdaptiveSuccinctService_get_response_local_result() throw() {}
+
+  std::string success;
+
+  _AdaptiveSuccinctService_get_response_local_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveSuccinctService_get_response_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveSuccinctService_get_response_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveSuccinctService_get_response_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveSuccinctService_get_response_local_presult__isset {
+  _AdaptiveSuccinctService_get_response_local_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveSuccinctService_get_response_local_presult__isset;
+
+class AdaptiveSuccinctService_get_response_local_presult {
+ public:
+
+
+  virtual ~AdaptiveSuccinctService_get_response_local_presult() throw() {}
+
+  std::string* success;
+
+  _AdaptiveSuccinctService_get_response_local_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1325,6 +1815,12 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
+  int32_t connect_to_handlers();
+  void send_connect_to_handlers();
+  int32_t recv_connect_to_handlers();
+  int32_t disconnect_from_handlers();
+  void send_disconnect_from_handlers();
+  int32_t recv_disconnect_from_handlers();
   int32_t connect_to_local_servers();
   void send_connect_to_local_servers();
   int32_t recv_connect_to_local_servers();
@@ -1337,11 +1833,18 @@ class AdaptiveSuccinctServiceClient : virtual public AdaptiveSuccinctServiceIf {
   int32_t initialize(const int32_t mode);
   void send_initialize(const int32_t mode);
   int32_t recv_initialize();
-  void get_request(const int64_t key);
+  int32_t get_request(const int64_t key);
   void send_get_request(const int64_t key);
-  void get_response(std::string& _return, const int64_t key);
-  void send_get_response(const int64_t key);
+  int32_t recv_get_request();
+  int64_t get_request_local(const int32_t local_shard_id, const int64_t key);
+  void send_get_request_local(const int32_t local_shard_id, const int64_t key);
+  int64_t recv_get_request_local();
+  void get_response(std::string& _return, const int32_t replica_id);
+  void send_get_response(const int32_t replica_id);
   void recv_get_response(std::string& _return);
+  void get_response_local(std::string& _return, const int32_t local_shard_id);
+  void send_get_response_local(const int32_t local_shard_id);
+  void recv_get_response_local(std::string& _return);
   int64_t remove_layer(const int32_t shard_id, const int32_t layer_id);
   void send_remove_layer(const int32_t shard_id, const int32_t layer_id);
   int64_t recv_remove_layer();
@@ -1375,12 +1878,16 @@ class AdaptiveSuccinctServiceProcessor : public ::apache::thrift::TDispatchProce
   typedef  void (AdaptiveSuccinctServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
+  void process_connect_to_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_disconnect_from_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_connect_to_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_disconnect_from_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_start_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_request(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_request_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_response(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_response_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_remove_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_reconstruct_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_storage_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1390,12 +1897,16 @@ class AdaptiveSuccinctServiceProcessor : public ::apache::thrift::TDispatchProce
  public:
   AdaptiveSuccinctServiceProcessor(boost::shared_ptr<AdaptiveSuccinctServiceIf> iface) :
     iface_(iface) {
+    processMap_["connect_to_handlers"] = &AdaptiveSuccinctServiceProcessor::process_connect_to_handlers;
+    processMap_["disconnect_from_handlers"] = &AdaptiveSuccinctServiceProcessor::process_disconnect_from_handlers;
     processMap_["connect_to_local_servers"] = &AdaptiveSuccinctServiceProcessor::process_connect_to_local_servers;
     processMap_["disconnect_from_local_servers"] = &AdaptiveSuccinctServiceProcessor::process_disconnect_from_local_servers;
     processMap_["start_servers"] = &AdaptiveSuccinctServiceProcessor::process_start_servers;
     processMap_["initialize"] = &AdaptiveSuccinctServiceProcessor::process_initialize;
     processMap_["get_request"] = &AdaptiveSuccinctServiceProcessor::process_get_request;
+    processMap_["get_request_local"] = &AdaptiveSuccinctServiceProcessor::process_get_request_local;
     processMap_["get_response"] = &AdaptiveSuccinctServiceProcessor::process_get_response;
+    processMap_["get_response_local"] = &AdaptiveSuccinctServiceProcessor::process_get_response_local;
     processMap_["remove_layer"] = &AdaptiveSuccinctServiceProcessor::process_remove_layer;
     processMap_["reconstruct_layer"] = &AdaptiveSuccinctServiceProcessor::process_reconstruct_layer;
     processMap_["storage_size"] = &AdaptiveSuccinctServiceProcessor::process_storage_size;
@@ -1430,6 +1941,24 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
     ifaces_.push_back(iface);
   }
  public:
+  int32_t connect_to_handlers() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->connect_to_handlers();
+    }
+    return ifaces_[i]->connect_to_handlers();
+  }
+
+  int32_t disconnect_from_handlers() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->disconnect_from_handlers();
+    }
+    return ifaces_[i]->disconnect_from_handlers();
+  }
+
   int32_t connect_to_local_servers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -1466,22 +1995,41 @@ class AdaptiveSuccinctServiceMultiface : virtual public AdaptiveSuccinctServiceI
     return ifaces_[i]->initialize(mode);
   }
 
-  void get_request(const int64_t key) {
+  int32_t get_request(const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->get_request(key);
     }
-    ifaces_[i]->get_request(key);
+    return ifaces_[i]->get_request(key);
   }
 
-  void get_response(std::string& _return, const int64_t key) {
+  int64_t get_request_local(const int32_t local_shard_id, const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_response(_return, key);
+      ifaces_[i]->get_request_local(local_shard_id, key);
     }
-    ifaces_[i]->get_response(_return, key);
+    return ifaces_[i]->get_request_local(local_shard_id, key);
+  }
+
+  void get_response(std::string& _return, const int32_t replica_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_response(_return, replica_id);
+    }
+    ifaces_[i]->get_response(_return, replica_id);
+    return;
+  }
+
+  void get_response_local(std::string& _return, const int32_t local_shard_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_response_local(_return, local_shard_id);
+    }
+    ifaces_[i]->get_response_local(_return, local_shard_id);
     return;
   }
 
