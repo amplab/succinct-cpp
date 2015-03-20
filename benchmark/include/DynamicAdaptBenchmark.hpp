@@ -42,12 +42,16 @@ private:
     void generate_randoms() {
         count_t q_cnt = 0;
         std::vector<count_t> cum_q_cnt;
+        fprintf(stderr, "Computing total number of keys in the system...\n");
         for(uint32_t i = 0; i < this->num_partitions; i++) {
             q_cnt += query_client->get_num_keys(i);
             cum_q_cnt.push_back(q_cnt);
         }
+        fprintf(stderr, "Found %lu keys.\n", q_cnt);
+        fprintf(stderr, "Generating zipf distribution...\n");
         ZipfGenerator z(skew, q_cnt);
-        for(count_t i = 0; i < q_cnt; i++) {
+        fprintf(stderr, "Generated zipf distribution, generating keys..\n");
+        for(count_t i = 0; i < (q_cnt / num_partitions); i++) {
             // Map from Zipf space to key space
             uint64_t r = z.next();
             uint64_t key = 0;
@@ -61,6 +65,7 @@ private:
             }
             randoms.push_back(key);
         }
+        fprintf(stderr, "Generated keys.\n");
     }
 
     void read_queries(std::string filename) {
