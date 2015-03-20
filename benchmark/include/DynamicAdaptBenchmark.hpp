@@ -9,6 +9,8 @@
 #include "ZipfGenerator.hpp"
 #include "thrift/AdaptiveSuccinctService.h"
 #include "thrift/ports.h"
+#include "thrift/AdaptiveSuccinctClient.hpp"
+#include "thrift/AdaptiveManagementClient.hpp"
 #include "thrift/ResponseQueue.hpp"
 
 #include "succinct/LayeredSuccinctShard.hpp"
@@ -24,14 +26,8 @@ using namespace ::apache::thrift::transport;
 
 class DynamicAdaptBenchmark : public Benchmark {
 private:
-    AdaptiveSuccinctServiceClient *query_client;
-    AdaptiveSuccinctServiceClient *stats_client;
-    AdaptiveSuccinctServiceClient *resp_client;
-    AdaptiveSuccinctServiceClient *mgmnt_client;
-    boost::shared_ptr<TTransport> query_transport;
-    boost::shared_ptr<TTransport> stats_transport;
-    boost::shared_ptr<TTransport> resp_transport;
-    boost::shared_ptr<TTransport> mgmnt_transport;
+    AdaptiveSuccinctClient *query_client;
+    AdaptiveManagementClient *mgmnt_client;
     std::vector<std::vector<uint32_t>> layers_to_delete;
     std::vector<std::vector<uint32_t>> layers_to_create;
     std::vector<uint32_t> request_rates;
@@ -129,30 +125,14 @@ private:
         assert(request_rates.size() == durations.size());
     }
 
-    AdaptiveSuccinctServiceClient *get_client(boost::shared_ptr<TTransport> &c_transport) {
-        int port = QUERY_HANDLER_PORT;
-        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        AdaptiveSuccinctServiceClient *client = new AdaptiveSuccinctServiceClient(protocol);
-        transport->open();
-        c_transport = transport;
-        return client;
-    }
-
 public:
     DynamicAdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
             std::string addfile, std::string delfile, double skew, uint32_t num_partitions,
             std::string queryfile = "") : Benchmark() {
 
-        this->query_client = this->get_client(query_transport);
+        this->query_client = new AdaptiveSuccinctClient();
         fprintf(stderr, "Created query client.\n");
-        this->mgmnt_client = this->get_client(mgmnt_transport);
-        fprintf(stderr, "Created management client.\n");
-        this->stats_client = this->get_client(stats_transport);
-        fprintf(stderr, "Created stats client.\n");
-        this->resp_client = this->get_client(resp_transport);
-        fprintf(stderr, "Created response client.\n");
+        this->mgmnt_client = new AdaptiveManagementClient();
 
         this->reqfile = reqfile;
         this->resfile = resfile;
@@ -168,10 +148,7 @@ public:
         parse_config_file(configfile);
     }
 
-    static void send_requests(AdaptiveSuccinctServiceClient *query_client,
-            boost::shared_ptr<TTransport> query_transport,
-            boost::shared_ptr<TTransport> resp_transport,
-            ResponseQueue<int32_t> &response_queue,
+    static void send_requests(AdaptiveSuccinctClient *query_client,
             std::vector<int64_t> randoms,
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
@@ -192,8 +169,7 @@ public:
             time_t start_time = get_timestamp();
             while((cur_time = get_timestamp()) - start_time <= duration) {
                 time_t t0 = get_timestamp();
-                int32_t res_id = query_client->get_request(randoms[i % randoms.size()]);
-                response_queue.push(res_id);
+                query_client->get_request(randoms[i % randoms.size()]);
                 i++;
                 num_requests++;
                 while(get_timestamp() - t0 < sleep_time);
@@ -217,16 +193,10 @@ public:
         fprintf(stderr, "Request thread sleeping for 10 seconds...\n");
         sleep(10);
         fprintf(stderr, "Finished sending queries, attempting to close query socket...\n");
-        query_transport->close();
-        fprintf(stderr, "Closed query socket.\n");
-
-        resp_transport->close();
-        fprintf(stderr, "Closed response socket.\n");
+        query_client->close();
     }
 
-    static void measure_responses(AdaptiveSuccinctServiceClient *query_client,
-            AdaptiveSuccinctServiceClient *stats_client, ResponseQueue<int32_t> &response_queue,
-            std::string resfile) {
+    static void measure_responses(AdaptiveSuccinctClient *query_client, std::string resfile) {
         std::string res;
         const time_t MEASURE_INTERVAL = 5000000;
         uint32_t num_responses = 0;
@@ -236,7 +206,7 @@ public:
         time_t measure_start_time = get_timestamp();
         while(true) {
             try {
-                query_client->get_response(res, response_queue.pop());
+                query_client->get_response(res);
                 num_responses++;
                 i++;
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
@@ -257,7 +227,7 @@ public:
         res_stream.close();
     }
 
-    static void manage_layers(AdaptiveSuccinctServiceClient *mgmt_client,
+    static void manage_layers(AdaptiveManagementClient *mgmt_client,
                 std::vector<std::vector<uint32_t>> layers_to_create,
                 std::vector<std::vector<uint32_t>> layers_to_delete,
                 std::vector<uint32_t> durations,
@@ -293,6 +263,7 @@ public:
                     break;
                 }
             }
+
             // Sleep if there is still time left
             if((cur_time = get_timestamp()) - start_time < duration) {
                 fprintf(stderr, "Done with layer management for stage %u, took %llu us, sleeping for %llu us.\n",
@@ -300,20 +271,18 @@ public:
                 usleep(duration - (cur_time - start_time));
             }
         }
+
+        mgmt_client->close();
     }
 
     void run_benchmark() {
         ResponseQueue<int32_t> response_queue;
 
         std::thread req(&DynamicAdaptBenchmark::send_requests,
-                query_client, query_transport,
-                resp_transport, std::ref(response_queue),
-                randoms, request_rates, durations,
-                reqfile);
+                query_client, randoms, request_rates, durations, reqfile);
         fprintf(stderr, "Started request thread!\n");
 
-        std::thread res(&DynamicAdaptBenchmark::measure_responses, resp_client,
-                stats_client, std::ref(response_queue), resfile);
+        std::thread res(&DynamicAdaptBenchmark::measure_responses, query_client, resfile);
         fprintf(stderr, "Started response thread!\n");
 
         std::thread lay(&DynamicAdaptBenchmark::manage_layers, mgmnt_client,
@@ -333,12 +302,6 @@ public:
             lay.join();
             fprintf(stderr, "Layer creation thread terminated.\n");
         }
-
-        stats_transport->close();
-        fprintf(stderr, "Closed stats socket.\n");
-
-        mgmnt_transport->close();
-        fprintf(stderr, "Closed management socket.\n");
 
         std::terminate();
     }

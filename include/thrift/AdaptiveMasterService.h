@@ -16,6 +16,7 @@ class AdaptiveMasterServiceIf {
  public:
   virtual ~AdaptiveMasterServiceIf() {}
   virtual void get_client(std::string& _return) = 0;
+  virtual int32_t get_client_id() = 0;
 };
 
 class AdaptiveMasterServiceIfFactory {
@@ -47,6 +48,10 @@ class AdaptiveMasterServiceNull : virtual public AdaptiveMasterServiceIf {
   virtual ~AdaptiveMasterServiceNull() {}
   void get_client(std::string& /* _return */) {
     return;
+  }
+  int32_t get_client_id() {
+    int32_t _return = 0;
+    return _return;
   }
 };
 
@@ -144,6 +149,100 @@ class AdaptiveMasterService_get_client_presult {
 
 };
 
+
+class AdaptiveMasterService_get_client_id_args {
+ public:
+
+  AdaptiveMasterService_get_client_id_args() {
+  }
+
+  virtual ~AdaptiveMasterService_get_client_id_args() throw() {}
+
+
+  bool operator == (const AdaptiveMasterService_get_client_id_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const AdaptiveMasterService_get_client_id_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveMasterService_get_client_id_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveMasterService_get_client_id_pargs {
+ public:
+
+
+  virtual ~AdaptiveMasterService_get_client_id_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveMasterService_get_client_id_result__isset {
+  _AdaptiveMasterService_get_client_id_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveMasterService_get_client_id_result__isset;
+
+class AdaptiveMasterService_get_client_id_result {
+ public:
+
+  AdaptiveMasterService_get_client_id_result() : success(0) {
+  }
+
+  virtual ~AdaptiveMasterService_get_client_id_result() throw() {}
+
+  int32_t success;
+
+  _AdaptiveMasterService_get_client_id_result__isset __isset;
+
+  void __set_success(const int32_t val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveMasterService_get_client_id_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveMasterService_get_client_id_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveMasterService_get_client_id_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveMasterService_get_client_id_presult__isset {
+  _AdaptiveMasterService_get_client_id_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveMasterService_get_client_id_presult__isset;
+
+class AdaptiveMasterService_get_client_id_presult {
+ public:
+
+
+  virtual ~AdaptiveMasterService_get_client_id_presult() throw() {}
+
+  int32_t* success;
+
+  _AdaptiveMasterService_get_client_id_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AdaptiveMasterServiceClient : virtual public AdaptiveMasterServiceIf {
  public:
   AdaptiveMasterServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -167,6 +266,9 @@ class AdaptiveMasterServiceClient : virtual public AdaptiveMasterServiceIf {
   void get_client(std::string& _return);
   void send_get_client();
   void recv_get_client(std::string& _return);
+  int32_t get_client_id();
+  void send_get_client_id();
+  int32_t recv_get_client_id();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -183,10 +285,12 @@ class AdaptiveMasterServiceProcessor : public ::apache::thrift::TDispatchProcess
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_get_client(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_client_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AdaptiveMasterServiceProcessor(boost::shared_ptr<AdaptiveMasterServiceIf> iface) :
     iface_(iface) {
     processMap_["get_client"] = &AdaptiveMasterServiceProcessor::process_get_client;
+    processMap_["get_client_id"] = &AdaptiveMasterServiceProcessor::process_get_client_id;
   }
 
   virtual ~AdaptiveMasterServiceProcessor() {}
@@ -223,6 +327,15 @@ class AdaptiveMasterServiceMultiface : virtual public AdaptiveMasterServiceIf {
     }
     ifaces_[i]->get_client(_return);
     return;
+  }
+
+  int32_t get_client_id() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_client_id();
+    }
+    return ifaces_[i]->get_client_id();
   }
 
 };

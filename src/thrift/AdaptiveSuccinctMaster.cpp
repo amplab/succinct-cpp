@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
+#include <atomic>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -86,8 +87,15 @@ public:
         _return = hostnames[rand() % hostnames.size()];
     }
     
+    int32_t get_client_id() {
+        int32_t ret = client_id;
+        client_id++;
+        return ret;
+    }
+
 private:
     std::vector<std::string> hostnames;
+    std::atomic<uint32_t> client_id;
 };
 
 void print_usage(char *exec) {
