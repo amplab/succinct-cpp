@@ -269,7 +269,7 @@ public:
             transport->close();
         } else {
             int port = QUERY_HANDLER_PORT;
-            boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+            boost::shared_ptr<TSocket> socket(new TSocket(hostnames[host_id], port));
             boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
             boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
             AdaptiveSuccinctServiceClient client(protocol);
