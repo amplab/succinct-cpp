@@ -254,14 +254,29 @@ public:
     }
 
     int32_t get_num_keys(const int32_t shard_id) {
-        int port = QUERY_SERVER_PORT + shard_id;
-        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        AdaptiveQueryServiceClient client(protocol);
-        transport->open();
-        int64_t size = client.get_num_keys();
-        transport->close();
+        uint32_t replica_id = (shard_id * replication);
+        uint32_t host_id = replica_id % num_hosts;
+        uint32_t local_shard_id =  replica_id / num_hosts;
+        int32_t size = 0;
+        if(host_id == local_host_id) {
+            int port = QUERY_SERVER_PORT + local_shard_id;
+            boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+            boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+            boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+            AdaptiveQueryServiceClient client(protocol);
+            transport->open();
+            size = client.get_num_keys();
+            transport->close();
+        } else {
+            int port = QUERY_HANDLER_PORT;
+            boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+            boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+            boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+            AdaptiveSuccinctServiceClient client(protocol);
+            transport->open();
+            size = client.get_num_keys(shard_id);
+            transport->close();
+        }
         return size;
     }
 
