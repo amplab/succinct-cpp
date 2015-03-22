@@ -10,6 +10,7 @@ TARGET_F := $(BINDIR)/fbench
 TARGET_SS := $(BINDIR)/ssbench
 TARGET_AS := $(BINDIR)/asbench
 TARGET_Q := $(BINDIR)/qbench
+TARGET_AQS := $(BINDIR)/aqsbench
 TARGET_SURE := $(BINDIR)/surebench
 
 OBJ_S := $(BUILDDIR)/shard-bench.o
@@ -17,6 +18,7 @@ OBJ_F := $(BUILDDIR)/file-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
 OBJ_AS := $(BUILDDIR)/adashard-bench.o
 OBJ_Q := $(BUILDDIR)/queue-bench.o
+OBJ_AQS := $(BUILDDIR)/aqs-bench.o
 OBJ_SURE := $(BUILDDIR)/sure-bench.o
 
 CFLAGS := -O3 -std=c++11 -Wall -g
@@ -36,6 +38,8 @@ ssbench: $(TARGET_SS)
 asbench: $(TARGET_AS)
 
 qbench: $(TARGET_Q)
+
+aqsbench: $(TARGET_AQS)
 
 surebench: $(TARGET_SURE)
 
@@ -64,6 +68,11 @@ $(TARGET_Q): $(OBJ_Q)
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_Q) $(LIBA)"; $(CC) $^ -o $(TARGET_Q) $(LIBA)
 
+$(TARGET_AQS): $(OBJ_AQS)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_AQS) $(LIBA)"; $(CC) $^ -o $(TARGET_AQS) $(LIBA)
+
 $(TARGET_SURE): $(OBJ_SURE)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
@@ -75,7 +84,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE)";\
-		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)";\
+		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)
 	
 .PHONY: clean

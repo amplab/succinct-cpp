@@ -217,9 +217,14 @@ asbench: adaptive-thrift-components
 		cd benchmark; make clean && make asbench
 
 qbench: adaptive-thrift-components
-	@echo "Building adashard benchmark..."
+	@echo "Building queue benchmark..."
 	@echo " cd benchmark; make clean && make qbench";\
 		cd benchmark; make clean && make qbench
+
+aqsbench: adaptive-thrift-components
+	@echo "Building aqs benchmark..."
+	@echo " cd benchmark; make clean && make aqsbench";\
+		cd benchmark; make clean && make aqsbench
 
 clean:
 	@echo "Cleaning..."; 
