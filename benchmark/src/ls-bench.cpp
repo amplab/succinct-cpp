@@ -5,11 +5,11 @@
 #include "LayeredSuccinctShardBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-o output-path]\n", exec);
+    fprintf(stderr, "Usage: %s [-c] [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-o output-path] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc > 5) {
+    if(argc > 11) {
         print_usage(argv[0]);
         return -1;
     }
@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     double skew = 1.0;  // Pure uniform
     uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32;
     bool construct = false;
-    while((c = getopt(argc, argv, "o:z:i:s:")) != -1) {
+    while((c = getopt(argc, argv, "co:z:i:s:")) != -1) {
         switch(c) {
         case 'c':
             construct = true;
