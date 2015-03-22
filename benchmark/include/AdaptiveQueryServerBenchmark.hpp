@@ -22,22 +22,43 @@ using namespace ::apache::thrift::transport;
 
 class AdaptiveQueryServerBenchmark : public Benchmark {
 private:
-
+    std::vector<int32_t> lengths;
     std::string reqfile;
     std::string resfile;
-    double skew;
+    double skew_keys;
+    double skew_lengths;
 
     void generate_randoms() {
         boost::shared_ptr<TTransport> transport;
         AdaptiveQueryServiceClient *client = get_client(transport);
         count_t q_cnt = client->get_num_keys();
-        fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n", skew, q_cnt);
-        ZipfGenerator z(skew, q_cnt);
+        fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n", skew_keys, q_cnt);
+        ZipfGenerator z(skew_keys, q_cnt);
         fprintf(stderr, "Generated zipf distribution, generating keys...\n");
         for(count_t i = 0; i < q_cnt; i++) {
             randoms.push_back(z.next());
         }
         fprintf(stderr, "Generated keys.\n");
+        transport->close();
+        delete client;
+    }
+
+    void generate_lengths() {
+        boost::shared_ptr<TTransport> transport;
+        AdaptiveQueryServiceClient *client = get_client(transport);
+        count_t q_cnt = client->get_num_keys();
+        uint32_t min_len = 10;
+        uint32_t max_len = 1000;
+        fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n", skew_lengths, (max_len - min_len));
+        ZipfGenerator z(skew_lengths, max_len - min_len);
+        fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
+
+        for(count_t i = 0; i < q_cnt; i++) {
+            // Map zipf value to a length
+            int32_t len = z.next() + min_len;
+            lengths.push_back(len);
+        }
+        fprintf(stderr, "Generated lengths.\n");
         transport->close();
         delete client;
     }
@@ -77,9 +98,11 @@ public:
 
         this->reqfile = reqfile;
         this->resfile = resfile;
-        this->skew = skew;
+        this->skew_keys = skew;
+        this->skew_lengths = 1.0; // Pure uniform for now
 
         generate_randoms();
+        generate_lengths();
         if(queryfile != "") {
             read_queries(queryfile);
         }
@@ -88,6 +111,7 @@ public:
     static void send_requests(AdaptiveQueryServiceClient *query_client,
             int64_t storage_size,
             std::vector<int64_t> randoms,
+            std::vector<int32_t> lengths,
             std::string reqfile) {
 
         std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
@@ -95,7 +119,7 @@ public:
 
         time_t start_time = get_timestamp();
         while(num_requests <= randoms.size()) {
-            query_client->send_get(randoms[num_requests % randoms.size()]);
+            query_client->send_access(randoms[num_requests % randoms.size()], 0, lengths[num_requests % lengths.size()]);
             num_requests++;
         }
         time_t diff = get_timestamp() - start_time;
@@ -115,7 +139,7 @@ public:
         time_t start_time = get_timestamp();
         while(num_responses <= randoms.size()) {
             try {
-                query_client->recv_get(res);
+                query_client->recv_access(res);
                 num_responses++;
             } catch(std::exception& e) {
                 break;
@@ -140,7 +164,7 @@ public:
         int64_t storage_size = query_client->storage_size();
 
         fprintf(stderr, "Starting request thread...\n");
-        std::thread req(&AdaptiveQueryServerBenchmark::send_requests, query_client, storage_size, randoms, reqfile);
+        std::thread req(&AdaptiveQueryServerBenchmark::send_requests, query_client, storage_size, randoms, lengths, reqfile);
 
         fprintf(stderr, "Starting response thread...\n");
         std::thread res(&AdaptiveQueryServerBenchmark::measure_responses, query_client, storage_size, randoms, resfile);

@@ -22,6 +22,8 @@ public:
 
     void get(std::string &result, int64_t key);
 
+    void access(std::string& result, int64_t key, int32_t offset, int32_t len);
+
     uint64_t num_sampled_values();
 };
 

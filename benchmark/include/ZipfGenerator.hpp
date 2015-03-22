@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cmath>
+#include <ctime>
 
 class ZipfGenerator {
 private:
@@ -51,6 +52,8 @@ public:
         assert(N > 0);
         assert(theta >= 0.0);
         assert(theta <= 1.0);
+
+        srand (time(NULL));
 
         this->theta = theta;
         this->N = N;

@@ -88,3 +88,44 @@ uint64_t LayeredSuccinctShard::num_sampled_values() {
     }
     return 0;
 }
+
+void LayeredSuccinctShard::access(std::string& result, int64_t key, int32_t offset, int32_t len) {
+    if(!opportunistic) {
+        LayeredSampledISA *ISA_lay = (LayeredSampledISA *)ISA;
+        result = "";
+        int64_t pos = get_value_offset_pos(key);
+        if(pos < 0)
+            return;
+        int64_t start = value_offsets[pos] + offset;
+        result.resize(len);
+        uint64_t idx = lookupISA(start);
+        for(int64_t i = 0; i < len; i++) {
+            result[i] = alphabet[lookupC(idx)];
+            uint64_t next_pos = start + i + 1;
+            if(ISA_lay->is_sampled(next_pos)) {
+                idx = lookupISA(next_pos);
+            } else {
+                idx = lookupNPA(idx);
+            }
+        }
+        return;
+    }
+
+    OpportunisticLayeredSampledISA *ISA_opp = (OpportunisticLayeredSampledISA *)ISA;
+    result = "";
+    int64_t pos = get_value_offset_pos(key);
+    if(pos < 0)
+        return;
+    int64_t start = value_offsets[pos] + offset;
+    result.resize(len);
+    uint64_t idx = lookupISA(start);
+    for(int64_t i = 0; i < len; i++) {
+        result[i] = alphabet[lookupC(idx)];
+        uint64_t next_pos = start + i + 1;
+        if(ISA_opp->is_sampled(next_pos)) {
+            idx = lookupISA(next_pos);
+        } else {
+            idx = lookupNPA(idx);
+        }
+    }
+}
