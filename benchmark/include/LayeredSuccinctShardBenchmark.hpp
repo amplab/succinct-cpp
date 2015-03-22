@@ -30,8 +30,8 @@ private:
 
     void generate_lengths() {
         count_t q_cnt = fd->num_keys();
-        uint32_t min_len = 10;
-        uint32_t max_len = 1000;
+        int32_t min_len = 10;
+        int32_t max_len = 1000;
         fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n", skew_lengths, (max_len - min_len));
         ZipfGenerator z(skew_lengths, max_len - min_len);
         fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
