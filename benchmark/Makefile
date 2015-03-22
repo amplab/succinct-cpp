@@ -7,6 +7,7 @@ LIBDIR := ../lib
 
 TARGET_S := $(BINDIR)/sbench
 TARGET_F := $(BINDIR)/fbench
+TARGET_LS := $(BINDIR)/lsbench
 TARGET_SS := $(BINDIR)/ssbench
 TARGET_AS := $(BINDIR)/asbench
 TARGET_Q := $(BINDIR)/qbench
@@ -15,6 +16,7 @@ TARGET_SURE := $(BINDIR)/surebench
 
 OBJ_S := $(BUILDDIR)/shard-bench.o
 OBJ_F := $(BUILDDIR)/file-bench.o
+OBJ_LS := $(BUILDDIR)/ls-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
 OBJ_AS := $(BUILDDIR)/adashard-bench.o
 OBJ_Q := $(BUILDDIR)/queue-bench.o
@@ -27,11 +29,13 @@ LIBT := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -lsuccinctclient
 LIBA := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -ladaptsuccinctclient
 INC := -I ../include -I include
 
-all: sbench fbench ssbench asbench surebench
+all: sbench lsbench fbench ssbench asbench qbench surebench aqsben
 
 sbench: $(TARGET_S)
 
 fbench: $(TARGET_F)
+
+lsbench: $(TARGET_LS)
 
 ssbench: $(TARGET_SS)
 
@@ -52,6 +56,11 @@ $(TARGET_F): $(OBJ_F)
 	@echo "Linking.."
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_F) $(LIB)"; $(CC) $^ -o $(TARGET_F) $(LIB)
+
+$(TARGET_LS): $(OBJ_LS)
+	@echo "Linking.."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_LS) $(LIB)"; $(CC) $^ -o $(TARGET_LS) $(LIB)
 	
 $(TARGET_SS): $(OBJ_SS)
 	@echo "Linking..."
@@ -84,7 +93,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)";\
-		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)";\
+		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)
 	
 .PHONY: clean

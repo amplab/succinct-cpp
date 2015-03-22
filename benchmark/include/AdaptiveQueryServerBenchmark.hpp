@@ -1,5 +1,5 @@
-#ifndef ADAPT_BENCHMARK_HPP
-#define ADAPT_BENCHMARK_HPP
+#ifndef ADAPTIVE_QUERY_SERVER_BENCHMARK_HPP
+#define ADAPTIVE_QUERY_SERVER_BENCHMARK_HPP
 
 #include <thrift/transport/TSocket.h>
 #include <thrift/protocol/TBinaryProtocol.h>
@@ -56,6 +56,8 @@ private:
         for(count_t i = 0; i < q_cnt; i++) {
             // Map zipf value to a length
             int32_t len = z.next() + min_len;
+            assert(len >= min_len);
+            assert(len <= max_len);
             lengths.push_back(len);
         }
         fprintf(stderr, "Generated lengths.\n");

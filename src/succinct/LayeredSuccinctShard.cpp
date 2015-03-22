@@ -101,7 +101,7 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key, int32_t offs
         uint64_t idx = lookupISA(start);
         for(int64_t i = 0; i < len; i++) {
             result[i] = alphabet[lookupC(idx)];
-            uint64_t next_pos = start + i + 1;
+            uint64_t next_pos = (start + i + 1) % original_size();
             if(ISA_lay->is_sampled(next_pos)) {
                 idx = lookupISA(next_pos);
             } else {
@@ -121,7 +121,7 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key, int32_t offs
     uint64_t idx = lookupISA(start);
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
-        uint64_t next_pos = start + i + 1;
+        uint64_t next_pos = (start + i + 1) % original_size();
         if(ISA_opp->is_sampled(next_pos)) {
             idx = lookupISA(next_pos);
         } else {

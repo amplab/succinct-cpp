@@ -201,6 +201,11 @@ sbench: succinct
 	@echo " cd benchmark; make clean && make sbench";\
 		cd benchmark; make clean && make sbench
 
+lsbench: succinct
+	@echo "Building layered shard benchmark..."
+	@echo " cd benchmark; make clean && make lsbench";\
+		cd benchmark; make clean && make lsbench
+
 surebench: succinct
 	@echo "Building sure benchmark..."
 	@echo " cd benchmark; make clean && make surebench";\
