@@ -38,6 +38,8 @@ private:
     std::string delfile;
     std::atomic<uint64_t> queue_length;
     double skew;
+    uint32_t batch_size;
+    uint32_t len;
 
     void generate_randoms() {
         count_t q_cnt = query_client->get_num_keys();
@@ -125,7 +127,8 @@ private:
 
 public:
     AdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
-            std::string addfile, std::string delfile, double skew, std::string queryfile = "") : Benchmark() {
+            std::string addfile, std::string delfile, double skew, uint32_t len,
+            uint32_t batch_size, std::string queryfile = "") : Benchmark() {
 
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
@@ -141,6 +144,8 @@ public:
 
         this->queue_length = 0;
         this->skew = skew;
+        this->batch_size = batch_size;
+        this->len = len;
 
         generate_randoms();
         if(queryfile != "") {
@@ -154,6 +159,8 @@ public:
             AdaptiveQueryServiceClient *mgmt_client,
             boost::shared_ptr<TTransport> mgmt_transport,
             std::vector<int64_t> randoms,
+            uint32_t len,
+            uint32_t batch_size,
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
             std::atomic<uint64_t> &queue_length,
@@ -174,9 +181,14 @@ public:
             time_t start_time = get_timestamp();
             while((cur_time = get_timestamp()) - start_time <= duration) {
                 time_t t0 = get_timestamp();
-                query_client->send_get(randoms[i % randoms.size()]);
-                i++;
-                num_requests++;
+                // Prepare batch
+                std::vector<int64_t> keys;
+                for(uint32_t j = 0; j < batch_size; j++) {
+                    keys.push_back(randoms[i % randoms.size()]);
+                    i++;
+                }
+                query_client->send_batch_access(keys, 0, len);
+                num_requests += batch_size;
                 queue_length++;
                 while(get_timestamp() - t0 < sleep_time);
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
@@ -206,7 +218,7 @@ public:
     static void measure_responses(AdaptiveQueryServiceClient *query_client,
             AdaptiveQueryServiceClient *stats_client,
             std::atomic<uint64_t> &queue_length, std::string resfile) {
-        std::string res;
+
         const time_t MEASURE_INTERVAL = 5000000;
         uint32_t num_responses = 0;
         time_t cur_time;
@@ -214,8 +226,9 @@ public:
         time_t measure_start_time = get_timestamp();
         while(true) {
             try {
-                query_client->recv_get(res);
-                num_responses++;
+                std::vector<std::string> res;
+                query_client->recv_batch_access(res);
+                num_responses += res.size();
                 queue_length--;
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
@@ -286,7 +299,8 @@ public:
         std::thread req(&AdaptBenchmark::send_requests,
                 query_client, query_transport,
                 mgmnt_client, mgmnt_transport,
-                randoms, request_rates, durations, std::ref(queue_length),
+                randoms, len, batch_size,
+                request_rates, durations, std::ref(queue_length),
                 reqfile);
         std::thread res(&AdaptBenchmark::measure_responses, query_client,
                 stats_client, std::ref(queue_length), resfile);
