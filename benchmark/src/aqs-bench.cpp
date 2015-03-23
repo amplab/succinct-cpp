@@ -5,11 +5,11 @@
 #include "AdaptiveQueryServerBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-l len] [-z skew] [-o output-path]\n", exec);
+    fprintf(stderr, "Usage: %s [-l len] [-z skew] [-b batch_size] [-o output-path]\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc > 7) {
+    if(argc > 9) {
         print_usage(argv[0]);
         return -1;
     }
@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     double skew = 1.0;  // Pure uniform
     int32_t len = 100;
     uint32_t batch_size = 10;
-    while((c = getopt(argc, argv, "o:z:l:")) != -1) {
+    while((c = getopt(argc, argv, "o:z:l:b:")) != -1) {
         switch(c) {
         case 'o':
             outpath = std::string(optarg);
