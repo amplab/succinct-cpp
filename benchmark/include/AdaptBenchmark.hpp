@@ -174,7 +174,7 @@ public:
 
         for(uint32_t stage = 0; stage < request_rates.size(); stage++) {
             time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
-            time_t sleep_time = 1000 * 1000 / request_rates[stage];
+            time_t sleep_time = (1000 * 1000 * batch_size) / request_rates[stage];
             uint64_t i = 0;
             fprintf(stderr, "Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
                     stage, request_rates[stage], duration);
