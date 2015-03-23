@@ -166,7 +166,7 @@ public:
         while(num_requests <= randoms.size()) {
             // Prepare batch
             std::vector<int64_t> keys;
-            for(int i = 0; i < batch_size; i++) {
+            for(uint32_t i = 0; i < batch_size; i++) {
                 keys.push_back(randoms[(num_requests + i) % randoms.size()]);
             }
             query_client->send_batch_access(keys, 0, len);
