@@ -70,6 +70,7 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
     int64_t len = end - start - 1;
     result.resize(len);
     uint64_t idx = lookupISA(start);
+    ISA_opp->store(start, idx);
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
         uint64_t next_pos = start + i + 1;
