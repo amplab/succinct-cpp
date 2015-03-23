@@ -32,16 +32,20 @@ uint64_t OpportunisticLayeredSampledSA::operator[](uint64_t i) {
     assert(i < original_size);
 
     uint64_t j = 0;
+    uint64_t original_i = i;
     while (!is_sampled(i)) {
         i = (*npa)[i];
         j++;
     }
 
     uint64_t sa_val = sampled_at(i / target_sampling_rate);
-    if(sa_val < j)
+    if(sa_val < j) {
+        store(original_i, (original_size - (j - sa_val)));
         return original_size - (j - sa_val);
-    else
+    } else {
+        store(original_i, (sa_val - j));
         return sa_val - j;
+    }
 
     return 0;
 }
