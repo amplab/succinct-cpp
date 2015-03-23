@@ -75,8 +75,24 @@ public:
         fd->get(_return, key);
     }
 
+    void batch_get(std::vector<std::string>& _return, const std::vector<int64_t>& keys) {
+        for(auto key: keys) {
+            std::string res;
+            fd->get(res, key);
+            _return.push_back(res);
+        }
+    }
+
     void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
         fd->access(_return, key, offset, len);
+    }
+
+    void batch_access(std::vector<std::string>& _return, const std::vector<int64_t>& keys, const int32_t offset, const int32_t len) {
+        for(auto key: keys) {
+            std::string res;
+            fd->access(res, key, offset, len);
+            _return.push_back(res);
+        }
     }
 
     void search(std::set<int64_t>& _return, const std::string& query) {

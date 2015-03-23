@@ -17,7 +17,9 @@ class AdaptiveQueryServiceIf {
   virtual ~AdaptiveQueryServiceIf() {}
   virtual int32_t init(const int32_t id) = 0;
   virtual void get(std::string& _return, const int64_t key) = 0;
+  virtual void batch_get(std::vector<std::string> & _return, const std::vector<int64_t> & keys) = 0;
   virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
+  virtual void batch_access(std::vector<std::string> & _return, const std::vector<int64_t> & keys, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int32_t get_num_keys() = 0;
@@ -61,7 +63,13 @@ class AdaptiveQueryServiceNull : virtual public AdaptiveQueryServiceIf {
   void get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
+  void batch_get(std::vector<std::string> & /* _return */, const std::vector<int64_t> & /* keys */) {
+    return;
+  }
   void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
+    return;
+  }
+  void batch_access(std::vector<std::string> & /* _return */, const std::vector<int64_t> & /* keys */, const int32_t /* offset */, const int32_t /* len */) {
     return;
   }
   void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
@@ -309,6 +317,114 @@ class AdaptiveQueryService_get_presult {
 
 };
 
+typedef struct _AdaptiveQueryService_batch_get_args__isset {
+  _AdaptiveQueryService_batch_get_args__isset() : keys(false) {}
+  bool keys;
+} _AdaptiveQueryService_batch_get_args__isset;
+
+class AdaptiveQueryService_batch_get_args {
+ public:
+
+  AdaptiveQueryService_batch_get_args() {
+  }
+
+  virtual ~AdaptiveQueryService_batch_get_args() throw() {}
+
+  std::vector<int64_t>  keys;
+
+  _AdaptiveQueryService_batch_get_args__isset __isset;
+
+  void __set_keys(const std::vector<int64_t> & val) {
+    keys = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_get_args & rhs) const
+  {
+    if (!(keys == rhs.keys))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_get_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_get_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveQueryService_batch_get_pargs {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_get_pargs() throw() {}
+
+  const std::vector<int64_t> * keys;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_get_result__isset {
+  _AdaptiveQueryService_batch_get_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_get_result__isset;
+
+class AdaptiveQueryService_batch_get_result {
+ public:
+
+  AdaptiveQueryService_batch_get_result() {
+  }
+
+  virtual ~AdaptiveQueryService_batch_get_result() throw() {}
+
+  std::vector<std::string>  success;
+
+  _AdaptiveQueryService_batch_get_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_get_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_get_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_get_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_get_presult__isset {
+  _AdaptiveQueryService_batch_get_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_get_presult__isset;
+
+class AdaptiveQueryService_batch_get_presult {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_get_presult() throw() {}
+
+  std::vector<std::string> * success;
+
+  _AdaptiveQueryService_batch_get_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _AdaptiveQueryService_access_args__isset {
   _AdaptiveQueryService_access_args__isset() : key(false), offset(false), len(false) {}
   bool key;
@@ -430,6 +546,132 @@ class AdaptiveQueryService_access_presult {
   std::string* success;
 
   _AdaptiveQueryService_access_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _AdaptiveQueryService_batch_access_args__isset {
+  _AdaptiveQueryService_batch_access_args__isset() : keys(false), offset(false), len(false) {}
+  bool keys;
+  bool offset;
+  bool len;
+} _AdaptiveQueryService_batch_access_args__isset;
+
+class AdaptiveQueryService_batch_access_args {
+ public:
+
+  AdaptiveQueryService_batch_access_args() : offset(0), len(0) {
+  }
+
+  virtual ~AdaptiveQueryService_batch_access_args() throw() {}
+
+  std::vector<int64_t>  keys;
+  int32_t offset;
+  int32_t len;
+
+  _AdaptiveQueryService_batch_access_args__isset __isset;
+
+  void __set_keys(const std::vector<int64_t> & val) {
+    keys = val;
+  }
+
+  void __set_offset(const int32_t val) {
+    offset = val;
+  }
+
+  void __set_len(const int32_t val) {
+    len = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_access_args & rhs) const
+  {
+    if (!(keys == rhs.keys))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_access_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_access_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveQueryService_batch_access_pargs {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_access_pargs() throw() {}
+
+  const std::vector<int64_t> * keys;
+  const int32_t* offset;
+  const int32_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_access_result__isset {
+  _AdaptiveQueryService_batch_access_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_access_result__isset;
+
+class AdaptiveQueryService_batch_access_result {
+ public:
+
+  AdaptiveQueryService_batch_access_result() {
+  }
+
+  virtual ~AdaptiveQueryService_batch_access_result() throw() {}
+
+  std::vector<std::string>  success;
+
+  _AdaptiveQueryService_batch_access_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_access_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_access_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_access_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_access_presult__isset {
+  _AdaptiveQueryService_batch_access_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_access_presult__isset;
+
+class AdaptiveQueryService_batch_access_presult {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_access_presult() throw() {}
+
+  std::vector<std::string> * success;
+
+  _AdaptiveQueryService_batch_access_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1175,9 +1417,15 @@ class AdaptiveQueryServiceClient : virtual public AdaptiveQueryServiceIf {
   void get(std::string& _return, const int64_t key);
   void send_get(const int64_t key);
   void recv_get(std::string& _return);
+  void batch_get(std::vector<std::string> & _return, const std::vector<int64_t> & keys);
+  void send_batch_get(const std::vector<int64_t> & keys);
+  void recv_batch_get(std::vector<std::string> & _return);
   void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
   void send_access(const int64_t key, const int32_t offset, const int32_t len);
   void recv_access(std::string& _return);
+  void batch_access(std::vector<std::string> & _return, const std::vector<int64_t> & keys, const int32_t offset, const int32_t len);
+  void send_batch_access(const std::vector<int64_t> & keys, const int32_t offset, const int32_t len);
+  void recv_batch_access(std::vector<std::string> & _return);
   void search(std::set<int64_t> & _return, const std::string& query);
   void send_search(const std::string& query);
   void recv_search(std::set<int64_t> & _return);
@@ -1216,7 +1464,9 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
   ProcessMap processMap_;
   void process_init(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_batch_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_batch_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1229,7 +1479,9 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
     iface_(iface) {
     processMap_["init"] = &AdaptiveQueryServiceProcessor::process_init;
     processMap_["get"] = &AdaptiveQueryServiceProcessor::process_get;
+    processMap_["batch_get"] = &AdaptiveQueryServiceProcessor::process_batch_get;
     processMap_["access"] = &AdaptiveQueryServiceProcessor::process_access;
+    processMap_["batch_access"] = &AdaptiveQueryServiceProcessor::process_batch_access;
     processMap_["search"] = &AdaptiveQueryServiceProcessor::process_search;
     processMap_["count"] = &AdaptiveQueryServiceProcessor::process_count;
     processMap_["get_num_keys"] = &AdaptiveQueryServiceProcessor::process_get_num_keys;
@@ -1284,6 +1536,16 @@ class AdaptiveQueryServiceMultiface : virtual public AdaptiveQueryServiceIf {
     return;
   }
 
+  void batch_get(std::vector<std::string> & _return, const std::vector<int64_t> & keys) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->batch_get(_return, keys);
+    }
+    ifaces_[i]->batch_get(_return, keys);
+    return;
+  }
+
   void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -1291,6 +1553,16 @@ class AdaptiveQueryServiceMultiface : virtual public AdaptiveQueryServiceIf {
       ifaces_[i]->access(_return, key, offset, len);
     }
     ifaces_[i]->access(_return, key, offset, len);
+    return;
+  }
+
+  void batch_access(std::vector<std::string> & _return, const std::vector<int64_t> & keys, const int32_t offset, const int32_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->batch_access(_return, keys, offset, len);
+    }
+    ifaces_[i]->batch_access(_return, keys, offset, len);
     return;
   }
 

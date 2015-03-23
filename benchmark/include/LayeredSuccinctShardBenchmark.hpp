@@ -30,8 +30,8 @@ private:
 
     void generate_lengths() {
         count_t q_cnt = fd->num_keys();
-        int32_t min_len = 10;
-        int32_t max_len = 1000;
+        int32_t min_len = 100;
+        int32_t max_len = 500;
         fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n", skew_lengths, (max_len - min_len));
         ZipfGenerator z(skew_lengths, max_len - min_len);
         fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
@@ -84,7 +84,7 @@ public:
         }
     }
 
-    void measure_access_throughput() {
+    void measure_access_throughput(uint32_t len) {
         fprintf(stderr, "Starting access throughput measurement...");
         size_t storage_size = fd->storage_size();
         std::string res;
@@ -93,7 +93,7 @@ public:
 
         time_t start_time = get_timestamp();
         while(num_ops <= randoms.size()) {
-            fd->access(res, randoms[num_ops % randoms.size()], 0, lengths[num_ops % lengths.size()]);
+            fd->access(res, randoms[num_ops % randoms.size()], 0, len);
             num_ops++;
         }
         time_t diff = get_timestamp() - start_time;
@@ -122,6 +122,24 @@ public:
         fprintf(stderr, "Done.\n");
     }
 
+    void measure_search_throughput() {
+        fprintf(stderr, "Starting search throughput measurement...");
+        size_t storage_size = fd->storage_size();
+        std::set<int64_t> res;
+        std::ofstream res_stream(resfile + ".get", std::ofstream::out | std::ofstream::app);
+        uint64_t num_ops = 0;
+
+        time_t start_time = get_timestamp();
+        while(num_ops <= randoms.size()) {
+            fd->search(res, queries[num_ops % queries.size()]);
+            num_ops++;
+        }
+        time_t diff = get_timestamp() - start_time;
+        double thput = ((double) num_ops * 1000 * 1000) / ((double)diff);
+        res_stream << storage_size << "\t" << thput << "\n";
+        res_stream.close();
+        fprintf(stderr, "Done.\n");
+    }
 
     void delete_layer(int32_t layer_id) {
         if(layer_id >= 0) {

@@ -25,7 +25,9 @@ service AdaptiveSuccinctService {
 service AdaptiveQueryService {
     i32 init(1:i32 id),
     string get(1:i64 key),
+    list<string> batch_get(1:list<i64> keys),
     string access(1:i64 key, 2:i32 offset, 3:i32 len),
+    list<string> batch_access(1:list<i64> keys, 2:i32 offset, 3:i32 len),
     set<i64> search(1:string query),
     i64 count(1:string query),
     i32 get_num_keys(),

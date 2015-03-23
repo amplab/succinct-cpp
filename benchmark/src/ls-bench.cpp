@@ -5,11 +5,11 @@
 #include "LayeredSuccinctShardBenchmark.hpp"
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-c] [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-o output-path] file\n", exec);
+    fprintf(stderr, "Usage: %s [-c] [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-l len] [-o output-path] file\n", exec);
 }
 
 int main(int argc, char **argv) {
-    if(argc > 11) {
+    if(argc > 13) {
         print_usage(argv[0]);
         return -1;
     }
@@ -17,9 +17,9 @@ int main(int argc, char **argv) {
     int c;
     std::string outpath = "benchmark/res";
     double skew = 1.0;  // Pure uniform
-    uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32;
+    uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32, len = 100;
     bool construct = false;
-    while((c = getopt(argc, argv, "co:z:i:s:")) != -1) {
+    while((c = getopt(argc, argv, "co:z:i:s:l:")) != -1) {
         switch(c) {
         case 'c':
             construct = true;
@@ -36,12 +36,16 @@ int main(int argc, char **argv) {
         case 's':
             sa_sampling_rate = atoi(optarg);
             break;
+        case 'l':
+            len = atoi(optarg);
+            break;
         default:
             outpath = "benchmark/res";
             skew = 1.0;
             construct = false;
             isa_sampling_rate = 32;
             sa_sampling_rate = 32;
+            len = 100;
         }
     }
 
@@ -57,8 +61,8 @@ int main(int argc, char **argv) {
     LayeredSuccinctShardBenchmark ls_bench(inputpath, construct, isa_sampling_rate, sa_sampling_rate, respath, skew);
     for(int32_t i = -1; i < 10; i++) {
         ls_bench.delete_layer(i);
-        ls_bench.measure_get_throughput();
-        ls_bench.measure_access_throughput();
+        // ls_bench.measure_get_throughput();
+        ls_bench.measure_access_throughput(len);
     }
 
     return 0;
