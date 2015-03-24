@@ -53,7 +53,7 @@ public:
         assert(theta >= 0.0);
         assert(theta <= 1.0);
 
-        srand (time(NULL));
+        // srand (time(NULL));
 
         this->theta = theta;
         this->N = N;
