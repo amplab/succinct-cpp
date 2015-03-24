@@ -132,7 +132,7 @@ public:
         fprintf(stderr, "Starting search throughput measurement...");
         size_t storage_size = fd->storage_size();
         std::set<int64_t> res;
-        std::ofstream res_stream(resfile + ".get", std::ofstream::out | std::ofstream::app);
+        std::ofstream res_stream(resfile + ".search", std::ofstream::out | std::ofstream::app);
         uint64_t num_ops = 0;
 
         time_t start_time = get_timestamp();
