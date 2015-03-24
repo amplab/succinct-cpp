@@ -109,6 +109,48 @@ public:
         }
     }
 
+    static void search_send_requests(AdaptiveQueryServiceClient *query_client,
+            int64_t storage_size,
+            std::vector<std::string> queries,
+            std::string reqfile) {
+
+        std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
+        uint64_t num_requests = 0;
+
+        time_t start_time = get_timestamp();
+        while(num_requests <= queries.size()) {
+            query_client->send_search(queries[num_requests % queries.size()]);
+            num_requests++;
+        }
+        time_t diff = get_timestamp() - start_time;
+        double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
+        req_stream << storage_size << "\t" << rr << "\n";
+        req_stream.close();
+    }
+
+    static void search_measure_responses(AdaptiveQueryServiceClient *query_client,
+            int64_t storage_size,
+            std::vector<std::string> queries,
+            std::string resfile) {
+
+        std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
+        uint64_t num_responses = 0;
+        time_t start_time = get_timestamp();
+        while(num_responses <= queries.size()) {
+            try {
+                std::set<int64_t> res;
+                query_client->recv_search(res);
+                num_responses++;
+            } catch(std::exception& e) {
+                break;
+            }
+        }
+        time_t diff = get_timestamp() - start_time;
+        double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
+        res_stream << storage_size << "\t" << rr << "\n";
+        res_stream.close();
+    }
+
     static void send_requests(AdaptiveQueryServiceClient *query_client,
             int64_t storage_size,
             std::vector<int64_t> randoms,
@@ -213,6 +255,33 @@ public:
             fprintf(stderr, "Removing layer %d\n", layer_to_delete);
             query_client->remove_layer(layer_to_delete);
             fprintf(stderr, "Removed layer %d\n", layer_to_delete);
+        }
+
+        query_transport->close();
+        delete query_client;
+    }
+
+    void measure_throughput_search() {
+
+        boost::shared_ptr<TTransport> query_transport;
+        AdaptiveQueryServiceClient *query_client = get_client(query_transport);
+
+        int64_t storage_size = query_client->storage_size();
+
+        fprintf(stderr, "Starting request thread...\n");
+        std::thread req(&AdaptiveQueryServerBenchmark::search_send_requests, query_client, storage_size, queries, reqfile);
+
+        fprintf(stderr, "Starting response thread...\n");
+        std::thread res(&AdaptiveQueryServerBenchmark::search_measure_responses, query_client, storage_size, queries, resfile);
+
+        if(req.joinable()) {
+            req.join();
+            fprintf(stderr, "Request thread terminated.\n");
+        }
+
+        if(res.joinable()) {
+            res.join();
+            fprintf(stderr, "Response thread terminated.\n");
         }
 
         query_transport->close();
