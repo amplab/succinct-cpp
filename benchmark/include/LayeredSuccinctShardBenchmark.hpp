@@ -67,7 +67,7 @@ private:
 
 public:
     LayeredSuccinctShardBenchmark(std::string filename, bool construct,
-            uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+            uint32_t isa_sampling_rate, uint32_t sa_sampling_rate,
             std::string resfile, double skew, std::string queryfile = "") : Benchmark() {
 
         this->resfile = resfile;
