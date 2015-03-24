@@ -13,10 +13,10 @@ LayeredSuccinctShard::LayeredSuccinctShard(uint32_t id, std::string datafile, bo
 size_t LayeredSuccinctShard::remove_layer(uint32_t layer_id) {
     size_t size = 0;
     if(!opportunistic) {
-        size += ((LayeredSampledArray *)SA)->delete_layer(layer_id);
+        // size += ((LayeredSampledArray *)SA)->delete_layer(layer_id);
         size += ((LayeredSampledArray *)ISA)->delete_layer(layer_id);
     } else {
-        size += ((OpportunisticLayeredSampledArray *)SA)->delete_layer(layer_id);
+        // size += ((OpportunisticLayeredSampledArray *)SA)->delete_layer(layer_id);
         size += ((OpportunisticLayeredSampledArray *)ISA)->delete_layer(layer_id);
     }
     return size;
@@ -26,10 +26,10 @@ size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
     size_t size = 0;
     if(!opportunistic) {
         size += ((LayeredSampledISA *)ISA)->reconstruct_layer(layer_id);
-        size += ((LayeredSampledSA *)SA)->reconstruct_layer(layer_id);
+        // size += ((LayeredSampledSA *)SA)->reconstruct_layer(layer_id);
     } else {
         size += ((OpportunisticLayeredSampledISA *)ISA)->reconstruct_layer(layer_id);
-        size += ((OpportunisticLayeredSampledSA *)SA)->reconstruct_layer(layer_id);
+        // size += ((OpportunisticLayeredSampledSA *)SA)->reconstruct_layer(layer_id);
     }
     return size;
 }
