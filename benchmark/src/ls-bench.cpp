@@ -61,8 +61,8 @@ int main(int argc, char **argv) {
     LayeredSuccinctShardBenchmark ls_bench(inputpath, construct, isa_sampling_rate, sa_sampling_rate, respath, skew);
     for(int32_t i = -1; i < 10; i++) {
         ls_bench.delete_layer(i);
-        // ls_bench.measure_get_throughput();
-        ls_bench.measure_access_throughput(len);
+        ls_bench.measure_get_throughput();
+        // ls_bench.measure_access_throughput(len);
     }
 
     return 0;

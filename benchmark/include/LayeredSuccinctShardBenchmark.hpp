@@ -22,7 +22,7 @@ private:
         fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n", skew_keys, q_cnt);
         ZipfGenerator z(skew_keys, q_cnt);
         fprintf(stderr, "Generated zipf distribution, generating keys...\n");
-        for(count_t i = 0; i < q_cnt; i++) {
+        for(count_t i = 0; i < 100000; i++) {
             randoms.push_back(z.next());
         }
         fprintf(stderr, "Generated keys.\n");
@@ -36,7 +36,7 @@ private:
         ZipfGenerator z(skew_lengths, max_len - min_len);
         fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
 
-        for(count_t i = 0; i < q_cnt; i++) {
+        for(count_t i = 0; i < 100000; i++) {
             // Map zipf value to a length
             int32_t len = z.next() + min_len;
             assert(len >= min_len);
@@ -73,8 +73,14 @@ public:
         this->resfile = resfile;
         this->skew_keys = skew;
         this->skew_lengths = 1.0; // Pure uniform for now
-        this->fd = new LayeredSuccinctShard(0, filename, false, sa_sampling_rate,
+        this->fd = new LayeredSuccinctShard(0, filename, construct, sa_sampling_rate,
                 isa_sampling_rate);
+        if(construct) {
+            // Serialize and save to file
+            std::ofstream s_out(filename + ".succinct");
+            fd->serialize(s_out);
+            s_out.close();
+        }
 
         generate_randoms();
         generate_lengths();
