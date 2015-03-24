@@ -9,7 +9,7 @@ void print_usage(char *exec) {
 }
 
 int main(int argc, char **argv) {
-    if(argc > 7) {
+    if(argc > 12) {
         print_usage(argv[0]);
         return -1;
     }
@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
     std::string outpath = "benchmark/res";
     double skew = 1.0;  // Pure uniform
     int32_t len = 100, batch_size = 10;
-    while((c = getopt(argc, argv, "c:o:z:l:b:")) != -1) {
+    std::string querypath = "";
+    while((c = getopt(argc, argv, "c:o:z:l:b:q:")) != -1) {
         switch(c) {
         case 'c':
             configfile = std::string(optarg);
@@ -36,10 +37,14 @@ int main(int argc, char **argv) {
         case 'b':
             batch_size = atoi(optarg);
             break;
+        case 'q':
+            querypath = std::string(optarg);
+            break;
         default:
             configfile = "benchmark/conf/adashard-bench.conf";
             outpath = "benchmark/res";
             skew = 1.0;
+            querypath = "";
         }
     }
 
@@ -48,7 +53,7 @@ int main(int argc, char **argv) {
     std::string respath = outpath + "/adashard-bench.res";
     std::string addpath = outpath + "/adashard-bench.add";
     std::string delpath = outpath + "/adashard-bench.del";
-    AdaptBenchmark d_bench(configfile, reqpath, respath, addpath, delpath, skew, len, batch_size);
+    AdaptBenchmark d_bench(configfile, reqpath, respath, addpath, delpath, skew, len, batch_size, querypath);
     d_bench.run_benchmark();
 
     return 0;
