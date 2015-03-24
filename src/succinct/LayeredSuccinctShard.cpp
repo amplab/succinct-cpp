@@ -120,6 +120,7 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key, int32_t offs
     int64_t start = value_offsets[pos] + offset;
     result.resize(len);
     uint64_t idx = lookupISA(start);
+    ISA_opp->store(start, idx);
     for(int64_t i = 0; i < len; i++) {
         result[i] = alphabet[lookupC(idx)];
         uint64_t next_pos = (start + i + 1) % original_size();
@@ -128,5 +129,6 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key, int32_t offs
         } else {
             idx = lookupNPA(idx);
         }
+        ISA_opp->store(next_pos, idx);
     }
 }
