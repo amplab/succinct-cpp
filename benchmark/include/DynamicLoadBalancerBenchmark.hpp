@@ -206,8 +206,9 @@ public:
                     req_stream << cur_time << "\t" << rr;
                     std::vector<double> allocations;
                     lb.get_latest_allocations(allocations);
-                    for(auto alloc: allocations)
-                        req_stream << "\t" << alloc;
+                    for(size_t i = 0; i < allocations.size(); i++) {
+                        req_stream << "\t" << allocations[i];
+                    }
                     req_stream << "\n";
                     req_stream.flush();
                     num_requests = 0;
@@ -221,8 +222,9 @@ public:
         req_stream << cur_time << "\t" << rr;
         std::vector<double> allocations;
         lb.get_latest_allocations(allocations);
-        for(auto alloc: allocations)
-            req_stream << "\t" << alloc;
+        for(size_t i = 0; i < allocations.size(); i++) {
+            req_stream << "\t" << allocations[i];
+        }
         req_stream << "\n";
         req_stream.close();
     }
@@ -316,9 +318,13 @@ public:
         sleep(delta);
 
         while(true) {
+            fprintf(stderr, "[QM]");
             for(uint32_t i = 0; i < num_replicas; i++) {
                 avg_qlens[i] = queue_lengths[i] * alpha + (1.0 - alpha) * avg_qlens[i];
+                double val = avg_qlens[i];
+                fprintf(stderr, "\t%f", val);
             }
+            fprintf(stderr, "\n");
             sleep(delta);
         }
     }

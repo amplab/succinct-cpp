@@ -14,6 +14,7 @@ public:
     DynamicLoadBalancer(uint32_t replication) {
         this->replication = replication;
         this->cum_prio = new double[replication];
+        fprintf(stderr, "Initialized load balancer with replication = %u\n", replication);
     }
 
     uint32_t get_replica(std::atomic<double> *priorities) {
