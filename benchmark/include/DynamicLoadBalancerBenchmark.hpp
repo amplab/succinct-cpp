@@ -37,6 +37,7 @@ private:
     std::string resfile;
     std::string addfile;
     std::string delfile;
+    std::string qfile;
     std::atomic<uint64_t> *queue_length;
     double skew;
     std::vector<std::string> replicas;
@@ -128,7 +129,7 @@ private:
 
 public:
     DynamicLoadBalancerBenchmark(std::string configfile, std::string reqfile, std::string resfile,
-            std::string addfile, std::string delfile, double skew, std::vector<std::string> replicas,
+            std::string addfile, std::string delfile, std::string qfile, double skew, std::vector<std::string> replicas,
             uint32_t num_active_replicas, std::string queryfile) : Benchmark() {
 
         this->replicas = replicas;
@@ -155,6 +156,7 @@ public:
         this->resfile = resfile;
         this->addfile = addfile;
         this->delfile = delfile;
+        this->qfile = qfile;
 
         this->skew = skew;
 
@@ -179,7 +181,7 @@ public:
             std::string reqfile) {
 
         time_t cur_time;
-        const time_t MEASURE_INTERVAL = 5000000;
+        const time_t MEASURE_INTERVAL = 40000000;
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
         DynamicLoadBalancer lb(query_client.size());
@@ -315,20 +317,24 @@ public:
         }
     }
 
-    static void monitor_queues(std::atomic<uint64_t> *queue_lengths, std::atomic<double> *avg_qlens, uint64_t num_replicas) {
+    static void monitor_queues(std::atomic<uint64_t> *queue_lengths, std::atomic<double> *avg_qlens, uint64_t num_replicas, std::string qfile) {
 
         double alpha = 0.8;
         uint32_t delta = 5;
 
-        sleep(delta);
+        std::ofstream q_stream(qfile);
 
+        sleep(delta);
         while(true) {
             fprintf(stderr, "[QM]");
+            q_stream << get_timestamp();
             for(uint32_t i = 0; i < num_replicas; i++) {
                 avg_qlens[i] = queue_lengths[i] * alpha + (1.0 - alpha) * avg_qlens[i];
                 double val = avg_qlens[i];
                 fprintf(stderr, "\t%f", val);
+                q_stream << "\t" << queue_lengths[i];
             }
+            q_stream << "\n";
             fprintf(stderr, "\n");
             sleep(delta);
         }
@@ -341,7 +347,7 @@ public:
             avg_qlens[i] = 0.0;
         }
 
-        std::thread queue_monitor_daemon(&DynamicLoadBalancerBenchmark::monitor_queues, queue_length, avg_qlens, replicas.size());
+        std::thread queue_monitor_daemon(&DynamicLoadBalancerBenchmark::monitor_queues, queue_length, avg_qlens, replicas.size(), qfile);
 
         std::thread req(&DynamicLoadBalancerBenchmark::send_requests,
                 query_client, queries, request_rates, durations, queue_length,

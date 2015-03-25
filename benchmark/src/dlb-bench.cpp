@@ -61,7 +61,8 @@ int main(int argc, char **argv) {
     std::string respath = outpath + "/dlb-bench.res";
     std::string addpath = outpath + "/dlb-bench.add";
     std::string delpath = outpath + "/dlb-bench.del";
-    DynamicLoadBalancerBenchmark dlb_bench(configfile, reqpath, respath, addpath, delpath, skew, hostnames, num_active_replicas, querypath);
+    std::string qpath = outpath + "/dlb-bench.queue";
+    DynamicLoadBalancerBenchmark dlb_bench(configfile, reqpath, respath, addpath, delpath, qpath, skew, hostnames, num_active_replicas, querypath);
     dlb_bench.run_benchmark();
 
     return 0;
