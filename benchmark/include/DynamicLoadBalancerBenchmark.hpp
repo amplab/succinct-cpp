@@ -175,26 +175,26 @@ public:
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
             std::atomic<uint64_t> *queue_length,
+            std::atomic<double> *avg_qlens,
             std::string reqfile) {
 
         time_t cur_time;
         const time_t MEASURE_INTERVAL = 40000000;
-        time_t measure_start_time = get_timestamp();
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
-
         DynamicLoadBalancer lb(query_client.size());
 
+        time_t measure_start_time = get_timestamp();
         for(uint32_t stage = 0; stage < request_rates.size(); stage++) {
             time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t sleep_time = (1000 * 1000) / request_rates[stage];
             uint64_t i = 0;
             fprintf(stderr, "Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
                     stage, request_rates[stage], duration);
-            time_t start_time = get_timestamp();
-            while((cur_time = get_timestamp()) - start_time <= duration) {
+            time_t stage_start_time = get_timestamp();
+            while((cur_time = get_timestamp()) - stage_start_time <= duration) {
                 time_t t0 = get_timestamp();
-                uint32_t replica_id = lb.get_replica(queue_length);
+                uint32_t replica_id = lb.get_replica(avg_qlens);
                 query_client[replica_id]->send_search(queries[i % queries.size()]);
                 i++;
                 num_requests++;
@@ -203,9 +203,9 @@ public:
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
+                    req_stream << cur_time << "\t" << rr;
                     std::vector<double> allocations;
                     lb.get_latest_allocations(allocations);
-                    req_stream << cur_time << "\t" << rr;
                     for(auto alloc: allocations)
                         req_stream << "\t" << alloc;
                     req_stream << "\n";
@@ -214,13 +214,13 @@ public:
                     measure_start_time = get_timestamp();
                 }
             }
-            fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage, (cur_time  - start_time));
+            fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage, (cur_time  - stage_start_time));
         }
         time_t diff = cur_time - measure_start_time;
         double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
+        req_stream << cur_time << "\t" << rr;
         std::vector<double> allocations;
         lb.get_latest_allocations(allocations);
-        req_stream << cur_time << "\t" << rr;
         for(auto alloc: allocations)
             req_stream << "\t" << alloc;
         req_stream << "\n";
@@ -308,10 +308,33 @@ public:
         }
     }
 
+    static void monitor_queues(std::atomic<uint64_t> *queue_lengths, std::atomic<double> *avg_qlens, uint64_t num_replicas) {
+
+        double alpha = 0.9;
+        uint32_t delta = 5;
+
+        sleep(delta);
+
+        while(true) {
+            for(uint32_t i = 0; i < num_replicas; i++) {
+                avg_qlens[i] = queue_lengths[i] * alpha + (1.0 - alpha) * avg_qlens[i];
+            }
+            sleep(delta);
+        }
+    }
+
     void run_benchmark() {
+
+        std::atomic<double> *avg_qlens = new std::atomic<double>[replicas.size()];
+        for(uint32_t i = 0; i < replicas.size(); i++) {
+            avg_qlens[i] = 0.0;
+        }
+
+        std::thread queue_monitor_daemon(&DynamicLoadBalancerBenchmark::monitor_queues, queue_length, avg_qlens, replicas.size());
 
         std::thread req(&DynamicLoadBalancerBenchmark::send_requests,
                 query_client, queries, request_rates, durations, queue_length,
+                avg_qlens,
                 reqfile);
 
         std::thread *res = new std::thread[query_client.size()];
