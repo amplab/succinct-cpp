@@ -128,7 +128,7 @@ private:
 public:
     AdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
             std::string addfile, std::string delfile, double skew, uint32_t len,
-            uint32_t batch_size, std::string queryfile = "") : Benchmark() {
+            uint32_t batch_size, std::string queryfile) : Benchmark() {
 
         this->query_client = this->get_client(query_transport);
         fprintf(stderr, "Created query client.\n");
@@ -147,10 +147,15 @@ public:
         this->batch_size = batch_size;
         this->len = len;
 
-        generate_randoms();
+        // generate_randoms();
         if(queryfile != "") {
             read_queries(queryfile);
         }
+
+        if(randoms.empty() && queries.empty()) {
+            fprintf(stderr, "Warning: No search or get queries loaded.\n");
+        }
+
         parse_config_file(configfile);
     }
 
