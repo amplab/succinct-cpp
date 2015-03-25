@@ -1,5 +1,5 @@
-#ifndef ADAPT_BENCHMARK_HPP
-#define ADAPT_BENCHMARK_HPP
+#ifndef DYNAMIC_LOAD_BALANCER_BENCHMARK_HPP
+#define DYNAMIC_LOAD_BALANCER_BENCHMARK_HPP
 
 #include <thrift/transport/TSocket.h>
 #include <thrift/protocol/TBinaryProtocol.h>
@@ -8,6 +8,7 @@
 #include "Benchmark.hpp"
 #include "ZipfGenerator.hpp"
 #include "thrift/AdaptiveQueryService.h"
+#include "thrift/DynamicLoadBalancer.hpp"
 #include "thrift/ports.h"
 
 #include <thread>
@@ -20,14 +21,14 @@ using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
-class AdaptBenchmark : public Benchmark {
+class DynamicLoadBalancerBenchmark : public Benchmark {
 private:
-    AdaptiveQueryServiceClient *query_client;
-    AdaptiveQueryServiceClient *stats_client;
-    AdaptiveQueryServiceClient *mgmnt_client;
-    boost::shared_ptr<TTransport> query_transport;
-    boost::shared_ptr<TTransport> stats_transport;
-    boost::shared_ptr<TTransport> mgmnt_transport;
+    std::vector<AdaptiveQueryServiceClient *> query_client;
+    std::vector<AdaptiveQueryServiceClient *> stats_client;
+    std::vector<AdaptiveQueryServiceClient *> mgmnt_client;
+    std::vector<boost::shared_ptr<TTransport>> query_transport;
+    std::vector<boost::shared_ptr<TTransport>> stats_transport;
+    std::vector<boost::shared_ptr<TTransport>> mgmnt_transport;
     std::vector<uint32_t> request_rates;
     std::vector<uint32_t> durations;
     std::vector<std::vector<uint32_t>> layers_to_delete;
@@ -36,13 +37,13 @@ private:
     std::string resfile;
     std::string addfile;
     std::string delfile;
-    std::atomic<uint64_t> queue_length;
+    std::atomic<uint64_t> *queue_length;
     double skew;
-    uint32_t batch_size;
-    uint32_t len;
+    std::vector<std::string> replicas;
+    uint32_t num_active_replicas;
 
     void generate_randoms() {
-        count_t q_cnt = query_client->get_num_keys();
+        count_t q_cnt = query_client[0]->get_num_keys();
         fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n", skew, q_cnt);
         ZipfGenerator z(skew, q_cnt);
         fprintf(stderr, "Generated zipf distribution, generating keys...\n");
@@ -114,9 +115,9 @@ private:
         assert(request_rates.size() == durations.size());
     }
 
-    AdaptiveQueryServiceClient *get_client(boost::shared_ptr<TTransport> &c_transport) {
+    AdaptiveQueryServiceClient *get_client(std::string host, boost::shared_ptr<TTransport> &c_transport) {
         int port = QUERY_SERVER_PORT;
-        boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+        boost::shared_ptr<TSocket> socket(new TSocket(host, port));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         AdaptiveQueryServiceClient *client = new AdaptiveQueryServiceClient(protocol);
@@ -126,26 +127,36 @@ private:
     }
 
 public:
-    AdaptBenchmark(std::string configfile, std::string reqfile, std::string resfile,
-            std::string addfile, std::string delfile, double skew, uint32_t len,
-            uint32_t batch_size, std::string queryfile) : Benchmark() {
+    DynamicLoadBalancerBenchmark(std::string configfile, std::string reqfile, std::string resfile,
+            std::string addfile, std::string delfile, double skew, std::vector<std::string> replicas,
+            uint32_t num_active_replicas, std::string queryfile) : Benchmark() {
 
-        this->query_client = this->get_client(query_transport);
-        fprintf(stderr, "Created query client.\n");
-        this->mgmnt_client = this->get_client(mgmnt_transport);
-        fprintf(stderr, "Created management client.\n");
-        this->stats_client = this->get_client(stats_transport);
-        fprintf(stderr, "Created stats client.\n");
+        this->replicas = replicas;
+        this->num_active_replicas = num_active_replicas;
+
+        this->query_client.resize(replicas.size());
+        this->mgmnt_client.resize(replicas.size());
+        this->stats_client.resize(replicas.size());
+        this->query_transport.resize(replicas.size());
+        this->mgmnt_transport.resize(replicas.size());
+        this->stats_transport.resize(replicas.size());
+        this->queue_length = new std::atomic<uint64_t>[replicas.size()];
+        for(uint32_t i = 0; i < replicas.size(); i++) {
+            this->query_client[i] = this->get_client(replicas[i], query_transport[i]);
+            fprintf(stderr, "Created query client %u.\n", i);
+            this->mgmnt_client[i] = this->get_client(replicas[i], mgmnt_transport[i]);
+            fprintf(stderr, "Created management client %u.\n", i);
+            this->stats_client[i] = this->get_client(replicas[i], stats_transport[i]);
+            fprintf(stderr, "Created stats client %u.\n", i);
+            this->queue_length[i] = 0;
+        }
 
         this->reqfile = reqfile;
         this->resfile = resfile;
         this->addfile = addfile;
         this->delfile = delfile;
 
-        this->queue_length = 0;
         this->skew = skew;
-        this->batch_size = batch_size;
-        this->len = len;
 
         // generate_randoms();
         if(queryfile != "") {
@@ -159,12 +170,11 @@ public:
         parse_config_file(configfile);
     }
 
-    static void send_requests(AdaptiveQueryServiceClient *query_client,
-            boost::shared_ptr<TTransport> query_transport,
+    static void send_requests(std::vector<AdaptiveQueryServiceClient *> query_client,
             std::vector<std::string> queries,
             std::vector<uint32_t> request_rates,
             std::vector<uint32_t> durations,
-            std::atomic<uint64_t> &queue_length,
+            std::atomic<uint64_t> *queue_length,
             std::string reqfile) {
 
         time_t cur_time;
@@ -172,6 +182,8 @@ public:
         time_t measure_start_time = get_timestamp();
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
+
+        DynamicLoadBalancer lb(query_client.size());
 
         for(uint32_t stage = 0; stage < request_rates.size(); stage++) {
             time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
@@ -182,10 +194,11 @@ public:
             time_t start_time = get_timestamp();
             while((cur_time = get_timestamp()) - start_time <= duration) {
                 time_t t0 = get_timestamp();
-                query_client->send_search(queries[i % queries.size()]);
+                uint32_t replica_id = lb.get_replica(queue_length);
+                query_client[replica_id]->send_search(queries[i % queries.size()]);
                 i++;
                 num_requests++;
-                queue_length++;
+                queue_length[replica_id]++;
                 while(get_timestamp() - t0 < sleep_time);
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
@@ -202,13 +215,6 @@ public:
         double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
         req_stream << cur_time << "\t" << rr << "\n";
         req_stream.close();
-
-        // Sleep for some time and let other threads finish
-        fprintf(stderr, "Request thread sleeping for 10 seconds...\n");
-        sleep(10);
-        fprintf(stderr, "Finished sending queries, attempting to close query socket...\n");
-        query_transport->close();
-        fprintf(stderr, "Closed query socket.\n");
     }
 
     static void measure_responses(AdaptiveQueryServiceClient *query_client,
@@ -282,6 +288,7 @@ public:
                     break;
                 }
             }
+
             // Sleep if there is still time left
             if((cur_time = get_timestamp()) - start_time < duration) {
                 fprintf(stderr, "Done with layer management for stage %u, took %llu us, sleeping for %llu us.\n",
@@ -292,35 +299,58 @@ public:
     }
 
     void run_benchmark() {
-        std::thread req(&AdaptBenchmark::send_requests,
-                query_client, query_transport,
-                queries, request_rates, durations, std::ref(queue_length),
+
+        std::thread req(&DynamicLoadBalancerBenchmark::send_requests,
+                query_client, queries, request_rates, durations, queue_length,
                 reqfile);
-        std::thread res(&AdaptBenchmark::measure_responses, query_client,
-                stats_client, std::ref(queue_length), resfile);
-        std::thread lay(&AdaptBenchmark::manage_layers, mgmnt_client,
-                layers_to_create, layers_to_delete, durations, addfile, delfile);
+
+        std::thread *res = new std::thread[query_client.size()];
+        for(uint32_t i = 0; i < query_client.size(); i++) {
+            res[i] = std::thread(&DynamicLoadBalancerBenchmark::measure_responses, query_client[i],
+                    stats_client[i], std::ref(queue_length[i]), resfile + "." + std::to_string(i));
+
+        }
+
+        std::thread *lay = new std::thread[num_active_replicas];
+        for(uint32_t i = 0; i < num_active_replicas; i++) {
+            lay[i] = std::thread(&DynamicLoadBalancerBenchmark::manage_layers, mgmnt_client[i],
+                    layers_to_create, layers_to_delete, durations, addfile, delfile);
+        }
 
         if(req.joinable()) {
             req.join();
             fprintf(stderr, "Request thread terminated.\n");
         }
 
-        if(res.joinable()) {
-            res.join();
-            fprintf(stderr, "Response thread terminated.\n");
+        // Sleep for some time and let other threads finish
+        fprintf(stderr, "Sleeping for 10 seconds...\n");
+        sleep(10);
+        fprintf(stderr, "Finished sending queries, attempting to close query sockets...\n");
+        for(auto qt : query_transport)
+            qt->close();
+        fprintf(stderr, "Closed query sockets.\n");
+
+        for(uint32_t i = 0; i < query_client.size(); i++) {
+            if(res[i].joinable()) {
+                res[i].join();
+                fprintf(stderr, "Response %u thread terminated.\n", i);
+            }
         }
 
-        if(lay.joinable()) {
-            lay.join();
-            fprintf(stderr, "Layer creation thread terminated.\n");
+        for(uint32_t i = 0; i < num_active_replicas; i++) {
+            if(lay[i].joinable()) {
+                lay[i].join();
+                fprintf(stderr, "Layer creation thread terminated.\n");
+            }
         }
 
-        mgmnt_transport->close();
-        fprintf(stderr, "Closed management socket.\n");
+        for(auto mt : mgmnt_transport)
+            mt->close();
+        fprintf(stderr, "Closed management sockets.\n");
 
-        stats_transport->close();
-        fprintf(stderr, "Closed stats socket.\n");
+        for(auto st: stats_transport)
+            st->close();
+        fprintf(stderr, "Closed stats sockets.\n");
     }
 };
 

@@ -10,6 +10,7 @@ TARGET_F := $(BINDIR)/fbench
 TARGET_LS := $(BINDIR)/lsbench
 TARGET_SS := $(BINDIR)/ssbench
 TARGET_AS := $(BINDIR)/asbench
+TARGET_DL := $(BINDIR)/dlbench
 TARGET_Q := $(BINDIR)/qbench
 TARGET_AQS := $(BINDIR)/aqsbench
 TARGET_SURE := $(BINDIR)/surebench
@@ -19,6 +20,7 @@ OBJ_F := $(BUILDDIR)/file-bench.o
 OBJ_LS := $(BUILDDIR)/ls-bench.o
 OBJ_SS := $(BUILDDIR)/succinctserver-bench.o
 OBJ_AS := $(BUILDDIR)/adashard-bench.o
+OBJ_DL := $(BUILDDIR)/dlb-bench.o
 OBJ_Q := $(BUILDDIR)/queue-bench.o
 OBJ_AQS := $(BUILDDIR)/aqs-bench.o
 OBJ_SURE := $(BUILDDIR)/sure-bench.o
@@ -29,7 +31,7 @@ LIBT := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -lsuccinctclient
 LIBA := -L $(LIBDIR) -lsuccinct -levent -lthrift -lthriftnb -ladaptsuccinctclient
 INC := -I ../include -I include
 
-all: sbench lsbench fbench ssbench asbench qbench surebench aqsben
+all: sbench lsbench fbench ssbench asbench dlbench qbench surebench aqsben
 
 sbench: $(TARGET_S)
 
@@ -40,6 +42,8 @@ lsbench: $(TARGET_LS)
 ssbench: $(TARGET_SS)
 
 asbench: $(TARGET_AS)
+
+dlbench: $(TARGET_DL)
 
 qbench: $(TARGET_Q)
 
@@ -72,6 +76,11 @@ $(TARGET_AS): $(OBJ_AS)
 	@mkdir -p $(BINDIR)
 	@echo " $(CC) $^ -o $(TARGET_AS) $(LIBA)"; $(CC) $^ -o $(TARGET_AS) $(LIBA)
 
+$(TARGET_DL): $(OBJ_DL)
+	@echo "Linking..."
+	@mkdir -p $(BINDIR)
+	@echo " $(CC) $^ -o $(TARGET_DL) $(LIBA)"; $(CC) $^ -o $(TARGET_DL) $(LIBA)
+
 $(TARGET_Q): $(OBJ_Q)
 	@echo "Linking..."
 	@mkdir -p $(BINDIR)
@@ -93,7 +102,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	@echo "Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)";\
-		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS) $(TARGET_DL)";\
+		$(RM) -r $(BUILDDIR) $(TARGET_S) $(TARGET_LS) $(TARGET_F) $(TARGET_SS) $(TARGET_AS) $(TARGET_SURE) $(TARGET_AQS) $(TARGET_DL)
 	
 .PHONY: clean

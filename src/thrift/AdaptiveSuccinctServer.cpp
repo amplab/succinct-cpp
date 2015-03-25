@@ -500,8 +500,6 @@ int main(int argc, char **argv) {
         global_queue_lengths[i] = 0;
     }
 
-    DynamicLoadBalancer *lb = new DynamicLoadBalancer(num_primary_shards, replication);
-
     int port = QUERY_HANDLER_PORT;
 //    shared_ptr<AdaptiveHandlerProcessorFactory> handlerFactory(new AdaptiveHandlerProcessorFactory(local_host_id,
 //            num_local_shards, hostnames, construct, replication, local_queue_lengths, global_queue_lengths));

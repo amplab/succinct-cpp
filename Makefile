@@ -221,6 +221,11 @@ asbench: adaptive-thrift-components
 	@echo " cd benchmark; make clean && make asbench";\
 		cd benchmark; make clean && make asbench
 
+dlbench: adaptive-thrift-components
+	@echo "Building loadbalancer benchmark..."
+	@echo " cd benchmark; make clean && make dlbench";\
+		cd benchmark; make clean && make dlbench
+
 qbench: adaptive-thrift-components
 	@echo "Building queue benchmark..."
 	@echo " cd benchmark; make clean && make qbench";\
