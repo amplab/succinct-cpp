@@ -168,7 +168,7 @@ public:
             std::string reqfile) {
 
         time_t cur_time;
-        const time_t MEASURE_INTERVAL = 5000000;
+        const time_t MEASURE_INTERVAL = 60000000;
         time_t measure_start_time = get_timestamp();
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
@@ -215,7 +215,7 @@ public:
             AdaptiveQueryServiceClient *stats_client,
             std::atomic<uint64_t> &queue_length, std::string resfile) {
 
-        const time_t MEASURE_INTERVAL = 5000000;
+        const time_t MEASURE_INTERVAL = 60000000;
         uint32_t num_responses = 0;
         time_t cur_time;
         std::ofstream res_stream(resfile);
