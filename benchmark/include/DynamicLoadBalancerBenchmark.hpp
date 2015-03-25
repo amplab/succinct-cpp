@@ -265,6 +265,7 @@ public:
     }
 
     static void manage_layers(AdaptiveQueryServiceClient *mgmt_client,
+            bool is_active,
             std::vector<std::vector<uint32_t>> layers_to_create,
             std::vector<std::vector<uint32_t>> layers_to_delete,
             std::vector<uint32_t> durations,
@@ -279,25 +280,30 @@ public:
             time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t start_time = get_timestamp();
             for(size_t i = 0; i < layers_to_create[stage].size(); i++) {
-                try {
-                    size_t add_size = mgmt_client->reconstruct_layer(layers_to_create[stage][i]);
-                    fprintf(stderr, "Created layer with size = %zu\n", add_size);
-                    add_stream << get_timestamp() << "\t" << i << "\t" << add_size << "\n";
-                    add_stream.flush();
-                } catch(std::exception& e) {
-                    break;
+                if(i == 0 || is_active) {
+                    try {
+                        size_t add_size = mgmt_client->reconstruct_layer(layers_to_create[stage][i]);
+                        fprintf(stderr, "Created layer with size = %zu\n", add_size);
+                        add_stream << get_timestamp() << "\t" << i << "\t" << add_size << "\n";
+                        add_stream.flush();
+                    } catch(std::exception& e) {
+                        fprintf(stderr, "Error: %s\n", e.what());
+                        break;
+                    }
                 }
             }
 
             for(size_t i = 0; i < layers_to_delete[stage].size(); i++) {
-                try {
-                    size_t del_size = mgmt_client->remove_layer(layers_to_delete[stage][i]);
-                    fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
-                    del_stream << get_timestamp() << "\t" << i << "\t" << del_size << "\n";
-                    del_stream.flush();
-                } catch(std::exception& e) {
-                    fprintf(stderr, "Error: %s\n", e.what());
-                    break;
+                if(i == 0 || is_active) {
+                    try {
+                        size_t del_size = mgmt_client->remove_layer(layers_to_delete[stage][i]);
+                        fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
+                        del_stream << get_timestamp() << "\t" << i << "\t" << del_size << "\n";
+                        del_stream.flush();
+                    } catch(std::exception& e) {
+                        fprintf(stderr, "Error: %s\n", e.what());
+                        break;
+                    }
                 }
             }
 
@@ -344,16 +350,13 @@ public:
                 reqfile);
 
         std::thread *res = new std::thread[query_client.size()];
+        std::thread *lay = new std::thread[query_client.size()];
         for(uint32_t i = 0; i < query_client.size(); i++) {
             res[i] = std::thread(&DynamicLoadBalancerBenchmark::measure_responses, query_client[i],
                     stats_client[i], std::ref(queue_length[i]), resfile + "." + std::to_string(i));
+            lay[i] = std::thread(&DynamicLoadBalancerBenchmark::manage_layers, mgmnt_client[i], (i < num_active_replicas),
+                                layers_to_create, layers_to_delete, durations, addfile, delfile);
 
-        }
-
-        std::thread *lay = new std::thread[num_active_replicas];
-        for(uint32_t i = 0; i < num_active_replicas; i++) {
-            lay[i] = std::thread(&DynamicLoadBalancerBenchmark::manage_layers, mgmnt_client[i],
-                    layers_to_create, layers_to_delete, durations, addfile, delfile);
         }
 
         if(req.joinable()) {
@@ -374,9 +377,6 @@ public:
                 res[i].join();
                 fprintf(stderr, "Response %u thread terminated.\n", i);
             }
-        }
-
-        for(uint32_t i = 0; i < num_active_replicas; i++) {
             if(lay[i].joinable()) {
                 lay[i].join();
                 fprintf(stderr, "Layer creation thread terminated.\n");
