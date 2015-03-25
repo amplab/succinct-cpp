@@ -194,7 +194,7 @@ public:
             time_t stage_start_time = get_timestamp();
             while((cur_time = get_timestamp()) - stage_start_time <= duration) {
                 time_t t0 = get_timestamp();
-                uint32_t replica_id = lb.get_replica(avg_qlens);
+                uint32_t replica_id = lb.get_replica(queue_length);
                 query_client[replica_id]->send_search(queries[i % queries.size()]);
                 i++;
                 num_requests++;
