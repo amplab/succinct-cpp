@@ -179,7 +179,7 @@ public:
             std::string reqfile) {
 
         time_t cur_time;
-        const time_t MEASURE_INTERVAL = 40000000;
+        const time_t MEASURE_INTERVAL = 5000000;
         std::ofstream req_stream(reqfile);
         uint64_t num_requests = 0;
         DynamicLoadBalancer lb(query_client.size());
