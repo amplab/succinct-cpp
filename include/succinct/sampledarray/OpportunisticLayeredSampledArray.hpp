@@ -79,11 +79,26 @@ public:
                 SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
                 SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
                 this->num_sampled_values++;
-                assert(val == SuccinctBase::lookup_bitmap_array(layer_data[l.layer_id], l.layer_idx, data_bits));
                 return true;
             }
         }
         return false;
+    }
+
+    bool is_idx_marked_for_creation(uint64_t i) {
+        if(i % target_sampling_rate != 0) return false;
+        layer_t l;
+        get_layer(&l, i);
+        return IS_MARKED_FOR_CREATION(l.layer_id) &&
+                !IS_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
+    }
+
+    void store_without_check(uint64_t i, uint64_t val) {
+        layer_t l;
+        get_layer(&l, i);
+        SuccinctBase::set_bitmap_array(&layer_data[l.layer_id], l.layer_idx, val, data_bits);
+        SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
+        this->num_sampled_values++;
     }
 
     virtual size_t delete_layer(uint32_t layer_id) {

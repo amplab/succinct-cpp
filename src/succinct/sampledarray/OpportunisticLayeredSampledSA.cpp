@@ -33,12 +33,24 @@ uint64_t OpportunisticLayeredSampledSA::operator[](uint64_t i) {
 
     uint64_t j = 0;
     uint64_t original_i = i;
+    std::vector<std::pair<uint64_t, uint64_t>> opt;
     while (!is_sampled(i)) {
         i = (*npa)[i];
         j++;
+        if(is_idx_marked_for_creation(i)) {
+            opt.push_back(std::pair<uint64_t, uint64_t>(i, j));
+        }
     }
 
     uint64_t sa_val = sampled_at(i / target_sampling_rate);
+
+    for(size_t k = 0; k < opt.size(); k++) {
+        uint64_t count = j - opt[k].second;
+        uint64_t pos = opt[k].first;
+        uint64_t cur_val = (sa_val < count) ? original_size - (count - sa_val) : sa_val - count;
+        store_without_check(pos, cur_val);
+    }
+
     if(sa_val < j) {
         store(original_i, (original_size - (j - sa_val)));
         return original_size - (j - sa_val);
