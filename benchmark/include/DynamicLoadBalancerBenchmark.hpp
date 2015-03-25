@@ -335,6 +335,7 @@ public:
                 q_stream << "\t" << queue_lengths[i];
             }
             q_stream << "\n";
+            q_stream.flush();
             fprintf(stderr, "\n");
             sleep(delta);
         }
