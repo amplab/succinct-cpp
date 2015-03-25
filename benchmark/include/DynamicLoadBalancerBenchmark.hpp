@@ -279,8 +279,8 @@ public:
         for(uint32_t stage = 0; stage < layers_to_create.size(); stage++) {
             time_t duration = ((uint64_t)durations[stage]) * 1000L * 1000L;   // Seconds to microseconds
             time_t start_time = get_timestamp();
-            for(size_t i = 0; i < layers_to_create[stage].size(); i++) {
-                if(i == 0 || is_active) {
+            if(stage == 0 || is_active) {
+                for(size_t i = 0; i < layers_to_create[stage].size(); i++) {
                     try {
                         size_t add_size = mgmt_client->reconstruct_layer(layers_to_create[stage][i]);
                         fprintf(stderr, "Created layer with size = %zu\n", add_size);
@@ -291,10 +291,8 @@ public:
                         break;
                     }
                 }
-            }
 
-            for(size_t i = 0; i < layers_to_delete[stage].size(); i++) {
-                if(i == 0 || is_active) {
+                for(size_t i = 0; i < layers_to_delete[stage].size(); i++) {
                     try {
                         size_t del_size = mgmt_client->remove_layer(layers_to_delete[stage][i]);
                         fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
@@ -304,6 +302,7 @@ public:
                         fprintf(stderr, "Error: %s\n", e.what());
                         break;
                     }
+
                 }
             }
 
