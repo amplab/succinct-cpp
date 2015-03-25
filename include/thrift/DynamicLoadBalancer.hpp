@@ -22,8 +22,8 @@ public:
         // Get the distribution
         double sum = 0.0;
         for(uint32_t i = 0; i < replication; i++) {
-            uint64_t prio = priorities[i];
-            sum += (prio + 1);  // To prevent zero priority cases
+            double prio = priorities[i];
+            sum += (1 / (prio + 1));  // To prevent zero priority cases
             this->cum_prio[i] = sum;
         }
 
