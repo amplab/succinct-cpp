@@ -18,7 +18,7 @@ bin="`cd "$bin"; pwd`"
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
 if [ "$SUCCINCT_DATA_PATH" = "" ]; then
-  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
+    SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
 fi
 
 if [ "$SUCCINCT_LOG_PATH" = "" ]; then
@@ -41,14 +41,10 @@ fi
 
 if [ "$OPPORTUNISTIC" = "TRUE" ]; then
     OPP="-o"
-elif
-    OPP=""
 fi
 
 if [ "$STANDALONE" = "TRUE" ]; then
     STD="-d"
-elif
-    STD=""
 fi
 
 LIMIT=$(($1 - 1))
