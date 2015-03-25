@@ -21,7 +21,8 @@ public:
         // Get the distribution
         double sum = 0.0;
         for(uint32_t i = 0; i < replication; i++) {
-            sum += priorities[i];
+            uint64_t prio = priorities[i];
+            sum += (prio + 1);  // To prevent zero priority cases
             this->cum_prio[i] = sum;
         }
 
@@ -32,6 +33,14 @@ public:
             }
         }
         return 0;
+    }
+
+    void get_latest_allocations(std::vector<double> allocations) {
+        double prev = 0, sum = 0;
+        for(uint32_t i = 0; i < replication; i++) {
+            allocations.push_back((cum_prio[i] - prev) / cum_prio[replication - 1]);
+            prev = cum_prio[i];
+        }
     }
 };
 

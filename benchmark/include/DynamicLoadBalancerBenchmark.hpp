@@ -203,7 +203,12 @@ public:
                 if((cur_time = get_timestamp()) - measure_start_time >= MEASURE_INTERVAL) {
                     time_t diff = cur_time - measure_start_time;
                     double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
-                    req_stream << cur_time << "\t" << rr << "\n";
+                    std::vector<double> allocations;
+                    lb.get_latest_allocations(allocations);
+                    req_stream << cur_time << "\t" << rr;
+                    for(auto alloc: allocations)
+                        req_stream << "\t" << alloc;
+                    req_stream << "\n";
                     req_stream.flush();
                     num_requests = 0;
                     measure_start_time = get_timestamp();
@@ -213,7 +218,12 @@ public:
         }
         time_t diff = cur_time - measure_start_time;
         double rr = ((double) num_requests * 1000 * 1000) / ((double)diff);
-        req_stream << cur_time << "\t" << rr << "\n";
+        std::vector<double> allocations;
+        lb.get_latest_allocations(allocations);
+        req_stream << cur_time << "\t" << rr;
+        for(auto alloc: allocations)
+            req_stream << "\t" << alloc;
+        req_stream << "\n";
         req_stream.close();
     }
 
