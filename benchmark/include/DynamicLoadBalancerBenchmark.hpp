@@ -317,7 +317,7 @@ public:
 
     static void monitor_queues(std::atomic<uint64_t> *queue_lengths, std::atomic<double> *avg_qlens, uint64_t num_replicas) {
 
-        double alpha = 0.9;
+        double alpha = 0.8;
         uint32_t delta = 5;
 
         sleep(delta);
