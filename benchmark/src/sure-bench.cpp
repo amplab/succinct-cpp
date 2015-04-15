@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
         s_out.close();
     } else {
         std::cout << "De-serializing Succinct data structures...\n";
-        s_file = new SuccinctFile(filename, false);
+        s_file = new SuccinctFile(filename, SuccinctMode::LOAD_IN_MEMORY);
     }
 
     std::cout << "Done.\n";

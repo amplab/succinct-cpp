@@ -35,19 +35,6 @@ private:
     }
 
 public:
-
-    ShardBenchmark(std::string filename, std::string queryfile = "") : Benchmark() {
-        std::ifstream input(filename);
-        uint32_t num_keys = std::count(std::istreambuf_iterator<char>(input),
-                std::istreambuf_iterator<char>(), '\n');
-        shard = new SuccinctShard(0, filename, num_keys, false);
-
-        generate_randoms();
-        if(queryfile != "") {
-            read_queries(queryfile);
-        }
-    }
-
     ShardBenchmark(SuccinctShard *shard, std::string queryfile = "") : Benchmark() {
         this->shard = shard;
 

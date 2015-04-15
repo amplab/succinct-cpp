@@ -100,6 +100,24 @@ public:
         return in_size;
     }
 
+    virtual size_t memorymap(uint8_t* buf) {
+        uint8_t *data_buf, *data_beg;
+        data_buf = data_beg = buf;
+
+        data_size = *((uint64_t *)data_buf);
+        data_buf += sizeof(uint64_t);
+        data_bits = *((uint8_t *)data_buf);
+        data_buf += sizeof(uint8_t);
+        original_size = *((uint64_t *)data_buf);
+        data_buf += sizeof(uint64_t);
+        sampling_rate = *((uint32_t *)data_buf);
+        data_buf += sizeof(uint32_t);
+
+        data_buf += SuccinctBase::memorymap_bitmap(&data, data_buf);
+
+        return data_buf - data_beg;
+    }
+
     virtual size_t storage_size() {
         return sizeof(uint64_t) + sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint32_t)
                 + SuccinctBase::bitmap_size(data);

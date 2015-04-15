@@ -36,14 +36,6 @@ private:
 
 public:
 
-    FileBenchmark(std::string filename, std::string queryfile = "") : Benchmark() {
-        fd = new SuccinctFile(filename, false);
-        generate_randoms();
-        if(queryfile != "") {
-            read_queries(queryfile);
-        }
-    }
-
     FileBenchmark(SuccinctFile *fd, std::string queryfile = "") : Benchmark() {
         this->fd = fd;
         generate_randoms();

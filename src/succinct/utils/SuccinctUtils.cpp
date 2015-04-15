@@ -23,3 +23,16 @@ uint64_t SuccinctUtils::modulo(int64_t a, uint64_t n) {
         a += n;
     return a % n;
 }
+
+// Memory map a file and return mapped buffer
+void* SuccinctUtils::memory_map(std::string filename) {
+    struct stat st;
+    stat(filename.c_str(), &st);
+
+    int fd = open(filename.c_str(), O_RDONLY, 0);
+    assert(fd != -1);
+
+    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+    return data;
+}

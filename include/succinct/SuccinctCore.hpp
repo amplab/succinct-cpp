@@ -26,6 +26,13 @@
 
 #include "succinct/SuccinctBase.hpp"
 
+typedef enum {
+    CONSTRUCT_IN_MEMORY = 0,
+    CONSTRUCT_MEMORY_MAPPED = 1,
+    LOAD_IN_MEMORY = 2,
+    LOAD_MEMORY_MAPPED = 3
+} SuccinctMode;
+
 class SuccinctCore : public SuccinctBase {
 private:
     typedef std::map<char, std::pair<uint64_t, uint32_t>> alphabet_map_t;
@@ -47,7 +54,7 @@ protected:
 public:
     /* Constructors */
     SuccinctCore(const char *filename,
-                bool construct_succinct = true,
+                SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY,
                 uint32_t sa_sampling_rate = 32,
                 uint32_t isa_sampling_rate = 32,
                 uint32_t npa_sampling_rate = 128,
@@ -80,6 +87,9 @@ public:
 
     // Deserialize succinct data structures
     size_t deserialize(std::istream& in);
+
+    // Memory map succinct data structures
+    size_t memorymap(std::string filename);
 
     // Get size of original input
     uint64_t original_size();

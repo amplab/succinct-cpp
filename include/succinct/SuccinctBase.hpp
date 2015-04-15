@@ -77,6 +77,9 @@ public:
     // Deserialize vector from input stream
     static size_t deserialize_vector(std::vector<uint64_t> &v, std::istream& in);
 
+    // Memory map vector from buffer
+    static size_t memorymap_vector(std::vector<uint64_t> &v, uint8_t *buf);
+
     /* BitMap access/modifier functions */
     // Initialize a bitmap with a specified size
     static void init_bitmap(BitMap **B, uint64_t size_in_bits, SuccinctAllocator s_allocator);
@@ -111,6 +114,9 @@ public:
     // Deserialize bitmap from input stream
     static size_t deserialize_bitmap(BitMap **B, std::istream& in);
 
+    // Memory map dictionary from buf
+    static size_t memorymap_bitmap(BitMap **B, uint8_t *buf);
+
     /* Dictionary access/modifier functions */
     // Create dictionary from a bitmap
     uint64_t create_dictionary(BitMap *B, Dictionary *D);
@@ -133,6 +139,9 @@ public:
     // Deserialize dictionary from input stream
     size_t deserialize_dictionary(Dictionary **D, std::istream& in);
 
+    // Memory map dictionary
+    size_t memorymap_dictionary(Dictionary **D, uint8_t *buf);
+
     // Get size of bitmap
     static size_t bitmap_size(BitMap *B);
 
@@ -143,7 +152,7 @@ public:
     static size_t vector_size(std::vector<uint64_t> &v);
 
     // Get size of SuccinctBase
-    size_t storage_size();
+    virtual size_t storage_size();
 
 protected:
     SuccinctAllocator s_allocator;

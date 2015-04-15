@@ -2,6 +2,13 @@
 #define SUCCINCT_UTILS_H
 
 #include <cstdint>
+#include <string>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include "succinct/utils/assertions.hpp"
 
 #include "succinct/utils/definitions.hpp"
 
@@ -15,6 +22,8 @@ public:
 
     // Returns a modulo n
     static uint64_t modulo(int64_t a, uint64_t n);
+
+    static void* memory_map(std::string filename);
 };
 
 #endif

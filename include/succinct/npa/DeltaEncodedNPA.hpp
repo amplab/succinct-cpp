@@ -52,6 +52,23 @@ public:
         return in_size;
     }
 
+    virtual size_t memorymap_delta_encoded_vector(DeltaEncodedVector *dv,
+                                                    uint8_t *buf) {
+        uint8_t *data, *data_beg;
+        data = data_beg = buf;
+
+        dv->sample_bits = *data;
+        data += sizeof(uint8_t);
+        dv->delta_offset_bits = *data;
+        data += sizeof(uint8_t);
+
+        data += SuccinctBase::memorymap_bitmap(&(dv->samples), data);
+        data += SuccinctBase::memorymap_bitmap(&(dv->deltas), data);
+        data += SuccinctBase::memorymap_bitmap(&(dv->delta_offsets), data);
+
+        return data - data_beg;
+    }
+
     virtual size_t dev_size(DeltaEncodedVector *dv) {
         if(dv == NULL) return 0;
         return sizeof(uint8_t) + sizeof(uint8_t) +
@@ -355,7 +372,7 @@ public:
         in_size += sizeof(uint32_t);
 
         // Read contexts
-        uint64_t context_size = contexts.size();
+        uint64_t context_size;
         in.read(reinterpret_cast<char *>(&(context_size)), sizeof(uint64_t));
         for (uint64_t i = 0; i < context_size; i++) {
             uint64_t first, second;
@@ -395,6 +412,65 @@ public:
         }
 
         return in_size;
+    }
+
+    virtual size_t memorymap(uint8_t* buf) {
+        uint8_t *data, *data_beg;
+        data = data_beg = buf;
+
+        npa_scheme = (NPAEncodingScheme)(*((uint64_t *)data));
+        data += sizeof(uint64_t);
+        npa_size = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        sigma_size = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        context_len = *((uint32_t *)data);
+        data += sizeof(uint32_t);
+        sampling_rate = *((uint32_t *)data);
+        data += sizeof(uint32_t);
+
+        // Read contexts
+        uint64_t context_size = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        for (uint64_t i = 0; i < context_size; i++) {
+            uint64_t first = *((uint64_t *)data);
+            data += sizeof(uint64_t);
+            uint64_t second = *((uint64_t *)data);
+            data += sizeof(uint64_t);
+            contexts[first] = second;
+        }
+
+        // Read rowoffsets
+        data += SuccinctBase::memorymap_vector(row_offsets, data);
+
+        // Read coloffsets
+        data += SuccinctBase::memorymap_vector(col_offsets, data);
+
+        // Read neccol
+        col_nec = new std::vector<uint64_t>[sigma_size];
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            data += SuccinctBase::memorymap_vector(col_nec[i], data);
+        }
+
+        // Read necrow
+        row_nec = new std::vector<uint64_t>[contexts.size()];
+        for(uint64_t i = 0; i < contexts.size(); i++) {
+            data += SuccinctBase::memorymap_vector(row_nec[i], data);
+        }
+
+        // Read cell offsets
+        cell_offsets = new std::vector<uint64_t>[sigma_size];
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            data += SuccinctBase::memorymap_vector(cell_offsets[i], data);
+        }
+
+        // Read delta encoded vectors
+        del_npa = new DeltaEncodedVector[sigma_size];
+        for(uint64_t i = 0; i < sigma_size; i++) {
+            data += memorymap_delta_encoded_vector(&del_npa[i], data);
+        }
+
+        return data - data_beg;
     }
 
 };

@@ -49,6 +49,9 @@ public:
     // Deserialize the wavelet tree encoded NPA
     virtual size_t deserialize(std::istream& in);
 
+    // Memory map the wavelet tree encoded NPA
+    virtual size_t memorymap(uint8_t* buf);
+
     virtual size_t storage_size();
 
 private:

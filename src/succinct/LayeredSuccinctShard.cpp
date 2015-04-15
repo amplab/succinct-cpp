@@ -1,9 +1,9 @@
 #include "succinct/LayeredSuccinctShard.hpp"
 
-LayeredSuccinctShard::LayeredSuccinctShard(uint32_t id, std::string datafile, bool construct, uint32_t sa_sampling_rate,
+LayeredSuccinctShard::LayeredSuccinctShard(uint32_t id, std::string datafile, SuccinctMode s_mode, uint32_t sa_sampling_rate,
             uint32_t isa_sampling_rate, uint32_t sampling_range, bool opportunistic, uint32_t npa_sampling_rate,
             NPA::NPAEncodingScheme npa_encoding_scheme, uint32_t context_len)
-            : SuccinctShard(id, datafile, construct, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
+            : SuccinctShard(id, datafile, s_mode, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
                     opportunistic ? SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX : SamplingScheme::LAYERED_SAMPLE_BY_INDEX,
                     opportunistic ? SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX : SamplingScheme::LAYERED_SAMPLE_BY_INDEX,
                     npa_encoding_scheme, context_len, sampling_range) {

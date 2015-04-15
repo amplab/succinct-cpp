@@ -40,9 +40,9 @@ public:
         fprintf(stderr, "Received INIT signal, initializing data structures...\n");
         fprintf(stderr, "Construct is set to %d\n", construct);
 
-        fd = new SuccinctShard(id, filename, construct, sa_sampling_rate, isa_sampling_rate);
+        fd = new SuccinctShard(id, filename, construct ? SuccinctMode::CONSTRUCT_IN_MEMORY : SuccinctMode::LOAD_IN_MEMORY, sa_sampling_rate, isa_sampling_rate);
         if(construct) {
-            fprintf(stderr, "Constructing data structures for file %s\n", filename.c_str());
+            fprintf(stderr, "Serializing data structures for file %s\n", filename.c_str());
             std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
             fd->serialize(s_file);
             s_file.close();

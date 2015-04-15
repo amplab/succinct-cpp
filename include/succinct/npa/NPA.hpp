@@ -6,9 +6,9 @@
 class NPA {
 public:
     typedef enum npa_encoding_scheme {
-        WAVELET_TREE_ENCODED,
-        ELIAS_DELTA_ENCODED,
-        ELIAS_GAMMA_ENCODED
+        WAVELET_TREE_ENCODED = 0,
+        ELIAS_DELTA_ENCODED = 1,
+        ELIAS_GAMMA_ENCODED = 2
     } NPAEncodingScheme;
 
     typedef SuccinctBase::BitMap bitmap_t;

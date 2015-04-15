@@ -8,7 +8,8 @@ private:
     bool opportunistic;
 
 public:
-    LayeredSuccinctShard(uint32_t id, std::string datafile, bool construct = true, uint32_t sa_sampling_rate = 32,
+    LayeredSuccinctShard(uint32_t id, std::string datafile,
+            SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY, uint32_t sa_sampling_rate = 32,
             uint32_t isa_sampling_rate = 32, uint32_t sampling_range = 1024, bool opportunistic = false,
             uint32_t npa_sampling_rate = 128,
             NPA::NPAEncodingScheme npa_encoding_scheme = NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,

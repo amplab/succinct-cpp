@@ -404,6 +404,61 @@ size_t WaveletTreeEncodedNPA::deserialize(std::istream& in) {
     return in_size;
 }
 
+size_t WaveletTreeEncodedNPA::memorymap(uint8_t *buf) {
+    uint8_t *data, *data_beg;
+    data = data_beg = buf;
+
+    npa_scheme = (NPAEncodingScheme)(*((uint64_t *)data));
+    data += sizeof(uint64_t);
+    npa_size = *((uint64_t *)data);
+    data += sizeof(uint64_t);
+    sigma_size = *((uint64_t *)data);
+    data += sizeof(uint64_t);
+    context_len = *((uint32_t *)data);
+    data += sizeof(uint32_t);
+    sampling_rate = *((uint32_t *)data);
+    data += sizeof(uint32_t);
+
+    // Read contexts
+    uint64_t context_size = *((uint64_t *)data);
+    data += sizeof(uint64_t);
+    for (uint64_t i = 0; i < context_size; i++) {
+        uint64_t first = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        uint64_t second = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        contexts[first] = second;
+    }
+
+    // Read rowoffsets
+    data += SuccinctBase::memorymap_vector(row_offsets, data);
+
+    // Read coloffsets
+    data += SuccinctBase::memorymap_vector(col_offsets, data);
+
+    // Read neccol
+    col_nec = new std::vector<uint64_t>[sigma_size];
+    for(uint64_t i = 0; i < sigma_size; i++) {
+        data += SuccinctBase::memorymap_vector(col_nec[i], data);
+    }
+
+    // Read necrow
+    row_nec = new std::vector<uint64_t>[contexts.size()];
+    for(uint64_t i = 0; i < contexts.size(); i++) {
+        data += SuccinctBase::memorymap_vector(row_nec[i], data);
+    }
+
+    // Read cell offsets
+    cell_offsets = new std::vector<uint64_t>[sigma_size];
+    for(uint64_t i = 0; i < sigma_size; i++) {
+        data += SuccinctBase::memorymap_vector(cell_offsets[i], data);
+    }
+
+    // TODO: Memory map WaveletTrees
+
+    return data - data_beg;
+}
+
 size_t WaveletTreeEncodedNPA::storage_size() {
     // TODO: fix
     return 0;

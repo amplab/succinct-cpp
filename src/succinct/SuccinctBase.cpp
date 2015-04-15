@@ -99,6 +99,22 @@ size_t SuccinctBase::deserialize_vector(std::vector<uint64_t> &v,
     return in_size;
 }
 
+size_t SuccinctBase::memorymap_vector(std::vector<uint64_t> &v,
+                                        uint8_t* buf) {
+    uint8_t *data, *data_beg;
+    data = data_beg = buf;
+    size_t v_size = *((size_t *)data);
+    data += sizeof(size_t);
+    v.reserve(v_size);
+    for(size_t i = 0; i < v_size; i++) {
+        uint64_t val = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        v.push_back(val);
+    }
+
+    return data - data_beg;
+}
+
 /* Bitmap access/modifier functions */
 // Initialize the bitmap with the specified size in bits
 void SuccinctBase::init_bitmap(SuccinctBase::BitMap **B,
@@ -254,6 +270,22 @@ size_t SuccinctBase::deserialize_bitmap(SuccinctBase::BitMap **B,
     }
 
     return in_size;
+}
+
+size_t SuccinctBase::memorymap_bitmap(SuccinctBase::BitMap **B, uint8_t* buf) {
+    uint8_t *data, *data_beg;
+    data = data_beg = buf;
+
+    uint64_t bitmap_size = *((uint64_t *)data);
+    data += sizeof(uint64_t);
+    if(bitmap_size) {
+        (*B) = new BitMap;
+        (*B)->size = bitmap_size;
+        (*B)->bitmap = (uint64_t*)data;
+        data += (BITS2BLOCKS(bitmap_size) * sizeof(uint64_t));
+    }
+
+    return data - data_beg;
 }
 
 /* Dictionary access/modifier functions */
@@ -713,6 +745,31 @@ size_t SuccinctBase::deserialize_dictionary(Dictionary **D, std::istream& in) {
     in_size += deserialize_bitmap(&(*D)->B, in);
 
     return in_size;
+}
+
+size_t SuccinctBase::memorymap_dictionary(Dictionary **D, uint8_t *buf) {
+    uint8_t *data, *data_beg;
+    data = data_beg = buf;
+
+    uint64_t dictionary_size = *((uint64_t *)data);
+    data += sizeof(uint64_t);
+    if(dictionary_size) {
+        (*D) = new Dictionary;
+        (*D)->size = dictionary_size;
+
+        (*D)->rank_l3 = ((uint64_t *)data);
+        data += (((*D)->size / L3BLKSIZE) + 1) * sizeof(uint64_t);
+        (*D)->rank_l12 = ((uint64_t *)data);
+        data += (((*D)->size / L2BLKSIZE) + 1) * sizeof(uint64_t);
+        (*D)->pos_l3 = ((uint64_t *)data);
+        data += (((*D)->size / L3BLKSIZE) + 1) * sizeof(uint64_t);
+        (*D)->pos_l12 = ((uint64_t *)data);
+        data += (((*D)->size / L2BLKSIZE) + 1) * sizeof(uint64_t);
+
+        data += memorymap_bitmap(&(*D)->B, data);
+    }
+
+    return data - data_beg;
 }
 
 size_t SuccinctBase::vector_size(std::vector<uint64_t> &v) {

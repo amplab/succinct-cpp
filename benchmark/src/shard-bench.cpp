@@ -137,16 +137,21 @@ int main(int argc, char **argv) {
 
     SuccinctShard *fd;
     if(mode == 0) {
-        fd = new SuccinctShard(0, inputpath, true, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
+        fprintf(stderr, "SuccinctMode = Construct in memory.\n");
+        fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
 
         // Serialize and save to file
         std::ofstream s_out(inputpath + ".succinct");
         fd->serialize(s_out);
         s_out.close();
     } else if(mode == 1) {
-        fd = new SuccinctShard(0, inputpath, false, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
+        fprintf(stderr, "SuccinctMode = Load in memory.\n");
+        fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
+    } else if(mode == 2) {
+        fprintf(stderr, "SuccinctMode = Load memory mapped.\n");
+        fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_MEMORY_MAPPED, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
     } else {
-        // Only modes 0, 1 supported for now
+        // Only modes 0, 1, 3 supported for now
         assert(0);
     }
 

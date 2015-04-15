@@ -33,8 +33,10 @@ protected:
 public:
     static const int64_t MAX_KEYS = 1L << 32;
 
-    SuccinctShard(uint32_t id, std::string datafile, bool construct = true, uint32_t sa_sampling_rate = 32,
-            uint32_t isa_sampling_rate = 32, uint32_t npa_sampling_rate = 128,
+    SuccinctShard(uint32_t id, std::string datafile,
+            SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY,
+            uint32_t sa_sampling_rate = 32, uint32_t isa_sampling_rate = 32,
+            uint32_t npa_sampling_rate = 128,
             SamplingScheme sa_sampling_scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX,
             SamplingScheme isa_sampling_scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX,
             NPA::NPAEncodingScheme npa_encoding_scheme = NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,

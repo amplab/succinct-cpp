@@ -18,12 +18,12 @@ int main(int argc, char **argv) {
     std::string outpath = "benchmark/res";
     double skew = 1.0;  // Pure uniform
     uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32, len = 100;
-    bool construct = false;
+    SuccinctMode s_mode = SuccinctMode::LOAD_IN_MEMORY;
     std::string querypath = "";
-    while((c = getopt(argc, argv, "co:z:i:s:l:q:")) != -1) {
+    while((c = getopt(argc, argv, "m:o:z:i:s:l:q:")) != -1) {
         switch(c) {
         case 'c':
-            construct = true;
+            s_mode = (SuccinctMode)atoi(optarg);
             break;
         case 'o':
             outpath = std::string(optarg);
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
         default:
             outpath = "benchmark/res";
             skew = 1.0;
-            construct = false;
+            s_mode = SuccinctMode::LOAD_IN_MEMORY;
             isa_sampling_rate = 32;
             sa_sampling_rate = 32;
             len = 100;
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 
     // Benchmark core functions
     std::string respath = outpath + "/ls-bench";
-    LayeredSuccinctShardBenchmark ls_bench(inputpath, construct, isa_sampling_rate, sa_sampling_rate, respath, skew, querypath);
+    LayeredSuccinctShardBenchmark ls_bench(inputpath, s_mode, isa_sampling_rate, sa_sampling_rate, respath, skew, querypath);
     for(int32_t i = -1; i < 10; i++) {
         ls_bench.delete_layer(i);
         ls_bench.measure_get_throughput();

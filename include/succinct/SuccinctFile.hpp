@@ -14,7 +14,7 @@ private:
     std::string succinct_filename;
 
 public:
-    SuccinctFile(std::string filename, bool construct = true);
+    SuccinctFile(std::string filename, SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY);
 
     std::string name();
     /*

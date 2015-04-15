@@ -1,7 +1,7 @@
 #include "succinct/SuccinctFile.hpp"
 
-SuccinctFile::SuccinctFile(std::string filename, bool construct)
-    : SuccinctCore(filename.c_str(), construct) {
+SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode)
+    : SuccinctCore(filename.c_str(), s_mode) {
     this->input_filename = filename;
     this->succinct_filename = filename + ".succinct";
 }

@@ -24,7 +24,7 @@ protected:
 #define EXISTS_LAYER(i)    GETBIT((this->LAYER_MAP), (i))
 
     uint32_t num_layers;                // Number of layers (Do not serialize)
-    std::atomic<uint64_t> LAYER_MAP;                 // Bitmap indicating which layers are stored
+    std::atomic<uint64_t> LAYER_MAP;    // Bitmap indicating which layers are stored
     std::map<uint32_t, uint64_t> count; // Count of each layer in the sampling_ranges (Do not serialize)
     uint32_t *layer;                    // Sample offset to layer mapping (Do not serialize)
     uint64_t *layer_idx;                // Sample offset to index into layer mapping (Do not serialize)
@@ -244,6 +244,25 @@ public:
         }
 
         return in_size;
+    }
+
+    virtual size_t memorymap(uint8_t *buf) {
+        uint8_t *data, *data_beg;
+        data = data_beg = buf;
+
+        LAYER_MAP = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+        data_bits = *data;
+        data += sizeof(uint8_t);
+        original_size = *((uint64_t *)data);
+        data += sizeof(uint64_t);
+
+        layer_data = new bitmap_t*[this->num_layers];
+        for(uint32_t i = 0; i < this->num_layers; i++) {
+            data += SuccinctBase::memorymap_bitmap(&layer_data[i], data);
+        }
+
+        return data - data_beg;
     }
 
     virtual size_t storage_size() {

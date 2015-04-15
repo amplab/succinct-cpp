@@ -46,13 +46,16 @@ int main(int argc, char **argv) {
         fd.serialize(s_out);
         s_out.close();
 
-        // Benchmark core functions
+        // Benchmark core and file functions
         FileBenchmark s_bench(&fd, querypath);
         s_bench.benchmark_core();
         s_bench.benchmark_file();
     } else if(mode == 1) {
-        // Benchmark core functions
-        FileBenchmark s_bench(inputpath, querypath);
+        SuccinctFile fd(inputpath, SuccinctMode::LOAD_IN_MEMORY);
+
+        // Benchmark core and file functions
+        FileBenchmark s_bench(fd, querypath);
+        s_bench.benchmark_core();
         s_bench.benchmark_file();
     } else {
         // Only modes 0, 1 supported for now
