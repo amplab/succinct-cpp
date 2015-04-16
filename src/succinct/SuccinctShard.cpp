@@ -171,6 +171,8 @@ void SuccinctShard::access(std::string& result, int64_t key, int32_t offset, int
     if(pos < 0)
         return;
     int64_t start = value_offsets[pos] + offset;
+    int64_t end = ((size_t)(pos + 1) < value_offsets.size()) ? value_offsets[pos + 1] : input_size;
+    len = fmin(len, end - start - 1);
     result.resize(len);
     uint64_t idx = lookupISA(start);
     for(int64_t i = 0; i < len; i++) {
