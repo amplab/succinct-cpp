@@ -54,13 +54,13 @@ protected:
     typedef unsigned long long int time_t;
     typedef unsigned long count_t;
 
-    const count_t WARMUP_N = 1000;
-    const count_t COOLDOWN_N = 1000;
-    const count_t MEASURE_N = 10000;
+    const count_t WARMUP_N = 100000;
+    const count_t COOLDOWN_N = 100000;
+    const count_t MEASURE_N = 5000;
 
-    static const count_t WARMUP_T = 10000000;
-    static const count_t MEASURE_T = 60000000;
-    static const count_t COOLDOWN_T = 10000000;
+    static const count_t WARMUP_T = 120000000;
+    static const count_t MEASURE_T = 300000000;
+    static const count_t COOLDOWN_T = 5000000;
 
     std::vector<int64_t> randoms;
     std::vector<std::string> queries;
