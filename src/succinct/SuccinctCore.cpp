@@ -545,6 +545,18 @@ size_t SuccinctCore::storage_size() {
     return tot_size;
 }
 
+void SuccinctCore::print_storage_breakdown() {
+    size_t metadata_size = SuccinctBase::storage_size();
+    metadata_size += sizeof(uint64_t);
+    metadata_size += sizeof(alphabet_map.size()) +
+            alphabet_map.size() * (sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t));
+    metadata_size += sizeof(alphabet_size) + alphabet_size * sizeof(char);
+    fprintf(stderr, "Metadata size = %zu\n", metadata_size);
+    fprintf(stderr, "SA size = %zu\n", SA->storage_size());
+    fprintf(stderr, "ISA size = %zu\n", ISA->storage_size());
+    fprintf(stderr, "NPA size = %zu\n", npa->storage_size());
+}
+
 SampledArray *SuccinctCore::getSA() {
     return SA;
 }

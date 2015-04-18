@@ -97,6 +97,8 @@ public:
     // Get succinct size
     virtual size_t storage_size();
 
+    virtual void print_storage_breakdown();
+
     // Get SA
     SampledArray *getSA();
 

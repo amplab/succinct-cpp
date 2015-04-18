@@ -248,7 +248,9 @@ int main(int argc, char **argv) {
             fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
                     created_layers.at(i), end_time - start_time);
         }
-    } else {
+    } else if(type == "storage-breakdown") {
+        fd->print_storage_breakdown();
+    } else{
         assert(0);
     }
 
