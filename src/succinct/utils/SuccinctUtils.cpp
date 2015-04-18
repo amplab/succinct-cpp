@@ -32,7 +32,7 @@ void* SuccinctUtils::memory_map(std::string filename) {
     int fd = open(filename.c_str(), O_RDONLY, 0);
     assert(fd != -1);
 
-    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_HUGETLB, fd, 0);
 
     return data;
 }

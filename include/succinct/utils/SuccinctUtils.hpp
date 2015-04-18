@@ -12,6 +12,10 @@
 
 #include "succinct/utils/definitions.hpp"
 
+#ifndef MAP_HUGETLB
+#define MAP_HUGETLB 0x40000
+#endif
+
 class SuccinctUtils {
 public:
     // Returns the number of set bits in a 64 bit integer
