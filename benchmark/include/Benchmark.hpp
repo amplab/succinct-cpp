@@ -55,8 +55,8 @@ protected:
     typedef unsigned long count_t;
 
     const count_t WARMUP_N = 100000;
-    const count_t COOLDOWN_N = 100000;
-    const count_t MEASURE_N = 5000;
+    const count_t MEASURE_N = 100000;
+    const count_t COOLDOWN_N = 5000;
 
     static const count_t WARMUP_T = 120000000;
     static const count_t MEASURE_T = 300000000;

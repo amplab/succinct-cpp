@@ -114,7 +114,7 @@ public:
             shard->get(res, randoms[i]);
             t1 = get_timestamp();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << tdiff << "\n";
+            res_stream << randoms[i] << "\t" << res.length() << "\t" << tdiff << "\n";
             sum = (sum + res.length()) % shard->original_size();
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
