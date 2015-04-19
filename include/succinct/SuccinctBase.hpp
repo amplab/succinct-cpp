@@ -30,6 +30,8 @@
 #define L2BLKSIZE   2048
 #define L3BLKSIZE   two32
 
+#define CACHE_BITMAP 1
+
 class SuccinctBase {
 private:
     void init_tables();
@@ -37,6 +39,8 @@ private:
 public:
 
     SuccinctBase();
+
+    virtual ~SuccinctBase() {}
 
     /* ===================================================================== */
     /* Basic data structures used in Succinct */
@@ -116,6 +120,9 @@ public:
 
     // Memory map dictionary from buf
     static size_t memorymap_bitmap(BitMap **B, uint8_t *buf);
+
+    // Read through the bitmap and return sum
+    uint64_t read_bitmap(BitMap *B);
 
     /* Dictionary access/modifier functions */
     // Create dictionary from a bitmap

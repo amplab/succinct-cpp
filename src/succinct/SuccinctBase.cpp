@@ -1,5 +1,6 @@
 #include "succinct/SuccinctBase.hpp"
 
+#define CACHE_BITMAP 1
 /* TODO: Replace all new[] calls with SuccinctAllocator calls */
 
 /* Default constructor */
@@ -282,7 +283,16 @@ size_t SuccinctBase::memorymap_bitmap(SuccinctBase::BitMap **B, uint8_t* buf) {
         (*B) = new BitMap;
         (*B)->size = bitmap_size;
         (*B)->bitmap = (uint64_t*)data;
-        data += (BITS2BLOCKS(bitmap_size) * sizeof(uint64_t));
+        uint64_t bitmap_size_bytes = (BITS2BLOCKS(bitmap_size) * sizeof(uint64_t));
+#ifdef CACHE_BITMAP
+        size_t sum = 0;
+        for(uint64_t i = 0; i < bitmap_size_bytes; i++) {
+            sum += data[i];
+            sum %= 256;
+        }
+        fprintf(stderr, "sum = %zu\n", sum);
+#endif
+        data += bitmap_size_bytes;
     }
 
     return data - data_beg;
