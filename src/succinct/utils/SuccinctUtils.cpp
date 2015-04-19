@@ -40,6 +40,7 @@ void* SuccinctUtils::memory_map(std::string filename) {
         fprintf(stderr, "mmap with MAP_HUGETLB option failed; trying without MAP_HUGETLB flag...\n");
         data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     }
+    madvise(data, st.st_size, POSIX_MADV_RANDOM);
     assert(data != (void *)-1);
 
     return data;
