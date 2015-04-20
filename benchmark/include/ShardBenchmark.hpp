@@ -237,7 +237,7 @@ public:
         // Warmup
         sum = 0;
         fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-        for(uint64_t i = 0; i < WARMUP_N; i++) {
+        for(uint64_t i = 0; i < WARMUP_N / 100; i++) {
             std::set<int64_t> res;
             shard->search(res, queries[i]);
             sum = (sum + res.size()) % shard->original_size();
@@ -248,7 +248,7 @@ public:
         // Measure
         sum = 0;
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-        for(uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+        for(uint64_t i = WARMUP_N / 100; i < (WARMUP_N + MEASURE_N) / 100; i++) {
             std::set<int64_t> res;
             t0 = get_timestamp();
             shard->search(res, queries[i]);
@@ -263,7 +263,7 @@ public:
         // Cooldown
         sum = 0;
         fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-        for(uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
+        for(uint64_t i = WARMUP_N + MEASURE_N; i < (WARMUP_N + MEASURE_N + COOLDOWN_N) / 100; i++) {
             std::set<int64_t> res;
             shard->search(res, queries[i]);
             sum = (sum + res.size()) % shard->original_size();
