@@ -33,12 +33,12 @@ void* SuccinctUtils::memory_map(std::string filename) {
     assert(fd != -1);
 
     // Try mapping with huge-pages support
-    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_HUGETLB, fd, 0);
+    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_HUGETLB | MAP_POPULATE, fd, 0);
 
     // Revert to mapping with huge page support in case mapping fails
     if(data == (void *)-1) {
         fprintf(stderr, "mmap with MAP_HUGETLB option failed; trying without MAP_HUGETLB flag...\n");
-        data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+        data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
     }
     madvise(data, st.st_size, POSIX_MADV_RANDOM);
     assert(data != (void *)-1);

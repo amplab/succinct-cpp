@@ -13,7 +13,11 @@
 #include "succinct/utils/definitions.hpp"
 
 #ifndef MAP_HUGETLB
-#define MAP_HUGETLB 0x40000
+#define MAP_HUGETLB 0
+#endif
+
+#ifndef MAP_POPULATE
+#define MAP_POPULATE 0
 #endif
 
 class SuccinctUtils {
