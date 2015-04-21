@@ -77,9 +77,7 @@ public:
                 isa_sampling_rate);
         if(construct) {
             // Serialize and save to file
-            std::ofstream s_out(filename + ".succinct");
-            fd->serialize(s_out);
-            s_out.close();
+            fd->serialize();
         }
 
         generate_randoms();

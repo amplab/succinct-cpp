@@ -16,7 +16,7 @@ public:
 
     virtual size_t serialize(std::ostream& out) = 0;
     virtual size_t deserialize(std::istream& in) = 0;
-    virtual size_t memorymap(uint8_t *buf) = 0;
+    virtual size_t memorymap(std::string filename) = 0;
 
     SamplingScheme get_sampling_scheme() { return scheme; }
 

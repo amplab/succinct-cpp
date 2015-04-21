@@ -100,9 +100,9 @@ public:
         return in_size;
     }
 
-    virtual size_t memorymap(uint8_t* buf) {
+    virtual size_t memorymap(std::string filename) {
         uint8_t *data_buf, *data_beg;
-        data_buf = data_beg = buf;
+        data_buf = data_beg = (uint8_t *)SuccinctUtils::memory_map(filename);
 
         data_size = *((uint64_t *)data_buf);
         data_buf += sizeof(uint64_t);

@@ -139,11 +139,8 @@ int main(int argc, char **argv) {
     if(mode == 0) {
         fprintf(stderr, "SuccinctMode = Construct in memory.\n");
         fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
-
-        // Serialize and save to file
-        std::ofstream s_out(inputpath + ".succinct");
-        fd->serialize(s_out);
-        s_out.close();
+        // Serialize
+        fd->serialize();
     } else if(mode == 1) {
         fprintf(stderr, "SuccinctMode = Load in memory.\n");
         fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);

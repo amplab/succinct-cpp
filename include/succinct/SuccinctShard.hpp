@@ -21,9 +21,6 @@
 
 class SuccinctShard : public SuccinctCore {
 protected:
-    std::string input_datafile;
-    std::string succinct_datafile;
-
     std::vector<int64_t> keys;
     std::vector<int64_t> value_offsets;
     BitMap *invalid_offsets;
@@ -62,6 +59,16 @@ public:
 
     void search(std::set<int64_t>& result, std::string str);
 
+    // Serialize succinct data structures
+    virtual size_t serialize();
+
+    // Deserialize succinct data structures
+    virtual size_t deserialize();
+
+    // Memory map succinct data structures
+    virtual size_t memorymap();
+
+    // Get succinct shard size
     virtual size_t storage_size();
 
 protected:

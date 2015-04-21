@@ -16,8 +16,6 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename, SuccinctMode s_m
             sampling_range) {
 
     this->id = id;
-    this->input_datafile = filename;
-    this->succinct_datafile = filename + ".succinct";
 
     // Read keys and value offsets
     std::ifstream input(filename);
@@ -141,7 +139,7 @@ std::pair<int64_t, int64_t> SuccinctShard::get_range(const char *p,
 }
 
 std::string SuccinctShard::name() {
-    return this->succinct_datafile;
+    return this->filename;
 }
 
 size_t SuccinctShard::num_keys() {
@@ -231,7 +229,109 @@ int64_t SuccinctShard::count(std::string str) {
     return result.size();
 }
 
+size_t SuccinctShard::serialize() {
+    size_t out_size = SuccinctCore::serialize();
+
+    // Write keys, value offsets, and invalid bitmap to file
+    std::ofstream keyval(succinct_path + "/keyval");
+
+    // Write keys
+    size_t keys_size = keys.size();
+    keyval.write(reinterpret_cast<const char *>(&(keys_size)), sizeof(size_t));
+    out_size += sizeof(size_t);
+    for(size_t i = 0; i < keys.size(); i++) {
+        keyval.write(reinterpret_cast<const char *>(&keys[i]), sizeof(int64_t));
+        out_size += sizeof(int64_t);
+    }
+
+    // Write values
+    size_t value_offsets_size = value_offsets.size();
+    keyval.write(reinterpret_cast<const char *>(&(value_offsets_size)), sizeof(size_t));
+    out_size += sizeof(size_t);
+    for(size_t i = 0; i < value_offsets.size(); i++) {
+        keyval.write(reinterpret_cast<const char *>(&value_offsets[i]), sizeof(int64_t));
+        out_size += sizeof(int64_t);
+    }
+
+    // Write bitmap
+    SuccinctBase::serialize_bitmap(invalid_offsets, keyval);
+
+    return out_size;
+}
+
+size_t SuccinctShard::deserialize() {
+    size_t in_size = SuccinctCore::deserialize();
+
+    // Read keys, value offsets, and invalid bitmap from file
+    std::ifstream keyval(succinct_path + "/keyval");
+
+    // Read keys
+    size_t keys_size;
+    keyval.read(reinterpret_cast<char *>(&keys_size), sizeof(size_t));
+    in_size += sizeof(size_t);
+    keys.reserve(keys_size);
+    for(size_t i = 0; i < keys_size; i++) {
+        uint64_t key;
+        keyval.read(reinterpret_cast<char *>(&key), sizeof(int64_t));
+        keys.push_back(key);
+        in_size += sizeof(int64_t);
+    }
+
+    // Read values
+    size_t value_offsets_size;
+    keyval.read(reinterpret_cast<char *>(&value_offsets_size), sizeof(size_t));
+    in_size += sizeof(size_t);
+    value_offsets.reserve(value_offsets_size);
+    for(size_t i = 0; i < value_offsets_size; i++) {
+        uint64_t value_offset;
+        keyval.read(reinterpret_cast<char *>(&value_offset), sizeof(int64_t));
+        value_offsets.push_back(value_offset);
+        in_size += sizeof(int64_t);
+    }
+
+    // Read bitmap
+    SuccinctBase::deserialize_bitmap(&invalid_offsets, keyval);
+
+    return in_size;
+}
+
+size_t SuccinctShard::memorymap() {
+    size_t core_size = SuccinctCore::memorymap();
+
+    uint8_t *data, *data_beg;
+    data = data_beg = (uint8_t *)SuccinctUtils::memory_map(succinct_path + "/keyval");
+
+    // Read keys
+    size_t keys_size = *((size_t *)data);
+    data += sizeof(size_t);
+    keys.reserve(keys_size);
+    for(size_t i = 0; i < keys_size; i++) {
+        uint64_t key = *((int64_t *)data);
+        keys.push_back(key);
+        data += sizeof(int64_t);
+    }
+
+    // Read values
+    size_t value_offsets_size = *((size_t *)data);
+    data += sizeof(size_t);
+    value_offsets.reserve(value_offsets_size);
+    for(size_t i = 0; i < value_offsets_size; i++) {
+        uint64_t value_offset = *((int64_t *)data);
+        value_offsets.push_back(value_offset);
+        data += sizeof(int64_t);
+    }
+
+    // Read bitmap
+    data += SuccinctBase::memorymap_bitmap(&invalid_offsets, data);
+
+    return core_size + (data - data_beg);
+}
+
 size_t SuccinctShard::storage_size() {
-    // TODO: Add size of keys, offsets, invalid_offsets bitmap
-    return SuccinctCore::storage_size();
+    size_t tot_size = SuccinctCore::storage_size();
+    tot_size += sizeof(sizeof(uint32_t));
+    tot_size += keys.size() * sizeof(int64_t) + sizeof(size_t);
+    tot_size += value_offsets.size() * sizeof(int64_t) + sizeof(size_t);
+    tot_size += SuccinctBase::bitmap_size(invalid_offsets);
+    return tot_size;
 }

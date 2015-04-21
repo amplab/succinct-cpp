@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 
         // Serialize and save to file
         std::ofstream s_out(inputpath + ".succinct");
-        fd.serialize(s_out);
+        fd.serialize();
         s_out.close();
 
         // Benchmark core and file functions

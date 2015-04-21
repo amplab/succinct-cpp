@@ -404,9 +404,9 @@ size_t WaveletTreeEncodedNPA::deserialize(std::istream& in) {
     return in_size;
 }
 
-size_t WaveletTreeEncodedNPA::memorymap(uint8_t *buf) {
+size_t WaveletTreeEncodedNPA::memorymap(std::string filename) {
     uint8_t *data, *data_beg;
-    data = data_beg = buf;
+    data = data_beg = (uint8_t *)SuccinctUtils::memory_map(filename);
 
     npa_scheme = (NPAEncodingScheme)(*((uint64_t *)data));
     data += sizeof(uint64_t);

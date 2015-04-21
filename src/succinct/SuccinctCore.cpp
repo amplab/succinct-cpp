@@ -18,7 +18,8 @@ SuccinctCore::SuccinctCore(const char *filename,
     this->npa = NULL;
     this->alphabet_size = 0;
     this->input_size = 0;
-
+    this->filename = std::string(filename);
+    this->succinct_path = this->filename + ".succinct";
     switch(s_mode) {
     case SuccinctMode::CONSTRUCT_IN_MEMORY:
     {
@@ -97,9 +98,7 @@ SuccinctCore::SuccinctCore(const char *filename,
 
         assert(ISA != NULL);
 
-        std::string s_path = std::string(filename) + ".succinct";
-        std::ifstream s_file(s_path);
-        deserialize(s_file);
+        deserialize();
         break;
     }
     case SuccinctMode::LOAD_MEMORY_MAPPED:
@@ -166,8 +165,7 @@ SuccinctCore::SuccinctCore(const char *filename,
 
         assert(ISA != NULL);
 
-        std::string s_path = std::string(filename) + ".succinct";
-        memorymap(s_path);
+        memorymap();
         break;
     }
     }
@@ -350,9 +348,17 @@ uint64_t SuccinctCore::lookupC(uint64_t i) {
     return get_rank1(&Cinv_idx, i);
 }
 
-size_t SuccinctCore::serialize(std::ostream& out) {
+size_t SuccinctCore::serialize() {
     size_t out_size = 0;
     typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
+    struct stat st;
+    if (stat(succinct_path.c_str(), &st) != 0)
+        if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0)
+            return 0;
+    std::ofstream out(succinct_path + "/metadata");
+    std::ofstream sa_out(succinct_path + "/sa");
+    std::ofstream isa_out(succinct_path + "/isa");
+    std::ofstream npa_out(succinct_path + "/npa");
 
     // Output size of input file
     out.write(reinterpret_cast<const char *>(&(input_size)), sizeof(uint64_t));
@@ -377,20 +383,34 @@ size_t SuccinctCore::serialize(std::ostream& out) {
         out.write(reinterpret_cast<const char *>(&alphabet[i]), sizeof(char));
     }
 
-    out_size += SA->serialize(out);
-    out_size += ISA->serialize(out);
+    out_size += SA->serialize(sa_out);
+    out_size += ISA->serialize(isa_out);
 
     if(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
         assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
         out_size += serialize_dictionary(((SampledByValueSA *)SA)->get_d_bpos(), out);
     }
 
-    out_size += npa->serialize(out);
+    out_size += npa->serialize(npa_out);
+
+    out.close();
+    sa_out.close();
+    isa_out.close();
+    npa_out.close();
 
     return out_size;
 }
 
-size_t SuccinctCore::deserialize(std::istream& in) {
+size_t SuccinctCore::deserialize() {
+    // Check if directory exists
+    struct stat st;
+    assert(stat(succinct_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+
+    std::ifstream in(succinct_path + "/metadata");
+    std::ifstream sa_in(succinct_path + "/sa");
+    std::ifstream isa_in(succinct_path + "/isa");
+    std::ifstream npa_in(succinct_path + "/npa");
+
     size_t in_size = 0;
 
     // Read size of input file
@@ -427,8 +447,8 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     }
 
     // Deserialize SA, ISA
-    in_size += SA->deserialize(in);
-    in_size += ISA->deserialize(in);
+    in_size += SA->deserialize(sa_in);
+    in_size += ISA->deserialize(isa_in);
 
     // Deserialize bitmap marking positions of sampled values if the sampling scheme
     // is sample by value.
@@ -443,13 +463,13 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     // Deserialize NPA based on the NPA encoding scheme.
     switch(npa->get_encoding_scheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-        in_size += ((EliasDeltaEncodedNPA *)npa)->deserialize(in);
+        in_size += ((EliasDeltaEncodedNPA *)npa)->deserialize(npa_in);
         break;
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-        in_size += ((EliasGammaEncodedNPA *)npa)->deserialize(in);
+        in_size += ((EliasGammaEncodedNPA *)npa)->deserialize(npa_in);
         break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-        in_size += ((WaveletTreeEncodedNPA *)npa)->deserialize(in);
+        in_size += ((WaveletTreeEncodedNPA *)npa)->deserialize(npa_in);
         break;
     default:
         assert(0);
@@ -458,13 +478,21 @@ size_t SuccinctCore::deserialize(std::istream& in) {
     // TODO: Fix
     Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets.begin() + 1, npa->col_offsets.end());
 
+    in.close();
+    sa_in.close();
+    isa_in.close();
+    npa_in.close();
+
     return in_size;
 }
 
-size_t SuccinctCore::memorymap(std::string filename) {
+size_t SuccinctCore::memorymap() {
+    // Check if directory exists
+    struct stat st;
+    assert(stat(succinct_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
     uint8_t *data_beg, *data;
-    data = data_beg = (uint8_t *)SuccinctUtils::memory_map(filename);
+    data = data_beg = (uint8_t *)SuccinctUtils::memory_map(succinct_path + "/metadata");
 
     input_size = *((uint64_t *)data);
     data += sizeof(uint64_t);
@@ -495,8 +523,8 @@ size_t SuccinctCore::memorymap(std::string filename) {
     data += (sizeof(char) * (alphabet_size + 1));
 
     // Memory map SA and ISA
-    data += SA->memorymap(data);
-    data += ISA->memorymap(data);
+    data += SA->memorymap(succinct_path + "/sa");
+    data += ISA->memorymap(succinct_path + "/isa");
 
     // Memory map bitmap marking positions of sampled values if the sampling scheme
     // is sample by value.
@@ -511,13 +539,13 @@ size_t SuccinctCore::memorymap(std::string filename) {
     // Memory map NPA based on the NPA encoding scheme.
     switch(npa->get_encoding_scheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-        data += ((EliasDeltaEncodedNPA *)npa)->memorymap(data);
+        data += ((EliasDeltaEncodedNPA *)npa)->memorymap(succinct_path + "/npa");
         break;
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-        data += ((EliasGammaEncodedNPA *)npa)->memorymap(data);
+        data += ((EliasGammaEncodedNPA *)npa)->memorymap(succinct_path + "/npa");
         break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-        data += ((WaveletTreeEncodedNPA *)npa)->memorymap(data);
+        data += ((WaveletTreeEncodedNPA *)npa)->memorymap(succinct_path + "/npa");
         break;
     default:
         assert(0);

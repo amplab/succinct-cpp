@@ -38,7 +38,11 @@ private:
     typedef std::map<char, std::pair<uint64_t, uint32_t>> alphabet_map_t;
 protected:
 
+    /* Metadata */
+    std::string filename;               // Name of input file
+    std::string succinct_path;          // Name of succinct path
     uint64_t input_size;                // Size of input
+
 
     /* Primary data structures */
     SampledArray *SA;                   // Suffix Array
@@ -83,18 +87,18 @@ public:
     uint64_t lookupC(uint64_t val);
 
     // Serialize succinct data structures
-    size_t serialize(std::ostream& out);
+    virtual size_t serialize();
 
     // Deserialize succinct data structures
-    size_t deserialize(std::istream& in);
+    virtual size_t deserialize();
 
     // Memory map succinct data structures
-    size_t memorymap(std::string filename);
+    virtual size_t memorymap();
 
     // Get size of original input
     uint64_t original_size();
 
-    // Get succinct size
+    // Get succinct core size
     virtual size_t storage_size();
 
     virtual void print_storage_breakdown();

@@ -78,6 +78,8 @@ public:
 
     virtual size_t deserialize(std::istream& in) = 0;
 
+    virtual size_t memorymap(std::string filename) = 0;
+
     virtual size_t storage_size() = 0;
 
     virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,

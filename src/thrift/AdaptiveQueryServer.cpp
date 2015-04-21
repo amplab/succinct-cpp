@@ -58,9 +58,7 @@ public:
         fd = new LayeredSuccinctShard(id, filename, construct ? SuccinctMode::CONSTRUCT_IN_MEMORY : SuccinctMode::LOAD_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, sampling_range, opportunistic);
         if(construct) {
             fprintf(stderr, "Serializing data structures for file %s\n", filename.c_str());
-            std::ofstream s_file(filename + ".succinct", std::ofstream::binary);
-            fd->serialize(s_file);
-            s_file.close();
+            fd->serialize();
         } else {
             fprintf(stderr, "Read data structures from file %s\n", filename.c_str());
         }
