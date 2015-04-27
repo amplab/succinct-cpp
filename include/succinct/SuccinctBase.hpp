@@ -13,6 +13,7 @@
 #include "succinct/utils/assertions.hpp"
 #include "succinct/utils/SuccinctAllocator.hpp"
 #include "succinct/utils/SuccinctUtils.hpp"
+#include "succinct/utils/buf_allocator.hpp"
 
 /* Bitmap Operations */
 #define ACCESSBIT(B, i) GETBIT((B)->bitmap[(i) / 64], (i) % 64)
