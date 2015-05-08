@@ -19,7 +19,7 @@ void display(RegEx *re) {
     }
     case RegExType::Primitive:
     {
-        fprintf(stderr, "[%s]", ((RegExPrimitive *)re)->getMgram().c_str());
+        fprintf(stderr, "\"%s\"", ((RegExPrimitive *)re)->getPrimitive().c_str());
         break;
     }
     case RegExType::Repeat:
@@ -109,13 +109,16 @@ int main(int argc, char **argv) {
 
     while(true) {
         char exp[100];
-        std::cout << "sure>";
+        std::cout << "sure> ";
         std::cin >> exp;
-        fprintf(stderr, "Regex:[%s]\n", exp);
+        fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
 
         timestamp_t start = get_timestamp();
         RegExParser parser(exp);
         RegEx *re = parser.parse();
+
+        display(re);
+        fprintf(stderr, "]\n");
 
         RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
         RegEx *re_plan = planner->plan();
@@ -125,10 +128,8 @@ int main(int argc, char **argv) {
 
         timestamp_t tot_time = get_timestamp() - start;
 
-        std::cout << "Query took " << tot_time << " ms\n";
-        // display(re);
-        // fprintf(stderr, "\n");
-        // rex.displayResults();
+        std::cout << "Query took " << tot_time << " ms for populating " << rex.getResults().size() << " results.\n";
+        rex.displayResults(10);
     }
 
     return 0;

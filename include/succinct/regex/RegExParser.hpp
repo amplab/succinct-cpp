@@ -82,8 +82,8 @@ private:
             return b;
         } else if(a->getType() == RegExType::Primitive &&
                 b->getType() == RegExType::Primitive) {
-            std::string a_str = ((RegExPrimitive *)a)->getMgram();
-            std::string b_str = ((RegExPrimitive *)b)->getMgram();
+            std::string a_str = ((RegExPrimitive *)a)->getPrimitive();
+            std::string b_str = ((RegExPrimitive *)b)->getPrimitive();
             RegEx *ret = new RegExPrimitive(a_str + b_str);
             delete a;
             delete b;
@@ -129,7 +129,7 @@ private:
             eat(')');
             return r;
         }
-        return mgram();
+        return primitive();
     }
 
     char nextChar() {
@@ -147,14 +147,26 @@ private:
         return num;
     }
 
-    RegEx* mgram() {
-        std::string m = "";
+    RegEx* primitive() {
+        std::string p = "";
         while(more() && peek() != '|' && peek() != '(' &&
                 peek() != ')' && peek() != '*' && peek() != '+' &&
                 peek() != '{' && peek() != '}') {
-            m += nextChar();
+            p += nextChar();
         }
-        return new RegExPrimitive(m);
+        RegExPrimitiveType p_type = getPrimitiveType(p);
+        return new RegExPrimitive(p, p_type);
+    }
+
+    RegExPrimitiveType getPrimitiveType(std::string mgram) {
+        if(mgram == ".") {
+            return RegExPrimitiveType::Dot;
+        } else if(mgram[0] == '[') {
+            if(mgram[mgram.length() - 1] != ']')
+                throw new ParseException;
+            return RegExPrimitiveType::Range;
+        }
+        return RegExPrimitiveType::Mgram;
     }
 };
 

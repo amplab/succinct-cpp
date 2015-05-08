@@ -104,17 +104,30 @@ public:
     }
 };
 
+
+enum RegExPrimitiveType {
+    Mgram,
+    Dot,
+    Range
+};
+
 class RegExPrimitive: public RegEx {
 private:
-    std::string mgram;
+    std::string primitive;
+    RegExPrimitiveType p_type;
 
 public:
-    RegExPrimitive(std::string mgram): RegEx(RegExType::Primitive) {
-        this->mgram = mgram;
+    RegExPrimitive(std::string primitive, RegExPrimitiveType p_type = RegExPrimitiveType::Mgram): RegEx(RegExType::Primitive) {
+        this->primitive = primitive;
+        this->p_type = p_type;
     }
 
-    std::string getMgram() {
-        return mgram;
+    std::string getPrimitive() {
+        return primitive;
+    }
+
+    RegExPrimitiveType getPrimitiveType() {
+        return p_type;
     }
 };
 

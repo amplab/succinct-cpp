@@ -4,33 +4,14 @@
 #include "succinct/SuccinctFile.hpp"
 
 #include <cstdint>
+#include <set>
+#include <algorithm>
+#include <iterator>
 
 class RegExExecutor {
 private:
-    enum RegExResultType {
-        Union,
-        Concat,
-        Repeat,
-        Mgram
-    };
-
-    struct LengthsComparator {
-        const std::vector<int64_t> & offsets;
-
-        LengthsComparator(const std::vector<int64_t> & val_vec):
-            offsets(val_vec) {}
-
-        bool operator()(int i1, int i2)
-        {
-            return offsets[i1] < offsets[i2];
-        }
-    };
-
-    typedef struct {
-        std::vector<int64_t> offsets;
-        std::vector<size_t> lengths;
-        RegExResultType type;
-    } RegExResult;
+    typedef std::pair<size_t, size_t> ResultEntry;
+    typedef std::set<ResultEntry> RegExResult;
 
     SuccinctFile *s_file;
     RegEx *re;
@@ -57,10 +38,17 @@ public:
         return final_res;
     }
 
-    void displayResults() {
-        for(size_t i = 0; i < final_res.offsets.size(); i++) {
-            fprintf(stderr, "%lld => %lu\n", final_res.offsets[i], final_res.lengths[i]);
+    void displayResults(size_t limit) {
+        fprintf(stderr, "{");
+        if(limit <= 0)
+            limit = final_res.size();
+        limit = MIN(limit, final_res.size());
+        RegExResult::iterator it;
+        size_t i;
+        for(it = final_res.begin(), i = 0; i < limit; i++, it++) {
+            fprintf(stderr, "%zd => %zu, ", it->first, it->second);
         }
+        fprintf(stderr, "...}\n");
     }
 
 private:
@@ -104,36 +92,30 @@ private:
     }
 
     void mgramSearch(RegExResult &mgram_res, RegExPrimitive *rp) {
-        s_file->search(mgram_res.offsets, rp->getMgram());
-        mgram_res.lengths.resize(mgram_res.offsets.size(), rp->getMgram().length());
-        mgram_res.type = RegExResultType::Mgram;
+        std::vector<int64_t> offsets;
+        std::string mgram = rp->getPrimitive();
+        size_t len = mgram.length();
+        s_file->search(offsets, mgram);
+        for(auto offset: offsets)
+            mgram_res.insert(ResultEntry(offset, len));
     }
 
     void regexUnion(RegExResult &union_res, RegExResult &a, RegExResult &b) {
-        union_res.offsets.insert(union_res.offsets.end(), a.offsets.begin(), a.offsets.end());
-        union_res.lengths.insert(union_res.lengths.end(), a.lengths.begin(), a.lengths.end());
-        union_res.offsets.insert(union_res.offsets.end(), b.offsets.begin(), b.offsets.end());
-        union_res.lengths.insert(union_res.lengths.end(), b.lengths.begin(), b.lengths.end());
-        union_res.type = RegExResultType::Union;
+        std::set_union(a.begin(), a.end(), b.begin(), b.end(),
+                std::inserter(union_res, union_res.begin()));
     }
 
     void regexConcat(RegExResult &concat_res, RegExResult &a, RegExResult &b) {
-        std::sort(a.lengths.begin(), a.lengths.end(), LengthsComparator(a.offsets));
-        std::sort(a.offsets.begin(), a.offsets.end());
-        std::sort(b.lengths.begin(), b.lengths.end(), LengthsComparator(b.offsets));
-        std::sort(b.offsets.begin(), b.offsets.end());
-        size_t b_pos = 0;
-        for(size_t i = 0; i < a.offsets.size() && b_pos < b.offsets.size(); i++) {
-            int64_t cur_a = a.offsets.at(i);
-            size_t cur_a_len = a.lengths.at(i);
-            while(b_pos < b.offsets.size() && b.offsets.at(b_pos) <= cur_a) b_pos++;
-            if(b_pos == b.offsets.size()) break;
-            if(b.offsets.at(b_pos) == cur_a + (int64_t)cur_a_len) {
-                concat_res.offsets.push_back(cur_a);
-                concat_res.lengths.push_back(cur_a_len + b.lengths.at(b_pos));
+        typedef RegExResult::iterator res_it;
+        res_it a_it, b_it;
+        for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++) {
+            while(b_it != b.end() && b_it->first <= a_it->first) b_it++;
+            if(b_it == b.end()) break;
+
+            if(b_it->first == a_it->first + a_it->second) {
+                concat_res.insert(ResultEntry(a_it->first, a_it->second + b_it->second));
             }
         }
-        concat_res.type = RegExResultType::Concat;
     }
 
     void regexRepeat(RegExResult &repeat_res, RegExResult &a, RegExRepeatType r_type) {
@@ -154,9 +136,7 @@ private:
                 regexConcat(concat_temp_res, concat_res, a);
                 concat_res = concat_temp_res;
 
-                concat_size = concat_res.offsets.size();
-
-                // fprintf(stderr, "Size of intermediate result = %lu\n", concat_temp_res.offsets.size());
+                concat_size = concat_res.size();
 
                 RegExResult repeat_temp_res;
                 regexUnion(repeat_temp_res, repeat_res, concat_res);
