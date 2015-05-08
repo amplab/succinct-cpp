@@ -10,8 +10,9 @@
 
 class RegExExecutor {
 private:
-    typedef std::pair<size_t, size_t> ResultEntry;
+    typedef std::pair<int64_t, int64_t> ResultEntry;
     typedef std::set<ResultEntry> RegExResult;
+    typedef RegExResult::iterator res_it;
 
     SuccinctFile *s_file;
     RegEx *re;
@@ -46,7 +47,7 @@ public:
         RegExResult::iterator it;
         size_t i;
         for(it = final_res.begin(), i = 0; i < limit; i++, it++) {
-            fprintf(stderr, "%zd => %zu, ", it->first, it->second);
+            fprintf(stderr, "%lld => %lld, ", it->first, it->second);
         }
         fprintf(stderr, "...}\n");
     }
@@ -62,7 +63,22 @@ private:
         }
         case RegExType::Primitive:
         {
-            mgramSearch(res, (RegExPrimitive *)r);
+            switch(((RegExPrimitive *)r)->getPrimitiveType()) {
+            case RegExPrimitiveType::Mgram:
+            {
+                mgramSearch(res, (RegExPrimitive *)r);
+                break;
+            }
+            case RegExPrimitiveType::Dot:
+            {
+                res.insert(ResultEntry(-1, 1));
+                break;
+            }
+            case RegExPrimitiveType::Range:
+            {
+                assert(0);
+            }
+            }
             break;
         }
         case RegExType::Or:
@@ -106,14 +122,30 @@ private:
     }
 
     void regexConcat(RegExResult &concat_res, RegExResult &a, RegExResult &b) {
-        typedef RegExResult::iterator res_it;
         res_it a_it, b_it;
         for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++) {
+            if(a.size() == 1 && a_it->first == -1) {
+                int64_t pattern_len = a_it->second;
+                for(int64_t i = 0; i < b.size(); i++) {
+                    concat_res.insert(ResultEntry(b_it->first - pattern_len, b_it->second + pattern_len));
+                    b_it++;
+                }
+                return;
+            }
+            if(b.size() == 1 && b_it->first == -1) {
+                int64_t pattern_len = b_it->second;
+                bool undef = pattern_len == -1;
+                for(int64_t i = 0; i < a.size(); i++) {
+                    concat_res.insert(ResultEntry(a_it->first, undef ? -1 : a_it->second + pattern_len));
+                    a_it++;
+                }
+                return;
+            }
             while(b_it != b.end() && b_it->first <= a_it->first) b_it++;
             if(b_it == b.end()) break;
 
-            if(b_it->first == a_it->first + a_it->second) {
-                concat_res.insert(ResultEntry(a_it->first, a_it->second + b_it->second));
+            if((b_it->first == a_it->first + a_it->second) || a_it->second == -1) {
+                concat_res.insert(ResultEntry(a_it->first, (b_it->first - a_it->first) + b_it->second));
             }
         }
     }
@@ -129,7 +161,12 @@ private:
         {
             size_t concat_size;
             RegExResult concat_res;
+            if(a.begin()->first == -1) {
+                repeat_res.insert(ResultEntry(-1, -1));
+                return;
+            }
             repeat_res = concat_res = a;
+
 
             do {
                 RegExResult concat_temp_res;

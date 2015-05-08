@@ -82,12 +82,15 @@ private:
             return b;
         } else if(a->getType() == RegExType::Primitive &&
                 b->getType() == RegExType::Primitive) {
-            std::string a_str = ((RegExPrimitive *)a)->getPrimitive();
-            std::string b_str = ((RegExPrimitive *)b)->getPrimitive();
-            RegEx *ret = new RegExPrimitive(a_str + b_str);
-            delete a;
-            delete b;
-            return ret;
+            if(((RegExPrimitive *)a)->getPrimitiveType() == RegExPrimitiveType::Mgram &&
+                    ((RegExPrimitive *)b)->getPrimitiveType() == RegExPrimitiveType::Mgram) {
+                std::string a_str = ((RegExPrimitive *)a)->getPrimitive();
+                std::string b_str = ((RegExPrimitive *)b)->getPrimitive();
+                RegEx *ret = new RegExPrimitive(a_str + b_str);
+                delete a;
+                delete b;
+                return ret;
+            }
         }
         return new RegExConcat(a, b);
     }
