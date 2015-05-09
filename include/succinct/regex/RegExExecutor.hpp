@@ -201,8 +201,15 @@ private:
                         a_it->off_len.second + b_it->off_len.second));
             return;
         }
-        for(; a_it != a.end() && b_it != b.end(); a_it++) {
-            while(b_it != b.end() && b_it->off_len.first <= a_it->off_len.first) b_it++;
+        while(a_it != a.end() && b_it != b.end()) {
+            ResultIterator first = a_it;
+            while(first != a.end() && first->off_len.first <= b_it->off_len.first) {
+                a_it = first; first++;
+            }
+            if(a_it == a.end()) break;
+            while(b_it != b.end() && b_it->off_len.first <= a_it->off_len.first) {
+                b_it++;
+            }
             if(b_it == b.end()) break;
 
             bool reg_concat = b_it->off_len.first == (a_it->off_len.first + a_it->off_len.second);
@@ -215,6 +222,8 @@ private:
                 concat_res.insert(ResultEntry(pattern_offset, pattern_length,
                         a_it->indef_beg, b_it->indef_end));
             }
+            a_it++;
+            b_it++;
         }
     }
 
