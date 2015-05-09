@@ -43,8 +43,8 @@ set y2label "Memory Footprint (GB)" font "Helvetica, 16"
 #set key top right
 
 #set xrange [2:10]
-#set yrange [1:]
-set xtics 600
+set yrange [0:]
+set xtics 1800
 max(x,y) = (x > y) ? x : y
 
 plot "../res/adashard-bench.req" using ($1/1000/1000):2 title "request-rate" w lp ls 1,\

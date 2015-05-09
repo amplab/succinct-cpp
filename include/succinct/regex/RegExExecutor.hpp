@@ -10,21 +10,51 @@
 
 class RegExExecutor {
 private:
-    typedef std::pair<int64_t, int64_t> ResultEntry;
-    typedef std::set<ResultEntry> RegExResult;
-    typedef RegExResult::iterator res_it;
+    typedef std::pair<int64_t, int64_t> OffsetLength;
+    typedef struct ResultEntry {
+        ResultEntry(int64_t offset, int64_t length,
+                bool _indef_beg = false, bool _indef_end = false) {
+            off_len = OffsetLength(offset, length);
+            indef_beg = _indef_beg;
+            indef_end = _indef_end;
+        }
+
+        ResultEntry(OffsetLength _off_len,
+                bool _indef_beg = false, bool _indef_end = false) {
+            off_len = _off_len;
+            indef_beg = _indef_beg;
+            indef_end = _indef_end;
+        }
+
+        OffsetLength off_len;
+        bool indef_beg;
+        bool indef_end;
+    } ResultEntry;
+    struct ResultEntryComparator {
+        bool operator() (const ResultEntry &lhs, const ResultEntry &rhs) {
+            return lhs.off_len < rhs.off_len;
+        }
+    };
+    ResultEntryComparator comp;
+    typedef std::set<ResultEntry, ResultEntryComparator> RegExResult;
+    typedef RegExResult::iterator ResultIterator;
 
     SuccinctFile *s_file;
     RegEx *re;
     RegExResult final_res;
 
     RegExBlank *blank;
+    int64_t all_pos;
 
 public:
     RegExExecutor(SuccinctFile *s_file, RegEx *re) {
         this->s_file = s_file;
         this->re = re;
         this->blank = new RegExBlank();
+
+        // Use length of file to represent all positions in the file, since
+        // no offset will be >= length of file.
+        this->all_pos = s_file->original_size();
     }
 
     ~RegExExecutor() {
@@ -44,10 +74,10 @@ public:
         if(limit <= 0)
             limit = final_res.size();
         limit = MIN(limit, final_res.size());
-        RegExResult::iterator it;
+        ResultIterator it;
         size_t i;
         for(it = final_res.begin(), i = 0; i < limit; i++, it++) {
-            fprintf(stderr, "%lld => %lld, ", it->first, it->second);
+            fprintf(stderr, "%lld => %lld, ", it->off_len.first, it->off_len.second);
         }
         fprintf(stderr, "...}\n");
     }
@@ -69,23 +99,20 @@ private:
                 mgramSearch(res, (RegExPrimitive *)r);
                 break;
             }
+            case RegExPrimitiveType::Range:
             case RegExPrimitiveType::Dot:
             {
-                res.insert(ResultEntry(-1, 1));
+                res.insert(ResultEntry(all_pos, 1));
                 break;
-            }
-            case RegExPrimitiveType::Range:
-            {
-                assert(0);
             }
             }
             break;
         }
-        case RegExType::Or:
+        case RegExType::Union:
         {
             RegExResult first_res, second_res;
-            compute(first_res, ((RegExOr *)r)->getFirst());
-            compute(second_res, ((RegExOr *)r)->getSecond());
+            compute(first_res, ((RegExUnion *)r)->getFirst());
+            compute(second_res, ((RegExUnion *)r)->getSecond());
             regexUnion(res, first_res, second_res);
             break;
         }
@@ -116,36 +143,77 @@ private:
             mgram_res.insert(ResultEntry(offset, len));
     }
 
+    bool isDotRes(RegExResult &res) {
+        return res.size() == 1 && res.begin()->off_len.first == all_pos;
+    }
+
+    bool isDotResIndef(RegExResult &res) {
+        return isDotRes(res) && res.begin()->indef_end;
+    }
+
     void regexUnion(RegExResult &union_res, RegExResult &a, RegExResult &b) {
+        if(isDotResIndef(a) && isDotResIndef(b)) {
+            union_res.insert(ResultEntry(all_pos, 0, false, true));
+            return;
+        }
+        if(isDotResIndef(a)) {
+            union_res = a;
+            return;
+        }
+        if(isDotResIndef(b)) {
+            union_res = b;
+            return;
+        }
         std::set_union(a.begin(), a.end(), b.begin(), b.end(),
-                std::inserter(union_res, union_res.begin()));
+                std::inserter(union_res, union_res.begin()), comp);
     }
 
     void regexConcat(RegExResult &concat_res, RegExResult &a, RegExResult &b) {
-        res_it a_it, b_it;
-        for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++) {
-            if(a.size() == 1 && a_it->first == -1) {
-                int64_t pattern_len = a_it->second;
-                for(int64_t i = 0; i < b.size(); i++) {
-                    concat_res.insert(ResultEntry(b_it->first - pattern_len, b_it->second + pattern_len));
-                    b_it++;
-                }
+        ResultIterator a_it = a.begin(), b_it = b.begin();
+        if(isDotRes(a) && isDotRes(b)) {
+            if(isDotResIndef(a) || isDotResIndef(b)) {
+                concat_res.insert(ResultEntry(all_pos, 0, false, true));
                 return;
             }
-            if(b.size() == 1 && b_it->first == -1) {
-                int64_t pattern_len = b_it->second;
-                bool undef = pattern_len == -1;
-                for(int64_t i = 0; i < a.size(); i++) {
-                    concat_res.insert(ResultEntry(a_it->first, undef ? -1 : a_it->second + pattern_len));
-                    a_it++;
-                }
+            size_t dot_len = a_it->off_len.second + b_it->off_len.second;
+            concat_res.insert(ResultEntry(all_pos, dot_len));
+            return;
+        }
+        if(isDotRes(a)) {
+            if(isDotResIndef(a)) {
+                for(; b_it != b.end(); b_it++)
+                    concat_res.insert(ResultEntry(b_it->off_len, true, false));
                 return;
             }
-            while(b_it != b.end() && b_it->first <= a_it->first) b_it++;
+            for(; b_it != b.end(); b_it++)
+                concat_res.insert(ResultEntry(b_it->off_len.first - a_it->off_len.second,
+                        a_it->off_len.second + b_it->off_len.second));
+            return;
+        }
+        if(isDotRes(b)) {
+            if(isDotResIndef(b)) {
+                for(; a_it != a.end(); a_it++)
+                    concat_res.insert(ResultEntry(a_it->off_len, false, true));
+                return;
+            }
+            for(; a_it != a.end(); a_it++)
+                concat_res.insert(ResultEntry(a_it->off_len.first,
+                        a_it->off_len.second + b_it->off_len.second));
+            return;
+        }
+        for(; a_it != a.end() && b_it != b.end(); a_it++) {
+            while(b_it != b.end() && b_it->off_len.first <= a_it->off_len.first) b_it++;
             if(b_it == b.end()) break;
 
-            if((b_it->first == a_it->first + a_it->second) || a_it->second == -1) {
-                concat_res.insert(ResultEntry(a_it->first, (b_it->first - a_it->first) + b_it->second));
+            bool reg_concat = b_it->off_len.first == (a_it->off_len.first + a_it->off_len.second);
+            bool indef_concat = b_it->off_len.first >= (a_it->off_len.first + a_it->off_len.second);
+            bool first_indef_end = (a_it->indef_end && indef_concat);
+            bool second_indef_beg = (b_it->indef_beg && indef_concat);
+            if(reg_concat || first_indef_end || second_indef_beg) {
+                int64_t pattern_offset = a_it->off_len.first;
+                int64_t pattern_length = (b_it->off_len.first - a_it->off_len.first) + b_it->off_len.second;
+                concat_res.insert(ResultEntry(pattern_offset, pattern_length,
+                        a_it->indef_beg, b_it->indef_end));
             }
         }
     }
@@ -161,12 +229,11 @@ private:
         {
             size_t concat_size;
             RegExResult concat_res;
-            if(a.begin()->first == -1) {
-                repeat_res.insert(ResultEntry(-1, -1));
+            if(a.begin()->off_len.first == all_pos) {
+                repeat_res.insert(ResultEntry(all_pos, 0, false, true));
                 return;
             }
             repeat_res = concat_res = a;
-
 
             do {
                 RegExResult concat_temp_res;

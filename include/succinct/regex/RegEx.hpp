@@ -4,7 +4,7 @@
 #include <iostream>
 
 enum RegExType {
-    Or,
+    Union,
     Concat,
     Repeat,
     Primitive,
@@ -26,13 +26,13 @@ private:
     RegExType re_type;
 };
 
-class RegExOr: public RegEx {
+class RegExUnion: public RegEx {
 private:
     RegEx *first;
     RegEx *second;
 
 public:
-    RegExOr(RegEx *first, RegEx *second): RegEx(RegExType::Or) {
+    RegExUnion(RegEx *first, RegEx *second): RegEx(RegExType::Union) {
         this->first = first;
         this->second = second;
     }
