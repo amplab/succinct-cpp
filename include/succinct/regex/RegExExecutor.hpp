@@ -13,22 +13,25 @@ private:
     typedef std::pair<int64_t, int64_t> OffsetLength;
     typedef struct ResultEntry {
         ResultEntry(int64_t offset, int64_t length,
-                bool _indef_beg = false, bool _indef_end = false) {
+                bool _indef_beg = false, bool _indef_end = false, std::string _legal_chars = "") {
             off_len = OffsetLength(offset, length);
             indef_beg = _indef_beg;
             indef_end = _indef_end;
+            legal_chars = _legal_chars;
         }
 
         ResultEntry(OffsetLength _off_len,
-                bool _indef_beg = false, bool _indef_end = false) {
+                bool _indef_beg = false, bool _indef_end = false, std::string _legal_chars = "") {
             off_len = _off_len;
             indef_beg = _indef_beg;
             indef_end = _indef_end;
+            legal_chars = _legal_chars;
         }
 
         OffsetLength off_len;
         bool indef_beg;
         bool indef_end;
+        std::string legal_chars;
     } ResultEntry;
     struct ResultEntryComparator {
         bool operator() (const ResultEntry &lhs, const ResultEntry &rhs) {

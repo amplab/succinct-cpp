@@ -19,7 +19,28 @@ void display(RegEx *re) {
     }
     case RegExType::Primitive:
     {
-        fprintf(stderr, "\"%s\"", ((RegExPrimitive *)re)->getPrimitive().c_str());
+        RegExPrimitive *p = ((RegExPrimitive *)re);
+        std::string p_type;
+        switch(p->getPrimitiveType()) {
+        case RegExPrimitiveType::Mgram:
+        {
+            p_type = "mgram";
+            break;
+        }
+        case RegExPrimitiveType::Dot:
+        {
+            p_type = "dot";
+            break;
+        }
+        case RegExPrimitiveType::Range:
+        {
+            p_type = "range";
+            break;
+        }
+        default:
+            p_type = "unknown";
+        }
+        fprintf(stderr, "\"%s\":%s", p->getPrimitive().c_str(), p_type.c_str());
         break;
     }
     case RegExType::Repeat:

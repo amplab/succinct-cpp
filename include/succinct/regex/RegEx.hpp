@@ -118,8 +118,20 @@ private:
 
 public:
     RegExPrimitive(std::string primitive, RegExPrimitiveType p_type = RegExPrimitiveType::Mgram): RegEx(RegExType::Primitive) {
-        this->primitive = primitive;
         this->p_type = p_type;
+        if(p_type == RegExPrimitiveType::Range) {
+            // Expand all ranges
+            std::string buf = "";
+            for(size_t i = 0; i < primitive.length(); i++) {
+                if(primitive[i] == '-')
+                    for(char c = primitive[i - 1] + 1; c < primitive[i + 1]; c++)
+                        buf += c;
+                else
+                    buf += primitive[i];
+            }
+            primitive = buf;
+        }
+        this->primitive = primitive;
     }
 
     std::string getPrimitive() {
