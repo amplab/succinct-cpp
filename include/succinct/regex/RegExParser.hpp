@@ -157,9 +157,41 @@ private:
                 peek() != '{' && peek() != '}') {
             p += nextChar();
         }
-        RegExPrimitiveType p_type = getPrimitiveType(p);
-        return new RegExPrimitive(p, p_type);
+        return parsePrimitives(p);
     }
+
+    RegEx* parsePrimitives(std::string p_str) {
+        RegEx* p = nextPrimitive(p_str);
+        if(p_str.length() != 0) {
+            return new RegExConcat(p, parsePrimitives(p_str));
+        }
+        return p;
+    }
+
+    RegEx* nextPrimitive(std::string &p_str) {
+        if(p_str[0] == '.') {
+            p_str = p_str.substr(1);
+            return new RegExPrimitive(".", RegExPrimitiveType::Dot);
+        } else if(p_str[0] == '[') {
+            size_t p_pos = 1;
+            while(p_pos < p_str.length() && p_str[p_pos] != ']') {
+                p_pos++;
+            }
+            if(p_pos == p_str.length()) throw new ParseException;
+            std::string str = p_str.substr(1, p_pos - 1);
+            p_str = p_str.substr(p_pos + 1);
+            return new RegExPrimitive(str, RegExPrimitiveType::Range);
+        }
+        size_t p_pos = 0;
+        while(p_pos < p_str.length() && p_str[p_pos] != '.' && p_str[p_pos] != '[' && p_str[p_pos] != ']') {
+            p_pos++;
+        }
+        std::string str = p_str.substr(0, p_pos);
+        p_str = p_str.substr(p_pos);
+        return new RegExPrimitive(str, RegExPrimitiveType::Mgram);
+    }
+
+
 
     RegExPrimitiveType getPrimitiveType(std::string mgram) {
         if(mgram == ".") {
