@@ -62,8 +62,6 @@ std::pair<int64_t, int64_t> SuccinctFile::bwSearch(std::string mgram) {
         range.second = alphabet_map[alphabet[alphabet_map[mgram[m_len - 1]].second + 1]].first - 1;
     } else return std::pair<int64_t, int64_t>(0, -1);
 
-    fprintf(stderr, "Initial range: %lld, %lld\n", range.first, range.second);
-
     for (int64_t i = m_len - 2; i >= 0; i--) {
         if (alphabet_map.find(mgram[i]) != alphabet_map.end()) {
             col_range.first = alphabet_map[mgram[i]].first;
@@ -72,13 +70,9 @@ std::pair<int64_t, int64_t> SuccinctFile::bwSearch(std::string mgram) {
 
         if(col_range.first > col_range.second) return std::pair<int64_t, int64_t>(0, -1);
 
-        fprintf(stderr, "C1, C2: %lld, %lld\n", col_range.first, col_range.second);
-
         fprintf(stderr, "Calling binary search...\n");
         range.first = npa->binary_search_npa(range.first, col_range.first, col_range.second, false);
         range.second = npa->binary_search_npa(range.second, col_range.first, col_range.second, true);
-
-        fprintf(stderr, "Current range: %lld, %lld\n", range.first, range.second);
 
         if(range.first > range.second) return range;
     }
