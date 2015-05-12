@@ -82,12 +82,11 @@ public:
 
     virtual size_t storage_size() = 0;
 
-    virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
+    int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
     									bool flag) {
     	int64_t sp = s;
 		int64_t ep = e;
 		uint64_t m;
-
 		while (sp <= ep) {
 		   m = (sp + ep) / 2;
 		   uint64_t npa_val = operator[](m);

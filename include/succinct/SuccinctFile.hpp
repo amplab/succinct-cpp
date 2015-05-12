@@ -24,6 +24,11 @@ public:
     void extract(std::string& result, uint64_t offset, uint64_t len);
 
     /*
+     * Extract character at specified position
+     */
+    char char_at(uint64_t pos);
+
+    /*
      * Get the count of a string in the Succinct file
      */
     uint64_t count(std::string str);
@@ -40,6 +45,9 @@ public:
      */
     void wildcard_search(std::vector<int64_t>& result, std::string pattern,
                                             uint64_t max_sep);
+
+    std::pair<int64_t, int64_t> bwSearch(std::string mgram);
+    std::pair<int64_t, int64_t> continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range);
 
 private:
     std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);

@@ -272,6 +272,7 @@ int64_t EliasGammaEncodedNPA::binary_search_samples(DeltaEncodedVector *dv, uint
 	return ep;
 }
 
+/*
 int64_t EliasGammaEncodedNPA::binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
 		bool flag) {
 
@@ -363,3 +364,4 @@ int64_t EliasGammaEncodedNPA::binary_search_npa(uint64_t val, uint64_t s, uint64
 
     return flag ? res - 1 : res;
 }
+*/

@@ -80,6 +80,8 @@ private:
     RegEx *concat(RegEx *a, RegEx *b) {
         if(a->getType() == RegExType::Blank) {
             return b;
+        } else if(b->getType() == RegExType::Blank) {
+            return a;
         } else if(a->getType() == RegExType::Primitive &&
                 b->getType() == RegExType::Primitive) {
             if(((RegExPrimitive *)a)->getPrimitiveType() == RegExPrimitiveType::Mgram &&

@@ -57,11 +57,11 @@ public:
         this->second = second;
     }
 
-    RegEx *getFirst() {
+    RegEx *getLeft() {
         return first;
     }
 
-    RegEx *getSecond() {
+    RegEx *getRight() {
         return second;
     }
 };

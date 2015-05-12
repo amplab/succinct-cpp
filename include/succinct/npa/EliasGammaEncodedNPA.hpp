@@ -39,9 +39,10 @@ public:
     // Compute the elias gamma encoding size in bits for a 64 bit integer
     static uint32_t elias_gamma_encoding_size(uint64_t n);
 
-    // Binary search elias gamma encoded npa
+    /*
     virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
     									bool flag);
+    */
 
 private:
     // Accesses data from a 64 bit integer represented as a bit map

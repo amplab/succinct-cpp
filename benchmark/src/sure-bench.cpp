@@ -1,13 +1,13 @@
 #include "succinct/regex/RegEx.hpp"
-#include "succinct/regex/RegExParser.hpp"
-#include "succinct/regex/RegExPlanner.hpp"
-#include "succinct/regex/RegExExecutor.hpp"
-
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
+
+#include "succinct/regex/executor/RegExExecutor.hpp"
+#include "succinct/regex/parser/RegExParser.hpp"
+#include "succinct/regex/planner/RegExPlanner.hpp"
 
 // Debug
 void display(RegEx *re) {
@@ -53,9 +53,9 @@ void display(RegEx *re) {
     case RegExType::Concat:
     {
         fprintf(stderr, "concat(");
-        display(((RegExConcat *)re)->getFirst());
+        display(((RegExConcat *)re)->getLeft());
         fprintf(stderr, ",");
-        display(((RegExConcat *)re)->getSecond());
+        display(((RegExConcat *)re)->getRight());
         fprintf(stderr, ")");
         break;
     }
@@ -85,24 +85,25 @@ static timestamp_t get_timestamp() {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 2 || argc > 6) {
+    if(argc < 2 || argc > 5) {
         print_usage(argv[0]);
         return -1;
     }
 
     int c;
     uint32_t mode = 0;
-    std::string querypath = "";
-    while((c = getopt(argc, argv, "m:q:")) != -1) {
+    bool opt = false;
+    while((c = getopt(argc, argv, "m:o")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
             break;
-        case 'q':
-            querypath = std::string(optarg);
+        case 'o':
+            opt = true;
             break;
         default:
             mode = 0;
+            opt = false;
         }
     }
 
@@ -131,26 +132,32 @@ int main(int argc, char **argv) {
     while(true) {
         char exp[100];
         std::cout << "sure> ";
-        std::cin >> exp;
-        fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
+        std::cin.getline(exp, sizeof(exp));
+
 
         timestamp_t start = get_timestamp();
         RegExParser parser(exp);
         RegEx *re = parser.parse();
 
+        fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
         display(re);
         fprintf(stderr, "]\n");
 
         RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
         RegEx *re_plan = planner->plan();
 
-        RegExExecutor rex(s_file, re_plan);
-        rex.execute();
+        RegExExecutor *rex;
+        if(opt) {
+            rex = new RegExExecutorOpt(s_file, re_plan);
+        } else {
+            rex = new RegExExecutorNaive(s_file, re_plan);
+        }
+        rex->execute();
 
         timestamp_t tot_time = get_timestamp() - start;
 
-        std::cout << "Query took " << tot_time << " ms for populating " << rex.getResults().size() << " results.\n";
-        rex.displayResults(10);
+        rex->displayResults(10);
+        std::cout << "Query took " << tot_time << " ms\n";
     }
 
     return 0;
