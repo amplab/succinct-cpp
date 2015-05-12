@@ -285,7 +285,7 @@ int64_t SuccinctShard::get_key_pos(const int64_t value_offset) {
 }
 
 void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
-    std::pair<int64_t, int64_t> range = get_range(str.c_str(), str.length());
+    std::pair<int64_t, int64_t> range = get_range_slow(str.c_str(), str.length());
     if(range.first > range.second) return;
     for(int64_t i = range.first; i <= range.second; i++) {
         int64_t key_pos = get_key_pos((int64_t)lookupSA(i));
