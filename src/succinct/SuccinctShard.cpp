@@ -120,7 +120,7 @@ uint64_t SuccinctShard::compute_context_value(const char *p, uint64_t i) {
     return val;
 }
 
-std::pair<int64_t, int64_t> SuccinctShard::get_range_slow(const char *p,
+std::pair<int64_t, int64_t> SuccinctShard::get_range(const char *p,
                                                         uint64_t len) {
     std::pair<int64_t, int64_t> range(0, -1);
     uint64_t m = strlen(p);
@@ -151,6 +151,8 @@ std::pair<int64_t, int64_t> SuccinctShard::get_range_slow(const char *p,
     return range;
 }
 
+/*
+// For debugging
 std::pair<int64_t, int64_t> SuccinctShard::get_range(const char *p,
                                                     uint64_t len) {
     uint64_t m = strlen(p);
@@ -209,6 +211,7 @@ std::pair<int64_t, int64_t> SuccinctShard::get_range(const char *p,
 
     return range;
 }
+*/
 
 std::string SuccinctShard::name() {
     return this->filename;
@@ -285,7 +288,7 @@ int64_t SuccinctShard::get_key_pos(const int64_t value_offset) {
 }
 
 void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
-    std::pair<int64_t, int64_t> range = get_range_slow(str.c_str(), str.length());
+    std::pair<int64_t, int64_t> range = get_range(str.c_str(), str.length());
     if(range.first > range.second) return;
     for(int64_t i = range.first; i <= range.second; i++) {
         int64_t key_pos = get_key_pos((int64_t)lookupSA(i));

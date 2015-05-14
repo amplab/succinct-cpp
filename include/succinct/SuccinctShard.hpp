@@ -75,7 +75,7 @@ protected:
     int64_t get_key_pos(const int64_t value_offset);
     int64_t get_value_offset_pos(const int64_t key);
 
-    std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
+    // std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
     std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);
 
     uint64_t compute_context_value(const char *str, uint64_t pos);
