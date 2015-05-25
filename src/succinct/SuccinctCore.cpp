@@ -353,8 +353,13 @@ size_t SuccinctCore::serialize() {
     typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
     struct stat st;
     if (stat(succinct_path.c_str(), &st) != 0)
-        if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0)
-            return 0;
+        if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0) {
+            fprintf(stderr,
+                "succinct dir '%s' does not exist, and failed to mkdir (no space or permission?)\n",
+                this->succinct_path.c_str());
+            fprintf(stderr, "terminating the serialization process.\n");
+            return 1;
+        }
     std::ofstream out(succinct_path + "/metadata");
     std::ofstream sa_out(succinct_path + "/sa");
     std::ofstream isa_out(succinct_path + "/isa");
