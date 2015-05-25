@@ -70,7 +70,6 @@ std::pair<int64_t, int64_t> SuccinctFile::bwSearch(std::string mgram) {
 
         if(col_range.first > col_range.second) return std::pair<int64_t, int64_t>(0, -1);
 
-        fprintf(stderr, "Calling binary search...\n");
         range.first = npa->binary_search_npa(range.first, col_range.first, col_range.second, false);
         range.second = npa->binary_search_npa(range.second, col_range.first, col_range.second, true);
 

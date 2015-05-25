@@ -592,3 +592,11 @@ SampledArray *SuccinctCore::getSA() {
 SampledArray *SuccinctCore::getISA() {
     return ISA;
 }
+
+NPA *SuccinctCore::getNPA() {
+    return npa;
+}
+
+char *SuccinctCore::getAlphabet() {
+    return alphabet;
+}

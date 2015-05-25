@@ -109,6 +109,12 @@ public:
     // Get ISA
     SampledArray *getISA();
 
+    // Get NPA
+    NPA *getNPA();
+
+    // Get alphabet
+    char *getAlphabet();
+
 private:
     /* Construct functions */
     // Create all auxiliary data structures

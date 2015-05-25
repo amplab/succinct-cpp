@@ -474,17 +474,26 @@ private:
             case RegExPrimitiveType::Mgram:
             {
                 Range range = s_file->bwSearch(p->getPrimitive());
-                results.insert(ResultEntry(range, p->getPrimitive().length()));
+                if(!isEmpty(range))
+                    results.insert(ResultEntry(range, p->getPrimitive().length()));
                 break;
             }
             case RegExPrimitiveType::Dot:
             {
-                assert(0);
+                for(char c: std::string(s_file->getAlphabet())) {
+                    Range range = s_file->bwSearch(std::string(1, c));
+                    if(!isEmpty(range))
+                        results.insert(ResultEntry(range, 1));
+                }
                 break;
             }
             case RegExPrimitiveType::Range:
             {
-                assert(0);
+                for(char c: p->getPrimitive()) {
+                    Range range = s_file->bwSearch(std::string(1, c));
+                    if(!isEmpty(range))
+                        results.insert(ResultEntry(range, 1));
+                }
                 break;
             }
             }
@@ -535,17 +544,26 @@ private:
             case RegExPrimitiveType::Mgram:
             {
                 Range range = s_file->continueBwSearch(p->getPrimitive(), right_result.range);
-                concat_results.insert(ResultEntry(range, right_result.length + p->getPrimitive().length()));
+                if(!isEmpty(range))
+                    concat_results.insert(ResultEntry(range, right_result.length + p->getPrimitive().length()));
                 break;
             }
             case RegExPrimitiveType::Dot:
             {
-                assert(0);
+                for(char c: std::string(s_file->getAlphabet())) {
+                    Range range = s_file->continueBwSearch(std::string(1, c), right_result.range);
+                    if(!isEmpty(range))
+                        concat_results.insert(ResultEntry(range, right_result.length + 1));
+                }
                 break;
             }
             case RegExPrimitiveType::Range:
             {
-                assert(0);
+                for(char c: p->getPrimitive()) {
+                    Range range = s_file->continueBwSearch(std::string(1, c), right_result.range);
+                    if(!isEmpty(range))
+                        concat_results.insert(ResultEntry(range, right_result.length + 1));
+                }
                 break;
             }
             }
@@ -579,6 +597,12 @@ private:
     }
 
     void regexRepeat(ResultSet &repeat_results, RegEx *r) {
+        if(r->getType() == RegExType::Primitive
+                && ((RegExPrimitive *)r)->getPrimitiveType() == RegExPrimitiveType::Dot) {
+            fprintf(stderr, "Wildcard not supported yet!\n");
+            assert(0);
+        }
+
         ResultSet results;
         compute(results, r);
         regexUnion(repeat_results, repeat_results, results);
@@ -588,6 +612,12 @@ private:
     }
 
     void regexRepeat(ResultSet &repeat_results, RegEx *r, ResultEntry right_result) {
+
+        if(r->getType() == RegExType::Primitive
+                && ((RegExPrimitive *)r)->getPrimitiveType() == RegExPrimitiveType::Dot) {
+            fprintf(stderr, "Wildcard not supported yet!\n");
+            assert(0);
+        }
 
         if(isEmpty(right_result)) return;
 
