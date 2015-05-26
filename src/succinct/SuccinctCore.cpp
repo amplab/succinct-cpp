@@ -9,7 +9,8 @@ SuccinctCore::SuccinctCore(const char *filename,
                             SamplingScheme sa_sampling_scheme,
                             SamplingScheme isa_sampling_scheme,
                             NPA::NPAEncodingScheme npa_encoding_scheme,
-                            uint32_t sampling_range) :
+                            uint32_t sampling_range,
+                            bool append_sample_rates_suffix) :
                             SuccinctBase() {
 
     this->alphabet = NULL;
@@ -19,7 +20,16 @@ SuccinctCore::SuccinctCore(const char *filename,
     this->alphabet_size = 0;
     this->input_size = 0;
     this->filename = std::string(filename);
+
     this->succinct_path = this->filename + ".succinct";
+    if (append_sample_rates_suffix) {
+        std::string npa_rate = std::to_string(npa_sampling_rate);
+        std::string isa_rate = std::to_string(isa_sampling_rate);
+        std::string sa_rate = std::to_string(sa_sampling_rate);
+        this->succinct_path = this->filename + "-npa" + npa_rate + "-isa" + isa_rate + "-sa" + sa_rate + ".succinct";
+        printf("Succinct path: '%s'\n", this->succinct_path.c_str());
+    }
+
     switch(s_mode) {
     case SuccinctMode::CONSTRUCT_IN_MEMORY:
     {
@@ -356,7 +366,7 @@ size_t SuccinctCore::serialize() {
         if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0) {
             fprintf(stderr,
                 "succinct dir '%s' does not exist, and failed to mkdir (no space or permission?)\n",
-                this->succinct_path.c_str());
+                succinct_path.c_str());
             fprintf(stderr, "terminating the serialization process.\n");
             return 1;
         }

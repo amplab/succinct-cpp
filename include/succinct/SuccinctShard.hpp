@@ -37,7 +37,8 @@ public:
             SamplingScheme sa_sampling_scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX,
             SamplingScheme isa_sampling_scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX,
             NPA::NPAEncodingScheme npa_encoding_scheme = NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
-            uint32_t context_len = 3, uint32_t sampling_range = 1024);
+            uint32_t context_len = 3, uint32_t sampling_range = 1024,
+            bool append_sample_rates_suffix = false);
 
     virtual ~SuccinctShard() {}
 
