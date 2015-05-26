@@ -149,7 +149,10 @@ int main(int argc, char **argv) {
             }
 
         fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme,
-            NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED, 1024, true);
+            NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
+            3,
+            1024,
+            true);
         // Serialize
         fd->serialize();
     } else if(mode == 1) {
