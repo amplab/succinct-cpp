@@ -48,5 +48,5 @@ for i in `seq 0 $limit`; do
 	shard_id=$(($i * $num_hosts + local_host_id))
 	shard_type=$(($shard_id % $num_replicas))
 	data_file="$SUCCINCT_DATA_PATH/data_${shard_type}"
-	nohup "$bin/qserver" -m 1 -p $port -i ${sampling_rates[$shard_type]} $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
+	nohup "$bin/sserver" -m 1 -p $port -i ${sampling_rates[$shard_type]} $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
 done

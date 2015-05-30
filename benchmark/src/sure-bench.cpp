@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include "succinct/SuccinctFile.hpp"
 #include "succinct/regex/executor/RegExExecutor.hpp"
 #include "succinct/regex/parser/RegExParser.hpp"
 #include "succinct/regex/planner/RegExPlanner.hpp"

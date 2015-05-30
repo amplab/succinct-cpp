@@ -164,7 +164,46 @@ public:
                 _return.insert(keys.begin(), keys.end());
             }
         }
-}
+    }
+
+    void regex_search_local(std::set<int64_t> & _return, const std::string& query) {
+        for(int j = 0; j < qservers.size(); j++) {
+            qservers[j].send_regex_search(query);
+        }
+
+        for(int j = 0; j < qservers.size(); j++) {
+            std::set<int64_t> keys;
+            qservers[j].recv_regex_search(keys);
+            _return.insert(keys.begin(), keys.end());
+        }
+    }
+
+    void regex_search(std::set<int64_t> & _return, const std::string& query) {
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    qservers[j].send_regex_search(query);
+                }
+            } else {
+                qhandlers.at(i).send_regex_search_local(query);
+            }
+        }
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    std::set<int64_t> keys;
+                    qservers[j].recv_regex_search(keys);
+                    _return.insert(keys.begin(), keys.end());
+                }
+            } else {
+                std::set<int64_t> keys;
+                qhandlers.at(i).recv_regex_search(keys);
+                _return.insert(keys.begin(), keys.end());
+            }
+        }
+    }
 
     int64_t count_local(const std::string& query) {
         int64_t ret = 0;

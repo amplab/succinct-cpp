@@ -46,9 +46,6 @@ public:
     void wildcard_search(std::vector<int64_t>& result, std::string pattern,
                                             uint64_t max_sep);
 
-    std::pair<int64_t, int64_t> bwSearch(std::string mgram);
-    std::pair<int64_t, int64_t> continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range);
-
 private:
     std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
     std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);

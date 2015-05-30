@@ -17,6 +17,10 @@
 #include <fstream>
 #include <streambuf>
 
+#include "succinct/regex/parser/RegExParser.hpp"
+#include "succinct/regex/planner/RegExPlanner.hpp"
+#include "succinct/regex/executor/RegExExecutor.hpp"
+
 #include "succinct/SuccinctCore.hpp"
 
 class SuccinctShard : public SuccinctCore {
@@ -58,6 +62,8 @@ public:
     int64_t count(std::string str);
 
     void search(std::set<int64_t>& result, std::string str);
+
+    void regex_search(std::set<std::pair<size_t, size_t>>& result, std::string str);
 
     // Serialize succinct data structures
     virtual size_t serialize();

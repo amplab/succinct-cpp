@@ -27,6 +27,8 @@ class SuccinctServiceIf {
   virtual void access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual void search_local(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void regex_search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void regex_search_local(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int64_t count_local(const std::string& query) = 0;
   virtual int32_t get_num_hosts() = 0;
@@ -101,6 +103,12 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     return;
   }
   void search_local(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void regex_search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void regex_search_local(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
   int64_t count(const std::string& /* query */) {
@@ -1405,6 +1413,222 @@ class SuccinctService_search_local_presult {
 
 };
 
+typedef struct _SuccinctService_regex_search_args__isset {
+  _SuccinctService_regex_search_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_regex_search_args__isset;
+
+class SuccinctService_regex_search_args {
+ public:
+
+  SuccinctService_regex_search_args() : query() {
+  }
+
+  virtual ~SuccinctService_regex_search_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_regex_search_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_regex_search_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_regex_search_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_regex_search_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_regex_search_pargs {
+ public:
+
+
+  virtual ~SuccinctService_regex_search_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_regex_search_result__isset {
+  _SuccinctService_regex_search_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_regex_search_result__isset;
+
+class SuccinctService_regex_search_result {
+ public:
+
+  SuccinctService_regex_search_result() {
+  }
+
+  virtual ~SuccinctService_regex_search_result() throw() {}
+
+  std::set<int64_t>  success;
+
+  _SuccinctService_regex_search_result__isset __isset;
+
+  void __set_success(const std::set<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_regex_search_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_regex_search_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_regex_search_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_regex_search_presult__isset {
+  _SuccinctService_regex_search_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_regex_search_presult__isset;
+
+class SuccinctService_regex_search_presult {
+ public:
+
+
+  virtual ~SuccinctService_regex_search_presult() throw() {}
+
+  std::set<int64_t> * success;
+
+  _SuccinctService_regex_search_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_regex_search_local_args__isset {
+  _SuccinctService_regex_search_local_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_regex_search_local_args__isset;
+
+class SuccinctService_regex_search_local_args {
+ public:
+
+  SuccinctService_regex_search_local_args() : query() {
+  }
+
+  virtual ~SuccinctService_regex_search_local_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_regex_search_local_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_regex_search_local_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_regex_search_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_regex_search_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_regex_search_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_regex_search_local_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_regex_search_local_result__isset {
+  _SuccinctService_regex_search_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_regex_search_local_result__isset;
+
+class SuccinctService_regex_search_local_result {
+ public:
+
+  SuccinctService_regex_search_local_result() {
+  }
+
+  virtual ~SuccinctService_regex_search_local_result() throw() {}
+
+  std::set<int64_t>  success;
+
+  _SuccinctService_regex_search_local_result__isset __isset;
+
+  void __set_success(const std::set<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_regex_search_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_regex_search_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_regex_search_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_regex_search_local_presult__isset {
+  _SuccinctService_regex_search_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_regex_search_local_presult__isset;
+
+class SuccinctService_regex_search_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_regex_search_local_presult() throw() {}
+
+  std::set<int64_t> * success;
+
+  _SuccinctService_regex_search_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _SuccinctService_count_args__isset {
   _SuccinctService_count_args__isset() : query(false) {}
   bool query;
@@ -1987,6 +2211,12 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void search_local(std::set<int64_t> & _return, const std::string& query);
   void send_search_local(const std::string& query);
   void recv_search_local(std::set<int64_t> & _return);
+  void regex_search(std::set<int64_t> & _return, const std::string& query);
+  void send_regex_search(const std::string& query);
+  void recv_regex_search(std::set<int64_t> & _return);
+  void regex_search_local(std::set<int64_t> & _return, const std::string& query);
+  void send_regex_search_local(const std::string& query);
+  void recv_regex_search_local(std::set<int64_t> & _return);
   int64_t count(const std::string& query);
   void send_count(const std::string& query);
   int64_t recv_count();
@@ -2029,6 +2259,8 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_access_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_regex_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_regex_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2049,6 +2281,8 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["access_local"] = &SuccinctServiceProcessor::process_access_local;
     processMap_["search"] = &SuccinctServiceProcessor::process_search;
     processMap_["search_local"] = &SuccinctServiceProcessor::process_search_local;
+    processMap_["regex_search"] = &SuccinctServiceProcessor::process_regex_search;
+    processMap_["regex_search_local"] = &SuccinctServiceProcessor::process_regex_search_local;
     processMap_["count"] = &SuccinctServiceProcessor::process_count;
     processMap_["count_local"] = &SuccinctServiceProcessor::process_count_local;
     processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
@@ -2193,6 +2427,26 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->search_local(_return, query);
     }
     ifaces_[i]->search_local(_return, query);
+    return;
+  }
+
+  void regex_search(std::set<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->regex_search(_return, query);
+    }
+    ifaces_[i]->regex_search(_return, query);
+    return;
+  }
+
+  void regex_search_local(std::set<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->regex_search_local(_return, query);
+    }
+    ifaces_[i]->regex_search_local(_return, query);
     return;
   }
 

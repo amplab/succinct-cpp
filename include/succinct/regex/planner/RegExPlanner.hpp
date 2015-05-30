@@ -1,16 +1,16 @@
 #ifndef REGEX_PLANNER_H
 #define REGEX_PLANNER_H
 
-#include "succinct/SuccinctFile.hpp"
+#include "succinct/SuccinctCore.hpp"
 
 class RegExPlanner {
 protected:
-    SuccinctFile *s_file;
+    SuccinctCore *s_core;
     RegEx *re;
 
 public:
-    RegExPlanner(SuccinctFile *s_file, RegEx *re) {
-        this->s_file = s_file;
+    RegExPlanner(SuccinctCore *s_file, RegEx *re) {
+        this->s_core = s_file;
         this->re = re;
     }
 
@@ -23,7 +23,7 @@ public:
 
 class NaiveRegExPlanner: public RegExPlanner {
 public:
-    NaiveRegExPlanner(SuccinctFile *s_file, RegEx *re): RegExPlanner(s_file, re) {}
+    NaiveRegExPlanner(SuccinctCore *s_core, RegEx *re): RegExPlanner(s_core, re) {}
 
     // Does no cost estimation
     virtual RegEx* plan() {

@@ -590,6 +590,53 @@ void SuccinctCore::print_storage_breakdown() {
     fprintf(stderr, "NPA size = %zu\n", npa->storage_size());
 }
 
+std::pair<int64_t, int64_t> SuccinctCore::bwSearch(std::string mgram) {
+    std::pair<int64_t, int64_t> range(0, -1), col_range;
+    uint64_t m_len = mgram.length();
+
+    if (alphabet_map.find(mgram[m_len - 1]) != alphabet_map.end()) {
+        range.first = (alphabet_map[mgram[m_len - 1]]).first;
+        range.second = alphabet_map[alphabet[alphabet_map[mgram[m_len - 1]].second + 1]].first - 1;
+    } else return std::pair<int64_t, int64_t>(0, -1);
+
+    for (int64_t i = m_len - 2; i >= 0; i--) {
+        if (alphabet_map.find(mgram[i]) != alphabet_map.end()) {
+            col_range.first = alphabet_map[mgram[i]].first;
+            col_range.second = alphabet_map[alphabet[alphabet_map[mgram[i]].second + 1]].first - 1;
+        } else return std::pair<int64_t, int64_t>(0, -1);
+
+        if(col_range.first > col_range.second) return std::pair<int64_t, int64_t>(0, -1);
+
+        range.first = npa->binary_search_npa(range.first, col_range.first, col_range.second, false);
+        range.second = npa->binary_search_npa(range.second, col_range.first, col_range.second, true);
+
+        if(range.first > range.second) return range;
+    }
+
+    return range;
+}
+
+std::pair<int64_t, int64_t> SuccinctCore::continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range) {
+    std::pair<int64_t, int64_t> col_range;
+    uint64_t m_len = mgram.length();
+
+    for (int64_t i = m_len - 1; i >= 0; i--) {
+        if (alphabet_map.find(mgram[i]) != alphabet_map.end()) {
+            col_range.first = alphabet_map[mgram[i]].first;
+            col_range.second = alphabet_map[alphabet[alphabet_map[mgram[i]].second + 1]].first - 1;
+        } else return std::pair<int64_t, int64_t>(0, -1);
+
+        if(col_range.first > col_range.second) return std::pair<int64_t, int64_t>(0, -1);
+
+        range.first = npa->binary_search_npa(range.first, col_range.first, col_range.second, false);
+        range.second = npa->binary_search_npa(range.second, col_range.first, col_range.second, true);
+
+        if(range.first > range.second) return range;
+    }
+
+    return range;
+}
+
 SampledArray *SuccinctCore::getSA() {
     return SA;
 }

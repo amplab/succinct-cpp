@@ -115,6 +115,9 @@ public:
     // Get alphabet
     char *getAlphabet();
 
+    std::pair<int64_t, int64_t> bwSearch(std::string mgram);
+    std::pair<int64_t, int64_t> continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range);
+
 private:
     /* Construct functions */
     // Create all auxiliary data structures

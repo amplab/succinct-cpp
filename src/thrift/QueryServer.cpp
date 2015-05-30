@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "../../include/succinct/SuccinctShard.hpp"
+#include "succinct/SuccinctShard.hpp"
 #include "thrift/ports.h"
 
 using namespace ::apache::thrift;
@@ -66,6 +66,14 @@ public:
         fd->search(_return, query);
     }
     
+    void regex_search(std::set<int64_t> &_return, const std::string &query) {
+        std::set<std::pair<size_t, size_t>> results;
+        fd->regex_search(results, query);
+        for(auto res: results) {
+            _return.insert((int64_t)res.first);
+        }
+    }
+
     int64_t count(const std::string& query) {
         return fd->count(query);
     }

@@ -19,6 +19,7 @@ class QueryServiceIf {
   virtual void get(std::string& _return, const int64_t key) = 0;
   virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void regex_search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int32_t get_num_keys() = 0;
 };
@@ -61,6 +62,9 @@ class QueryServiceNull : virtual public QueryServiceIf {
     return;
   }
   void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void regex_search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
   int64_t count(const std::string& /* query */) {
@@ -523,6 +527,114 @@ class QueryService_search_presult {
 
 };
 
+typedef struct _QueryService_regex_search_args__isset {
+  _QueryService_regex_search_args__isset() : query(false) {}
+  bool query;
+} _QueryService_regex_search_args__isset;
+
+class QueryService_regex_search_args {
+ public:
+
+  QueryService_regex_search_args() : query() {
+  }
+
+  virtual ~QueryService_regex_search_args() throw() {}
+
+  std::string query;
+
+  _QueryService_regex_search_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const QueryService_regex_search_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_regex_search_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_regex_search_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_regex_search_pargs {
+ public:
+
+
+  virtual ~QueryService_regex_search_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_regex_search_result__isset {
+  _QueryService_regex_search_result__isset() : success(false) {}
+  bool success;
+} _QueryService_regex_search_result__isset;
+
+class QueryService_regex_search_result {
+ public:
+
+  QueryService_regex_search_result() {
+  }
+
+  virtual ~QueryService_regex_search_result() throw() {}
+
+  std::set<int64_t>  success;
+
+  _QueryService_regex_search_result__isset __isset;
+
+  void __set_success(const std::set<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_regex_search_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_regex_search_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_regex_search_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_regex_search_presult__isset {
+  _QueryService_regex_search_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_regex_search_presult__isset;
+
+class QueryService_regex_search_presult {
+ public:
+
+
+  virtual ~QueryService_regex_search_presult() throw() {}
+
+  std::set<int64_t> * success;
+
+  _QueryService_regex_search_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _QueryService_count_args__isset {
   _QueryService_count_args__isset() : query(false) {}
   bool query;
@@ -757,6 +869,9 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void search(std::set<int64_t> & _return, const std::string& query);
   void send_search(const std::string& query);
   void recv_search(std::set<int64_t> & _return);
+  void regex_search(std::set<int64_t> & _return, const std::string& query);
+  void send_regex_search(const std::string& query);
+  void recv_regex_search(std::set<int64_t> & _return);
   int64_t count(const std::string& query);
   void send_count(const std::string& query);
   int64_t recv_count();
@@ -782,6 +897,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_regex_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
@@ -791,6 +907,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["get"] = &QueryServiceProcessor::process_get;
     processMap_["access"] = &QueryServiceProcessor::process_access;
     processMap_["search"] = &QueryServiceProcessor::process_search;
+    processMap_["regex_search"] = &QueryServiceProcessor::process_regex_search;
     processMap_["count"] = &QueryServiceProcessor::process_count;
     processMap_["get_num_keys"] = &QueryServiceProcessor::process_get_num_keys;
   }
@@ -857,6 +974,16 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
       ifaces_[i]->search(_return, query);
     }
     ifaces_[i]->search(_return, query);
+    return;
+  }
+
+  void regex_search(std::set<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->regex_search(_return, query);
+    }
+    ifaces_[i]->regex_search(_return, query);
     return;
   }
 
