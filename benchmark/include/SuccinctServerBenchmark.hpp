@@ -48,13 +48,10 @@ private:
             return;
         }
 
-        std::string line, bin, query;
+        std::string line;
         while (getline(inputfile, line)) {
             // Extract key and value
-            int split_index = line.find_first_of('\t');
-            bin = line.substr(0, split_index);
-            query = line.substr(split_index + 1);
-            queries.push_back(query);
+            queries.push_back(line);
         }
         inputfile.close();
     }
@@ -65,7 +62,7 @@ public:
         this->benchmark_type = bench_type;
         int port = QUERY_HANDLER_PORT;
 
-        if (bench_type == "latency") {
+        if (!bench_type.compare(0, 7, "latency")) {
             fprintf(stderr, "Connecting to server...\n");
             boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
             boost::shared_ptr<TTransport> transport(
@@ -252,7 +249,7 @@ public:
             fd->search(res, queries[i]);
             t1 = get_timestamp();
             tdiff = t1 - t0;
-            res_stream << randoms[i] << "\t" << tdiff << "\n";
+            res_stream << res.size() << "\t" << tdiff << "\n";
             sum = (sum + res.size()) % MAXSUM;
         }
         fprintf(stderr, "Measure chksum = %lu\n", sum);
@@ -268,6 +265,32 @@ public:
         }
         fprintf(stderr, "Cooldown chksum = %lu\n", sum);
         fprintf(stderr, "Cooldown complete.\n");
+
+        res_stream.close();
+    }
+
+    void benchmark_regex_search_latency(std::string res_path) {
+        time_t t0, t1, tdiff;
+        count_t sum;
+        std::ofstream res_stream(res_path);
+
+        // Measure
+        sum = 0;
+        fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
+        for(uint32_t i = 0; i < queries.size(); i++) {
+            for(uint32_t j = 0; j < 10; j++) {
+                fprintf(stderr, "Running iteration %u of query %u\n", i, j);
+                std::set<int64_t> res;
+                t0 = get_timestamp();
+                fd->regex_search(res, queries[i]);
+                t1 = get_timestamp();
+                tdiff = t1 - t0;
+                res_stream << i << "\t" << j << "\t" << res.size() << "\t" << tdiff << "\n";
+                sum = (sum + res.size()) % MAXSUM;
+            }
+        }
+        fprintf(stderr, "Measure chksum = %lu\n", sum);
+        fprintf(stderr, "Measure complete.\n");
 
         res_stream.close();
     }
