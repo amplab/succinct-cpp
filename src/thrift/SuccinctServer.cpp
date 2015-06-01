@@ -172,9 +172,9 @@ public:
         }
 
         for(int j = 0; j < qservers.size(); j++) {
-            std::set<int64_t> keys;
-            qservers[j].recv_regex_search(keys);
-            _return.insert(keys.begin(), keys.end());
+            std::set<int64_t> results;
+            qservers[j].recv_regex_search(results);
+            _return.insert(results.begin(), results.end());
         }
     }
 
@@ -193,14 +193,14 @@ public:
         for(int i = 0; i < hostnames.size(); i++) {
             if(i == local_host_id) {
                 for(int j = 0; j < qservers.size(); j++) {
-                    std::set<int64_t> keys;
-                    qservers[j].recv_regex_search(keys);
-                    _return.insert(keys.begin(), keys.end());
+                    std::set<int64_t> results;
+                    qservers[j].recv_regex_search(results);
+                    _return.insert(results.begin(), results.end());
                 }
             } else {
-                std::set<int64_t> keys;
-                qhandlers.at(i).recv_regex_search(keys);
-                _return.insert(keys.begin(), keys.end());
+                std::set<int64_t> results;
+                qhandlers.at(i).recv_regex_search(results);
+                _return.insert(results.begin(), results.end());
             }
         }
     }

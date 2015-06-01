@@ -1,151 +1,157 @@
-#ifndef REGEX_H
-#define REGEX_H
+#ifndef REGEX_HPP
+#define REGEX_HPP
 
-#include <iostream>
+#include <cstdio>
 
-enum RegExType {
-    Union,
-    Concat,
-    Repeat,
-    Primitive,
-    Blank
-};
+#include "succinct/regex/RegExTypes.hpp"
+#include "succinct/regex/parser/RegExParser.hpp"
+#include "succinct/regex/planner/RegExPlanner.hpp"
+#include "succinct/regex/executor/RegExExecutor.hpp"
 
-class RegEx {
-public:
-
-    RegEx(RegExType re_type) {
-        this->re_type = re_type;
-    }
-
-    RegExType getType() {
-        return re_type;
-    }
-
+class SRegEx {
 private:
-    RegExType re_type;
-};
+    typedef std::pair<size_t, size_t> OffLen;
+    typedef std::set<OffLen> RRes;
+    typedef RRes::iterator RResIt;
 
-class RegExUnion: public RegEx {
-private:
-    RegEx *first;
-    RegEx *second;
-
-public:
-    RegExUnion(RegEx *first, RegEx *second): RegEx(RegExType::Union) {
-        this->first = first;
-        this->second = second;
-    }
-
-    RegEx *getFirst() {
-        return first;
-    }
-
-    RegEx *getSecond() {
-        return second;
-    }
-};
-
-class RegExConcat: public RegEx {
-private:
-    RegEx *first;
-    RegEx *second;
-
-public:
-    RegExConcat(RegEx *first, RegEx *second): RegEx(RegExType::Concat) {
-        this->first = first;
-        this->second = second;
-    }
-
-    RegEx *getLeft() {
-        return first;
-    }
-
-    RegEx *getRight() {
-        return second;
-    }
-};
-
-enum RegExRepeatType {
-    ZeroOrMore,
-    OneOrMore,
-    MinToMax
-};
-
-class RegExRepeat: public RegEx {
-private:
-    RegEx *internal;
-    RegExRepeatType r_type;
-    int min;
-    int max;
-
-public:
-    RegExRepeat(RegEx *internal, RegExRepeatType r_type, int min = -1, int max = -1): RegEx(RegExType::Repeat) {
-        this->internal = internal;
-        this->r_type = r_type;
-        this->min = min;
-        this->max = max;
-    }
-
-    RegEx *getInternal() {
-        return internal;
-    }
-
-    RegExRepeatType getRepeatType() {
-        return r_type;
-    }
-
-    int getMin() {
-        return min;
-    }
-
-    int getMax() {
-        return max;
-    }
-};
-
-
-enum RegExPrimitiveType {
-    Mgram,
-    Dot,
-    Range
-};
-
-class RegExPrimitive: public RegEx {
-private:
-    std::string primitive;
-    RegExPrimitiveType p_type;
-
-public:
-    RegExPrimitive(std::string primitive, RegExPrimitiveType p_type = RegExPrimitiveType::Mgram): RegEx(RegExType::Primitive) {
-        this->p_type = p_type;
-        if(p_type == RegExPrimitiveType::Range) {
-            // Expand all ranges
-            std::string buf = "";
-            for(size_t i = 0; i < primitive.length(); i++) {
-                if(primitive[i] == '-')
-                    for(char c = primitive[i - 1] + 1; c < primitive[i + 1]; c++)
-                        buf += c;
-                else
-                    buf += primitive[i];
-            }
-            primitive = buf;
+    void explain_subexp(RegEx *re) {
+        switch(re->getType()) {
+        case RegExType::Blank:
+        {
+            fprintf(stderr, "<blank>");
+            break;
         }
-        this->primitive = primitive;
+        case RegExType::Primitive:
+        {
+            RegExPrimitive *p = ((RegExPrimitive *)re);
+            fprintf(stderr, "\"%s\"", p->getPrimitive().c_str());
+            break;
+        }
+        case RegExType::Repeat:
+        {
+            fprintf(stderr, "REPEAT(");
+            explain_subexp(((RegExRepeat *)re)->getInternal());
+            fprintf(stderr, ")");
+            break;
+        }
+        case RegExType::Concat:
+        {
+            fprintf(stderr, "(");
+            explain_subexp(((RegExConcat *)re)->getLeft());
+            fprintf(stderr, " CONCAT ");
+            explain_subexp(((RegExConcat *)re)->getRight());
+            fprintf(stderr, ")");
+            break;
+        }
+        case RegExType::Union:
+        {
+            fprintf(stderr, "(");
+            explain_subexp(((RegExUnion *)re)->getFirst());
+            fprintf(stderr, " OR ");
+            explain_subexp(((RegExUnion *)re)->getSecond());
+            fprintf(stderr, ")");
+            break;
+        }
+        }
     }
 
-    std::string getPrimitive() {
-        return primitive;
+    void parse() {
+        // TODO: Right now this assumes we don't have nested ".*" operators
+        // It would be nice to allow .* anywhere.
+        std::string delimiter = ".*";
+
+        size_t pos = 0;
+        std::string subexp;
+
+        while ((pos = exp.find(delimiter)) != std::string::npos) {
+            subexp = exp.substr(0, pos);
+            RegExParser parser((char *)subexp.c_str());
+            subexps.push_back(parser.parse());
+            exp.erase(0, pos + delimiter.length());
+        }
+
+        subexp = exp;
+        RegExParser parser((char *)subexp.c_str());
+        subexps.push_back(parser.parse());
     }
 
-    RegExPrimitiveType getPrimitiveType() {
-        return p_type;
-    }
-};
-
-class RegExBlank: public RegEx {
 public:
-    RegExBlank(): RegEx(RegExType::Blank) {}
+    SRegEx(std::string exp, SuccinctCore *s_core) {
+        this->exp = exp;
+        this->s_core = s_core;
+        parse();
+    }
+
+    void execute() {
+        std::vector<RRes> subresults;
+        for(auto subexp: subexps) {
+            RRes subresult;
+            subquery(subresult, subexp);
+            subresults.push_back(subresult);
+        }
+
+        while(subresults.size() != 1) {
+            wildcard(subresults[0], subresults[1]);
+            subresults.erase(subresults.begin());
+        }
+
+        r_results = subresults[0];
+    }
+
+    void wildcard(RRes &left, RRes &right) {
+        RRes wildcard_res;
+        RResIt left_it, right_it;
+        for(left_it = left.begin(); left_it != left.end(); left_it++) {
+            OffLen search_candidate(left_it->first + left_it->second, 0);
+            RResIt first_entry = right.lower_bound(search_candidate);
+            for(right_it = first_entry; right_it != right.end(); right_it++) {
+                size_t offset = left_it->first;
+                size_t length = right_it->first - left_it->first + right_it->second;
+                wildcard_res.insert(OffLen(offset, length));
+            }
+        }
+        right = wildcard_res;
+    }
+
+    void subquery(RRes &result, RegEx *r) {
+        RegExExecutorOpt executor(s_core, r);
+        executor.execute();
+        executor.getResults(result);
+    }
+
+    void explain() {
+        fprintf(stderr, "***");
+        for(auto subexp: subexps) {
+            explain_subexp(subexp);
+            fprintf(stderr, "***");
+        }
+    }
+
+    void show_results(size_t limit) {
+        if(limit <= 0)
+            limit = r_results.size();
+        limit = MIN(limit, r_results.size());
+        RResIt it;
+        size_t i;
+        fprintf(stderr, "Showing %zu of %zu results.\n", limit, r_results.size());
+        fprintf(stderr, "{");
+        for(it = r_results.begin(), i = 0; i < limit; i++, it++) {
+            fprintf(stderr, "%zu => %zu, ", it->first, it->second);
+        }
+        fprintf(stderr, "...}\n");
+    }
+
+    void get_results(RRes &results) {
+        results = r_results;
+    }
+
+private:
+    std::string exp;
+    std::vector<RegEx *> subexps;
+    SuccinctCore *s_core;
+
+    RRes r_results;
 };
+
 
 #endif

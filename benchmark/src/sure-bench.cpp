@@ -1,14 +1,11 @@
-#include "succinct/regex/RegEx.hpp"
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 
+#include "succinct/regex/RegEx.hpp"
 #include "succinct/SuccinctFile.hpp"
-#include "succinct/regex/executor/RegExExecutor.hpp"
-#include "succinct/regex/parser/RegExParser.hpp"
-#include "succinct/regex/planner/RegExPlanner.hpp"
 
 // Debug
 void display(RegEx *re) {
@@ -134,30 +131,20 @@ int main(int argc, char **argv) {
         char exp[100];
         std::cout << "sure> ";
         std::cin.getline(exp, sizeof(exp));
-
+        std::string query = std::string(exp);
 
         timestamp_t start = get_timestamp();
-        RegExParser parser(exp);
-        RegEx *re = parser.parse();
+        SRegEx re(query, s_file);
 
         fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
-        display(re);
+        re.explain();
         fprintf(stderr, "]\n");
 
-        RegExPlanner *planner = new NaiveRegExPlanner(s_file, re);
-        RegEx *re_plan = planner->plan();
-
-        RegExExecutor *rex;
-        if(opt) {
-            rex = new RegExExecutorOpt(s_file, re_plan);
-        } else {
-            rex = new RegExExecutorNaive(s_file, re_plan);
-        }
-        rex->execute();
+        re.execute();
 
         timestamp_t tot_time = get_timestamp() - start;
 
-        rex->displayResults(10);
+        re.show_results(10);
         std::cout << "Query took " << tot_time << " ms\n";
     }
 

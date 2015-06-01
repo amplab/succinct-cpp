@@ -1,9 +1,10 @@
 #ifndef REGEX_PARSER_H
 #define REGEX_PARSER_H
 
-#include "succinct/regex/RegEx.hpp"
 #include <iostream>
 #include <cstring>
+
+#include "succinct/regex/RegExTypes.hpp"
 
 // Grammar:
 //   <regex> ::= <term> '|' <regex>

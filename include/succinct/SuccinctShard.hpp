@@ -17,9 +17,7 @@
 #include <fstream>
 #include <streambuf>
 
-#include "succinct/regex/parser/RegExParser.hpp"
-#include "succinct/regex/planner/RegExPlanner.hpp"
-#include "succinct/regex/executor/RegExExecutor.hpp"
+#include "succinct/regex/RegEx.hpp"
 
 #include "succinct/SuccinctCore.hpp"
 

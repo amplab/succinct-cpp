@@ -27,23 +27,9 @@ public:
     virtual ~RegExExecutor() {}
 
     virtual void execute() = 0;
-    virtual void displayResults(size_t limit) {
 
-        if(limit <= 0)
-            limit = final_res.size();
-        limit = MIN(limit, final_res.size());
-        RegExResultIterator it;
-        size_t i;
-        fprintf(stderr, "Showing %zu of %zu results.\n", limit, final_res.size());
-        fprintf(stderr, "{");
-        for(it = final_res.begin(), i = 0; i < limit; i++, it++) {
-            fprintf(stderr, "%zu => %zu, ", it->first, it->second);
-        }
-        fprintf(stderr, "...}\n");
-    }
-
-    virtual RegExResult getResults() {
-        return final_res;
+    virtual void getResults(RegExResult &result) {
+        result = final_res;
     }
 };
 

@@ -299,14 +299,9 @@ void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
 }
 
 void SuccinctShard::regex_search(std::set<std::pair<size_t, size_t>> &result, std::string query) {
-    char *regex = (char *)query.c_str();
-    RegExParser parser(regex);
-    RegEx *r = parser.parse();
-    NaiveRegExPlanner planner(this, r);
-    r = planner.plan();
-    RegExExecutorOpt executor(this, r);
-    executor.execute();
-    result = executor.getResults();
+    SRegEx re(query, this);
+    re.execute();
+    re.get_results(result);
 }
 
 int64_t SuccinctShard::count(std::string str) {
