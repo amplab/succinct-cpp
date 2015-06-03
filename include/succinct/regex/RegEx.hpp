@@ -7,6 +7,8 @@
 #include "succinct/regex/parser/RegExParser.hpp"
 #include "succinct/regex/planner/RegExPlanner.hpp"
 #include "succinct/regex/executor/RegExExecutor.hpp"
+#include "succinct/regex/executor/RegExExecutorBwd.hpp"
+#include "succinct/regex/executor/RegExExecutorFwd.hpp"
 
 class SRegEx {
 private:
@@ -52,6 +54,36 @@ private:
             fprintf(stderr, ")");
             break;
         }
+        }
+    }
+
+    bool is_prefixed(RegEx *re) {
+        switch(re->getType()) {
+        case RegExType::Blank:
+            return false;
+        case RegExType::Primitive:
+            return (((RegExPrimitive *)re)->getPrimitiveType() == RegExPrimitiveType::Mgram);
+        case RegExType::Repeat:
+            return is_prefixed(((RegExRepeat *)re)->getInternal());
+        case RegExType::Concat:
+            return is_prefixed(((RegExConcat *)re)->getLeft());
+        case RegExType::Union:
+            return is_prefixed(((RegExUnion *)re)->getFirst()) && is_prefixed(((RegExUnion *)re)->getSecond());
+        }
+    }
+
+    bool is_suffixed(RegEx *re) {
+        switch(re->getType()) {
+        case RegExType::Blank:
+            return false;
+        case RegExType::Primitive:
+            return (((RegExPrimitive *)re)->getPrimitiveType() == RegExPrimitiveType::Mgram);
+        case RegExType::Repeat:
+            return is_suffixed(((RegExRepeat *)re)->getInternal());
+        case RegExType::Concat:
+            return is_suffixed(((RegExConcat *)re)->getRight());
+        case RegExType::Union:
+            return is_suffixed(((RegExUnion *)re)->getFirst()) && is_prefixed(((RegExUnion *)re)->getSecond());
         }
     }
 
@@ -120,14 +152,25 @@ public:
     }
 
     void subquery(RRes &result, RegEx *r) {
-        RegExExecutorOpt executor(s_core, r);
-        executor.execute();
-        executor.getResults(result);
+        if(is_suffixed(r) || !is_prefixed(r)) {
+            RegExExecutorBwd executor(s_core, r);
+            executor.execute();
+            executor.getResults(result);
+        } else {
+            RegExExecutorFwd executor(s_core, r);
+            executor.execute();
+            executor.getResults(result);
+        }
     }
 
     size_t subcount(RegEx *r) {
-        RegExExecutorOpt executor(s_core, r);
-        return executor.count();
+        if(is_suffixed(r) || !is_prefixed(r)) {
+            RegExExecutorBwd executor(s_core, r);
+            return executor.count();
+        } else {
+            RegExExecutorFwd executor(s_core, r);
+            return executor.count();
+        }
     }
 
     void explain() {

@@ -115,8 +115,14 @@ public:
     // Get alphabet
     char *getAlphabet();
 
-    std::pair<int64_t, int64_t> bwSearch(std::string mgram);
-    std::pair<int64_t, int64_t> continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range);
+    inline int compare(std::string mgram, int64_t pos);
+    inline int compare(std::string mgram, int64_t pos, size_t offset);
+
+    std::pair<int64_t, int64_t> bw_search(std::string mgram);
+    std::pair<int64_t, int64_t> continue_bw_search(std::string mgram, std::pair<int64_t, int64_t> range);
+
+    std::pair<int64_t, int64_t> fw_search(std::string mgram);
+    std::pair<int64_t, int64_t> continue_fw_search(std::string mgram, std::pair<int64_t, int64_t> range, size_t len);
 
 private:
     /* Construct functions */

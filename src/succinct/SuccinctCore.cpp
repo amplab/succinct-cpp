@@ -590,7 +590,7 @@ void SuccinctCore::print_storage_breakdown() {
     fprintf(stderr, "NPA size = %zu\n", npa->storage_size());
 }
 
-std::pair<int64_t, int64_t> SuccinctCore::bwSearch(std::string mgram) {
+std::pair<int64_t, int64_t> SuccinctCore::bw_search(std::string mgram) {
     std::pair<int64_t, int64_t> range(0, -1), col_range;
     uint64_t m_len = mgram.length();
 
@@ -616,7 +616,7 @@ std::pair<int64_t, int64_t> SuccinctCore::bwSearch(std::string mgram) {
     return range;
 }
 
-std::pair<int64_t, int64_t> SuccinctCore::continueBwSearch(std::string mgram, std::pair<int64_t, int64_t> range) {
+std::pair<int64_t, int64_t> SuccinctCore::continue_bw_search(std::string mgram, std::pair<int64_t, int64_t> range) {
     std::pair<int64_t, int64_t> col_range;
     uint64_t m_len = mgram.length();
 
@@ -635,6 +635,94 @@ std::pair<int64_t, int64_t> SuccinctCore::continueBwSearch(std::string mgram, st
     }
 
     return range;
+}
+
+int SuccinctCore::compare(std::string p, int64_t i) {
+    long j = 0;
+    do {
+        char c = alphabet[lookupC(i)];
+        if (p[j] < c) {
+            return -1;
+        } else if(p[j] > c) {
+            return 1;
+        }
+        i = lookupNPA(i);
+        j++;
+    } while (j < p.length());
+    return 0;
+}
+
+int SuccinctCore::compare(std::string p, int64_t i, size_t offset) {
+
+    long j = 0;
+
+    // Skip first offset chars
+    while(offset) {
+        i = lookupNPA(i);
+        offset--;
+    }
+
+    do {
+        char c = alphabet[lookupC(i)];
+        if (p[j] < c) {
+            return -1;
+        } else if(p[j] > c) {
+            return 1;
+        }
+        i = lookupNPA(i);
+        j++;
+    } while (j < p.length());
+
+    return 0;
+}
+
+std::pair<int64_t, int64_t> SuccinctCore::fw_search(std::string mgram) {
+
+    int64_t st = original_size() - 1;
+    int64_t sp = 0;
+    int64_t s;
+    while(sp < st) {
+        s = (sp + st) / 2;
+        if (compare(mgram, s) > 0) sp = s + 1;
+        else st = s;
+    }
+
+    int64_t et = original_size() - 1;
+    int64_t ep = sp - 1;
+    int64_t e;
+
+    while (ep < et) {
+        e = ceil((double)(ep + et) / 2);
+        if (compare(mgram, e) == 0) ep = e;
+        else et = e - 1;
+    }
+
+    return std::pair<int64_t, int64_t>(sp, ep);
+}
+
+std::pair<int64_t, int64_t> SuccinctCore::continue_fw_search(std::string mgram,
+        std::pair<int64_t, int64_t> range, size_t len) {
+
+    int64_t st = range.second;
+    int64_t sp = range.first;
+    int64_t s;
+    while(sp < st) {
+        s = (sp + st) / 2;
+        if (compare(mgram, s, len) > 0) sp = s + 1;
+        else st = s;
+    }
+
+    int64_t et = range.second;
+    int64_t ep = sp - 1;
+    int64_t e;
+
+    while (ep < et) {
+        e = ceil((double)(ep + et) / 2);
+        if (compare(mgram, e, len) == 0) ep = e;
+        else et = e - 1;
+    }
+
+    return std::pair<int64_t, int64_t>(sp, ep);
 }
 
 SampledArray *SuccinctCore::getSA() {

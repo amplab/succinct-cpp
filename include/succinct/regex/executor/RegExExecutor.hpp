@@ -33,7 +33,7 @@ public:
     }
 };
 
-class RegExExecutorNaive: public RegExExecutor {
+class RegExExecutorBlackBox: public RegExExecutor {
 private:
 
     typedef struct ResultEntry {
@@ -95,7 +95,7 @@ private:
     size_t all_pos;
 
 public:
-    RegExExecutorNaive(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {
+    RegExExecutorBlackBox(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {
         this->blank = new RegExBlank();
 
         // Use length of file to represent all positions in the file, since
@@ -103,7 +103,7 @@ public:
         this->all_pos = s_core->original_size();
     }
 
-    ~RegExExecutorNaive() {
+    ~RegExExecutorBlackBox() {
         delete blank;
     }
 
@@ -209,7 +209,7 @@ private:
         std::vector<int64_t> offsets;
         std::string mgram = rp->getPrimitive();
         size_t len = mgram.length();
-        std::pair<int64_t, int64_t> range = s_core->bwSearch(mgram);
+        std::pair<int64_t, int64_t> range = s_core->bw_search(mgram);
         if(range.first > range.second) return;
         offsets.reserve((uint64_t)(range.second - range.first + 1));
         for(int64_t i = range.first; i <= range.second; i++) {
@@ -398,8 +398,8 @@ private:
     }
 };
 
-class RegExExecutorOpt: public RegExExecutor {
-private:
+class RegExExecutorSuccinct: public RegExExecutor {
+protected:
     typedef std::pair<int64_t, int64_t> Range;
     typedef struct ResultEntry {
         ResultEntry(Range _range, size_t _length) {
@@ -422,7 +422,7 @@ private:
     ResultSet regex_res;
 
 public:
-    RegExExecutorOpt(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {}
+    RegExExecutorSuccinct(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {}
 
     size_t count() {
         size_t sum = 0;
@@ -447,7 +447,7 @@ public:
             Range range = r_it->range;
             if(!isEmpty(range)) {
                 for(int64_t i = range.first; i <= range.second; i++) {
-                    if(sa_buf.find(i) != sa_buf.end()) {
+                    if(sa_buf.find(i) == sa_buf.end()) {
                         sa_buf[i] = s_core->lookupSA(i);
                     }
                     res.push_back(OffsetLength(sa_buf[i], r_it->length));
@@ -457,7 +457,9 @@ public:
         final_res = std::set<std::pair<size_t, size_t>>(res.begin(), res.end());
     }
 
-private:
+protected:
+    virtual void compute(ResultSet &results, RegEx *r) = 0;
+
     bool isEmpty(Range range) {
         return range.first > range.second;
     }
@@ -472,231 +474,6 @@ private:
         }
         return results.empty();
     }
-
-    void compute(ResultSet &results, RegEx *r) {
-        switch(r->getType()) {
-        case RegExType::Blank:
-        {
-            break;
-        }
-        case RegExType::Primitive:
-        {
-            RegExPrimitive *p = (RegExPrimitive *)r;
-            switch(p->getPrimitiveType()) {
-            case RegExPrimitiveType::Mgram:
-            {
-                Range range = s_core->bwSearch(p->getPrimitive());
-                if(!isEmpty(range))
-                    results.insert(ResultEntry(range, p->getPrimitive().length()));
-                break;
-            }
-            case RegExPrimitiveType::Dot:
-            {
-                for(char c: std::string(s_core->getAlphabet())) {
-                    if(c == '\n' || c == (char)1) continue;
-                    Range range = s_core->bwSearch(std::string(1, c));
-                    if(!isEmpty(range))
-                        results.insert(ResultEntry(range, 1));
-                }
-                break;
-            }
-            case RegExPrimitiveType::Range:
-            {
-                for(char c: p->getPrimitive()) {
-                    Range range = s_core->bwSearch(std::string(1, c));
-                    if(!isEmpty(range))
-                        results.insert(ResultEntry(range, 1));
-                }
-                break;
-            }
-            }
-            break;
-        }
-        case RegExType::Union:
-        {
-            ResultSet first_res, second_res;
-            compute(first_res, ((RegExUnion *)r)->getFirst());
-            compute(second_res, ((RegExUnion *)r)->getSecond());
-            regexUnion(results, first_res, second_res);
-            break;
-        }
-        case RegExType::Concat:
-        {
-            ResultSet right_results;
-            compute(right_results, ((RegExConcat *)r)->getRight());
-            for(auto right_result: right_results) {
-                ResultSet temp;
-                regexConcat(temp, ((RegExConcat *)r)->getLeft(), right_result);
-                regexUnion(results, results, temp);
-            }
-            break;
-        }
-        case RegExType::Repeat:
-        {
-            RegExRepeat *rep_r = ((RegExRepeat *)r);
-            switch(rep_r->getRepeatType()) {
-            case RegExRepeatType::ZeroOrMore:
-            {
-                regexRepeatOneOrMore(results, rep_r->getInternal());
-                break;
-            }
-            case RegExRepeatType::OneOrMore:
-            {
-                regexRepeatOneOrMore(results, rep_r->getInternal());
-                break;
-            }
-            case RegExRepeatType::MinToMax:
-            {
-                regexRepeatMinToMax(results, rep_r->getInternal(), rep_r->getMin(), rep_r->getMax());
-            }
-            }
-            break;
-        }
-        }
-    }
-
-    void regexUnion(ResultSet &union_results, ResultSet a, ResultSet b) {
-        std::set_union(a.begin(), a.end(), b.begin(), b.end(),
-                std::inserter(union_results, union_results.begin()), comp);
-    }
-
-    void regexConcat(ResultSet &concat_results, RegEx *r, ResultEntry right_result) {
-        switch(r->getType()) {
-        case RegExType::Blank:
-        {
-            break;
-        }
-        case RegExType::Primitive:
-        {
-            RegExPrimitive *p = (RegExPrimitive *)r;
-            switch(p->getPrimitiveType()) {
-            case RegExPrimitiveType::Mgram:
-            {
-                Range range = s_core->continueBwSearch(p->getPrimitive(), right_result.range);
-                if(!isEmpty(range))
-                    concat_results.insert(ResultEntry(range, right_result.length + p->getPrimitive().length()));
-                break;
-            }
-            case RegExPrimitiveType::Dot:
-            {
-                for(char c: std::string(s_core->getAlphabet())) {
-                    if(c == '\n' || c == (char)1) continue;
-                    Range range = s_core->continueBwSearch(std::string(1, c), right_result.range);
-                    if(!isEmpty(range))
-                        concat_results.insert(ResultEntry(range, right_result.length + 1));
-                }
-                break;
-            }
-            case RegExPrimitiveType::Range:
-            {
-                for(char c: p->getPrimitive()) {
-                    Range range = s_core->continueBwSearch(std::string(1, c), right_result.range);
-                    if(!isEmpty(range))
-                        concat_results.insert(ResultEntry(range, right_result.length + 1));
-                }
-                break;
-            }
-            }
-            break;
-        }
-        case RegExType::Union:
-        {
-            ResultSet res1, res2;
-            regexConcat(res1, ((RegExUnion *)r)->getFirst(), right_result);
-            regexConcat(res2, ((RegExUnion *)r)->getSecond(), right_result);
-            regexUnion(concat_results, res1, res2);
-            break;
-        }
-        case RegExType::Concat:
-        {
-            ResultSet left_right_results;
-            regexConcat(left_right_results, ((RegExConcat *)r)->getRight(), right_result);
-            for(auto left_right_result: left_right_results) {
-                ResultSet temp;
-                regexConcat(temp, ((RegExConcat *)r)->getLeft(), left_right_result);
-                regexUnion(concat_results, concat_results, temp);
-            }
-            break;
-        }
-        case RegExType::Repeat:
-        {
-            RegExRepeat *rep_r = ((RegExRepeat *)r);
-            switch(rep_r->getRepeatType()) {
-            case RegExRepeatType::ZeroOrMore:
-            {
-                regexRepeatOneOrMore(concat_results, rep_r->getInternal(), right_result);
-                concat_results.insert(right_result);
-                break;
-            }
-            case RegExRepeatType::OneOrMore:
-            {
-                regexRepeatOneOrMore(concat_results, rep_r->getInternal(), right_result);
-                break;
-            }
-            case RegExRepeatType::MinToMax:
-            {
-                regexRepeatMinToMax(concat_results, rep_r->getInternal(), right_result, rep_r->getMin(), rep_r->getMax());
-            }
-            }
-            break;
-        }
-        }
-    }
-
-    void regexRepeatOneOrMore(ResultSet &repeat_results, RegEx *r) {
-        ResultSet results;
-        compute(results, r);
-        if(results.empty()) return;
-        regexUnion(repeat_results, repeat_results, results);
-
-        for(auto result: results)
-            regexRepeatOneOrMore(repeat_results, r, result);
-    }
-
-    void regexRepeatOneOrMore(ResultSet &repeat_results, RegEx *r, ResultEntry right_result) {
-        if(isEmpty(right_result)) return;
-
-        ResultSet concat_results;
-        regexConcat(concat_results, r, right_result);
-        if(concat_results.empty()) return;
-        regexUnion(repeat_results, repeat_results, concat_results);
-
-        for(auto result: concat_results)
-            regexRepeatOneOrMore(repeat_results, r, result);
-    }
-
-    void regexRepeatMinToMax(ResultSet &repeat_results, RegEx *r, int min, int max) {
-        min = (min > 0) ? min - 1 : 0;
-        max = (max > 0) ? max - 1 : 0;
-
-        ResultSet results;
-        compute(results, r);
-        if(results.empty()) return;
-
-        if(!min)
-            regexUnion(repeat_results, repeat_results, results);
-
-        if(max)
-            for(auto result: results)
-                regexRepeatMinToMax(repeat_results, r, result, min, max);
-    }
-
-    void regexRepeatMinToMax(ResultSet &repeat_results, RegEx *r, ResultEntry right_result, int min, int max) {
-        min = (min > 0) ? min - 1 : 0;
-        max = (max > 0) ? max - 1 : 0;
-
-        if(isEmpty(right_result)) return;
-
-        ResultSet concat_results;
-        regexConcat(concat_results, r, right_result);
-        if(concat_results.empty()) return;
-
-        if(!min)
-            regexUnion(repeat_results, repeat_results, concat_results);
-
-        if(max)
-            for(auto result: concat_results)
-                regexRepeatMinToMax(repeat_results, r, result, min, max);
-    }
 };
+
 #endif
