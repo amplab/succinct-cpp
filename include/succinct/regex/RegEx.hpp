@@ -98,6 +98,12 @@ public:
         r_results = subresults[0];
     }
 
+    void count(std::vector<size_t> &counts) {
+        for(auto subexp: subexps) {
+            counts.push_back(subcount(subexp));
+        }
+    }
+
     void wildcard(RRes &left, RRes &right) {
         RRes wildcard_res;
         RResIt left_it, right_it;
@@ -117,6 +123,11 @@ public:
         RegExExecutorOpt executor(s_core, r);
         executor.execute();
         executor.getResults(result);
+    }
+
+    size_t subcount(RegEx *r) {
+        RegExExecutorOpt executor(s_core, r);
+        return executor.count();
     }
 
     void explain() {

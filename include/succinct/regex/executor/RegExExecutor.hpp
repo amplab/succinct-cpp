@@ -424,16 +424,33 @@ private:
 public:
     RegExExecutorOpt(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {}
 
+    size_t count() {
+        size_t sum = 0;
+        compute(regex_res, re);
+
+        for(ResultIterator r_it = regex_res.begin(); r_it != regex_res.end(); r_it++) {
+            Range range = r_it->range;
+            if(!isEmpty(range))
+                sum += (range.second - range.first + 1);
+        }
+
+        return sum;
+    }
+
     void execute() {
         compute(regex_res, re);
 
         // Process final results
+        std::map<int64_t, size_t> sa_buf;
         std::vector<std::pair<size_t, size_t>> res;
         for(ResultIterator r_it = regex_res.begin(); r_it != regex_res.end(); r_it++) {
             Range range = r_it->range;
             if(!isEmpty(range)) {
                 for(int64_t i = range.first; i <= range.second; i++) {
-                    res.push_back(OffsetLength(s_core->lookupSA(i), r_it->length));
+                    if(sa_buf.find(i) != sa_buf.end()) {
+                        sa_buf[i] = s_core->lookupSA(i);
+                    }
+                    res.push_back(OffsetLength(sa_buf[i], r_it->length));
                 }
             }
         }

@@ -74,6 +74,14 @@ public:
         }
     }
 
+    void regex_count(std::vector<int64_t> & _return, const std::string& query) {
+        std::vector<size_t> results;
+        fd->regex_count(results, query);
+        for(auto res: results) {
+            _return.push_back((int64_t)res);
+        }
+    }
+
     int64_t count(const std::string& query) {
         return fd->count(query);
     }

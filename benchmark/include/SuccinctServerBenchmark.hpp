@@ -269,6 +269,36 @@ public:
         res_stream.close();
     }
 
+    void benchmark_regex_count_latency(std::string res_path) {
+        time_t t0, t1, tdiff;
+        count_t sum;
+        std::ofstream res_stream(res_path);
+
+        // Measure
+        sum = 0;
+        fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
+        for(uint32_t i = 0; i < queries.size(); i++) {
+            for(uint32_t j = 0; j < 10; j++) {
+                fprintf(stderr, "Running iteration %u of query %u\n", i, j);
+                std::vector<int64_t> res;
+                t0 = get_timestamp();
+                fd->regex_count(res, queries[i]);
+                t1 = get_timestamp();
+                tdiff = t1 - t0;
+                res_stream << i << "\t" << j << "\t";
+                for(auto r: res) {
+                    res_stream << r << "\t";
+                }
+                res_stream << tdiff << "\n";
+                sum = (sum + res.size()) % MAXSUM;
+            }
+        }
+        fprintf(stderr, "Measure chksum = %lu\n", sum);
+        fprintf(stderr, "Measure complete.\n");
+
+        res_stream.close();
+    }
+
     void benchmark_regex_search_latency(std::string res_path) {
         time_t t0, t1, tdiff;
         count_t sum;

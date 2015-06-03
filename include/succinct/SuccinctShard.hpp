@@ -63,6 +63,8 @@ public:
 
     void regex_search(std::set<std::pair<size_t, size_t>>& result, std::string str);
 
+    void regex_count(std::vector<size_t>& result, std::string str);
+
     // Serialize succinct data structures
     virtual size_t serialize();
 

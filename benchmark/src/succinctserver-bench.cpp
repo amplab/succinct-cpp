@@ -63,8 +63,10 @@ int main(int argc, char **argv) {
         s_bench.benchmark_count_latency("latency_results_count");
     } else if(benchmark_type == "latency-search") {
         s_bench.benchmark_search_latency("latency_results_search");
-    } else if(benchmark_type == "latency-regex") {
+    } else if(benchmark_type == "latency-regex-search") {
         s_bench.benchmark_regex_search_latency("latency_results_regex_search");
+    } else if(benchmark_type == "latency-regex-count") {
+        s_bench.benchmark_regex_count_latency("latency_results_regex_count");
     } else if(benchmark_type == "throughput-get") {
         s_bench.benchmark_throughput_get(num_threads);
     } else if(benchmark_type == "throughput-access") {

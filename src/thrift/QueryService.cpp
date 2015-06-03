@@ -616,15 +616,15 @@ uint32_t QueryService_search_result::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             this->success.clear();
-            uint32_t _size52;
-            ::apache::thrift::protocol::TType _etype55;
-            xfer += iprot->readSetBegin(_etype55, _size52);
-            uint32_t _i56;
-            for (_i56 = 0; _i56 < _size52; ++_i56)
+            uint32_t _size74;
+            ::apache::thrift::protocol::TType _etype77;
+            xfer += iprot->readSetBegin(_etype77, _size74);
+            uint32_t _i78;
+            for (_i78 = 0; _i78 < _size74; ++_i78)
             {
-              int64_t _elem57;
-              xfer += iprot->readI64(_elem57);
-              this->success.insert(_elem57);
+              int64_t _elem79;
+              xfer += iprot->readI64(_elem79);
+              this->success.insert(_elem79);
             }
             xfer += iprot->readSetEnd();
           }
@@ -655,10 +655,10 @@ uint32_t QueryService_search_result::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
     {
       xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::set<int64_t> ::const_iterator _iter58;
-      for (_iter58 = this->success.begin(); _iter58 != this->success.end(); ++_iter58)
+      std::set<int64_t> ::const_iterator _iter80;
+      for (_iter80 = this->success.begin(); _iter80 != this->success.end(); ++_iter80)
       {
-        xfer += oprot->writeI64((*_iter58));
+        xfer += oprot->writeI64((*_iter80));
       }
       xfer += oprot->writeSetEnd();
     }
@@ -693,15 +693,15 @@ uint32_t QueryService_search_presult::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             (*(this->success)).clear();
-            uint32_t _size59;
-            ::apache::thrift::protocol::TType _etype62;
-            xfer += iprot->readSetBegin(_etype62, _size59);
-            uint32_t _i63;
-            for (_i63 = 0; _i63 < _size59; ++_i63)
+            uint32_t _size81;
+            ::apache::thrift::protocol::TType _etype84;
+            xfer += iprot->readSetBegin(_etype84, _size81);
+            uint32_t _i85;
+            for (_i85 = 0; _i85 < _size81; ++_i85)
             {
-              int64_t _elem64;
-              xfer += iprot->readI64(_elem64);
-              (*(this->success)).insert(_elem64);
+              int64_t _elem86;
+              xfer += iprot->readI64(_elem86);
+              (*(this->success)).insert(_elem86);
             }
             xfer += iprot->readSetEnd();
           }
@@ -812,15 +812,15 @@ uint32_t QueryService_regex_search_result::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             this->success.clear();
-            uint32_t _size65;
-            ::apache::thrift::protocol::TType _etype68;
-            xfer += iprot->readSetBegin(_etype68, _size65);
-            uint32_t _i69;
-            for (_i69 = 0; _i69 < _size65; ++_i69)
+            uint32_t _size87;
+            ::apache::thrift::protocol::TType _etype90;
+            xfer += iprot->readSetBegin(_etype90, _size87);
+            uint32_t _i91;
+            for (_i91 = 0; _i91 < _size87; ++_i91)
             {
-              int64_t _elem70;
-              xfer += iprot->readI64(_elem70);
-              this->success.insert(_elem70);
+              int64_t _elem92;
+              xfer += iprot->readI64(_elem92);
+              this->success.insert(_elem92);
             }
             xfer += iprot->readSetEnd();
           }
@@ -851,10 +851,10 @@ uint32_t QueryService_regex_search_result::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
     {
       xfer += oprot->writeSetBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
-      std::set<int64_t> ::const_iterator _iter71;
-      for (_iter71 = this->success.begin(); _iter71 != this->success.end(); ++_iter71)
+      std::set<int64_t> ::const_iterator _iter93;
+      for (_iter93 = this->success.begin(); _iter93 != this->success.end(); ++_iter93)
       {
-        xfer += oprot->writeI64((*_iter71));
+        xfer += oprot->writeI64((*_iter93));
       }
       xfer += oprot->writeSetEnd();
     }
@@ -889,17 +889,211 @@ uint32_t QueryService_regex_search_presult::read(::apache::thrift::protocol::TPr
         if (ftype == ::apache::thrift::protocol::T_SET) {
           {
             (*(this->success)).clear();
-            uint32_t _size72;
-            ::apache::thrift::protocol::TType _etype75;
-            xfer += iprot->readSetBegin(_etype75, _size72);
-            uint32_t _i76;
-            for (_i76 = 0; _i76 < _size72; ++_i76)
+            uint32_t _size94;
+            ::apache::thrift::protocol::TType _etype97;
+            xfer += iprot->readSetBegin(_etype97, _size94);
+            uint32_t _i98;
+            for (_i98 = 0; _i98 < _size94; ++_i98)
             {
-              int64_t _elem77;
-              xfer += iprot->readI64(_elem77);
-              (*(this->success)).insert(_elem77);
+              int64_t _elem99;
+              xfer += iprot->readI64(_elem99);
+              (*(this->success)).insert(_elem99);
             }
             xfer += iprot->readSetEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->query);
+          this->__isset.query = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("QueryService_regex_count_args");
+
+  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->query);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("QueryService_regex_count_pargs");
+
+  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->query)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size100;
+            ::apache::thrift::protocol::TType _etype103;
+            xfer += iprot->readListBegin(_etype103, _size100);
+            this->success.resize(_size100);
+            uint32_t _i104;
+            for (_i104 = 0; _i104 < _size100; ++_i104)
+            {
+              xfer += iprot->readI64(this->success[_i104]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("QueryService_regex_count_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I64, static_cast<uint32_t>(this->success.size()));
+      std::vector<int64_t> ::const_iterator _iter105;
+      for (_iter105 = this->success.begin(); _iter105 != this->success.end(); ++_iter105)
+      {
+        xfer += oprot->writeI64((*_iter105));
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t QueryService_regex_count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size106;
+            ::apache::thrift::protocol::TType _etype109;
+            xfer += iprot->readListBegin(_etype109, _size106);
+            (*(this->success)).resize(_size106);
+            uint32_t _i110;
+            for (_i110 = 0; _i110 < _size106; ++_i110)
+            {
+              xfer += iprot->readI64((*(this->success))[_i110]);
+            }
+            xfer += iprot->readListEnd();
           }
           this->__isset.success = true;
         } else {
@@ -1513,6 +1707,64 @@ void QueryServiceClient::recv_regex_search(std::set<int64_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_search failed: unknown result");
 }
 
+void QueryServiceClient::regex_count(std::vector<int64_t> & _return, const std::string& query)
+{
+  send_regex_count(query);
+  recv_regex_count(_return);
+}
+
+void QueryServiceClient::send_regex_count(const std::string& query)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  QueryService_regex_count_pargs args;
+  args.query = &query;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void QueryServiceClient::recv_regex_count(std::vector<int64_t> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("regex_count") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  QueryService_regex_count_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_count failed: unknown result");
+}
+
 int64_t QueryServiceClient::count(const std::string& query)
 {
   send_count(query);
@@ -1914,6 +2166,60 @@ void QueryServiceProcessor::process_regex_search(int32_t seqid, ::apache::thrift
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "QueryService.regex_search", bytes);
+  }
+}
+
+void QueryServiceProcessor::process_regex_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("QueryService.regex_count", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "QueryService.regex_count");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "QueryService.regex_count");
+  }
+
+  QueryService_regex_count_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "QueryService.regex_count", bytes);
+  }
+
+  QueryService_regex_count_result result;
+  try {
+    iface_->regex_count(result.success, args.query);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "QueryService.regex_count");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "QueryService.regex_count");
+  }
+
+  oprot->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "QueryService.regex_count", bytes);
   }
 }
 

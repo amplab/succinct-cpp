@@ -19,6 +19,9 @@ service SuccinctService {
     
     set<i64> regex_search(1:string query),
     set<i64> regex_search_local(1:string query),
+    
+    list<i64> regex_count(1:string query),
+    list<i64> regex_count_local(1:string query),
 
     i64 count(1:string query),
     i64 count_local(1:string query),
@@ -34,6 +37,7 @@ service QueryService {
     string access(1:i64 key, 2:i32 offset, 3:i32 len),
     set<i64> search(1:string query),
     set<i64> regex_search(1:string query),
+    list<i64> regex_count(1:string query),
     i64 count(1:string query),
     i32 get_num_keys(),
 }

@@ -205,6 +205,45 @@ public:
         }
     }
 
+    void regex_count_local(std::vector<int64_t> & _return, const std::string& query) {
+        for(int j = 0; j < qservers.size(); j++) {
+            qservers[j].send_regex_search(query);
+        }
+
+        for(int j = 0; j < qservers.size(); j++) {
+            std::vector<int64_t> results;
+            qservers[j].recv_regex_count(results);
+            _return.insert(_return.begin(), results.begin(), results.end());
+        }
+    }
+
+    void regex_count(std::vector<int64_t> & _return, const std::string& query) {
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    qservers[j].send_regex_count(query);
+                }
+            } else {
+                qhandlers.at(i).send_regex_count_local(query);
+            }
+        }
+
+        for(int i = 0; i < hostnames.size(); i++) {
+            if(i == local_host_id) {
+                for(int j = 0; j < qservers.size(); j++) {
+                    std::vector<int64_t> results;
+                    qservers[j].recv_regex_count(results);
+                    _return.insert(_return.begin(), results.begin(), results.end());
+                }
+            } else {
+                std::vector<int64_t> results;
+                qhandlers.at(i).recv_regex_count(results);
+                _return.insert(_return.begin(), results.begin(), results.end());
+            }
+        }
+    }
+
     int64_t count_local(const std::string& query) {
         int64_t ret = 0;
         for(int j = 0; j < qservers.size(); j++) {
