@@ -3,7 +3,7 @@
 SuccinctShard::SuccinctShard(uint32_t id, std::string filename, SuccinctMode s_mode, uint32_t sa_sampling_rate,
         uint32_t isa_sampling_rate, uint32_t npa_sampling_rate, SamplingScheme sa_sampling_scheme,
         SamplingScheme isa_sampling_scheme, NPA::NPAEncodingScheme npa_encoding_scheme, uint32_t context_len,
-        uint32_t sampling_range)
+        uint32_t sampling_range, bool append_sample_rates_suffix)
     : SuccinctCore(filename.c_str(),
             s_mode,
             sa_sampling_rate,
@@ -13,7 +13,8 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename, SuccinctMode s_m
             sa_sampling_scheme,
             isa_sampling_scheme,
             npa_encoding_scheme,
-            sampling_range) {
+            sampling_range,
+            append_sample_rates_suffix) {
 
     this->id = id;
 

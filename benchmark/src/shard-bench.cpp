@@ -138,7 +138,21 @@ int main(int argc, char **argv) {
     SuccinctShard *fd;
     if(mode == 0) {
         fprintf(stderr, "SuccinctMode = Construct in memory.\n");
-        fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme);
+
+        // sanity check as construction process is very expensive
+        struct stat st;
+        std::string succinct_path = inputpath + ".succinct";
+        if (stat(succinct_path.c_str(), &st) != 0)
+            if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0) {
+                fprintf(stderr, "cannot mkdir directory '%s', terminating\n", succinct_path.c_str());
+                return 1;
+            }
+
+        fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY, sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, scheme, scheme,
+            NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
+            3,
+            1024,
+            true);
         // Serialize
         fd->serialize();
     } else if(mode == 1) {
