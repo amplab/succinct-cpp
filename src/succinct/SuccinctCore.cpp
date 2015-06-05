@@ -352,7 +352,7 @@ size_t SuccinctCore::serialize() {
     size_t out_size = 0;
     typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
     struct stat st;
-    if (stat(succinct_path.c_str(), &st) != 0)
+    if (stat(succinct_path.c_str(), &st) != 0) {
         if (mkdir(succinct_path.c_str(), (mode_t)(S_IRWXU | S_IRGRP |  S_IXGRP | S_IROTH | S_IXOTH)) != 0) {
             fprintf(stderr,
                 "succinct dir '%s' does not exist, and failed to mkdir (no space or permission?)\n",
@@ -360,6 +360,7 @@ size_t SuccinctCore::serialize() {
             fprintf(stderr, "terminating the serialization process.\n");
             return 1;
         }
+    }
     std::ofstream out(succinct_path + "/metadata");
     std::ofstream sa_out(succinct_path + "/sa");
     std::ofstream isa_out(succinct_path + "/isa");
@@ -677,31 +678,18 @@ int SuccinctCore::compare(std::string p, int64_t i, size_t offset) {
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::fw_search(std::string mgram) {
-
-    int64_t st = original_size() - 1;
-    int64_t sp = 0;
-    int64_t s;
-    while(sp < st) {
-        s = (sp + st) / 2;
-        if (compare(mgram, s) > 0) sp = s + 1;
-        else st = s;
-    }
-
-    int64_t et = original_size() - 1;
-    int64_t ep = sp - 1;
-    int64_t e;
-
-    while (ep < et) {
-        e = ceil((double)(ep + et) / 2);
-        if (compare(mgram, e) == 0) ep = e;
-        else et = e - 1;
-    }
-
-    return std::pair<int64_t, int64_t>(sp, ep);
+    std::pair<int64_t, int64_t> range(0, -1);
+    if(alphabet_map.find(mgram[0]) != alphabet_map.end()) {
+        range.first = (alphabet_map[mgram[0]]).first;
+        range.second = alphabet_map[alphabet[alphabet_map[mgram[0]].second + 1]].first - 1;
+    } else return range;
+    return continue_fw_search(mgram.substr(1), range, 10);
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::continue_fw_search(std::string mgram,
         std::pair<int64_t, int64_t> range, size_t len) {
+
+    if(mgram == "") return range;
 
     int64_t st = range.second;
     int64_t sp = range.first;

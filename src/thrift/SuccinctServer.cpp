@@ -67,14 +67,16 @@ public:
             transport->open();
             fprintf(stderr, "Connected to QueryServer %u!\n ", i);
             int32_t shard_id = i * hostnames.size() + local_host_id;
-            int32_t status = client.init(shard_id);
-            if(status == 0) {
-                fprintf(stderr, "Initialization complete at QueryServer %u!\n", i);
-                qservers.push_back(client);
-                qserver_transports.push_back(transport);
-            } else {
-                fprintf(stderr, "Initialization failed at QueryServer %u!\n", i);
-                return 1;
+            client.send_init(shard_id);
+            qservers.push_back(client);
+            qserver_transports.push_back(transport);
+        }
+
+        for(auto client: qservers) {
+            int32_t status = client.recv_init();
+            if(!status) {
+                fprintf(stderr, "Initialization failed at QueryServer %u!\n");
+                return status;
             }
         }
 
