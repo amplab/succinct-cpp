@@ -31,6 +31,14 @@ if [ "$QUERY_SERVER_PORT" = "" ]; then
 	QUERY_SERVER_PORT=11002
 fi
 
+if [ "$REGEX_OPT" = "" ]; then
+    REGEX_OPT="TRUE"
+fi
+
+if [ "$REGEX_OPT" = "TRUE" ]; then
+    opt="-o"
+fi
+
 i=0
 while read sr dist; do
 	((sampling_rates[$i] = $sr))
@@ -48,5 +56,5 @@ for i in `seq 0 $limit`; do
 	shard_id=$(($i * $num_hosts + local_host_id))
 	shard_type=$(($shard_id % $num_replicas))
 	data_file="$SUCCINCT_DATA_PATH/data_${shard_type}"
-	nohup "$bin/sserver" -m 1 -p $port -i ${sampling_rates[$shard_type]} $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
+	nohup "$bin/sserver" -m 1 -p $port -i ${sampling_rates[$shard_type]} $opt $data_file 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
 done

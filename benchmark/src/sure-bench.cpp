@@ -70,7 +70,7 @@ void display(RegEx *re) {
 }
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-o] [file]\n", exec);
 }
 
 typedef unsigned long long int timestamp_t;
@@ -100,8 +100,8 @@ int main(int argc, char **argv) {
             opt = true;
             break;
         default:
-            mode = 0;
-            opt = false;
+            fprintf(stderr, "Invalid option %c\n", c);
+            exit(0);
         }
     }
 
@@ -109,6 +109,8 @@ int main(int argc, char **argv) {
         print_usage(argv[0]);
         return -1;
     }
+
+    fprintf(stderr, "opt = %d\n", opt);
 
     std::string filename = std::string(argv[optind]);
     SuccinctFile *s_file = NULL;
@@ -134,7 +136,7 @@ int main(int argc, char **argv) {
         std::string query = std::string(exp);
 
         timestamp_t start = get_timestamp();
-        SRegEx re(query, s_file);
+        SRegEx re(query, s_file, opt);
 
         fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
         re.explain();

@@ -61,7 +61,7 @@ public:
 
     void search(std::set<int64_t>& result, std::string str);
 
-    void regex_search(std::set<std::pair<size_t, size_t>>& result, std::string str);
+    void regex_search(std::set<std::pair<size_t, size_t>>& result, std::string str, bool opt = true);
 
     void regex_count(std::vector<size_t>& result, std::string str);
 

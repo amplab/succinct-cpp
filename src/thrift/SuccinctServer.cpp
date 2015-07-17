@@ -65,7 +65,7 @@ public:
             boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
             QueryServiceClient client(protocol);
             transport->open();
-            fprintf(stderr, "Connected to QueryServer %u!\n ", i);
+            fprintf(stderr, "Connected to QueryServer %u!\n", i);
             int32_t shard_id = i * hostnames.size() + local_host_id;
             client.send_init(shard_id);
             qservers.push_back(client);
@@ -74,11 +74,13 @@ public:
 
         for(auto client: qservers) {
             int32_t status = client.recv_init();
-            if(!status) {
-                fprintf(stderr, "Initialization failed at QueryServer %u!\n");
+            if(status) {
+                fprintf(stderr, "Initialization failed, status = %d!\n", status);
                 return status;
             }
         }
+
+        fprintf(stderr, "All QueryServers successfully initialized!\n");
 
         return 0;
     }

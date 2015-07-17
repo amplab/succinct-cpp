@@ -298,8 +298,8 @@ void SuccinctShard::search(std::set<int64_t> &result, std::string str) {
     }
 }
 
-void SuccinctShard::regex_search(std::set<std::pair<size_t, size_t>> &result, std::string query) {
-    SRegEx re(query, this);
+void SuccinctShard::regex_search(std::set<std::pair<size_t, size_t>> &result, std::string query, bool opt) {
+    SRegEx re(query, this, opt);
     re.execute();
     re.get_results(result);
 }

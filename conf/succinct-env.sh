@@ -5,3 +5,4 @@
 #export OPPORTUNISTIC="TRUE"
 #export STANDALONE="TRUE"
 #export REPLICATION="3"
+#export REGEX_OPT="TRUE"

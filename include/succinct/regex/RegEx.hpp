@@ -108,9 +108,10 @@ private:
     }
 
 public:
-    SRegEx(std::string exp, SuccinctCore *s_core) {
+    SRegEx(std::string exp, SuccinctCore *s_core, bool opt = true) {
         this->exp = exp;
         this->s_core = s_core;
+        this->opt = opt;
         parse();
     }
 
@@ -152,12 +153,18 @@ public:
     }
 
     void subquery(RRes &result, RegEx *r) {
-        if(is_suffixed(r) || !is_prefixed(r)) {
-            RegExExecutorBwd executor(s_core, r);
-            executor.execute();
-            executor.getResults(result);
+        if(opt) {
+            if(is_suffixed(r) || !is_prefixed(r)) {
+                RegExExecutorBwd executor(s_core, r);
+                executor.execute();
+                executor.getResults(result);
+            } else {
+                RegExExecutorFwd executor(s_core, r);
+                executor.execute();
+                executor.getResults(result);
+            }
         } else {
-            RegExExecutorFwd executor(s_core, r);
+            RegExExecutorBlackBox executor(s_core, r);
             executor.execute();
             executor.getResults(result);
         }
@@ -203,6 +210,7 @@ private:
     std::string exp;
     std::vector<RegEx *> subexps;
     SuccinctCore *s_core;
+    bool opt;
 
     RRes r_results;
 };

@@ -23,7 +23,7 @@ using boost::shared_ptr;
 
 class QueryServiceHandler : virtual public QueryServiceIf {
 public:
-    QueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate) {
+    QueryServiceHandler(std::string filename, bool construct, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate, bool regex_opt = true) {
         this->fd = NULL;
         this->construct = construct;
         this->filename = filename;
@@ -34,6 +34,7 @@ public:
         input.close();
         this->sa_sampling_rate = sa_sampling_rate;
         this->isa_sampling_rate = isa_sampling_rate;
+        this->regex_opt = regex_opt;
     }
 
     int32_t init(int32_t id) {
@@ -68,7 +69,7 @@ public:
     
     void regex_search(std::set<int64_t> &_return, const std::string &query) {
         std::set<std::pair<size_t, size_t>> results;
-        fd->regex_search(results, query);
+        fd->regex_search(results, query, regex_opt);
         for(auto res: results) {
             _return.insert((int64_t)res.first);
         }
@@ -98,6 +99,7 @@ private:
     uint32_t num_keys;
     uint32_t sa_sampling_rate;
     uint32_t isa_sampling_rate;
+    bool regex_opt;
 };
 
 void print_usage(char *exec) {
@@ -119,7 +121,8 @@ int main(int argc, char **argv) {
 
     int c;
     uint32_t mode = 0, port = QUERY_SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32;
-    while((c = getopt(argc, argv, "m:p:s:i:")) != -1) {
+    bool regex_opt = false;
+    while((c = getopt(argc, argv, "m:p:s:i:o")) != -1) {
         switch(c) {
         case 'm':
             mode = atoi(optarg);
@@ -132,6 +135,9 @@ int main(int argc, char **argv) {
             break;
         case 'i':
             isa_sampling_rate = atoi(optarg);
+            break;
+        case 'o':
+            regex_opt = true;
             break;
         default:
             mode = 0;
@@ -148,7 +154,7 @@ int main(int argc, char **argv) {
     std::string filename = std::string(argv[optind]);
     bool construct = (mode == 0) ? true : false;
 
-    shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct, sa_sampling_rate, isa_sampling_rate));
+    shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(filename, construct, sa_sampling_rate, isa_sampling_rate, regex_opt));
     shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
     try {
