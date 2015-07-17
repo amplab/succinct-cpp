@@ -279,7 +279,7 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint32_t i = 0; i < queries.size(); i++) {
             for(uint32_t j = 0; j < 10; j++) {
-                fprintf(stderr, "Running iteration %u of query %u\n", i, j);
+                fprintf(stderr, "Running iteration %u of query %u\n", j, i);
                 std::vector<int64_t> res;
                 t0 = get_timestamp();
                 fd->regex_count(res, queries[i]);
@@ -290,6 +290,7 @@ public:
                     res_stream << r << "\t";
                 }
                 res_stream << tdiff << "\n";
+                res_stream.flush();
                 sum = (sum + res.size()) % MAXSUM;
             }
         }
@@ -309,13 +310,14 @@ public:
         fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
         for(uint32_t i = 0; i < queries.size(); i++) {
             for(uint32_t j = 0; j < 10; j++) {
-                fprintf(stderr, "Running iteration %u of query %u\n", i, j);
+                fprintf(stderr, "Running iteration %u of query %u\n", j, i);
                 std::set<int64_t> res;
                 t0 = get_timestamp();
                 fd->regex_search(res, queries[i]);
                 t1 = get_timestamp();
                 tdiff = t1 - t0;
                 res_stream << i << "\t" << j << "\t" << res.size() << "\t" << tdiff << "\n";
+                res_stream.flush();
                 sum = (sum + res.size()) % MAXSUM;
             }
         }
