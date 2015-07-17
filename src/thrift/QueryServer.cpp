@@ -103,12 +103,12 @@ private:
 };
 
 void print_usage(char *exec) {
-    fprintf(stderr, "Usage: %s [-m mode] [-p port] [-s sa_sampling_rate] [-i isa_sampling_rate] [file]\n", exec);
+    fprintf(stderr, "Usage: %s [-m mode] [-p port] [-s sa_sampling_rate] [-i isa_sampling_rate] [-o] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
 
-    if(argc < 2 || argc > 10) {
+    if(argc < 2 || argc > 11) {
         print_usage(argv[0]);
         return -1;
     }
