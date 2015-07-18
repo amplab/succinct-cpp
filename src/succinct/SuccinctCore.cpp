@@ -678,12 +678,27 @@ int SuccinctCore::compare(std::string p, int64_t i, size_t offset) {
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::fw_search(std::string mgram) {
-    std::pair<int64_t, int64_t> range(0, -1);
-    if(alphabet_map.find(mgram[0]) != alphabet_map.end()) {
-        range.first = (alphabet_map[mgram[0]]).first;
-        range.second = alphabet_map[alphabet[alphabet_map[mgram[0]].second + 1]].first - 1;
-    } else return range;
-    return continue_fw_search(mgram.substr(1), range, 10);
+
+    int64_t st = original_size() - 1;
+    int64_t sp = 0;
+    int64_t s;
+    while(sp < st) {
+        s = (sp + st) / 2;
+        if (compare(mgram, s) > 0) sp = s + 1;
+        else st = s;
+    }
+
+    int64_t et = original_size() - 1;
+    int64_t ep = sp - 1;
+    int64_t e;
+
+     while (ep < et) {
+        e = ceil((double)(ep + et) / 2);
+        if (compare(mgram, e) == 0) ep = e;
+        else et = e - 1;
+    }
+
+    return std::pair<int64_t, int64_t>(sp, ep);
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::continue_fw_search(std::string mgram,
