@@ -86,6 +86,8 @@ public:
     // Get index of value v in C
     uint64_t lookupC(uint64_t val);
 
+    char charAt(uint64_t i);
+
     // Serialize succinct data structures
     virtual size_t serialize();
 

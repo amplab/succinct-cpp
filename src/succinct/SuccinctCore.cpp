@@ -348,6 +348,10 @@ uint64_t SuccinctCore::lookupC(uint64_t i) {
     return get_rank1(&Cinv_idx, i);
 }
 
+char SuccinctCore::charAt(uint64_t i) {
+  return alphabet[lookupC(lookupISA(i))];
+}
+
 size_t SuccinctCore::serialize() {
     size_t out_size = 0;
     typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
@@ -655,7 +659,7 @@ int SuccinctCore::compare(std::string p, int64_t i) {
 
 int SuccinctCore::compare(std::string p, int64_t i, size_t offset) {
 
-    long j = 0;
+    uint64_t j = 0;
 
     // Skip first offset chars
     while(offset) {

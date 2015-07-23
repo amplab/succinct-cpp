@@ -130,7 +130,7 @@ private:
 
         RegExResultIterator left_it, right_it;
         for (left_it = left.begin(), right_it = right.begin(); left_it != left.end() && right_it != right.end(); left_it++) {
-            while (right_it != right.end() && right_it->first <= left_it->first) right_it++;
+            while (right_it != right.end() && right_it->first < left_it->first + left_it->second) right_it++;
             if (right_it == right.end()) break;
 
           if (right_it->first == left_it->first + left_it->second)
