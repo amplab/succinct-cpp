@@ -1,6 +1,6 @@
 CC := g++
 
-SRCDIR := ../test
+SRCDIR := src
 BUILDDIR := ../build/test
 LIBDIR := ../lib
 TARGETDIR := ../bin
