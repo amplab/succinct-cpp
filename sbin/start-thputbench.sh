@@ -12,7 +12,7 @@ if [ -f "$SUCCINCT_HOSTS" ]; then
   HOSTLIST=`cat "$SUCCINCT_HOSTS"`
 fi
 
-. "$SUCCINCT_PREFIX/bin/load-succinct-env.sh"
+. "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
 if [ "$SUCCINCT_RES_PATH" = "" ]; then
 	SUCCINCT_RES_PATH="$SUCCINCT_HOME/res"

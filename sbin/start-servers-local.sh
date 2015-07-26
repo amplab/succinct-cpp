@@ -10,9 +10,9 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
-. "$SUCCINCT_PREFIX/bin/load-succinct-env.sh"
+. "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$SUCCINCT_HOME/bin"
+bin="$THRIFT_BIN_DIR"
 bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
