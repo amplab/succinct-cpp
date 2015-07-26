@@ -1,5 +1,4 @@
-Succinct
-========
+# Succinct
 
 C++ Implementation of Succinct (http://succinct.cs.berkeley.edu).
 
@@ -8,3 +7,23 @@ representation of data. With basic primitives of random acces, search
 and fast counts of arbitrary substrings on unstructured data (flat files),
 Succinct can provide a rich set of queries on semi-structured or structured
 data without requiring any secondary indexes.
+
+# Requirements
+
+* C++11 support
+* CMake build system
+* Thrift for its `thrift`, `adaptive`, `bench` and `test` modules.
+
+# Building
+
+To build Succinct, run:
+
+```
+./build.sh
+```
+
+To clean-up build files, run:
+
+```
+./cleanup.sh
+```
