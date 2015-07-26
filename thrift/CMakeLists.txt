@@ -24,27 +24,27 @@ set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 
-set(GENERAL_SOURCES ${SOURCES_DIR}/succinct_constants.cpp
-    ${SOURCES_DIR}/succinct_types.cpp)
+set(GENERAL_SOURCES ${SOURCES_DIR}/succinct_constants.cc
+    ${SOURCES_DIR}/succinct_types.cc)
 
 set(SERVER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/QueryServer.cpp)
+    ${SOURCES_DIR}/QueryService.cc
+    ${SOURCES_DIR}/query_server.cc)
 
 set(HANDLER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/SuccinctServer.cpp)
+    ${SOURCES_DIR}/QueryService.cc
+    ${SOURCES_DIR}/SuccinctService.cc
+    ${SOURCES_DIR}/succinct_server.cc)
 
 set(MASTER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/MasterService.cpp
-    ${SOURCES_DIR}/SuccinctMaster.cpp)
+    ${SOURCES_DIR}/SuccinctService.cc
+    ${SOURCES_DIR}/MasterService.cc
+    ${SOURCES_DIR}/succinct_master.cc)
 
 set(CLIENT_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/MasterService.cpp)
+    ${SOURCES_DIR}/QueryService.cc
+    ${SOURCES_DIR}/SuccinctService.cc
+    ${SOURCES_DIR}/MasterService.cc)
 
 include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
 

@@ -31,4 +31,4 @@ add_subdirectory(external/gtest-1.7.0)
 add_subdirectory(test)
 
 enable_testing()
-add_test(CoreTest ${TESTS_PATH}/core_tests ${PROJECT_SOURCE_DIR}/test/data)
+add_test(CoreTest ${TESTS_PATH}/core_test ${PROJECT_SOURCE_DIR}/test/data)

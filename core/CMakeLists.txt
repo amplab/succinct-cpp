@@ -19,7 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 set(INCLUDE include)
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp) #TODO: Switch all source files to .cc
+file(GLOB_RECURSE SOURCE_FILES src/*.cc)
 include_directories(${INCLUDE})
 add_library(succinct STATIC ${SOURCE_FILES})
 set_target_properties(succinct PROPERTIES LINKER_LANGUAGE CXX)
