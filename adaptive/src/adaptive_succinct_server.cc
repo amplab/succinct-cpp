@@ -17,7 +17,7 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "../../core/include/layered_succinct_shard.h"
-#include "dynamic_load_balancer.hpp"
+#include "../include/dynamic_load_balancer.h"
 #include "AdaptiveSuccinctService.h"
 #include "adaptive_constants.h"
 #include "AdaptiveQueryService.h"

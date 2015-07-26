@@ -9,10 +9,6 @@
 #include "succinct_core.h"
 
 class SuccinctFile : public SuccinctCore {
- private:
-  std::string input_filename;
-  std::string succinct_filename;
-
  public:
   SuccinctFile(std::string filename, SuccinctMode s_mode =
                    SuccinctMode::CONSTRUCT_IN_MEMORY);
@@ -52,6 +48,9 @@ class SuccinctFile : public SuccinctCore {
   std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);
 
   uint64_t compute_context_value(const char *str, uint64_t pos);
+
+  std::string input_filename;
+  std::string succinct_filename;
 
 };
 

@@ -13,7 +13,6 @@ enum RegExType {
 
 class RegEx {
  public:
-
   RegEx(RegExType re_type) {
     this->re_type = re_type;
   }
@@ -27,10 +26,6 @@ class RegEx {
 };
 
 class RegExUnion : public RegEx {
- private:
-  RegEx *first;
-  RegEx *second;
-
  public:
   RegExUnion(RegEx *first, RegEx *second)
       : RegEx(RegExType::Union) {
@@ -45,13 +40,13 @@ class RegExUnion : public RegEx {
   RegEx *getSecond() {
     return second;
   }
-};
 
-class RegExConcat : public RegEx {
  private:
   RegEx *first;
   RegEx *second;
+};
 
+class RegExConcat : public RegEx {
  public:
   RegExConcat(RegEx *first, RegEx *second)
       : RegEx(RegExType::Concat) {
@@ -66,6 +61,10 @@ class RegExConcat : public RegEx {
   RegEx *getRight() {
     return second;
   }
+
+ private:
+  RegEx *first;
+  RegEx *second;
 };
 
 enum RegExRepeatType {
@@ -75,12 +74,6 @@ enum RegExRepeatType {
 };
 
 class RegExRepeat : public RegEx {
- private:
-  RegEx *internal;
-  RegExRepeatType r_type;
-  int min;
-  int max;
-
  public:
   RegExRepeat(RegEx *internal, RegExRepeatType r_type, int min = -1, int max =
                   -1)
@@ -106,6 +99,12 @@ class RegExRepeat : public RegEx {
   int getMax() {
     return max;
   }
+
+ private:
+  RegEx *internal;
+  RegExRepeatType r_type;
+  int min;
+  int max;
 };
 
 enum RegExPrimitiveType {
@@ -115,10 +114,6 @@ enum RegExPrimitiveType {
 };
 
 class RegExPrimitive : public RegEx {
- private:
-  std::string primitive;
-  RegExPrimitiveType p_type;
-
  public:
   RegExPrimitive(std::string primitive, RegExPrimitiveType p_type =
                      RegExPrimitiveType::Mgram)
@@ -146,6 +141,10 @@ class RegExPrimitive : public RegEx {
   RegExPrimitiveType getPrimitiveType() {
     return p_type;
   }
+
+ private:
+  std::string primitive;
+  RegExPrimitiveType p_type;
 };
 
 class RegExBlank : public RegEx {

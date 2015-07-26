@@ -6,10 +6,6 @@
 #include <cstring>
 
 class SuccinctAllocator {
-
- private:
-  bool s_use_hugepages;
-
  public:
   /*
    * Constructor
@@ -57,6 +53,9 @@ class SuccinctAllocator {
    *
    */
   void *s_memset(void* ptr, int value, size_t num);
+
+ private:
+  bool s_use_hugepages;
 
 };
 #endif

@@ -12,10 +12,10 @@
 #include <unistd.h>
 #include <functional>
 
+#include "../../adaptive/include/adaptive_succinct_client.h"
 #include "../../adaptive/include/response_queue.h"
 #include "../../core/include/layered_succinct_shard.h"
 #include "adaptive_management_client.h"
-#include "adaptive_succinct_client.hpp"
 #include "benchmark.h"
 #include "zipf_generator.h"
 

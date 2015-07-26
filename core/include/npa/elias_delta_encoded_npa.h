@@ -23,8 +23,7 @@ class EliasDeltaEncodedNPA : public DeltaEncodedNPA {
                        SuccinctAllocator &s_allocator);
 
   // Virtual destructor
-  ~EliasDeltaEncodedNPA() {
-  }
+  ~EliasDeltaEncodedNPA();
 
  private:
   uint32_t elias_delta_encoding_size(uint64_t n);

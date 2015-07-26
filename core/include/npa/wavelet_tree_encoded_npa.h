@@ -14,16 +14,6 @@ class WaveletTreeEncodedNPA : public NPA {
     struct _wletnode *lt, *rt;
   } WaveletNode;
 
- protected:
-  // Create wavelet tree
-  void create_wavelettree(WaveletNode **w, uint64_t s, uint64_t e,
-                          std::vector<uint64_t> &v, std::vector<uint64_t> &v_c);
-
-  // Lookup wavelet tree
-  uint64_t lookup_wavelettree(WaveletNode *tree, uint64_t c_pos,
-                              uint64_t sl_pos, uint64_t s, uint64_t e);
-
- public:
   // Constructor
   WaveletTreeEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                         uint32_t context_len, uint32_t sampling_rate,
@@ -55,6 +45,15 @@ class WaveletTreeEncodedNPA : public NPA {
   virtual size_t memorymap(std::string filename);
 
   virtual size_t storage_size();
+
+ protected:
+  // Create wavelet tree
+  void create_wavelettree(WaveletNode **w, uint64_t s, uint64_t e,
+                          std::vector<uint64_t> &v, std::vector<uint64_t> &v_c);
+
+  // Lookup wavelet tree
+  uint64_t lookup_wavelettree(WaveletNode *tree, uint64_t c_pos,
+                              uint64_t sl_pos, uint64_t s, uint64_t e);
 
  private:
   SuccinctBase *s_base;

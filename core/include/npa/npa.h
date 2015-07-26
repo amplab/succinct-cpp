@@ -13,15 +13,6 @@ class NPA {
 
   typedef SuccinctBase::BitMap bitmap_t;
 
- protected:
-  NPAEncodingScheme npa_scheme;
-  uint64_t npa_size;
-  uint64_t sigma_size;
-  uint32_t context_len;
-  uint32_t sampling_rate;
-
-  SuccinctAllocator s_allocator;
-
  public:
   // Constructor
   NPA(uint64_t npa_size, uint64_t sigma_size, uint32_t context_len,
@@ -134,6 +125,14 @@ class NPA {
 
     return val;
   }
+
+  // Protected data structures
+  NPAEncodingScheme npa_scheme;
+  uint64_t npa_size;
+  uint64_t sigma_size;
+  uint32_t context_len;
+  uint32_t sampling_rate;
+  SuccinctAllocator s_allocator;
 
  public:
   // Public data structures

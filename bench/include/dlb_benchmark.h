@@ -13,7 +13,8 @@
 #include <unistd.h>
 #include <atomic>
 #include <functional>
-#include "dynamic_load_balancer.hpp"
+
+#include "../../adaptive/include/dynamic_load_balancer.h"
 #include "benchmark.h"
 #include "zipf_generator.h"
 

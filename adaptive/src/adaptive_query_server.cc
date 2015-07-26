@@ -9,7 +9,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "../../core/include/layered_succinct_shard.h"
+#include "layered_succinct_shard.h"
 #include "AdaptiveQueryService.h"
 #include "adaptive_constants.h"
 #include "ports.h"

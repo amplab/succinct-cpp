@@ -4,9 +4,6 @@
 #include "succinct_shard.h"
 
 class LayeredSuccinctShard : public SuccinctShard {
- private:
-  bool opportunistic;
-
  public:
   LayeredSuccinctShard(uint32_t id, std::string datafile, SuccinctMode s_mode =
                            SuccinctMode::CONSTRUCT_IN_MEMORY,
@@ -31,6 +28,9 @@ class LayeredSuccinctShard : public SuccinctShard {
   void access(std::string& result, int64_t key, int32_t offset, int32_t len);
 
   uint64_t num_sampled_values();
+
+ private:
+  bool opportunistic;
 };
 
 #endif

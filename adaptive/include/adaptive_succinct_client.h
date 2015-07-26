@@ -65,14 +65,6 @@ class AdaptiveSuccinctClient {
   }
 
  private:
-  AdaptiveSuccinctServiceClient *request_client;
-  AdaptiveSuccinctServiceClient *response_client;
-  boost::shared_ptr<TTransport> request_transport;
-  boost::shared_ptr<TTransport> response_transport;
-  std::string handler;
-  int32_t client_id;
-  ResponseQueue<int32_t> replica_ids;
-
   AdaptiveSuccinctServiceClient *get_client(
       std::string host, int port, boost::shared_ptr<TTransport> &c_transport) {
     boost::shared_ptr<TSocket> socket(new TSocket(host, port));
@@ -84,6 +76,14 @@ class AdaptiveSuccinctClient {
     c_transport = transport;
     return client;
   }
+
+  AdaptiveSuccinctServiceClient *request_client;
+  AdaptiveSuccinctServiceClient *response_client;
+  boost::shared_ptr<TTransport> request_transport;
+  boost::shared_ptr<TTransport> response_transport;
+  std::string handler;
+  int32_t client_id;
+  ResponseQueue<int32_t> replica_ids;
 
 };
 

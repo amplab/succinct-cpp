@@ -12,17 +12,6 @@
 #define PREFIX_SUM(i)   (prefixsum[i] & 0xFFFF)
 
 class EliasGammaEncodedNPA : public DeltaEncodedNPA {
- private:
-  // Pre-computed prefix sums for elias gamma encoded NPA
-  uint32_t prefixsum[65536];
-
- protected:
-  // Create elias-gamma delta encoded vector
-  virtual void createDEV(DeltaEncodedVector *dv, std::vector<uint64_t> &data);
-
-  // Lookup elias-gamma delta encoded vector at index i
-  virtual uint64_t lookupDEV(DeltaEncodedVector *dv, uint64_t i);
-
  public:
   EliasGammaEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                        uint32_t context_len, uint32_t sampling_rate,
@@ -43,6 +32,13 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
    virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
    bool flag);
    */
+
+ protected:
+  // Create elias-gamma delta encoded vector
+  virtual void createDEV(DeltaEncodedVector *dv, std::vector<uint64_t> &data);
+
+  // Lookup elias-gamma delta encoded vector at index i
+  virtual uint64_t lookupDEV(DeltaEncodedVector *dv, uint64_t i);
 
  private:
   // Accesses data from a 64 bit integer represented as a bit map
@@ -65,6 +61,9 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
 
   // Compute the prefix sum of elias-gamma encoded delta values
   uint64_t elias_gamma_prefix_sum(bitmap_t *B, uint64_t offset, uint64_t i);
+
+  // Pre-computed prefix sums for elias gamma encoded NPA
+  uint32_t prefixsum[65536];
 
 };
 

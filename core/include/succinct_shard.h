@@ -21,13 +21,6 @@
 #include "succinct_core.h"
 
 class SuccinctShard : public SuccinctCore {
- protected:
-  std::vector<int64_t> keys;
-  std::vector<int64_t> value_offsets;
-  BitMap *invalid_offsets;
-
-  uint32_t id;
-
  public:
   static const int64_t MAX_KEYS = 1L << 32;
 
@@ -89,6 +82,12 @@ class SuccinctShard : public SuccinctCore {
   std::pair<int64_t, int64_t> get_range(const char *str, uint64_t len);
 
   uint64_t compute_context_value(const char *str, uint64_t pos);
+
+  std::vector<int64_t> keys;
+  std::vector<int64_t> value_offsets;
+  BitMap *invalid_offsets;
+
+  uint32_t id;
 
 };
 

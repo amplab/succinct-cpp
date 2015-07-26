@@ -27,10 +27,6 @@ class ParseException : public std::exception {
 };
 
 class RegExParser {
- private:
-  char *exp;
-  RegEx *blank;
-
  public:
   RegExParser(char *exp) {
     this->exp = exp;
@@ -207,6 +203,9 @@ class RegExParser {
     }
     return RegExPrimitiveType::Mgram;
   }
+
+  char *exp;
+  RegEx *blank;
 };
 
 #endif

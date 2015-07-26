@@ -4,27 +4,34 @@
 #include "sampling_scheme.h"
 
 class SampledArray {
-private:
-    SamplingScheme scheme;
+ public:
+  SampledArray(SamplingScheme scheme) {
+    this->scheme = scheme;
+  }
+  virtual ~SampledArray() {
+  }
 
-public:
-    SampledArray(SamplingScheme scheme) { this->scheme = scheme; }
-    virtual ~SampledArray() {}
+  virtual uint64_t operator[](uint64_t i) = 0;
+  virtual uint64_t at(uint64_t i) {
+    return operator[](i);
+  }
 
-    virtual uint64_t operator[](uint64_t i) = 0;
-    virtual uint64_t at(uint64_t i) { return operator[](i); }
+  virtual size_t serialize(std::ostream& out) = 0;
+  virtual size_t deserialize(std::istream& in) = 0;
+  virtual size_t memorymap(std::string filename) = 0;
 
-    virtual size_t serialize(std::ostream& out) = 0;
-    virtual size_t deserialize(std::istream& in) = 0;
-    virtual size_t memorymap(std::string filename) = 0;
+  SamplingScheme get_sampling_scheme() {
+    return scheme;
+  }
 
-    SamplingScheme get_sampling_scheme() { return scheme; }
+  virtual uint32_t get_sampling_rate() = 0;
 
-    virtual uint32_t get_sampling_rate() = 0;
+  virtual bool is_sampled(uint64_t i) = 0;
 
-    virtual bool is_sampled(uint64_t i) = 0;
+  virtual size_t storage_size() = 0;
 
-    virtual size_t storage_size() = 0;
+ private:
+  SamplingScheme scheme;
 };
 
 #endif /* SAMPLED_ARRAY_HPP */

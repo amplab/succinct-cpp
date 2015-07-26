@@ -6,9 +6,6 @@
 #include <assert.h>
 
 class LoadBalancer {
- private:
-  std::vector<double> cum_dist;
-
  public:
   LoadBalancer(std::vector<double> distribution) {
     std::sort(distribution.begin(), distribution.end());
@@ -34,6 +31,10 @@ class LoadBalancer {
   uint32_t num_replicas() {
     return cum_dist.size();
   }
+
+ private:
+  std::vector<double> cum_dist;
+
 };
 
 #endif /* LOAD_BALANCER_HPP */

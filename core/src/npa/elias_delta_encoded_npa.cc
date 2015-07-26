@@ -20,6 +20,9 @@ EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint32_t context_len,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
 }
 
+EliasDeltaEncodedNPA::~EliasDeltaEncodedNPA() {
+}
+
 uint32_t EliasDeltaEncodedNPA::elias_delta_encoding_size(uint64_t n) {
   uint32_t N = lower_log_2(n);
   uint32_t NN = lower_log_2(N + 1);

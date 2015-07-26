@@ -28,12 +28,6 @@ using namespace ::apache::thrift::server;
 using boost::shared_ptr;
 
 class SuccinctServiceHandler : virtual public SuccinctServiceIf {
- private:
-  std::ifstream::pos_type filesize(std::string filename) {
-    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-    return in.tellg();
-  }
-
  public:
   SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
                          uint32_t num_shards, std::string qserver_exec,
@@ -325,7 +319,7 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     // Create connections to all Succinct Clients
     for (int i = 0; i < hostnames.size(); i++) {
       fprintf(stderr, "Connecting to %s:%d...\n", hostnames[i].c_str(),
-              QUERY_HANDLER_PORT);
+      QUERY_HANDLER_PORT);
       try {
         if (i == local_host_id) {
           fprintf(stderr, "Self setup:\n");

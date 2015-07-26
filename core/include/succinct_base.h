@@ -32,9 +32,6 @@
 #define L3BLKSIZE   two32
 
 class SuccinctBase {
- private:
-  void init_tables();
-
  public:
 
   SuccinctBase();
@@ -165,6 +162,9 @@ class SuccinctBase {
 
  protected:
   SuccinctAllocator s_allocator;
+
+ private:
+  void init_tables();
 
 };
 

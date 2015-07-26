@@ -10,15 +10,6 @@
 #include "succinct_core.h"
 
 class RegExExecutor {
- protected:
-  typedef std::pair<size_t, size_t> OffsetLength;
-  typedef std::set<OffsetLength> RegExResult;
-  typedef RegExResult::iterator RegExResultIterator;
-
-  SuccinctCore *s_core;
-  RegEx *re;
-  std::set<OffsetLength> final_res;
-
  public:
   RegExExecutor(SuccinctCore *s_core, RegEx *re) {
     this->s_core = s_core;
@@ -33,11 +24,19 @@ class RegExExecutor {
   virtual void getResults(RegExResult &result) {
     result = final_res;
   }
+
+ protected:
+  typedef std::pair<size_t, size_t> OffsetLength;
+  typedef std::set<OffsetLength> RegExResult;
+  typedef RegExResult::iterator RegExResultIterator;
+
+  SuccinctCore *s_core;
+  RegEx *re;
+  std::set<OffsetLength> final_res;
+
 };
 
 class RegExExecutorBlackBox : public RegExExecutor {
- private:
-
  public:
   RegExExecutorBlackBox(SuccinctCore *s_core, RegEx *re)
       : RegExExecutor(s_core, re) {
@@ -223,28 +222,6 @@ class RegExExecutorBlackBox : public RegExExecutor {
 };
 
 class RegExExecutorSuccinct : public RegExExecutor {
- protected:
-  typedef std::pair<int64_t, int64_t> Range;
-  typedef struct ResultEntry {
-    ResultEntry(Range _range, size_t _length) {
-      range = _range;
-      length = _length;
-    }
-    Range range;
-    size_t length;
-  } ResultEntry;
-  struct ResultEntryComparator {
-    bool operator()(const ResultEntry &lhs, const ResultEntry &rhs) {
-      if (lhs.range == rhs.range)
-        return lhs.length < rhs.length;
-      return lhs.range < rhs.range;
-    }
-  } comp;
-  typedef std::set<ResultEntry, ResultEntryComparator> ResultSet;
-  typedef ResultSet::iterator ResultIterator;
-
-  ResultSet regex_res;
-
  public:
   RegExExecutorSuccinct(SuccinctCore *s_core, RegEx *re)
       : RegExExecutor(s_core, re) {
@@ -286,6 +263,25 @@ class RegExExecutorSuccinct : public RegExExecutor {
   }
 
  protected:
+  typedef std::pair<int64_t, int64_t> Range;
+  typedef struct ResultEntry {
+    ResultEntry(Range _range, size_t _length) {
+      range = _range;
+      length = _length;
+    }
+    Range range;
+    size_t length;
+  } ResultEntry;
+  struct ResultEntryComparator {
+    bool operator()(const ResultEntry &lhs, const ResultEntry &rhs) {
+      if (lhs.range == rhs.range)
+        return lhs.length < rhs.length;
+      return lhs.range < rhs.range;
+    }
+  } comp;
+  typedef std::set<ResultEntry, ResultEntryComparator> ResultSet;
+  typedef ResultSet::iterator ResultIterator;
+
   virtual void compute(ResultSet &results, RegEx *r) = 0;
 
   bool isEmpty(Range range) {
@@ -303,6 +299,8 @@ class RegExExecutorSuccinct : public RegExExecutor {
     }
     return results.empty();
   }
+
+  ResultSet regex_res;
 };
 
 #endif

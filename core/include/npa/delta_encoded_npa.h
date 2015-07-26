@@ -1,7 +1,7 @@
 #ifndef DELTA_ENCODED_NPA_H
 #define DELTA_ENCODED_NPA_H
 
-#include "../utils/succinct_utils.h"
+#include "utils/succinct_utils.h"
 #include "npa.h"
 
 class DeltaEncodedNPA : public NPA {
@@ -14,8 +14,6 @@ class DeltaEncodedNPA : public NPA {
     uint8_t sample_bits;
     uint8_t delta_offset_bits;
   } DeltaEncodedVector;
-
-  DeltaEncodedVector *del_npa;
 
   virtual size_t serialize_delta_encoded_vector(DeltaEncodedVector *dv,
                                                 std::ostream& out) {
@@ -485,6 +483,7 @@ class DeltaEncodedNPA : public NPA {
     return data - data_beg;
   }
 
+  DeltaEncodedVector *del_npa;
 };
 
 #endif

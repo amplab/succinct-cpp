@@ -1,13 +1,9 @@
 #ifndef REGEX_PLANNER_H
 #define REGEX_PLANNER_H
 
-#include "../../succinct_core.h"
+#include "succinct_core.h"
 
 class RegExPlanner {
- protected:
-  SuccinctCore *s_core;
-  RegEx *re;
-
  public:
   RegExPlanner(SuccinctCore *s_file, RegEx *re) {
     this->s_core = s_file;
@@ -19,6 +15,10 @@ class RegExPlanner {
   }
 
   virtual RegEx* plan() = 0;
+
+ protected:
+  SuccinctCore *s_core;
+  RegEx *re;
 };
 
 class NaiveRegExPlanner : public RegExPlanner {

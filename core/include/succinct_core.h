@@ -31,27 +31,10 @@ typedef enum {
 } SuccinctMode;
 
 class SuccinctCore : public SuccinctBase {
- private:
-  typedef std::map<char, std::pair<uint64_t, uint32_t>> alphabet_map_t;
- protected:
-
-  /* Metadata */
-  std::string filename;               // Name of input file
-  std::string succinct_path;          // Name of succinct path
-  uint64_t input_size;                // Size of input
-
-  /* Primary data structures */
-  SampledArray *SA;                   // Suffix Array
-  SampledArray *ISA;                  // Inverse Suffix Array
-  NPA *npa;                           // Next Pointer Array
-  std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
-
-  /* Auxiliary data structures */
-  char *alphabet;
-  alphabet_map_t alphabet_map;
-  uint32_t alphabet_size;             // Size of the input alphabet
-
  public:
+  typedef std::map<char, std::pair<uint64_t, uint32_t>> AlphabetMap;
+  typedef std::pair<int64_t, int64_t> Range;
+
   /* Constructors */
   SuccinctCore(const char *filename, SuccinctMode s_mode =
                    SuccinctMode::CONSTRUCT_IN_MEMORY,
@@ -115,13 +98,29 @@ class SuccinctCore : public SuccinctBase {
   inline int compare(std::string mgram, int64_t pos);
   inline int compare(std::string mgram, int64_t pos, size_t offset);
 
-  std::pair<int64_t, int64_t> bw_search(std::string mgram);
-  std::pair<int64_t, int64_t> continue_bw_search(
-      std::string mgram, std::pair<int64_t, int64_t> range);
+  Range bw_search(std::string mgram);
+  Range continue_bw_search(std::string mgram, Range range);
 
-  std::pair<int64_t, int64_t> fw_search(std::string mgram);
-  std::pair<int64_t, int64_t> continue_fw_search(
-      std::string mgram, std::pair<int64_t, int64_t> range, size_t len);
+  Range fw_search(std::string mgram);
+  Range continue_fw_search(std::string mgram, Range range, size_t len);
+
+ protected:
+
+  /* Metadata */
+  std::string filename;               // Name of input file
+  std::string succinct_path;          // Name of succinct path
+  uint64_t input_size;                // Size of input
+
+  /* Primary data structures */
+  SampledArray *SA;                   // Suffix Array
+  SampledArray *ISA;                  // Inverse Suffix Array
+  NPA *npa;                           // Next Pointer Array
+  std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
+
+  /* Auxiliary data structures */
+  char *alphabet;
+  AlphabetMap alphabet_map;
+  uint32_t alphabet_size;             // Size of the input alphabet
 
  private:
   /* Construct functions */
