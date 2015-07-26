@@ -20,7 +20,8 @@
 
 class LayeredSampledArray : public SampledArray {
  public:
-
+  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::Dictionary dictionary_t;
   typedef struct {
     uint32_t layer_id;
     uint64_t layer_idx;
@@ -274,9 +275,6 @@ class LayeredSampledArray : public SampledArray {
   }
 
  protected:
-  typedef SuccinctBase::BitMap bitmap_t;
-  typedef SuccinctBase::Dictionary dictionary_t;
-
   uint32_t num_layers;                // Number of layers (Do not serialize)
   std::atomic<uint64_t> LAYER_MAP;  // Bitmap indicating which layers are stored
   std::map<uint32_t, uint64_t> count;  // Count of each layer in the sampling_ranges (Do not serialize)
