@@ -5,7 +5,7 @@
  *
  */
 SuccinctAllocator::SuccinctAllocator(bool s_use_hugepages) {
-    this->s_use_hugepages = s_use_hugepages;
+  this->s_use_hugepages = s_use_hugepages;
 }
 
 /*
@@ -13,8 +13,8 @@ SuccinctAllocator::SuccinctAllocator(bool s_use_hugepages) {
  *
  */
 bool SuccinctAllocator::use_hugepages() {
-    s_use_hugepages = false;
-    return s_use_hugepages;
+  s_use_hugepages = false;
+  return s_use_hugepages;
 }
 
 /*
@@ -23,10 +23,10 @@ bool SuccinctAllocator::use_hugepages() {
  *
  */
 void* SuccinctAllocator::s_malloc(size_t size) {
-    if(s_use_hugepages) {
-        return 0;
-    }
-    return malloc(size);
+  if (s_use_hugepages) {
+    return 0;
+  }
+  return malloc(size);
 }
 
 /*
@@ -35,10 +35,10 @@ void* SuccinctAllocator::s_malloc(size_t size) {
  *
  */
 void* SuccinctAllocator::s_calloc(size_t num, size_t size) {
-    if(s_use_hugepages) {
-        return 0;
-    }
-    return calloc(num, size);
+  if (s_use_hugepages) {
+    return 0;
+  }
+  return calloc(num, size);
 }
 
 /*
@@ -46,10 +46,10 @@ void* SuccinctAllocator::s_calloc(size_t num, size_t size) {
  *
  */
 void* SuccinctAllocator::s_realloc(void* ptr, size_t size) {
-    if(s_use_hugepages) {
-        return 0;
-    }
-    return realloc(ptr, size);
+  if (s_use_hugepages) {
+    return 0;
+  }
+  return realloc(ptr, size);
 }
 
 /*
@@ -59,10 +59,10 @@ void* SuccinctAllocator::s_realloc(void* ptr, size_t size) {
  *
  */
 void SuccinctAllocator::s_free(void* ptr) {
-    if(s_use_hugepages) {
-        return;
-    }
-    free(ptr);
+  if (s_use_hugepages) {
+    return;
+  }
+  free(ptr);
 }
 
 /*
@@ -71,8 +71,8 @@ void SuccinctAllocator::s_free(void* ptr) {
  *
  */
 void *SuccinctAllocator::s_memset(void *ptr, int value, size_t num) {
-    if(s_use_hugepages) {
-        return 0;
-    }
-    return memset(ptr, value, num);
+  if (s_use_hugepages) {
+    return 0;
+  }
+  return memset(ptr, value, num);
 }

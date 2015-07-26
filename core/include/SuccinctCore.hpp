@@ -24,125 +24,122 @@
 #include "utils/divsufsortxx_utility.hpp"
 
 typedef enum {
-    CONSTRUCT_IN_MEMORY = 0,
-    CONSTRUCT_MEMORY_MAPPED = 1,
-    LOAD_IN_MEMORY = 2,
-    LOAD_MEMORY_MAPPED = 3
+  CONSTRUCT_IN_MEMORY = 0,
+  CONSTRUCT_MEMORY_MAPPED = 1,
+  LOAD_IN_MEMORY = 2,
+  LOAD_MEMORY_MAPPED = 3
 } SuccinctMode;
 
 class SuccinctCore : public SuccinctBase {
-private:
-    typedef std::map<char, std::pair<uint64_t, uint32_t>> alphabet_map_t;
-protected:
+ private:
+  typedef std::map<char, std::pair<uint64_t, uint32_t>> alphabet_map_t;
+ protected:
 
-    /* Metadata */
-    std::string filename;               // Name of input file
-    std::string succinct_path;          // Name of succinct path
-    uint64_t input_size;                // Size of input
+  /* Metadata */
+  std::string filename;               // Name of input file
+  std::string succinct_path;          // Name of succinct path
+  uint64_t input_size;                // Size of input
 
+  /* Primary data structures */
+  SampledArray *SA;                   // Suffix Array
+  SampledArray *ISA;                  // Inverse Suffix Array
+  NPA *npa;                           // Next Pointer Array
+  std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
 
-    /* Primary data structures */
-    SampledArray *SA;                   // Suffix Array
-    SampledArray *ISA;                  // Inverse Suffix Array
-    NPA *npa;                           // Next Pointer Array
-    std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
+  /* Auxiliary data structures */
+  char *alphabet;
+  alphabet_map_t alphabet_map;
+  uint32_t alphabet_size;             // Size of the input alphabet
 
-    /* Auxiliary data structures */
-    char *alphabet;
-    alphabet_map_t alphabet_map;
-    uint32_t alphabet_size;             // Size of the input alphabet
+ public:
+  /* Constructors */
+  SuccinctCore(const char *filename, SuccinctMode s_mode =
+                   SuccinctMode::CONSTRUCT_IN_MEMORY,
+               uint32_t sa_sampling_rate = 32, uint32_t isa_sampling_rate = 32,
+               uint32_t npa_sampling_rate = 128, uint32_t context_len = 3,
+               SamplingScheme sa_sampling_scheme =
+                   SamplingScheme::FLAT_SAMPLE_BY_INDEX,
+               SamplingScheme isa_sampling_scheme =
+                   SamplingScheme::FLAT_SAMPLE_BY_INDEX,
+               NPA::NPAEncodingScheme npa_encoding_scheme =
+                   NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
+               uint32_t sampling_range = 1024);
 
-public:
-    /* Constructors */
-    SuccinctCore(const char *filename,
-                SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY,
-                uint32_t sa_sampling_rate = 32,
-                uint32_t isa_sampling_rate = 32,
-                uint32_t npa_sampling_rate = 128,
-                uint32_t context_len = 3,
-                SamplingScheme sa_sampling_scheme =
-                        SamplingScheme::FLAT_SAMPLE_BY_INDEX,
-                SamplingScheme isa_sampling_scheme =
-                        SamplingScheme::FLAT_SAMPLE_BY_INDEX,
-                NPA::NPAEncodingScheme npa_encoding_scheme =
-                        NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
-                uint32_t sampling_range = 1024);
+  virtual ~SuccinctCore() {
+  }
 
-    virtual ~SuccinctCore() {}
+  /* Lookup functions for each of the core data structures */
+  // Lookup NPA at index i
+  uint64_t lookupNPA(uint64_t i);
 
-    /* Lookup functions for each of the core data structures */
-    // Lookup NPA at index i
-    uint64_t lookupNPA(uint64_t i);
+  // Lookup SA at index i
+  uint64_t lookupSA(uint64_t i);
 
-    // Lookup SA at index i
-    uint64_t lookupSA(uint64_t i);
+  // Lookup ISA at index i
+  uint64_t lookupISA(uint64_t i);
 
-    // Lookup ISA at index i
-    uint64_t lookupISA(uint64_t i);
+  // Get index of value v in C
+  uint64_t lookupC(uint64_t val);
 
-    // Get index of value v in C
-    uint64_t lookupC(uint64_t val);
+  char charAt(uint64_t i);
 
-    char charAt(uint64_t i);
+  // Serialize succinct data structures
+  virtual size_t serialize();
 
-    // Serialize succinct data structures
-    virtual size_t serialize();
+  // Deserialize succinct data structures
+  virtual size_t deserialize();
 
-    // Deserialize succinct data structures
-    virtual size_t deserialize();
+  // Memory map succinct data structures
+  virtual size_t memorymap();
 
-    // Memory map succinct data structures
-    virtual size_t memorymap();
+  // Get size of original input
+  uint64_t original_size();
 
-    // Get size of original input
-    uint64_t original_size();
+  // Get succinct core size
+  virtual size_t storage_size();
 
-    // Get succinct core size
-    virtual size_t storage_size();
+  virtual void print_storage_breakdown();
 
-    virtual void print_storage_breakdown();
+  // Get SA
+  SampledArray *getSA();
 
-    // Get SA
-    SampledArray *getSA();
+  // Get ISA
+  SampledArray *getISA();
 
-    // Get ISA
-    SampledArray *getISA();
+  // Get NPA
+  NPA *getNPA();
 
-    // Get NPA
-    NPA *getNPA();
+  // Get alphabet
+  char *getAlphabet();
 
-    // Get alphabet
-    char *getAlphabet();
+  inline int compare(std::string mgram, int64_t pos);
+  inline int compare(std::string mgram, int64_t pos, size_t offset);
 
-    inline int compare(std::string mgram, int64_t pos);
-    inline int compare(std::string mgram, int64_t pos, size_t offset);
+  std::pair<int64_t, int64_t> bw_search(std::string mgram);
+  std::pair<int64_t, int64_t> continue_bw_search(
+      std::string mgram, std::pair<int64_t, int64_t> range);
 
-    std::pair<int64_t, int64_t> bw_search(std::string mgram);
-    std::pair<int64_t, int64_t> continue_bw_search(std::string mgram, std::pair<int64_t, int64_t> range);
+  std::pair<int64_t, int64_t> fw_search(std::string mgram);
+  std::pair<int64_t, int64_t> continue_fw_search(
+      std::string mgram, std::pair<int64_t, int64_t> range, size_t len);
 
-    std::pair<int64_t, int64_t> fw_search(std::string mgram);
-    std::pair<int64_t, int64_t> continue_fw_search(std::string mgram, std::pair<int64_t, int64_t> range, size_t len);
+ private:
+  /* Construct functions */
+  // Create all auxiliary data structures
+  void construct_aux(BitMap *compactSA, const char *data);
 
-private:
-    /* Construct functions */
-    // Create all auxiliary data structures
-    void construct_aux(BitMap *compactSA, const char *data);
+  // Parent construct function
+  void construct(const char* filename, uint32_t sa_sampling_rate,
+                 uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
+                 uint32_t context_len, SamplingScheme sa_sampling_scheme,
+                 SamplingScheme isa_sampling_scheme,
+                 NPA::NPAEncodingScheme npa_encoding_scheme,
+                 uint32_t sampling_range);
 
-    // Parent construct function
-    void construct(const char* filename,
-            uint32_t sa_sampling_rate,
-            uint32_t isa_sampling_rate,
-            uint32_t npa_sampling_rate,
-            uint32_t context_len,
-            SamplingScheme sa_sampling_scheme,
-            SamplingScheme isa_sampling_scheme,
-            NPA::NPAEncodingScheme npa_encoding_scheme,
-            uint32_t sampling_range);
+  // Helper functions
+  bool compare_data_bitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
+  uint64_t get_context_val(BitMap *T, uint32_t i);
 
-    // Helper functions
-    bool compare_data_bitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
-    uint64_t get_context_val(BitMap *T, uint32_t i);
-
-    bool is_sampled(uint64_t i);
+  bool is_sampled(uint64_t i);
 };
 #endif
