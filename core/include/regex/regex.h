@@ -230,7 +230,7 @@ class SRegEx {
         }
       }
       result = last_results;
-#elif
+#else
       RegExParser p((char *) sub_expression.c_str());
       RegEx *r = p.parse();
       if (is_suffixed(r) || !is_prefixed(r)) {
