@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(succinct-thrift CXX)
+project(succinct-adaptive CXX)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -24,36 +24,36 @@ set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 
-set(GENERAL_SOURCES ${SOURCES_DIR}/succinct_constants.cpp
-    ${SOURCES_DIR}/succinct_types.cpp)
+set(GENERAL_SOURCES ${SOURCES_DIR}/adaptive_constants.cpp
+    ${SOURCES_DIR}/adaptive_types.cpp)
 
 set(SERVER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/QueryServer.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cpp
+    ${SOURCES_DIR}/AdaptiveQueryServer.cpp)
 
 set(HANDLER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/SuccinctServer.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cpp
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
+    ${SOURCES_DIR}/AdaptiveSuccinctServer.cpp)
 
 set(MASTER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/MasterService.cpp
-    ${SOURCES_DIR}/SuccinctMaster.cpp)
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
+    ${SOURCES_DIR}/AdaptiveMasterService.cpp
+    ${SOURCES_DIR}/AdaptiveSuccinctMaster.cpp)
 
 set(CLIENT_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cpp
-    ${SOURCES_DIR}/SuccinctService.cpp
-    ${SOURCES_DIR}/MasterService.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cpp
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
+    ${SOURCES_DIR}/AdaptiveMasterService.cpp)
 
 include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
 
-add_executable(sserver ${SERVER_SOURCES})
-add_executable(shandler ${HANDLER_SOURCES})
-add_executable(smaster ${MASTER_SOURCES})
-add_library(sclient ${CLIENT_SOURCES})
+add_executable(aserver ${SERVER_SOURCES})
+add_executable(ahandler ${HANDLER_SOURCES})
+add_executable(amaster ${MASTER_SOURCES})
+add_library(aclient ${CLIENT_SOURCES})
 
-target_link_libraries(sserver succinct)
-target_link_libraries(sserver ${THRIFT_LIBRARIES})
-target_link_libraries(shandler ${THRIFT_LIBRARIES})
-target_link_libraries(smaster ${THRIFT_LIBRARIES})
+target_link_libraries(aserver succinct)
+target_link_libraries(aserver ${THRIFT_LIBRARIES})
+target_link_libraries(ahandler ${THRIFT_LIBRARIES})
+target_link_libraries(amaster ${THRIFT_LIBRARIES})

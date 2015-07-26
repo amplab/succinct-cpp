@@ -107,7 +107,7 @@ public:
                 return 1;
             }
         }
-        fprintf(stderr, "Currently have %d connections.\n", qhandlers[client_id].size());
+        fprintf(stderr, "Currently have %zu connections.\n", qhandlers[client_id].size());
         return 0;
     }
 
@@ -129,7 +129,7 @@ public:
                 return 1;
             }
         }
-        fprintf(stderr, "Currently have %d local server connections.\n", qservers[client_id].size());
+        fprintf(stderr, "Currently have %zu local server connections.\n", qservers[client_id].size());
         return 0;
     }
 

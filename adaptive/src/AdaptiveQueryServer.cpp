@@ -110,7 +110,7 @@ public:
         time_t start_time = get_timestamp();
         int64_t del_size = fd->remove_layer(layer_id);
         time_t end_time = get_timestamp();
-        fprintf(stderr, "Completed remove layer request for layer_id = %d, time = %lu\n",
+        fprintf(stderr, "Completed remove layer request for layer_id = %d, time = %llu\n",
                 layer_id, end_time - start_time);
         return del_size;
     }
@@ -120,7 +120,7 @@ public:
         time_t start_time = get_timestamp();
         int64_t add_size = fd->reconstruct_layer(layer_id);
         time_t end_time = get_timestamp();
-        fprintf(stderr, "Completed create layer request for layer_id = %d, time = %lu\n",
+        fprintf(stderr, "Completed create layer request for layer_id = %d, time = %llu\n",
                 layer_id, end_time - start_time);
         return add_size;
     }
