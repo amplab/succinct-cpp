@@ -18,7 +18,7 @@ class FileBenchmark : public Benchmark {
   void benchmark_idx_fn(uint64_t (SuccinctFile::*f)(uint64_t),
                         std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     uint64_t res;
     count_t sum;
     std::ofstream res_stream(res_path);
@@ -63,7 +63,7 @@ class FileBenchmark : public Benchmark {
 
   void benchmark_count(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     uint64_t res;
     count_t sum;
     std::ofstream res_stream(res_path);
@@ -88,7 +88,7 @@ class FileBenchmark : public Benchmark {
 
   void benchmark_search(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -113,7 +113,7 @@ class FileBenchmark : public Benchmark {
 
   void benchmark_extract(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     uint64_t extract_length = 64;
     std::ofstream res_stream(res_path);

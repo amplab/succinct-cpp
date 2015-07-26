@@ -18,7 +18,7 @@ class ShardBenchmark : public Benchmark {
 
   void benchmark_idx_fn(uint64_t (SuccinctShard::*f)(uint64_t),
                         std::string res_path) {
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     uint64_t res;
     count_t sum;
     std::ofstream res_stream(res_path);
@@ -63,7 +63,7 @@ class ShardBenchmark : public Benchmark {
 
   void benchmark_get_latency(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -110,7 +110,7 @@ class ShardBenchmark : public Benchmark {
 
   void benchmark_access_latency(std::string res_path, int32_t len) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -157,7 +157,7 @@ class ShardBenchmark : public Benchmark {
 
   void benchmark_count_latency(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -203,7 +203,7 @@ class ShardBenchmark : public Benchmark {
   }
 
   void benchmark_search_latency(std::string res_path) {
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -254,7 +254,7 @@ class ShardBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;
@@ -262,18 +262,18 @@ class ShardBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       // Cooldown phase
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;
@@ -297,7 +297,7 @@ class ShardBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         shard->access(value, randoms[i % randoms.size()], 0, len);
         i++;
@@ -305,18 +305,18 @@ class ShardBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         shard->access(value, randoms[i % randoms.size()], 0, len);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       // Cooldown phase
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         shard->access(value, randoms[i % randoms.size()], 0, len);
         i++;
@@ -341,7 +341,7 @@ class ShardBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         value = shard->count(queries[i % randoms.size()]);
         i++;
@@ -349,18 +349,18 @@ class ShardBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         value = shard->count(queries[i % randoms.size()]);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       // Cooldown phase
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         value = shard->count(queries[i % randoms.size()]);
         i++;
@@ -385,7 +385,7 @@ class ShardBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;
@@ -393,18 +393,18 @@ class ShardBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       // Cooldown phase
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         shard->get(value, randoms[i % randoms.size()]);
         i++;

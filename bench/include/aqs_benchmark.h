@@ -50,12 +50,12 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_requests <= queries.size()) {
       query_client->send_search(queries[num_requests % queries.size()]);
       num_requests++;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
@@ -68,7 +68,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
 
     std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_responses <= queries.size()) {
       try {
         std::set<int64_t> res;
@@ -78,7 +78,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();
@@ -91,12 +91,12 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_requests <= randoms.size()) {
       query_client->send_access(randoms[num_requests % randoms.size()], 0, len);
       num_requests++;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
@@ -110,7 +110,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     std::string res;
     std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_responses <= randoms.size()) {
       try {
         query_client->recv_access(res);
@@ -119,7 +119,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();
@@ -133,7 +133,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_requests <= randoms.size()) {
       // Prepare batch
       std::vector<int64_t> keys;
@@ -143,7 +143,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
       query_client->send_batch_access(keys, 0, len);
       num_requests += batch_size;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
@@ -157,7 +157,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
 
     std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_responses <= randoms.size()) {
       try {
         std::vector<std::string> res;
@@ -169,7 +169,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();

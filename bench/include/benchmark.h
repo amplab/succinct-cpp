@@ -51,6 +51,9 @@ static __inline__ unsigned long long rdtsc(void) {
 
 class Benchmark {
  public:
+  typedef unsigned long long int timestamp_t;
+  typedef unsigned long count_t;
+
   Benchmark() {
   }
 
@@ -59,17 +62,14 @@ class Benchmark {
     queries.clear();
   }
 
-  static time_t get_timestamp() {
+  static timestamp_t get_timestamp() {
     struct timeval now;
     gettimeofday(&now, NULL);
 
-    return now.tv_usec + (time_t) now.tv_sec * 1000000;
+    return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
   }
 
  protected:
-  typedef unsigned long long int time_t;
-  typedef unsigned long count_t;
-
   const count_t WARMUP_N = 100000;
   const count_t MEASURE_N = 100000;
   const count_t COOLDOWN_N = 5000;

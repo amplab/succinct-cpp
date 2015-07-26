@@ -55,23 +55,23 @@ class DynamicAdaptBenchmark : public Benchmark {
                             std::vector<uint32_t> durations,
                             std::string reqfile) {
 
-    time_t cur_time;
-    const time_t MEASURE_INTERVAL = 5000000;
-    time_t measure_start_time = get_timestamp();
+    timestamp_t cur_time;
+    const timestamp_t MEASURE_INTERVAL = 5000000;
+    timestamp_t measure_start_time = get_timestamp();
     std::ofstream req_stream(reqfile);
     uint64_t num_requests = 0;
 
     uint64_t i = 0;
     for (uint32_t stage = 0; stage < request_rates.size(); stage++) {
-      time_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
-      time_t sleep_time = 1000 * 1000 / request_rates[stage];
+      timestamp_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
+      timestamp_t sleep_time = 1000 * 1000 / request_rates[stage];
       fprintf(
           stderr,
           "Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
           stage, request_rates[stage], duration);
-      time_t start_time = get_timestamp();
+      timestamp_t start_time = get_timestamp();
       while ((cur_time = get_timestamp()) - start_time <= duration) {
-        time_t t0 = get_timestamp();
+        timestamp_t t0 = get_timestamp();
         query_client->get_request(randoms[i % randoms.size()]);
         i++;
         num_requests++;
@@ -79,7 +79,7 @@ class DynamicAdaptBenchmark : public Benchmark {
           ;
         if ((cur_time = get_timestamp()) - measure_start_time
             >= MEASURE_INTERVAL) {
-          time_t diff = cur_time - measure_start_time;
+          timestamp_t diff = cur_time - measure_start_time;
           double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
           req_stream << cur_time << "\t" << rr << "\n";
           req_stream.flush();
@@ -90,7 +90,7 @@ class DynamicAdaptBenchmark : public Benchmark {
       fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage,
               (cur_time - start_time));
     }
-    time_t diff = cur_time - measure_start_time;
+    timestamp_t diff = cur_time - measure_start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << cur_time << "\t" << rr << "\n";
     req_stream.flush();
@@ -106,12 +106,12 @@ class DynamicAdaptBenchmark : public Benchmark {
   static void measure_responses(AdaptiveSuccinctClient *query_client,
                                 std::string resfile) {
     std::string res;
-    const time_t MEASURE_INTERVAL = 5000000;
+    const timestamp_t MEASURE_INTERVAL = 5000000;
     uint32_t num_responses = 0;
-    time_t cur_time;
+    timestamp_t cur_time;
     std::ofstream res_stream(resfile);
     uint64_t i = 0;
-    time_t measure_start_time = get_timestamp();
+    timestamp_t measure_start_time = get_timestamp();
     while (true) {
       try {
         query_client->get_response(res);
@@ -119,7 +119,7 @@ class DynamicAdaptBenchmark : public Benchmark {
         i++;
         if ((cur_time = get_timestamp()) - measure_start_time
             >= MEASURE_INTERVAL) {
-          time_t diff = cur_time - measure_start_time;
+          timestamp_t diff = cur_time - measure_start_time;
           double thput = ((double) num_responses * 1000 * 1000)
               / ((double) diff);
           res_stream << cur_time << "\t" << thput << "\n";
@@ -131,7 +131,7 @@ class DynamicAdaptBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = cur_time - measure_start_time;
+    timestamp_t diff = cur_time - measure_start_time;
     double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << cur_time << "\t" << thput << "\n";
     res_stream.close();
@@ -145,11 +145,11 @@ class DynamicAdaptBenchmark : public Benchmark {
 
     std::ofstream add_stream(addfile);
     std::ofstream del_stream(delfile);
-    time_t cur_time;
+    timestamp_t cur_time;
 
     for (uint32_t stage = 0; stage < layers_to_create.size(); stage++) {
-      time_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
-      time_t start_time = get_timestamp();
+      timestamp_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
+      timestamp_t start_time = get_timestamp();
       for (size_t i = 0; i < layers_to_create[stage].size(); i++) {
         try {
           size_t add_size = mgmt_client->reconstruct_layer(

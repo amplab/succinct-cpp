@@ -43,7 +43,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
   void benchmark_get_latency(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -90,7 +90,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
   void benchmark_access_latency(std::string res_path, int32_t len) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -137,7 +137,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
   void benchmark_count_latency(std::string res_path) {
 
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -183,7 +183,7 @@ class SuccinctServerBenchmark : public Benchmark {
   }
 
   void benchmark_search_latency(std::string res_path) {
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -228,7 +228,7 @@ class SuccinctServerBenchmark : public Benchmark {
   }
 
   void benchmark_regex_count_latency(std::string res_path) {
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -259,7 +259,7 @@ class SuccinctServerBenchmark : public Benchmark {
   }
 
   void benchmark_regex_search_latency(std::string res_path) {
-    time_t t0, t1, tdiff;
+    timestamp_t t0, t1, tdiff;
     count_t sum;
     std::ofstream res_stream(res_path);
 
@@ -297,7 +297,7 @@ class SuccinctServerBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         client.get(value, data.randoms[i % data.randoms.size()]);
         i++;
@@ -305,17 +305,17 @@ class SuccinctServerBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         client.get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         client.get(value, data.randoms[i % data.randoms.size()]);
         i++;
@@ -396,7 +396,7 @@ class SuccinctServerBenchmark : public Benchmark {
     try {
       // Warmup phase
       long i = 0;
-      time_t warmup_start = get_timestamp();
+      timestamp_t warmup_start = get_timestamp();
       while (get_timestamp() - warmup_start < WARMUP_T) {
         client.access(value, data.randoms[i % data.randoms.size()], 0,
                       data.len);
@@ -405,18 +405,18 @@ class SuccinctServerBenchmark : public Benchmark {
 
       // Measure phase
       i = 0;
-      time_t start = get_timestamp();
+      timestamp_t start = get_timestamp();
       while (get_timestamp() - start < MEASURE_T) {
         client.access(value, data.randoms[i % data.randoms.size()], 0,
                       data.len);
         i++;
       }
-      time_t end = get_timestamp();
+      timestamp_t end = get_timestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
       i = 0;
-      time_t cooldown_start = get_timestamp();
+      timestamp_t cooldown_start = get_timestamp();
       while (get_timestamp() - cooldown_start < COOLDOWN_T) {
         client.access(value, data.randoms[i % data.randoms.size()], 0,
                       data.len);

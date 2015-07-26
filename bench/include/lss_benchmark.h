@@ -47,12 +47,12 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_ops <= randoms.size()) {
       fd->access(res, randoms[num_ops % randoms.size()], 0, len);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << thput << "\n";
     res_stream.close();
@@ -67,12 +67,12 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_ops <= randoms.size()) {
       fd->get(res, randoms[num_ops % randoms.size()]);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << thput << "\n";
     res_stream.close();
@@ -87,12 +87,12 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
+    timestamp_t start_time = get_timestamp();
     while (num_ops <= randoms.size()) {
       fd->search(res, queries[num_ops % queries.size()]);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
+    timestamp_t diff = get_timestamp() - start_time;
     double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << thput << "\n";
     res_stream.close();
