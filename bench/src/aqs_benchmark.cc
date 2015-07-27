@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "aqs_benchmark.h"
+#include "../include/adaptive_query_server_benchmark.h"
 
 void print_usage(char *exec) {
   fprintf(stderr,
@@ -54,8 +54,8 @@ int main(int argc, char **argv) {
   AdaptiveQueryServerBenchmark aqs_bench(reqpath, respath, skew, len,
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
-    aqs_bench.delete_layer(i);
-    aqs_bench.measure_throughput_search();
+    aqs_bench.DeleteLayer(i);
+    aqs_bench.MeasureSearchThroughput();
     // aqs_bench.measure_throughput();
     // aqs_bench.measure_throughput_batch(batch_size);
   }

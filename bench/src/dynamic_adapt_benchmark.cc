@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   std::string delpath = outpath + "/adashard-bench.del";
   DynamicAdaptBenchmark q_bench(configfile, reqpath, respath, addpath, delpath,
                                 skew, num_partitions);
-  q_bench.run_benchmark();
+  q_bench.RunBenchmark();
 
   return 0;
 }

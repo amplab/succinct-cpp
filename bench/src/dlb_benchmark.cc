@@ -1,8 +1,7 @@
-#include "dlb_benchmark.h"
-
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include "../include/dynamic_load_balancer_benchmark.h"
 
 
 void print_usage(char *exec) {

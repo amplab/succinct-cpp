@@ -14,7 +14,7 @@
 #include <atomic>
 #include <functional>
 
-#include "../../adaptive/include/dynamic_load_balancer.h"
+#include "dynamic_load_balancer.h"
 #include "benchmark.h"
 #include "zipf_generator.h"
 
@@ -65,7 +65,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
       read_queries(queryfile);
     }
 
-    if (randoms.empty() && queries.empty()) {
+    if (randoms_.empty() && queries_.empty()) {
       fprintf(stderr, "Warning: No search or get queries loaded.\n");
     }
 
@@ -78,34 +78,34 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
       std::vector<uint32_t> durations, std::atomic<uint64_t> *queue_length,
       std::atomic<double> *avg_qlens, std::string reqfile) {
 
-    time_t cur_time;
-    const time_t MEASURE_INTERVAL = 40000000;
+    TimeStamp cur_time;
+    const TimeStamp MEASURE_INTERVAL = 40000000;
     std::ofstream req_stream(reqfile);
     uint64_t num_requests = 0;
     DynamicLoadBalancer lb(query_client.size());
 
-    time_t measure_start_time = get_timestamp();
+    TimeStamp measure_start_time = GetTimestamp();
     for (uint32_t stage = 0; stage < request_rates.size(); stage++) {
-      time_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
-      time_t sleep_time = (1000 * 1000) / request_rates[stage];
+      TimeStamp duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
+      TimeStamp sleep_time = (1000 * 1000) / request_rates[stage];
       uint64_t i = 0;
       fprintf(
           stderr,
           "Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
           stage, request_rates[stage], duration);
-      time_t stage_start_time = get_timestamp();
-      while ((cur_time = get_timestamp()) - stage_start_time <= duration) {
-        time_t t0 = get_timestamp();
+      TimeStamp stage_start_time = GetTimestamp();
+      while ((cur_time = GetTimestamp()) - stage_start_time <= duration) {
+        TimeStamp t0 = GetTimestamp();
         uint32_t replica_id = lb.get_replica(queue_length);
         query_client[replica_id]->send_search(queries[i % queries.size()]);
         i++;
         num_requests++;
         queue_length[replica_id]++;
-        while (get_timestamp() - t0 < sleep_time)
+        while (GetTimestamp() - t0 < sleep_time)
           ;
-        if ((cur_time = get_timestamp()) - measure_start_time
+        if ((cur_time = GetTimestamp()) - measure_start_time
             >= MEASURE_INTERVAL) {
-          time_t diff = cur_time - measure_start_time;
+          TimeStamp diff = cur_time - measure_start_time;
           double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
           req_stream << cur_time << "\t" << rr;
           std::vector<double> allocations;
@@ -116,13 +116,13 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
           req_stream << "\n";
           req_stream.flush();
           num_requests = 0;
-          measure_start_time = get_timestamp();
+          measure_start_time = GetTimestamp();
         }
       }
       fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage,
               (cur_time - stage_start_time));
     }
-    time_t diff = cur_time - measure_start_time;
+    TimeStamp diff = cur_time - measure_start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << cur_time << "\t" << rr;
     std::vector<double> allocations;
@@ -139,33 +139,33 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
                                 std::atomic<uint64_t> &queue_length,
                                 std::string resfile) {
 
-    const time_t MEASURE_INTERVAL = 40000000;
+    const TimeStamp MEASURE_INTERVAL = 40000000;
     uint32_t num_responses = 0;
-    time_t cur_time;
+    TimeStamp cur_time;
     std::ofstream res_stream(resfile);
-    time_t measure_start_time = get_timestamp();
+    TimeStamp measure_start_time = GetTimestamp();
     while (true) {
       try {
         std::set<int64_t> res;
         query_client->recv_search(res);
         num_responses++;
         queue_length--;
-        if ((cur_time = get_timestamp()) - measure_start_time
+        if ((cur_time = GetTimestamp()) - measure_start_time
             >= MEASURE_INTERVAL) {
-          time_t diff = cur_time - measure_start_time;
+          TimeStamp diff = cur_time - measure_start_time;
           double thput = ((double) num_responses * 1000 * 1000)
               / ((double) diff);
           res_stream << cur_time << "\t" << thput << "\t"
               << stats_client->storage_size() << "\t" << queue_length << "\n";
           res_stream.flush();
           num_responses = 0;
-          measure_start_time = get_timestamp();
+          measure_start_time = GetTimestamp();
         }
       } catch (std::exception& e) {
         break;
       }
     }
-    time_t diff = cur_time - measure_start_time;
+    TimeStamp diff = cur_time - measure_start_time;
     double thput = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << cur_time << "\t" << thput << "\t"
                << stats_client->storage_size() << "\t"
@@ -182,18 +182,18 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
 
     std::ofstream add_stream(addfile);
     std::ofstream del_stream(delfile);
-    time_t cur_time;
+    TimeStamp cur_time;
 
     for (uint32_t stage = 0; stage < layers_to_create.size(); stage++) {
-      time_t duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
-      time_t start_time = get_timestamp();
+      TimeStamp duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
+      TimeStamp start_time = GetTimestamp();
       if (stage == 0 || is_active) {
         for (size_t i = 0; i < layers_to_create[stage].size(); i++) {
           try {
             size_t add_size = mgmt_client->reconstruct_layer(
                 layers_to_create[stage][i]);
             fprintf(stderr, "Created layer with size = %zu\n", add_size);
-            add_stream << get_timestamp() << "\t" << i << "\t" << add_size
+            add_stream << GetTimestamp() << "\t" << i << "\t" << add_size
                        << "\n";
             add_stream.flush();
           } catch (std::exception& e) {
@@ -207,7 +207,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
             size_t del_size = mgmt_client->remove_layer(
                 layers_to_delete[stage][i]);
             fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
-            del_stream << get_timestamp() << "\t" << i << "\t" << del_size
+            del_stream << GetTimestamp() << "\t" << i << "\t" << del_size
                        << "\n";
             del_stream.flush();
           } catch (std::exception& e) {
@@ -219,7 +219,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
       }
 
       // Sleep if there is still time left
-      if ((cur_time = get_timestamp()) - start_time < duration) {
+      if ((cur_time = GetTimestamp()) - start_time < duration) {
         fprintf(
             stderr,
             "Done with layer management for stage %u, took %llu us, sleeping for %llu us.\n",
@@ -242,7 +242,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
     sleep(delta);
     while (true) {
       fprintf(stderr, "[QM]");
-      q_stream << get_timestamp();
+      q_stream << GetTimestamp();
       for (uint32_t i = 0; i < num_replicas; i++) {
         avg_qlens[i] = queue_lengths[i] * alpha + (1.0 - alpha) * avg_qlens[i];
         double val = avg_qlens[i];
@@ -268,7 +268,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
         replicas.size(), qfile);
 
     std::thread req(&DynamicLoadBalancerBenchmark::send_requests, query_client,
-                    queries, request_rates, durations, queue_length, avg_qlens,
+                    queries_, request_rates, durations, queue_length, avg_qlens,
                     reqfile);
 
     std::thread *res = new std::thread[query_client.size()];
@@ -341,13 +341,13 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
   uint32_t num_active_replicas;
 
   void generate_randoms() {
-    count_t q_cnt = query_client[0]->get_num_keys();
+    uint64_t q_cnt = query_client[0]->get_num_keys();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
             skew, q_cnt);
     ZipfGenerator z(skew, q_cnt);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");
-    for (count_t i = 0; i < q_cnt; i++) {
-      randoms.push_back(z.next());
+    for (uint64_t i = 0; i < q_cnt; i++) {
+      randoms_.push_back(z.Next());
     }
     fprintf(stderr, "Generated keys.\n");
   }
@@ -366,7 +366,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
       int split_index = line.find_first_of('\t');
       bin = line.substr(0, split_index);
       query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries_.push_back(query);
     }
     inputfile.close();
   }

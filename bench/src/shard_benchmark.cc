@@ -187,27 +187,27 @@ int main(int argc, char **argv) {
 
   ShardBenchmark s_bench(fd, querypath);
   if (type == "latency-sa") {
-    s_bench.benchmark_idx_fn(&SuccinctShard::lookupSA, "latency_results_sa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupSA, "latency_results_sa");
   } else if (type == "latency-isa") {
-    s_bench.benchmark_idx_fn(&SuccinctShard::lookupISA, "latency_results_isa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupISA, "latency_results_isa");
   } else if (type == "latency-npa") {
-    s_bench.benchmark_idx_fn(&SuccinctShard::lookupNPA, "latency_results_npa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupNPA, "latency_results_npa");
   } else if (type == "latency-access") {
-    s_bench.benchmark_access_latency("latency_results_access", len);
+    s_bench.BenchmarkAccessLatency("latency_results_access", len);
   } else if (type == "latency-get") {
-    s_bench.benchmark_get_latency("latency_results_get");
+    s_bench.BenchmarkGetLatency("latency_results_get");
   } else if (type == "latency-count") {
-    s_bench.benchmark_count_latency("latency_results_count");
+    s_bench.BenchmarkCountLatency("latency_results_count");
   } else if (type == "latency-search") {
-    s_bench.benchmark_search_latency("latency_results_search");
+    s_bench.BenchmarkSearchLatency("latency_results_search");
   } else if (type == "throughput-access") {
-    s_bench.benchmark_access_throughput(len);
+    s_bench.BenchmarkAccessThroughput(len);
   } else if (type == "throughput-get") {
-    s_bench.benchmark_get_throughput();
+    s_bench.BenchmarkGetThroughput();
   } else if (type == "throughput-count") {
-    s_bench.benchmark_count_throughput();
+    s_bench.BenchmarkCountThrougput();
   } else if (type == "throughput-search") {
-    s_bench.benchmark_search_throughput();
+    s_bench.BenchmarkSearchThroughput();
   } else if (type == "reconstruct-sa") {
     if (scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX
         && scheme != SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {
@@ -216,14 +216,14 @@ int main(int argc, char **argv) {
     }
     LayeredSampledArray *SA = (LayeredSampledArray *) fd->getSA();
     for (uint32_t i = 0; i < created_layers.size(); i++) {
-      uint64_t start_time = Benchmark::get_timestamp();
+      uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
         ((LayeredSampledSA *) SA)->reconstruct_layer(created_layers.at(i));
       } else {
         ((OpportunisticLayeredSampledSA *) SA)->reconstruct_layer(
             created_layers.at(i));
       }
-      uint64_t end_time = Benchmark::get_timestamp();
+      uint64_t end_time = Benchmark::GetTimestamp();
       fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
               created_layers.at(i), end_time - start_time);
     }
@@ -235,14 +235,14 @@ int main(int argc, char **argv) {
     }
     LayeredSampledArray *ISA = (LayeredSampledArray *) fd->getISA();
     for (uint32_t i = 0; i < created_layers.size(); i++) {
-      uint64_t start_time = Benchmark::get_timestamp();
+      uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
         ((LayeredSampledISA *) ISA)->reconstruct_layer(created_layers.at(i));
       } else {
         ((OpportunisticLayeredSampledISA *) ISA)->reconstruct_layer(
             created_layers.at(i));
       }
-      uint64_t end_time = Benchmark::get_timestamp();
+      uint64_t end_time = Benchmark::GetTimestamp();
       fprintf(stderr, "Time to reconstruct layer %u = %llu\n",
               created_layers.at(i), end_time - start_time);
     }

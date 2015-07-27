@@ -5,7 +5,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "../../core/include/layered_succinct_shard.h"
+#include "layered_succinct_shard.h"
 #include "benchmark.h"
 #include "zipf_generator.h"
 
@@ -13,14 +13,15 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
  public:
   LayeredSuccinctShardBenchmark(std::string filename, bool construct,
                                 uint32_t isa_sampling_rate,
-                                uint32_t sa_sampling_rate, std::string resfile,
-                                double skew, std::string queryfile = "")
+                                uint32_t sa_sampling_rate,
+                                std::string results_file, double skew,
+                                std::string query_file = "")
       : Benchmark() {
 
-    this->resfile = resfile;
-    this->skew_keys = skew;
-    this->skew_lengths = 1.0;  // Pure uniform for now
-    this->fd = new LayeredSuccinctShard(
+    results_file_ = results_file;
+    key_skew_ = skew;
+    length_skew_ = 1.0;  // Pure uniform for now
+    layered_succinct_shard_ = new LayeredSuccinctShard(
         0,
         filename,
         construct ?
@@ -28,118 +29,119 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
         sa_sampling_rate, isa_sampling_rate);
     if (construct) {
       // Serialize and save to file
-      fd->serialize();
+      layered_succinct_shard_->serialize();
     }
 
-    generate_randoms();
-    generate_lengths();
+    GenerateRandoms();
+    GenerateLengths();
 
-    if (queryfile != "") {
-      read_queries(queryfile);
+    if (query_file != "") {
+      ReadQueries(query_file);
     }
   }
 
-  void measure_access_throughput(uint32_t len) {
+  void MeasureAccessThroughput(uint32_t fetch_length) {
     fprintf(stderr, "Starting access throughput measurement...");
-    size_t storage_size = fd->storage_size();
+    size_t storage_size = layered_succinct_shard_->storage_size();
     std::string res;
-    std::ofstream res_stream(resfile + ".access",
+    std::ofstream res_stream(results_file_ + ".access",
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
-    while (num_ops <= randoms.size()) {
-      fd->access(res, randoms[num_ops % randoms.size()], 0, len);
+    TimeStamp start_time = GetTimestamp();
+    while (num_ops <= randoms_.size()) {
+      layered_succinct_shard_->access(res, randoms_[num_ops % randoms_.size()],
+                                      0, fetch_length);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
-    double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
-    res_stream << storage_size << "\t" << thput << "\n";
+    TimeStamp diff = GetTimestamp() - start_time;
+    double throughput = ((double) num_ops * 1000 * 1000) / ((double) diff);
+    res_stream << storage_size << "\t" << throughput << "\n";
     res_stream.close();
     fprintf(stderr, "Done.\n");
   }
 
-  void measure_get_throughput() {
+  void MeasureGetThroughput() {
     fprintf(stderr, "Starting get throughput measurement...");
-    size_t storage_size = fd->storage_size();
+    size_t storage_size = layered_succinct_shard_->storage_size();
     std::string res;
-    std::ofstream res_stream(resfile + ".get",
+    std::ofstream res_stream(results_file_ + ".get",
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
-    while (num_ops <= randoms.size()) {
-      fd->get(res, randoms[num_ops % randoms.size()]);
+    TimeStamp start_time = GetTimestamp();
+    while (num_ops <= randoms_.size()) {
+      layered_succinct_shard_->get(res, randoms_[num_ops % randoms_.size()]);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << thput << "\n";
     res_stream.close();
     fprintf(stderr, "Done.\n");
   }
 
-  void measure_search_throughput() {
+  void MeasureSearchThroughput() {
     fprintf(stderr, "Starting search throughput measurement...");
-    size_t storage_size = fd->storage_size();
+    size_t storage_size = layered_succinct_shard_->storage_size();
     std::set<int64_t> res;
-    std::ofstream res_stream(resfile + ".search",
+    std::ofstream res_stream(results_file_ + ".search",
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
-    time_t start_time = get_timestamp();
-    while (num_ops <= randoms.size()) {
-      fd->search(res, queries[num_ops % queries.size()]);
+    TimeStamp start_time = GetTimestamp();
+    while (num_ops <= randoms_.size()) {
+      layered_succinct_shard_->search(res, queries_[num_ops % queries_.size()]);
       num_ops++;
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << thput << "\n";
     res_stream.close();
     fprintf(stderr, "Done.\n");
   }
 
-  void delete_layer(int32_t layer_id) {
+  void DeleteLayer(int32_t layer_id) {
     if (layer_id >= 0) {
       fprintf(stderr, "Deleting layer %d...\n", layer_id);
-      fd->remove_layer(layer_id);
+      layered_succinct_shard_->remove_layer(layer_id);
       fprintf(stderr, "Done.\n");
     }
   }
 
  private:
-  void generate_randoms() {
-    count_t q_cnt = fd->num_keys();
+  void GenerateRandoms() {
+    uint64_t q_cnt = layered_succinct_shard_->num_keys();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
-            skew_keys, q_cnt);
-    ZipfGenerator z(skew_keys, q_cnt);
+            key_skew_, q_cnt);
+    ZipfGenerator z(key_skew_, q_cnt);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");
-    for (count_t i = 0; i < 100000; i++) {
-      randoms.push_back(z.next());
+    for (uint64_t i = 0; i < 100000; i++) {
+      randoms_.push_back(z.Next());
     }
     fprintf(stderr, "Generated keys.\n");
   }
 
-  void generate_lengths() {
-    count_t q_cnt = fd->num_keys();
+  void GenerateLengths() {
+    uint64_t q_cnt = layered_succinct_shard_->num_keys();
     int32_t min_len = 100;
     int32_t max_len = 500;
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n",
-            skew_lengths, (max_len - min_len));
-    ZipfGenerator z(skew_lengths, max_len - min_len);
+            length_skew_, (max_len - min_len));
+    ZipfGenerator z(length_skew_, max_len - min_len);
     fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
 
-    for (count_t i = 0; i < 100000; i++) {
+    for (uint64_t i = 0; i < 100000; i++) {
       // Map zipf value to a length
-      int32_t len = z.next() + min_len;
+      int32_t len = z.Next() + min_len;
       assert(len >= min_len);
       assert(len <= max_len);
-      lengths.push_back(len);
+      lengths_.push_back(len);
     }
     fprintf(stderr, "Generated lengths.\n");
   }
 
-  void read_queries(std::string filename) {
+  void ReadQueries(std::string filename) {
     std::ifstream inputfile(filename);
     if (!inputfile.is_open()) {
       fprintf(stderr, "Error: Query file [%s] may be missing.\n",
@@ -153,16 +155,16 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
       int split_index = line.find_first_of('\t');
       bin = line.substr(0, split_index);
       query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries_.push_back(query);
     }
     inputfile.close();
   }
 
-  LayeredSuccinctShard *fd;
-  std::vector<int32_t> lengths;
-  std::string resfile;
-  double skew_keys;
-  double skew_lengths;
+  LayeredSuccinctShard *layered_succinct_shard_;
+  std::vector<int32_t> lengths_;
+  std::string results_file_;
+  double key_skew_;
+  double length_skew_;
 };
 
 #endif

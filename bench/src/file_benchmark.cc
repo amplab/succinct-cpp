@@ -49,15 +49,15 @@ int main(int argc, char **argv) {
 
     // Benchmark core and file functions
     FileBenchmark s_bench(&fd, querypath);
-    s_bench.benchmark_core();
-    s_bench.benchmark_file();
+    s_bench.BenchmarkCore();
+    s_bench.BenchmarkFile();
   } else if (mode == 1) {
     SuccinctFile fd(inputpath, SuccinctMode::LOAD_IN_MEMORY);
 
     // Benchmark core and file functions
     FileBenchmark s_bench(&fd, querypath);
-    s_bench.benchmark_core();
-    s_bench.benchmark_file();
+    s_bench.BenchmarkCore();
+    s_bench.BenchmarkFile();
   } else {
     // Only modes 0, 1 supported for now
     assert(0);

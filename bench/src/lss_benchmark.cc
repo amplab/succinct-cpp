@@ -1,8 +1,7 @@
-#include "../include/lss_benchmark.h"
-
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include "../include/layered_succinct_shard_benchmark.h"
 
 
 void print_usage(char *exec) {
@@ -71,8 +70,8 @@ int main(int argc, char **argv) {
                                          sa_sampling_rate, respath, skew,
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
-    ls_bench.delete_layer(i);
-    ls_bench.measure_get_throughput();
+    ls_bench.DeleteLayer(i);
+    ls_bench.MeasureGetThroughput();
     // ls_bench.measure_access_throughput(len);
   }
 

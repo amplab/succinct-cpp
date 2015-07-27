@@ -51,35 +51,34 @@ static __inline__ unsigned long long rdtsc(void) {
 
 class Benchmark {
  public:
+  typedef unsigned long long int TimeStamp;
+
   Benchmark() {
   }
 
   virtual ~Benchmark() {
-    randoms.clear();
-    queries.clear();
+    randoms_.clear();
+    queries_.clear();
   }
 
-  static time_t get_timestamp() {
+  static TimeStamp GetTimestamp() {
     struct timeval now;
     gettimeofday(&now, NULL);
 
-    return now.tv_usec + (time_t) now.tv_sec * 1000000;
+    return now.tv_usec + (TimeStamp) now.tv_sec * 1000000;
   }
 
  protected:
-  typedef unsigned long long int time_t;
-  typedef unsigned long count_t;
+  static const uint64_t kWarmupCount = 100000;
+  static const uint64_t kMeasureCount = 100000;
+  static const uint64_t kCooldownCount = 5000;
 
-  const count_t WARMUP_N = 100000;
-  const count_t MEASURE_N = 100000;
-  const count_t COOLDOWN_N = 5000;
+  static const uint64_t kWarmupTime = 120000000;
+  static const uint64_t kMeasureTime = 300000000;
+  static const uint64_t kCooldownTime = 5000000;
 
-  static const count_t WARMUP_T = 120000000;
-  static const count_t MEASURE_T = 300000000;
-  static const count_t COOLDOWN_T = 5000000;
-
-  std::vector<int64_t> randoms;
-  std::vector<std::string> queries;
+  std::vector<int64_t> randoms_;
+  std::vector<std::string> queries_;
 };
 
 #endif

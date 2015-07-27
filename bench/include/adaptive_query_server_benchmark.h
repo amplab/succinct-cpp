@@ -23,52 +23,55 @@ using namespace ::apache::thrift::transport;
 
 class AdaptiveQueryServerBenchmark : public Benchmark {
  public:
-  AdaptiveQueryServerBenchmark(std::string reqfile, std::string resfile,
-                               double skew, int32_t len, std::string queryfile =
-                                   "")
+  AdaptiveQueryServerBenchmark(std::string requests_file,
+                               std::string responses_file, double skew,
+                               int32_t fetch_length,
+                               std::string query_file = "")
       : Benchmark() {
 
-    this->reqfile = reqfile;
-    this->resfile = resfile;
-    this->skew_keys = skew;
-    this->skew_lengths = 1.0;  // Pure uniform for now
+    this->requests_file_ = requests_file;
+    this->responses_file_ = responses_file;
+    this->key_skew_ = skew;
+    this->fetch_length_skew_ = 1.0;  // Pure uniform for now
 
-    this->len = len;
+    this->fetch_length_ = fetch_length;
 
-    generate_randoms();
-    generate_lengths();
-    if (queryfile != "") {
-      read_queries(queryfile);
+    GenerateRandoms();
+    GenerateLengths();
+    if (query_file != "") {
+      ReadQueries(query_file);
     }
   }
 
-  static void search_send_requests(AdaptiveQueryServiceClient *query_client,
-                                   int64_t storage_size,
-                                   std::vector<std::string> queries,
-                                   std::string reqfile) {
+  static void SendSearchRequests(AdaptiveQueryServiceClient *query_client,
+                                 int64_t storage_size,
+                                 std::vector<std::string> queries,
+                                 std::string requests_file) {
 
-    std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream req_stream(requests_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_requests <= queries.size()) {
       query_client->send_search(queries[num_requests % queries.size()]);
       num_requests++;
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
   }
 
-  static void search_measure_responses(AdaptiveQueryServiceClient *query_client,
-                                       int64_t storage_size,
-                                       std::vector<std::string> queries,
-                                       std::string resfile) {
+  static void MeasureSearchResponses(AdaptiveQueryServiceClient *query_client,
+                                     int64_t storage_size,
+                                     std::vector<std::string> queries,
+                                     std::string responses_file) {
 
-    std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream res_stream(responses_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_responses <= queries.size()) {
       try {
         std::set<int64_t> res;
@@ -78,39 +81,44 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();
   }
 
-  static void send_requests(AdaptiveQueryServiceClient *query_client,
-                            int64_t storage_size, std::vector<int64_t> randoms,
-                            uint32_t len, std::string reqfile) {
+  static void SendAccessRequests(AdaptiveQueryServiceClient *query_client,
+                                 int64_t storage_size,
+                                 std::vector<int64_t> randoms,
+                                 uint32_t fetch_length,
+                                 std::string requests_file) {
 
-    std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream req_stream(requests_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_requests <= randoms.size()) {
-      query_client->send_access(randoms[num_requests % randoms.size()], 0, len);
+      query_client->send_access(randoms[num_requests % randoms.size()], 0,
+                                fetch_length);
       num_requests++;
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
   }
 
-  static void measure_responses(AdaptiveQueryServiceClient *query_client,
-                                int64_t storage_size,
-                                std::vector<int64_t> randoms,
-                                std::string resfile) {
+  static void MeasureAccessResponses(AdaptiveQueryServiceClient *query_client,
+                                     int64_t storage_size,
+                                     std::vector<int64_t> randoms,
+                                     std::string responses_file) {
 
     std::string res;
-    std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream res_stream(responses_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_responses <= randoms.size()) {
       try {
         query_client->recv_access(res);
@@ -119,45 +127,46 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();
   }
 
-  static void send_requests_batch(AdaptiveQueryServiceClient *query_client,
-                                  int64_t storage_size,
-                                  std::vector<int64_t> randoms, uint32_t len,
-                                  uint32_t batch_size, std::string reqfile) {
+  static void SendBatchedAccessRequests(
+      AdaptiveQueryServiceClient *query_client, int64_t storage_size,
+      std::vector<int64_t> randoms, uint32_t fetch_length, uint32_t batch_size,
+      std::string requests_file) {
 
-    std::ofstream req_stream(reqfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream req_stream(requests_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_requests = 0;
 
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_requests <= randoms.size()) {
       // Prepare batch
       std::vector<int64_t> keys;
       for (uint32_t i = 0; i < batch_size; i++) {
         keys.push_back(randoms[(num_requests + i) % randoms.size()]);
       }
-      query_client->send_batch_access(keys, 0, len);
+      query_client->send_batch_access(keys, 0, fetch_length);
       num_requests += batch_size;
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
     req_stream << storage_size << "\t" << rr << "\n";
     req_stream.close();
   }
 
-  static void measure_responses_batch(AdaptiveQueryServiceClient *query_client,
-                                      int64_t storage_size,
-                                      std::vector<int64_t> randoms,
-                                      uint32_t batch_size,
-                                      std::string resfile) {
+  static void MeasureBatchedAccessResponses(
+      AdaptiveQueryServiceClient *query_client, int64_t storage_size,
+      std::vector<int64_t> randoms, uint32_t batch_size,
+      std::string responses_file) {
 
-    std::ofstream res_stream(resfile, std::ofstream::out | std::ofstream::app);
+    std::ofstream res_stream(responses_file,
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
-    time_t start_time = get_timestamp();
+    TimeStamp start_time = GetTimestamp();
     while (num_responses <= randoms.size()) {
       try {
         std::vector<std::string> res;
@@ -169,15 +178,15 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
         break;
       }
     }
-    time_t diff = get_timestamp() - start_time;
+    TimeStamp diff = GetTimestamp() - start_time;
     double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
     res_stream << storage_size << "\t" << rr << "\n";
     res_stream.close();
   }
 
-  void delete_layer(int32_t layer_to_delete) {
+  void DeleteLayer(int32_t layer_to_delete) {
     boost::shared_ptr<TTransport> query_transport;
-    AdaptiveQueryServiceClient *query_client = get_client(query_transport);
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
 
     if (layer_to_delete != -1) {
       fprintf(stderr, "Removing layer %d\n", layer_to_delete);
@@ -189,20 +198,20 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     delete query_client;
   }
 
-  void measure_throughput_search() {
+  void MeasureSearchThroughput() {
 
     boost::shared_ptr<TTransport> query_transport;
-    AdaptiveQueryServiceClient *query_client = get_client(query_transport);
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
 
     int64_t storage_size = query_client->storage_size();
 
     fprintf(stderr, "Starting request thread...\n");
-    std::thread req(&AdaptiveQueryServerBenchmark::search_send_requests,
-                    query_client, storage_size, queries, reqfile);
+    std::thread req(&AdaptiveQueryServerBenchmark::SendSearchRequests,
+                    query_client, storage_size, queries_, requests_file_);
 
     fprintf(stderr, "Starting response thread...\n");
-    std::thread res(&AdaptiveQueryServerBenchmark::search_measure_responses,
-                    query_client, storage_size, queries, resfile);
+    std::thread res(&AdaptiveQueryServerBenchmark::MeasureSearchResponses,
+                    query_client, storage_size, queries_, responses_file_);
 
     if (req.joinable()) {
       req.join();
@@ -218,20 +227,21 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     delete query_client;
   }
 
-  void measure_throughput() {
+  void MeasureAccessThroughput() {
 
     boost::shared_ptr<TTransport> query_transport;
-    AdaptiveQueryServiceClient *query_client = get_client(query_transport);
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
 
     int64_t storage_size = query_client->storage_size();
 
     fprintf(stderr, "Starting request thread...\n");
-    std::thread req(&AdaptiveQueryServerBenchmark::send_requests, query_client,
-                    storage_size, randoms, len, reqfile);
+    std::thread req(&AdaptiveQueryServerBenchmark::SendAccessRequests,
+                    query_client, storage_size, randoms_, fetch_length_,
+                    requests_file_);
 
     fprintf(stderr, "Starting response thread...\n");
-    std::thread res(&AdaptiveQueryServerBenchmark::measure_responses,
-                    query_client, storage_size, randoms, resfile);
+    std::thread res(&AdaptiveQueryServerBenchmark::MeasureAccessResponses,
+                    query_client, storage_size, randoms_, responses_file_);
 
     if (req.joinable()) {
       req.join();
@@ -247,21 +257,23 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     delete query_client;
   }
 
-  void measure_throughput_batch(int32_t batch_size) {
+  void MeasureBatchedAccessThroughput(int32_t batch_size) {
     boost::shared_ptr<TTransport> query_transport;
-    AdaptiveQueryServiceClient *query_client = get_client(query_transport);
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
 
     int64_t storage_size = query_client->storage_size();
 
     fprintf(stderr, "Starting request thread...\n");
-    std::thread req(&AdaptiveQueryServerBenchmark::send_requests_batch,
-                    query_client, storage_size, randoms, len, batch_size,
-                    reqfile + ".batch." + std::to_string(batch_size));
+    std::thread req(&AdaptiveQueryServerBenchmark::SendBatchedAccessRequests,
+                    query_client, storage_size, randoms_, fetch_length_,
+                    batch_size,
+                    requests_file_ + ".batch." + std::to_string(batch_size));
 
     fprintf(stderr, "Starting response thread...\n");
-    std::thread res(&AdaptiveQueryServerBenchmark::measure_responses_batch,
-                    query_client, storage_size, randoms, batch_size,
-                    resfile + ".batch." + std::to_string(batch_size));
+    std::thread res(
+        &AdaptiveQueryServerBenchmark::MeasureBatchedAccessResponses,
+        query_client, storage_size, randoms_, batch_size,
+        responses_file_ + ".batch." + std::to_string(batch_size));
 
     if (req.joinable()) {
       req.join();
@@ -278,49 +290,41 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
   }
 
  private:
-  std::vector<int32_t> lengths;
-  std::string reqfile;
-  std::string resfile;
-  double skew_keys;
-  double skew_lengths;
-
-  int32_t len;
-
-  void generate_randoms() {
+  void GenerateRandoms() {
     boost::shared_ptr<TTransport> transport;
-    AdaptiveQueryServiceClient *client = get_client(transport);
-    count_t q_cnt = client->get_num_keys();
+    AdaptiveQueryServiceClient *client = GetClient(transport);
+    uint64_t q_cnt = client->get_num_keys();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
-            skew_keys, q_cnt);
-    ZipfGenerator z(skew_keys, q_cnt);
+            key_skew_, q_cnt);
+    ZipfGenerator z(key_skew_, q_cnt);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");
-    for (count_t i = 0; i < 100000; i++) {
-      randoms.push_back(z.next());
+    for (uint64_t i = 0; i < 100000; i++) {
+      randoms_.push_back(z.Next());
     }
     fprintf(stderr, "Generated keys.\n");
     transport->close();
     delete client;
   }
 
-  void generate_lengths() {
+  void GenerateLengths() {
     int32_t min_len = 10;
     int32_t max_len = 1000;
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n",
-            skew_lengths, (max_len - min_len));
-    ZipfGenerator z(skew_lengths, max_len - min_len);
+            fetch_length_skew_, (max_len - min_len));
+    ZipfGenerator z(fetch_length_skew_, max_len - min_len);
     fprintf(stderr, "Generated zipf distribution, generating lengths...\n");
 
-    for (count_t i = 0; i < 100000; i++) {
+    for (uint64_t i = 0; i < 100000; i++) {
       // Map zipf value to a length
-      int32_t len = z.next() + min_len;
+      int32_t len = z.Next() + min_len;
       assert(len >= min_len);
       assert(len <= max_len);
-      lengths.push_back(len);
+      lengths_.push_back(len);
     }
     fprintf(stderr, "Generated lengths.\n");
   }
 
-  void read_queries(std::string filename) {
+  void ReadQueries(std::string filename) {
     std::ifstream inputfile(filename);
     if (!inputfile.is_open()) {
       fprintf(stderr, "Error: Query file [%s] may be missing.\n",
@@ -334,13 +338,13 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
       int split_index = line.find_first_of('\t');
       bin = line.substr(0, split_index);
       query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries_.push_back(query);
     }
     inputfile.close();
   }
 
-  AdaptiveQueryServiceClient *get_client(
-      boost::shared_ptr<TTransport> &c_transport) {
+  AdaptiveQueryServiceClient *GetClient(
+      boost::shared_ptr<TTransport> &client_transport) {
     int port = QUERY_SERVER_PORT;
     boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
     boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
@@ -348,9 +352,16 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     AdaptiveQueryServiceClient *client = new AdaptiveQueryServiceClient(
         protocol);
     transport->open();
-    c_transport = transport;
+    client_transport = transport;
     return client;
   }
+
+  std::vector<int32_t> lengths_;
+  std::string requests_file_;
+  std::string responses_file_;
+  double key_skew_;
+  double fetch_length_skew_;
+  int32_t fetch_length_;
 };
 
 #endif

@@ -1,204 +1,203 @@
 #ifndef FILE_BENCHMARK_HPP
 #define FILE_BENCHMARK_HPP
 
-#include "../../core/include/succinct_file.h"
+#include "succinct_file.h"
 #include "benchmark.h"
 
 class FileBenchmark : public Benchmark {
  public:
-  FileBenchmark(SuccinctFile *fd, std::string queryfile = "")
+  FileBenchmark(SuccinctFile *succinct_file, std::string queryfile = "")
       : Benchmark() {
-    this->fd = fd;
-    generate_randoms();
+    succinct_file_ = succinct_file;
+    GenerateRandoms();
     if (queryfile != "") {
-      read_queries(queryfile);
+      ReadQueries(queryfile);
     }
   }
 
-  void benchmark_idx_fn(uint64_t (SuccinctFile::*f)(uint64_t),
+  void BenchmarkLookupFunction(uint64_t (SuccinctFile::*function)(uint64_t),
                         std::string res_path) {
 
-    time_t t0, t1, tdiff;
-    uint64_t res;
-    count_t sum;
-    std::ofstream res_stream(res_path);
+    TimeStamp t0, t1, tdiff;
+    uint64_t result;
+    uint64_t sum;
+    std::ofstream result_stream(res_path);
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-    for (uint64_t i = 0; i < WARMUP_N; i++) {
-      res = (fd->*f)(randoms[i]);
-      sum = (sum + res) % fd->original_size();
+    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < kWarmupCount; i++) {
+      result = (succinct_file_->*function)(randoms_[i]);
+      sum = (sum + result) % succinct_file_->original_size();
     }
     fprintf(stderr, "Warmup chksum = %lu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-    for (uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
+    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       t0 = rdtsc();
-      res = (fd->*f)(randoms[i]);
+      result = (succinct_file_->*function)(randoms_[i]);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
-      sum = (sum + res) % fd->original_size();
+      result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
+      sum = (sum + result) % succinct_file_->original_size();
     }
     fprintf(stderr, "Measure chksum = %lu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-    for (uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
-      res = (fd->*f)(randoms[i]);
-      sum = (sum + res) % fd->original_size();
+    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
+      result = (succinct_file_->*function)(randoms_[i]);
+      sum = (sum + result) % succinct_file_->original_size();
     }
     fprintf(stderr, "Cooldown chksum = %lu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
-    res_stream.close();
-
+    result_stream.close();
   }
 
-  void benchmark_count(std::string res_path) {
+  void BenchmarkCount(std::string result_path) {
 
-    time_t t0, t1, tdiff;
-    uint64_t res;
-    count_t sum;
-    std::ofstream res_stream(res_path);
+    TimeStamp t0, t1, tdiff;
+    uint64_t result;
+    uint64_t sum;
+    std::ofstream result_stream(result_path);
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-    for (uint64_t i = 0; i < queries.size(); i++) {
+    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    for (uint64_t i = 0; i < queries_.size(); i++) {
       t0 = rdtsc();
-      res = fd->count(queries[i]);
+      result = succinct_file_->count(queries_[i]);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      res_stream << res << "\t" << tdiff << "\n";
-      sum = (sum + res) % fd->original_size();
+      result_stream << result << "\t" << tdiff << "\n";
+      sum = (sum + result) % succinct_file_->original_size();
     }
     fprintf(stderr, "Measure chksum = %lu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
-    res_stream.close();
+    result_stream.close();
 
   }
 
-  void benchmark_search(std::string res_path) {
+  void BenchmarkSearch(std::string result_path) {
 
-    time_t t0, t1, tdiff;
-    count_t sum;
-    std::ofstream res_stream(res_path);
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
+    std::ofstream result_stream(result_path);
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-    for (uint64_t i = 0; i < queries.size(); i++) {
-      std::vector<int64_t> res;
+    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    for (uint64_t i = 0; i < queries_.size(); i++) {
+      std::vector<int64_t> result;
       t0 = rdtsc();
-      fd->search(res, queries[i]);
+      succinct_file_->search(result, queries_[i]);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      res_stream << res.size() << "\t" << tdiff << "\n";
-      sum = (sum + res.size()) % fd->original_size();
+      result_stream << result.size() << "\t" << tdiff << "\n";
+      sum = (sum + result.size()) % succinct_file_->original_size();
     }
     fprintf(stderr, "Measure chksum = %lu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
-    res_stream.close();
+    result_stream.close();
 
   }
 
-  void benchmark_extract(std::string res_path) {
+  void BenchmarkExtract(std::string result_path) {
 
-    time_t t0, t1, tdiff;
-    count_t sum;
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
     uint64_t extract_length = 64;
-    std::ofstream res_stream(res_path);
+    std::ofstream result_stream(result_path);
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", WARMUP_N);
-    for (uint64_t i = 0; i < WARMUP_N; i++) {
-      std::string res;
-      fd->extract(res, randoms[i], extract_length);
-      sum = (sum + res.length()) % fd->original_size();
+    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < kWarmupCount; i++) {
+      std::string result;
+      succinct_file_->extract(result, randoms_[i], extract_length);
+      sum = (sum + result.length()) % succinct_file_->original_size();
     }
     fprintf(stderr, "Warmup chksum = %lu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", MEASURE_N);
-    for (uint64_t i = WARMUP_N; i < WARMUP_N + MEASURE_N; i++) {
-      std::string res;
+    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+      std::string result;
       t0 = rdtsc();
-      fd->extract(res, randoms[i], extract_length);
+      succinct_file_->extract(result, randoms_[i], extract_length);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      res_stream << randoms[i] << "\t" << res << "\t" << tdiff << "\n";
-      sum = (sum + res.length()) % fd->original_size();
+      result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
+      sum = (sum + result.length()) % succinct_file_->original_size();
     }
     fprintf(stderr, "Measure chksum = %lu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", COOLDOWN_N);
-    for (uint64_t i = WARMUP_N + MEASURE_N; i < randoms.size(); i++) {
-      std::string res;
-      fd->extract(res, randoms[i], extract_length);
-      sum = (sum + res.length()) % fd->original_size();
+    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
+      std::string result;
+      succinct_file_->extract(result, randoms_[i], extract_length);
+      sum = (sum + result.length()) % succinct_file_->original_size();
     }
     fprintf(stderr, "Cooldown chksum = %lu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
-    res_stream.close();
+    result_stream.close();
 
   }
 
-  void benchmark_core() {
+  void BenchmarkCore() {
     fprintf(stderr, "Benchmarking Core Functions...\n\n");
     fprintf(stderr, "Benchmarking lookupNPA...\n");
-    benchmark_idx_fn(&SuccinctFile::lookupNPA, fd->name() + ".res_npa");
+    BenchmarkLookupFunction(&SuccinctFile::lookupNPA, succinct_file_->name() + ".res_npa");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking lookupSA...\n");
-    benchmark_idx_fn(&SuccinctFile::lookupSA, fd->name() + ".res_sa");
+    BenchmarkLookupFunction(&SuccinctFile::lookupSA, succinct_file_->name() + ".res_sa");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking lookupISA...\n");
-    benchmark_idx_fn(&SuccinctFile::lookupISA, fd->name() + ".res_isa");
+    BenchmarkLookupFunction(&SuccinctFile::lookupISA, succinct_file_->name() + ".res_isa");
     fprintf(stderr, "Done!\n\n");
   }
 
-  void benchmark_file() {
+  void BenchmarkFile() {
     fprintf(stderr, "Benchmarking File Functions...\n\n");
     fprintf(stderr, "Benchmarking extract...\n");
-    benchmark_extract(fd->name() + ".res_extract");
+    BenchmarkExtract(succinct_file_->name() + ".res_extract");
     fprintf(stderr, "Done!\n\n");
-    if (queries.size() == 0) {
+    if (queries_.size() == 0) {
       fprintf(stderr, "[WARNING]: No queries have been loaded.\n");
       fprintf(stderr, "[WARNING]: Skipping count and search benchmarks.\n");
     } else {
       fprintf(stderr, "Benchmarking count...\n");
-      benchmark_count(fd->name() + ".res_count");
+      BenchmarkCount(succinct_file_->name() + ".res_count");
       fprintf(stderr, "Done!\n\n");
       fprintf(stderr, "Benchmarking search...\n");
-      benchmark_search(fd->name() + ".res_search");
+      BenchmarkSearch(succinct_file_->name() + ".res_search");
       fprintf(stderr, "Done!\n\n");
     }
   }
 
  private:
-  void generate_randoms() {
-    count_t q_cnt = WARMUP_N + COOLDOWN_N + MEASURE_N;
-    for (count_t i = 0; i < q_cnt; i++) {
-      randoms.push_back(rand() % fd->original_size());
+  void GenerateRandoms() {
+    uint64_t query_count = kWarmupCount + kCooldownCount + kMeasureCount;
+    for (uint64_t i = 0; i < query_count; i++) {
+      randoms_.push_back(rand() % succinct_file_->original_size());
     }
   }
 
-  void read_queries(std::string filename) {
+  void ReadQueries(std::string filename) {
     std::ifstream inputfile(filename);
     if (!inputfile.is_open()) {
       fprintf(stderr, "Error: Query file [%s] may be missing.\n",
@@ -212,14 +211,14 @@ class FileBenchmark : public Benchmark {
       int split_index = line.find_first_of('\t');
       bin = line.substr(0, split_index);
       query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries_.push_back(query);
     }
     inputfile.close();
   }
 
-  std::vector<uint64_t> randoms;
-  std::vector<std::string> queries;
-  SuccinctFile *fd;
+  std::vector<uint64_t> randoms_;
+  std::vector<std::string> queries_;
+  SuccinctFile *succinct_file_;
 };
 
 #endif
