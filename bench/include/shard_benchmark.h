@@ -250,12 +250,17 @@ class ShardBenchmark : public Benchmark {
 
   void benchmark_regex_latency(std::string res_path) {
     count_t sum;
+    timestamp_t start, end, diff;
     sum = 0;
     for (uint64_t i = 0; i < queries.size(); i++) {
       fprintf(stderr, "Executing query %s\n", queries[i].c_str());
       std::set<std::pair<size_t, size_t>> res;
+      start = get_timestamp();
       shard->regex_search(res, queries[i], false);
+      end = get_timestamp();
+      diff = end - start;
       sum = (sum + res.size()) % shard->original_size();
+      fprintf(stderr, "Query %llu took %llu seconds.\n", i, diff);
     }
     fprintf(stderr, "Done\n");
   }
