@@ -13,6 +13,13 @@
 #define BB_PARTIAL_SCAN
 #define PS_PARTIAL_SCAN
 
+typedef unsigned long long int timestamp_t;
+timestamp_t getTimeStamp() {
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
+}
+
 class SRegEx {
  public:
   typedef std::pair<size_t, size_t> OffsetLength;
@@ -50,6 +57,8 @@ class SRegEx {
   }
 
   void wildcard(RegExResults &left, RegExResults &right) {
+    timestamp_t start, end, diff;
+    start = getTimeStamp();
     RegExResults wildcard_res;
     RegExResultsIterator left_it, right_it;
     for (left_it = left.begin(); left_it != left.end(); left_it++) {
@@ -62,6 +71,9 @@ class SRegEx {
       }
     }
     right = wildcard_res;
+    end = getTimeStamp();
+    diff = end - start;
+    fprintf(stderr, "R1:%zu, R2:%zu, Wildcard Time = %llu\n", left.size(), right.size(), diff);
   }
 
   void subquery(RegExResults &result, std::string sub_expression) {
@@ -245,6 +257,7 @@ class SRegEx {
 #endif
     } else {
 #ifdef BB_PARTIAL_SCAN
+      timestamp_t start, end, diff;
       std::vector<std::string> sub_sub_expressions;
       std::string sub_sub_expression = "";
       size_t i = 0;
@@ -298,6 +311,7 @@ class SRegEx {
             continue;
           }
           RegExResults range_results;
+          start = getTimeStamp();
           if (ssexp == ".") {
             for (RegExResultsIterator it = last_results.begin();
                 it != last_results.end(); it++) {
@@ -352,6 +366,9 @@ class SRegEx {
             }
           }
           last_results = range_results;
+          end = getTimeStamp();
+          diff = end - start;
+          fprintf(stderr, "Range:%s, Scan Time = %llu\n", ssexp.c_str(), diff);
         } else {
 
           bool backtrack = false;
@@ -376,6 +393,7 @@ class SRegEx {
               if (ssexp[ssexp.length() - 1] == '*')
                 continue;
 
+              start = getTimeStamp();
               RegExResults range_results;
               if (ssexp == ".") {
                 for (RegExResultsIterator it = last_results.begin();
@@ -419,8 +437,12 @@ class SRegEx {
                 }
               }
               last_results = range_results;
+              end = getTimeStamp();
+              diff = end - start;
+              fprintf(stderr, "Range:%s, Scan Time = %llu\n", ssexp.c_str(), diff);
             }
           } else {
+            start = getTimeStamp();
             RegExResults concat_results;
             RegExResultsIterator left_it, right_it;
             for (left_it = last_results.begin(), right_it = cur_results.begin();
@@ -439,6 +461,9 @@ class SRegEx {
               }
             }
             last_results = concat_results;
+            end = getTimeStamp();
+            diff = end - start;
+            fprintf(stderr, "R1:%zu, R2:%zu, Concat Time = %llu\n", last_results.size(), cur_results.size(), diff);
           }
         }
       }
