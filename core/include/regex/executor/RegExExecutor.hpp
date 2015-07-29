@@ -130,7 +130,7 @@ public:
       for (left_it = left.begin(); left_it != left.end(); left_it++) {
         OffsetLength search_candidate(left_it->first + left_it->second, 0);
         RegExResultIterator first_entry = right.lower_bound(search_candidate);
-        for (right_it = first_entry; right_it != right.end(); right_it++) {
+        for (right_it = first_entry; right_it != right.end() && right_it->first <= left_it->first + 32768; right_it++) {
           size_t offset = left_it->first;
           size_t length = right_it->first - left_it->first + right_it->second;
           wildcard_res.insert(OffsetLength(offset, length));
