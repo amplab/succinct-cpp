@@ -22,7 +22,7 @@ uint64_t SuccinctFile::compute_context_value(const char *p, uint64_t i) {
     return val;
 }
 
-std::pair<int64_t, int64_t> SuccinctFile::get_range_slow(const char *p,
+std::pair<int64_t, int64_t> SuccinctFile::get_range(const char *p,
                                                         uint64_t len) {
     std::pair<int64_t, int64_t> range(0, -1);
     uint64_t m = strlen(p);
@@ -45,65 +45,6 @@ std::pair<int64_t, int64_t> SuccinctFile::get_range_slow(const char *p,
         ep = npa->binary_search_npa(ep, c1, c2, true);
 
         if (sp > ep) return range;
-    }
-
-    range.first = sp;
-    range.second = ep;
-
-    return range;
-}
-
-std::pair<int64_t, int64_t> SuccinctFile::get_range(const char *p,
-                                                    uint64_t len) {
-    uint64_t m = strlen(p);
-    if (m <= npa->get_context_len()) {
-       return get_range_slow(p, len);
-    }
-    std::pair<int64_t, int64_t> range(0, -1);
-    uint32_t sigma_id;
-    int64_t sp, ep, c1, c2;
-    uint64_t start_off;
-    uint64_t context_val, context_id;
-
-    sigma_id = alphabet_map[p[m - npa->get_context_len() - 1]].second;
-    context_val = compute_context_value(p, m - npa->get_context_len());
-    context_id = npa->contexts[context_val];
-    start_off = get_rank1(&(npa->col_nec[sigma_id]), context_id) - 1;
-    sp = npa->col_offsets[sigma_id] + npa->cell_offsets[sigma_id][start_off];
-    if(start_off + 1 < npa->cell_offsets[sigma_id].size()) {
-       ep = npa->col_offsets[sigma_id] + npa->cell_offsets[sigma_id][start_off + 1] - 1;
-    } else if((sigma_id + 1) < alphabet_size){
-       ep = npa->col_offsets[sigma_id + 1] - 1;
-    } else {
-       ep = input_size - 1;
-    }
-
-    if(sp > ep) return range;
-
-    for (int64_t i = m - npa->get_context_len() - 2; i >= 0; i--) {
-    	if (alphabet_map.find(p[i]) != alphabet_map.end()) {
-           sigma_id = alphabet_map[p[i]].second;
-           context_val = compute_context_value(p, i + 1);
-           if(npa->contexts.find(context_val) == npa->contexts.end()) {
-        	   return range;
-           }
-           context_id = npa->contexts[context_val];
-           start_off = get_rank1(&(npa->col_nec[sigma_id]), context_id) - 1;
-           c1 = npa->col_offsets[sigma_id] + npa->cell_offsets[sigma_id][start_off];
-           if(start_off + 1 < npa->cell_offsets[sigma_id].size()) {
-               c2 = npa->col_offsets[sigma_id] + npa->cell_offsets[sigma_id][start_off + 1] - 1;
-           } else if((sigma_id + 1) < alphabet_size){
-               c2 = npa->col_offsets[sigma_id + 1] - 1;
-           } else {
-               c2 = input_size - 1;
-           }
-           if(c2 < c1) return range;
-    	} else return range;
-
-		sp = npa->binary_search_npa(sp, c1, c2, false);
-		ep = npa->binary_search_npa(ep, c1, c2, true);
-
-		if (sp > ep) return range;
     }
 
     range.first = sp;

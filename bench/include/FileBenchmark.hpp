@@ -3,7 +3,7 @@
 
 #include "Benchmark.hpp"
 #include "SuccinctFile.hpp"
-
+#include "regex/executor/RegExExecutor.hpp"
 
 class FileBenchmark : public Benchmark {
 
@@ -185,6 +185,110 @@ public:
 
         res_stream.close();
 
+    }
+
+    std::vector<std::string> readQueryFile(const std::string& query_file) const {
+        std::vector<std::string> queries;
+            std::ifstream query_stream(query_file);
+            if(!query_stream.is_open()) {
+                fprintf(stderr, "Error: Query file [%s] may be missing.\n",
+                        query_file.c_str());
+                exit(0);
+            }
+
+            std::string line, bin, query;
+            while (getline(query_stream, line)) {
+                // Extract key and value
+                int split_index = line.find_first_of('\t');
+                bin = line.substr(0, split_index);
+                query = line.substr(split_index + 1);
+                queries.push_back(query);
+            }
+            query_stream.close();
+            return queries;
+    }
+
+    void benchmark_regex_breakdown(std::string result_path, std::string query_file) {
+      std::vector<std::string> queries1 = readQueryFile(query_file + ".1");
+      std::vector<std::string> queries2 = readQueryFile(query_file + ".2");
+      std::ofstream wildcard_stream(result_path + ".wildcard");
+      std::ofstream union_stream(result_path + ".union");
+      std::ofstream concat_stream(result_path + ".concat");
+      std::ofstream repeat_stream(result_path + ".repeat");
+
+      time_t start, end, diff1, diff2;
+      for (auto query1 : queries1) {
+        for (auto query2 : queries2) {
+          typedef RegExExecutor::RegExResult RRes;
+          typedef RegExExecutor::OffsetLength REnt;
+
+          // Search time
+          std::vector<int64_t> res1, res2;
+          start = get_timestamp();
+          fd->search(res1, query1);
+          end = get_timestamp();
+          diff1 = end - start;
+
+          start = get_timestamp();
+          fd->search(res2, query2);
+          end = get_timestamp();
+          diff2 = end - start;
+
+          wildcard_stream << res1.size() << "\t" << res2.size() << "\t" << (diff1 + diff2) << "\t";
+          union_stream << res1.size() << "\t" << res2.size() << "\t" << (diff1 + diff2) << "\t";
+          concat_stream << res1.size() << "\t" << res2.size() << "\t" << (diff1 + diff2) << "\t";
+          repeat_stream << res1.size() << "\t" << diff1 << "\t";
+
+          // Sort time
+          RRes sres1, sres2;
+          start = get_timestamp();
+          for (auto res : res1) {
+            sres1.insert(REnt(res, query1.length()));
+          }
+          end = get_timestamp();
+          diff1 = end - start;
+
+          start = get_timestamp();
+          for (auto res : res2) {
+            sres2.insert(REnt(res, query2.length()));
+          }
+          end = get_timestamp();
+          diff2 = end - start;
+
+          wildcard_stream << (diff1 + diff2) << "\t";
+          union_stream << (diff1 + diff2) << "\t";
+          concat_stream << (diff1 + diff2) << "\t";
+          repeat_stream << diff1 << "\t";
+
+          // Combine time
+          RRes w_res, u_res, c_res, r_res;
+          RegExExecutorBlackBox b;
+
+          start = get_timestamp();
+          b.regexWildcard(w_res, sres1, sres2);
+          end = get_timestamp();
+          diff1 = end - start;
+          wildcard_stream << diff1 << "\t" << w_res.size() << "\n";
+
+          start = get_timestamp();
+          b.regexUnion(u_res, sres1, sres2);
+          end = get_timestamp();
+          diff1 = end - start;
+          union_stream << diff1 << "\t" << u_res.size() << "\n";
+
+          start = get_timestamp();
+          b.regexConcat(c_res, sres1, sres2);
+          end = get_timestamp();
+          diff1 = end - start;
+          concat_stream << diff1 << "\t" << c_res.size() << "\n";
+
+          start = get_timestamp();
+          b.regexRepeat(r_res, sres1, RegExRepeatType::OneOrMore);
+          end = get_timestamp();
+          diff1 = end - start;
+          repeat_stream << diff1 << "\t" << r_res.size() << "\n";
+        }
+      }
     }
 
     void benchmark_core() {

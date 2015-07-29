@@ -6,14 +6,16 @@
 #include <algorithm>
 #include <iterator>
 
+#include "regex/RegExTypes.hpp"
 #include "SuccinctCore.hpp"
 
 class RegExExecutor {
-protected:
-    typedef std::pair<size_t, size_t> OffsetLength;
-    typedef std::set<OffsetLength> RegExResult;
-    typedef RegExResult::iterator RegExResultIterator;
+ public:
+  typedef std::pair<size_t, size_t> OffsetLength;
+  typedef std::set<OffsetLength> RegExResult;
+  typedef RegExResult::iterator RegExResultIterator;
 
+protected:
     SuccinctCore *s_core;
     RegEx *re;
     std::set<OffsetLength> final_res;
@@ -38,6 +40,8 @@ private:
 
 
 public:
+    RegExExecutorBlackBox(): RegExExecutor(NULL, NULL) {
+    }
     RegExExecutorBlackBox(SuccinctCore *s_core, RegEx *re): RegExExecutor(s_core, re) {
     }
 
@@ -48,7 +52,6 @@ public:
         compute(final_res, re);
     }
 
-private:
     void compute(RegExResult &res, RegEx *r) {
         switch(r->getType()) {
         case RegExType::Blank:
@@ -119,6 +122,20 @@ private:
         }
         for(auto offset: offsets)
             mgram_res.insert(OffsetLength(offset, len));
+    }
+
+    void regexWildcard(RegExResult& wildcard_res, RegExResult &left,
+                    RegExResult &right) {
+      RegExResultIterator left_it, right_it;
+      for (left_it = left.begin(); left_it != left.end(); left_it++) {
+        OffsetLength search_candidate(left_it->first + left_it->second, 0);
+        RegExResultIterator first_entry = right.lower_bound(search_candidate);
+        for (right_it = first_entry; right_it != right.end(); right_it++) {
+          size_t offset = left_it->first;
+          size_t length = right_it->first - left_it->first + right_it->second;
+          wildcard_res.insert(OffsetLength(offset, length));
+        }
+      }
     }
 
     void regexUnion(RegExResult &union_res, RegExResult &a, RegExResult &b) {
