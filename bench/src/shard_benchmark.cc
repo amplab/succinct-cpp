@@ -200,6 +200,8 @@ int main(int argc, char **argv) {
     s_bench.benchmark_count_latency("latency_results_count");
   } else if (type == "latency-search") {
     s_bench.benchmark_search_latency("latency_results_search");
+  } else if (type == "latency-regex") {
+    s_bench.benchmark_regex_latency("latency_results_search");
   } else if (type == "throughput-access") {
     s_bench.benchmark_access_throughput(len);
   } else if (type == "throughput-get") {

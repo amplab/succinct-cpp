@@ -248,6 +248,18 @@ class ShardBenchmark : public Benchmark {
     res_stream.close();
   }
 
+  void benchmark_regex_latency(std::string res_path) {
+    count_t sum;
+    sum = 0;
+    for (uint64_t i = 0; i < queries.size(); i++) {
+      fprintf(stderr, "Executing query %s\n", queries[i].c_str());
+      std::set<std::pair<size_t, size_t>> res;
+      shard->regex_search(res, queries[i], false);
+      sum = (sum + res.size()) % shard->original_size();
+    }
+    fprintf(stderr, "Done\n");
+  }
+
   void benchmark_get_throughput() {
     double thput = 0;
     std::string value;
@@ -438,13 +450,10 @@ class ShardBenchmark : public Benchmark {
       return;
     }
 
-    std::string line, bin, query;
+    std::string line;
     while (getline(inputfile, line)) {
       // Extract key and value
-      int split_index = line.find_first_of('\t');
-      bin = line.substr(0, split_index);
-      query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries.push_back(line);
     }
     inputfile.close();
   }
