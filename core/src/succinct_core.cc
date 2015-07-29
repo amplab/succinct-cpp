@@ -424,7 +424,7 @@ size_t SuccinctCore::serialize() {
                                      out);
   }
 
-  out_size += npa->serialize(npa_out);
+  out_size += npa->Serialize(npa_out);
 
   out.close();
   sa_out.close();
@@ -495,23 +495,23 @@ size_t SuccinctCore::deserialize() {
   }
 
   // Deserialize NPA based on the NPA encoding scheme.
-  switch (npa->get_encoding_scheme()) {
+  switch (npa->encoding_scheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-      in_size += ((EliasDeltaEncodedNPA *) npa)->deserialize(npa_in);
+      in_size += ((EliasDeltaEncodedNPA *) npa)->Deserialize(npa_in);
       break;
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-      in_size += ((EliasGammaEncodedNPA *) npa)->deserialize(npa_in);
+      in_size += ((EliasGammaEncodedNPA *) npa)->Deserialize(npa_in);
       break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-      in_size += ((WaveletTreeEncodedNPA *) npa)->deserialize(npa_in);
+      in_size += ((WaveletTreeEncodedNPA *) npa)->Deserialize(npa_in);
       break;
     default:
       assert(0);
   }
 
   // TODO: Fix
-  Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets.begin() + 1,
-                  npa->col_offsets.end());
+  Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets_.begin() + 1,
+                  npa->col_offsets_.end());
 
   in.close();
   sa_in.close();
@@ -574,15 +574,15 @@ size_t SuccinctCore::memorymap() {
   }
 
   // Memory map NPA based on the NPA encoding scheme.
-  switch (npa->get_encoding_scheme()) {
+  switch (npa->encoding_scheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-      data += ((EliasDeltaEncodedNPA *) npa)->memorymap(succinct_path + "/npa");
+      data += ((EliasDeltaEncodedNPA *) npa)->MemoryMap(succinct_path + "/npa");
       break;
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-      data += ((EliasGammaEncodedNPA *) npa)->memorymap(succinct_path + "/npa");
+      data += ((EliasGammaEncodedNPA *) npa)->MemoryMap(succinct_path + "/npa");
       break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-      data += ((WaveletTreeEncodedNPA *) npa)->memorymap(
+      data += ((WaveletTreeEncodedNPA *) npa)->MemoryMap(
           succinct_path + "/npa");
       break;
     default:
@@ -590,8 +590,8 @@ size_t SuccinctCore::memorymap() {
   }
 
   // TODO: Fix
-  Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets.begin() + 1,
-                  npa->col_offsets.end());
+  Cinv_idx.insert(Cinv_idx.end(), npa->col_offsets_.begin() + 1,
+                  npa->col_offsets_.end());
 
   return data - data_beg;
 }
@@ -609,7 +609,7 @@ size_t SuccinctCore::storage_size() {
   tot_size += sizeof(alphabet_size) + alphabet_size * sizeof(char);
   tot_size += SA->storage_size();
   tot_size += ISA->storage_size();
-  tot_size += npa->storage_size();
+  tot_size += npa->StorageSize();
   return tot_size;
 }
 
@@ -623,7 +623,7 @@ void SuccinctCore::print_storage_breakdown() {
   fprintf(stderr, "Metadata size = %zu\n", metadata_size);
   fprintf(stderr, "SA size = %zu\n", SA->storage_size());
   fprintf(stderr, "ISA size = %zu\n", ISA->storage_size());
-  fprintf(stderr, "NPA size = %zu\n", npa->storage_size());
+  fprintf(stderr, "NPA size = %zu\n", npa->StorageSize());
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::bw_search(std::string mgram) {
@@ -648,9 +648,9 @@ std::pair<int64_t, int64_t> SuccinctCore::bw_search(std::string mgram) {
     if (col_range.first > col_range.second)
       return std::pair<int64_t, int64_t>(0, -1);
 
-    range.first = npa->binary_search_npa(range.first, col_range.first,
+    range.first = npa->BinarySearch(range.first, col_range.first,
                                          col_range.second, false);
-    range.second = npa->binary_search_npa(range.second, col_range.first,
+    range.second = npa->BinarySearch(range.second, col_range.first,
                                           col_range.second, true);
 
     if (range.first > range.second)
@@ -676,9 +676,9 @@ std::pair<int64_t, int64_t> SuccinctCore::continue_bw_search(
     if (col_range.first > col_range.second)
       return std::pair<int64_t, int64_t>(0, -1);
 
-    range.first = npa->binary_search_npa(range.first, col_range.first,
+    range.first = npa->BinarySearch(range.first, col_range.first,
                                          col_range.second, false);
-    range.second = npa->binary_search_npa(range.second, col_range.first,
+    range.second = npa->BinarySearch(range.second, col_range.first,
                                           col_range.second, true);
 
     if (range.first > range.second)

@@ -10,8 +10,8 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
-  init_prefixsum();
-  encode(data_bitmap, compactSA, compactISA);
+  InitPrefixSum();
+  Encode(data_bitmap, compactSA, compactISA);
 }
 
 EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,
@@ -19,10 +19,10 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(0, 0, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
-  init_prefixsum();
+  InitPrefixSum();
 }
 
-uint16_t EliasGammaEncodedNPA::access_data_pos16(uint16_t data, uint32_t pos,
+uint16_t EliasGammaEncodedNPA::AccessDataPos16(uint16_t data, uint32_t pos,
                                                  uint32_t b) {
   assert(b <= 16 && pos >= 0);
   if (b == 0)
@@ -32,7 +32,7 @@ uint16_t EliasGammaEncodedNPA::access_data_pos16(uint16_t data, uint32_t pos,
 
 }
 
-void EliasGammaEncodedNPA::init_prefixsum() {
+void EliasGammaEncodedNPA::InitPrefixSum() {
   for (uint64_t i = 0; i < 65536; i++) {
     uint16_t val = (uint16_t) i;
     uint16_t count = 0, offset = 0, sum = 0;
@@ -43,7 +43,7 @@ void EliasGammaEncodedNPA::init_prefixsum() {
         offset++;
       }
       if (offset + (N + 1) <= 16) {
-        sum += access_data_pos16(val, offset, N + 1);
+        sum += AccessDataPos16(val, offset, N + 1);
         offset += (N + 1);
         count++;
       } else {
@@ -51,18 +51,18 @@ void EliasGammaEncodedNPA::init_prefixsum() {
         break;
       }
     }
-    prefixsum[i] = (offset << 24) | (count << 16) | sum;
+    prefixsum_[i] = (offset << 24) | (count << 16) | sum;
   }
 }
 
 // Compute the elias gamma encoding size in bits for a 64 bit integer
-uint32_t EliasGammaEncodedNPA::elias_gamma_encoding_size(uint64_t n) {
-  uint32_t N = lower_log_2(n);
+uint32_t EliasGammaEncodedNPA::EliasGammaEncodingSize(uint64_t n) {
+  uint32_t N = LowerLog2(n);
   return 2 * N + 1;
 }
 
 // Encode a sorted vector using elias gamma encoding
-void EliasGammaEncodedNPA::elias_gamma_encode(bitmap_t **B,
+void EliasGammaEncodedNPA::EliasGammaEncode(bitmap_t **B,
                                               std::vector<uint64_t> &deltas,
                                               uint64_t size) {
   if (size == 0) {
@@ -71,9 +71,9 @@ void EliasGammaEncodedNPA::elias_gamma_encode(bitmap_t **B,
     return;
   }
   uint64_t pos = 0;
-  SuccinctBase::init_bitmap(B, size, s_allocator);
+  SuccinctBase::init_bitmap(B, size, s_allocator_);
   for (size_t i = 0; i < deltas.size(); i++) {
-    int bits = elias_gamma_encoding_size(deltas[i]);
+    int bits = EliasGammaEncodingSize(deltas[i]);
     SuccinctBase::set_bitmap_pos(B, pos, deltas[i], bits);
     pos += bits;
   }
@@ -81,7 +81,7 @@ void EliasGammaEncodedNPA::elias_gamma_encode(bitmap_t **B,
 
 // Decode a particular elias-gamma encoded delta value at a provided offset
 // in the deltas bitmap
-uint64_t EliasGammaEncodedNPA::elias_gamma_decode(bitmap_t *B,
+uint64_t EliasGammaEncodedNPA::EliasGammaDecode(bitmap_t *B,
                                                   uint64_t *offset) {
   uint32_t N = 0;
 #if USE_BSR
@@ -100,7 +100,7 @@ uint64_t EliasGammaEncodedNPA::elias_gamma_decode(bitmap_t *B,
 }
 
 // Compute the prefix sum of the elias-gamma encoded deltas
-uint64_t EliasGammaEncodedNPA::elias_gamma_prefix_sum(bitmap_t *B,
+uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(bitmap_t *B,
                                                       uint64_t offset,
                                                       uint64_t i) {
   uint64_t delta_sum = 0;
@@ -175,7 +175,7 @@ uint64_t EliasGammaEncodedNPA::elias_gamma_prefix_sum(bitmap_t *B,
   return delta_sum;
 }
 
-void EliasGammaEncodedNPA::createDEV(DeltaEncodedVector *dv,
+void EliasGammaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
                                      std::vector<uint64_t> &data) {
   if (data.size() == 0) {
     return;
@@ -190,7 +190,7 @@ void EliasGammaEncodedNPA::createDEV(DeltaEncodedVector *dv,
   uint64_t last_val = 0;
 
   for (size_t i = 0; i < data.size(); i++) {
-    if (i % sampling_rate == 0) {
+    if (i % sampling_rate_ == 0) {
       _samples.push_back(data[i]);
       if (data[i] > max_sample) {
         max_sample = data[i];
@@ -199,7 +199,7 @@ void EliasGammaEncodedNPA::createDEV(DeltaEncodedVector *dv,
         max_offset = cum_delta_size;
       _delta_offsets.push_back(cum_delta_size);
       if (i != 0) {
-        assert(delta_count == sampling_rate - 1);
+        assert(delta_count == sampling_rate_ - 1);
         tot_delta_count += delta_count;
         delta_count = 0;
       }
@@ -208,7 +208,7 @@ void EliasGammaEncodedNPA::createDEV(DeltaEncodedVector *dv,
       assert(delta > 0);
       _deltas.push_back(delta);
 
-      delta_enc_size = elias_gamma_encoding_size(delta);
+      delta_enc_size = EliasGammaEncodingSize(delta);
       cum_delta_size += delta_enc_size;
       delta_count++;
     }
@@ -239,31 +239,31 @@ void EliasGammaEncodedNPA::createDEV(DeltaEncodedVector *dv,
                                     NULL :
                                                              &_samples[0],
                                     _samples.size(), dv->sample_bits,
-                                    s_allocator);
+                                    s_allocator_);
 
-  elias_gamma_encode(&(dv->deltas), _deltas, cum_delta_size);
+  EliasGammaEncode(&(dv->deltas), _deltas, cum_delta_size);
   dv->delta_offsets = new bitmap_t;
   SuccinctBase::create_bitmap_array(
       &(dv->delta_offsets),
       (_delta_offsets.size() == 0) ? NULL : &_delta_offsets[0],
-      _delta_offsets.size(), dv->delta_offset_bits, s_allocator);
+      _delta_offsets.size(), dv->delta_offset_bits, s_allocator_);
 
 }
 
-uint64_t EliasGammaEncodedNPA::lookupDEV(DeltaEncodedVector *dv, uint64_t i) {
-  uint64_t sample_offset = i / sampling_rate;
-  uint64_t delta_offset_idx = i % sampling_rate;
+uint64_t EliasGammaEncodedNPA::LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i) {
+  uint64_t sample_offset = i / sampling_rate_;
+  uint64_t delta_offset_idx = i % sampling_rate_;
   uint64_t val = SuccinctBase::lookup_bitmap_array(dv->samples, sample_offset,
                                                    dv->sample_bits);
   if (delta_offset_idx == 0)
     return val;
   uint64_t delta_offset = SuccinctBase::lookup_bitmap_array(
       dv->delta_offsets, sample_offset, dv->delta_offset_bits);
-  val += elias_gamma_prefix_sum(dv->deltas, delta_offset, delta_offset_idx);
+  val += EliasGammaPrefixSum(dv->deltas, delta_offset, delta_offset_idx);
   return val;
 }
 
-int64_t EliasGammaEncodedNPA::binary_search_samples(DeltaEncodedVector *dv,
+int64_t EliasGammaEncodedNPA::BinarySearchSamples(DeltaEncodedVector *dv,
                                                     uint64_t val, uint64_t s,
                                                     uint64_t e) {
   int64_t sp = s;

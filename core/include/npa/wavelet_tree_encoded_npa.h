@@ -29,36 +29,36 @@ class WaveletTreeEncodedNPA : public NPA {
   }
 
   // Encode EliasDeltaEncodedNPA
-  virtual void encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
-                      bitmap_t *compactISA);
+  virtual void Encode(bitmap_t *data_bitmap, bitmap_t *compact_sa,
+                      bitmap_t *compact_isa);
 
   // Access element at index i
   virtual uint64_t operator[](uint64_t i);
 
   // Serialize the wavelet tree enoded NPA
-  virtual size_t serialize(std::ostream& out);
+  virtual size_t Serialize(std::ostream& out);
 
   // Deserialize the wavelet tree encoded NPA
-  virtual size_t deserialize(std::istream& in);
+  virtual size_t Deserialize(std::istream& in);
 
   // Memory map the wavelet tree encoded NPA
-  virtual size_t memorymap(std::string filename);
+  virtual size_t MemoryMap(std::string filename);
 
-  virtual size_t storage_size();
+  virtual size_t StorageSize();
 
  protected:
   // Create wavelet tree
-  void create_wavelettree(WaveletNode **w, uint64_t s, uint64_t e,
+  void CreateWaveletTree(WaveletNode **w, uint64_t s, uint64_t e,
                           std::vector<uint64_t> &v, std::vector<uint64_t> &v_c);
 
   // Lookup wavelet tree
-  uint64_t lookup_wavelettree(WaveletNode *tree, uint64_t c_pos,
+  uint64_t LookupWaveletTree(WaveletNode *tree, uint64_t c_pos,
                               uint64_t sl_pos, uint64_t s, uint64_t e);
 
  private:
-  SuccinctBase *s_base;
-  uint64_t *csizes;
-  WaveletNode **wtree;
+  SuccinctBase *succinct_base_;
+  uint64_t *column_sizes_;
+  WaveletNode **wavelet_tree_;
 
 };
 

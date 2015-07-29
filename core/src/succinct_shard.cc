@@ -142,8 +142,8 @@ std::pair<int64_t, int64_t> SuccinctShard::get_range(const char *p,
     if (c2 < c1)
       return range;
 
-    sp = npa->binary_search_npa(sp, c1, c2, false);
-    ep = npa->binary_search_npa(ep, c1, c2, true);
+    sp = npa->BinarySearch(sp, c1, c2, false);
+    ep = npa->BinarySearch(ep, c1, c2, true);
 
     if (sp > ep)
       return range;

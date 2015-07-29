@@ -10,26 +10,26 @@ EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint64_t npa_size,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
-  encode(data_bitmap, compactSA, compactISA);
+  Encode(data_bitmap, compactSA, compactISA);
 }
 
 EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint32_t context_len,
                                            uint32_t sampling_rates,
                                            SuccinctAllocator &s_allocator)
-    : DeltaEncodedNPA(0, 0, context_len, sampling_rate,
+    : DeltaEncodedNPA(0, 0, context_len, sampling_rate_,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
 }
 
 EliasDeltaEncodedNPA::~EliasDeltaEncodedNPA() {
 }
 
-uint32_t EliasDeltaEncodedNPA::elias_delta_encoding_size(uint64_t n) {
-  uint32_t N = lower_log_2(n);
-  uint32_t NN = lower_log_2(N + 1);
+uint32_t EliasDeltaEncodedNPA::EliasDeltaEncodingSize(uint64_t n) {
+  uint32_t N = LowerLog2(n);
+  uint32_t NN = LowerLog2(N + 1);
   return N + 2 * NN + 1;
 }
 
-void EliasDeltaEncodedNPA::elias_delta_encode(SuccinctBase::BitMap **B,
+void EliasDeltaEncodedNPA::EliasDeltaEncode(SuccinctBase::BitMap **B,
                                               std::vector<uint64_t> &deltas,
                                               uint64_t size) {
   if (size == 0) {
@@ -39,11 +39,11 @@ void EliasDeltaEncodedNPA::elias_delta_encode(SuccinctBase::BitMap **B,
   }
 
   uint64_t pos = 0;
-  SuccinctBase::init_bitmap(B, size, s_allocator);
+  SuccinctBase::init_bitmap(B, size, s_allocator_);
   for (size_t i = 0; i < deltas.size(); i++) {
-    uint32_t N_prime = lower_log_2(deltas[i]);
+    uint32_t N_prime = LowerLog2(deltas[i]);
     uint32_t N = N_prime + 1;
-    uint32_t N_bits = EliasGammaEncodedNPA::elias_gamma_encoding_size(N);
+    uint32_t N_bits = EliasGammaEncodedNPA::EliasGammaEncodingSize(N);
     SuccinctBase::set_bitmap_pos(B, pos, N, N_bits);
     pos += N_bits;
     uint64_t val = deltas[i] - (1 << N_prime);
@@ -54,7 +54,7 @@ void EliasDeltaEncodedNPA::elias_delta_encode(SuccinctBase::BitMap **B,
 
 // Decode a particular elias-delta encoded delta value at a provided offset
 // in the deltas bitmaps
-uint64_t EliasDeltaEncodedNPA::elias_delta_decode(SuccinctBase::BitMap *B,
+uint64_t EliasDeltaEncodedNPA::EliasDeltaDecode(SuccinctBase::BitMap *B,
                                                   uint64_t *offset) {
   uint32_t L = 0;
   while (!ACCESSBIT(B, (*offset))) {
@@ -71,7 +71,7 @@ uint64_t EliasDeltaEncodedNPA::elias_delta_decode(SuccinctBase::BitMap *B,
 }
 
 // Compute the prefix sum for the elias delta encoded deltas
-uint64_t EliasDeltaEncodedNPA::elias_delta_prefix_sum(SuccinctBase::BitMap *B,
+uint64_t EliasDeltaEncodedNPA::EliasDeltaPrefixSum(SuccinctBase::BitMap *B,
                                                       uint64_t offset,
                                                       uint64_t i) {
   uint64_t sum = 0;
@@ -95,7 +95,7 @@ uint64_t EliasDeltaEncodedNPA::elias_delta_prefix_sum(SuccinctBase::BitMap *B,
 }
 
 // Create delta encoded vector
-void EliasDeltaEncodedNPA::createDEV(DeltaEncodedVector *dv,
+void EliasDeltaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
                                      std::vector<uint64_t> &data) {
   if (data.size() == 0) {
     return;
@@ -112,7 +112,7 @@ void EliasDeltaEncodedNPA::createDEV(DeltaEncodedVector *dv,
   uint64_t last_val = 0;
 
   for (size_t i = 0; i < data.size(); i++) {
-    if (i % sampling_rate == 0) {
+    if (i % sampling_rate_ == 0) {
       _samples.push_back(data[i]);
       if (data[i] > max_sample) {
         max_sample = data[i];
@@ -121,7 +121,7 @@ void EliasDeltaEncodedNPA::createDEV(DeltaEncodedVector *dv,
         max_offset = cum_delta_size;
       _delta_offsets.push_back(cum_delta_size);
       if (i != 0) {
-        assert(delta_count == sampling_rate - 1);
+        assert(delta_count == sampling_rate_ - 1);
         tot_delta_count += delta_count;
         delta_count = 0;
       }
@@ -130,7 +130,7 @@ void EliasDeltaEncodedNPA::createDEV(DeltaEncodedVector *dv,
       assert(delta > 0);
       _deltas.push_back(delta);
 
-      delta_enc_size = elias_delta_encoding_size(delta);
+      delta_enc_size = EliasDeltaEncodingSize(delta);
       cum_delta_size += delta_enc_size;
       delta_count++;
     }
@@ -158,27 +158,27 @@ void EliasDeltaEncodedNPA::createDEV(DeltaEncodedVector *dv,
   dv->deltas = new bitmap_t;
   SuccinctBase::create_bitmap_array(
       &(dv->samples), (_samples.size() == 0) ? NULL : &_samples[0],
-      _samples.size(), dv->sample_bits, s_allocator);
+      _samples.size(), dv->sample_bits, s_allocator_);
 
-  elias_delta_encode(&(dv->deltas), _deltas, cum_delta_size);
+  EliasDeltaEncode(&(dv->deltas), _deltas, cum_delta_size);
 
   dv->delta_offsets = new bitmap_t;
   SuccinctBase::create_bitmap_array(
       &(dv->delta_offsets),
       (_delta_offsets.size() == 0) ? NULL : &_delta_offsets[0],
-      _delta_offsets.size(), dv->delta_offset_bits, s_allocator);
+      _delta_offsets.size(), dv->delta_offset_bits, s_allocator_);
 }
 
 // Lookup delta encoded vector at index i
-uint64_t EliasDeltaEncodedNPA::lookupDEV(DeltaEncodedVector *dv, uint64_t i) {
-  uint64_t sample_offset = i / sampling_rate;
-  uint64_t delta_offset_idx = i % sampling_rate;
+uint64_t EliasDeltaEncodedNPA::LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i) {
+  uint64_t sample_offset = i / sampling_rate_;
+  uint64_t delta_offset_idx = i % sampling_rate_;
   uint64_t val = SuccinctBase::lookup_bitmap_array(dv->samples, sample_offset,
                                                    dv->sample_bits);
   if (delta_offset_idx == 0)
     return val;
   uint64_t delta_offset = SuccinctBase::lookup_bitmap_array(
       dv->delta_offsets, sample_offset, dv->delta_offset_bits);
-  val += elias_delta_prefix_sum(dv->deltas, delta_offset, delta_offset_idx);
+  val += EliasDeltaPrefixSum(dv->deltas, delta_offset, delta_offset_idx);
   return val;
 }

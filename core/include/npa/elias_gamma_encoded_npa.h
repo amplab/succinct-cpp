@@ -26,7 +26,7 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   }
 
   // Compute the elias gamma encoding size in bits for a 64 bit integer
-  static uint32_t elias_gamma_encoding_size(uint64_t n);
+  static uint32_t EliasGammaEncodingSize(uint64_t n);
 
   /*
    virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
@@ -35,35 +35,35 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
 
  protected:
   // Create elias-gamma delta encoded vector
-  virtual void createDEV(DeltaEncodedVector *dv, std::vector<uint64_t> &data);
+  virtual void CreateDeltaEncodedVector(DeltaEncodedVector *dv, std::vector<uint64_t> &data);
 
   // Lookup elias-gamma delta encoded vector at index i
-  virtual uint64_t lookupDEV(DeltaEncodedVector *dv, uint64_t i);
+  virtual uint64_t LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i);
 
  private:
   // Accesses data from a 64 bit integer represented as a bit map
   // from a specified position and for a specified number of bits
-  uint16_t access_data_pos16(uint16_t data, uint32_t pos, uint32_t b);
+  uint16_t AccessDataPos16(uint16_t data, uint32_t pos, uint32_t b);
 
-  int64_t binary_search_samples(DeltaEncodedVector *dv, uint64_t val,
+  int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val,
                                 uint64_t s, uint64_t e);
 
   // Initialize pre-computed prefix sums
-  void init_prefixsum();
+  void InitPrefixSum();
 
   // Encode a sorted vector using elias-gamma encoding
-  void elias_gamma_encode(bitmap_t **B, std::vector<uint64_t> &deltas,
+  void EliasGammaEncode(bitmap_t **B, std::vector<uint64_t> &deltas,
                           uint64_t size);
 
   // Decode a particular elias-gamma encoded delta value at a provided offset
   // in the deltas bitmap
-  uint64_t elias_gamma_decode(bitmap_t *B, uint64_t *offset);
+  uint64_t EliasGammaDecode(bitmap_t *B, uint64_t *offset);
 
   // Compute the prefix sum of elias-gamma encoded delta values
-  uint64_t elias_gamma_prefix_sum(bitmap_t *B, uint64_t offset, uint64_t i);
+  uint64_t EliasGammaPrefixSum(bitmap_t *B, uint64_t offset, uint64_t i);
 
   // Pre-computed prefix sums for elias gamma encoded NPA
-  uint32_t prefixsum[65536];
+  uint32_t prefixsum_[65536];
 
 };
 
