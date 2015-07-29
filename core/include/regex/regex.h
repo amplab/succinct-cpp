@@ -14,11 +14,6 @@
 #define PS_PARTIAL_SCAN
 
 typedef unsigned long long int timestamp_t;
-timestamp_t getTimeStamp() {
-  struct timeval now;
-  gettimeofday(&now, NULL);
-  return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
-}
 
 class SRegEx {
  public:
@@ -31,6 +26,12 @@ class SRegEx {
     this->s_core = s_core;
     this->opt = opt;
     get_subexpressions();
+  }
+
+  timestamp_t getTimeStamp() {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
   }
 
   void execute() {

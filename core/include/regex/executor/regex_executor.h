@@ -5,17 +5,12 @@
 #include <set>
 #include <algorithm>
 #include <iterator>
+#include <sys/time.h>
 
 #include "regex/regex_types.h"
 #include "succinct_core.h"
 
 typedef unsigned long long int timestamp_t;
-timestamp_t timeStamp() {
-  struct timeval now;
-  gettimeofday(&now, NULL);
-  return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
-}
-
 
 class RegExExecutor {
  public:
@@ -35,6 +30,12 @@ class RegExExecutor {
 
   virtual void getResults(RegExResult &result) {
     result = final_res;
+  }
+
+  timestamp_t getTimeStamp() {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    return now.tv_usec + (timestamp_t) now.tv_sec * 1000000;
   }
 
  protected:
@@ -116,7 +117,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
     std::vector<int64_t> offsets;
     std::string mgram = rp->getPrimitive();
     size_t len = mgram.length();
-    start = timeStamp();
+    start = getTimeStamp();
     std::pair<int64_t, int64_t> range = s_core->bw_search(mgram);
     if (range.first > range.second)
       return;
@@ -124,22 +125,22 @@ class RegExExecutorBlackBox : public RegExExecutor {
     for (int64_t i = range.first; i <= range.second; i++) {
       offsets.push_back((int64_t) s_core->lookupSA(i));
     }
-    end = timeStamp();
+    end = getTimeStamp();
     diff1 = end - start;
-    start = timeStamp();
+    start = getTimeStamp();
     for (auto offset : offsets)
       mgram_res.insert(OffsetLength(offset, len));
-    end = timeStamp();
+    end = getTimeStamp();
     diff2 = end - start;
     fprintf(stderr, "Token = %s, Search time = %llu, Sort time = %llu\n", mgram.c_str(), diff1, diff2);
   }
 
   void regexUnion(RegExResult &union_res, RegExResult &a, RegExResult &b) {
     timestamp_t start, end, diff;
-    start = timeStamp();
+    start = getTimeStamp();
     std::set_union(a.begin(), a.end(), b.begin(), b.end(),
                    std::inserter(union_res, union_res.begin()));
-    end = timeStamp();
+    end = getTimeStamp();
     diff = end - start;
     fprintf(stderr, "R1:%zu, R2:%zu, Union time = %llu\n", a.size(), b.size(), diff);
   }
@@ -148,7 +149,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
                    RegExResult &right) {
 
     timestamp_t start, end, diff;
-    start = timeStamp();
+    start = getTimeStamp();
     RegExResultIterator left_it, right_it;
     for (left_it = left.begin(), right_it = right.begin();
         left_it != left.end() && right_it != right.end(); left_it++) {
@@ -162,7 +163,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
         concat_res.insert(
             OffsetLength(left_it->first, left_it->second + right_it->second));
     }
-    end = timeStamp();
+    end = getTimeStamp();
     diff = end - start;
     fprintf(stderr, "R1:%zu, R2:%zu, Concat time = %llu\n", left.size(), right.size(), diff);
   }
@@ -171,7 +172,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
                    RegExRepeatType r_type, int min = -1, int max = -1) {
 
     timestamp_t start, end, diff;
-    start = timeStamp();
+    start = getTimeStamp();
     switch (r_type) {
       case RegExRepeatType::ZeroOrMore: {
         size_t concat_size;
@@ -247,7 +248,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
         break;
       }
     }
-    end = timeStamp();
+    end = getTimeStamp();
     diff = end - start;
     fprintf(stderr, "R:%zu, Repeat time = %llu\n", a.size(), diff);
   }
