@@ -84,7 +84,7 @@ private:
         case RegExType::Concat:
             return is_suffixed(((RegExConcat *)re)->getRight());
         case RegExType::Union:
-            return is_suffixed(((RegExUnion *)re)->getFirst()) && is_prefixed(((RegExUnion *)re)->getSecond());
+            return is_suffixed(((RegExUnion *)re)->getFirst()) && is_suffixed(((RegExUnion *)re)->getSecond());
         }
     }
 
