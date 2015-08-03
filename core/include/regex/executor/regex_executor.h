@@ -1,4 +1,4 @@
-#ifndef REGEX_EXECUTOR_H
+  #ifndef REGEX_EXECUTOR_H
 #define REGEX_EXECUTOR_H
 
 #include <cstdint>
@@ -15,116 +15,118 @@ class RegExExecutor {
   typedef std::set<OffsetLength> RegExResult;
   typedef RegExResult::iterator RegExResultIterator;
 
-  RegExExecutor(SuccinctCore *s_core, RegEx *re) {
-    this->s_core = s_core;
-    this->re = re;
+  RegExExecutor(SuccinctCore *succinct_core, RegEx *regex) {
+    this->succinct_core_ = succinct_core;
+    this->regex_ = regex;
   }
 
   virtual ~RegExExecutor() {
   }
 
-  virtual void execute() = 0;
+  virtual void Execute() = 0;
 
-  virtual void getResults(RegExResult &result) {
-    result = final_res;
+  virtual void getResults(RegExResult &results) {
+    results = final_results_;
   }
 
  protected:
-  SuccinctCore *s_core;
-  RegEx *re;
-  std::set<OffsetLength> final_res;
+  SuccinctCore *succinct_core_;
+  RegEx *regex_;
+  std::set<OffsetLength> final_results_;
 
 };
 
 class RegExExecutorBlackBox : public RegExExecutor {
  public:
-  RegExExecutorBlackBox(SuccinctCore *s_core, RegEx *re)
-      : RegExExecutor(s_core, re) {
+  RegExExecutorBlackBox(SuccinctCore *succinct_core, RegEx *regex)
+      : RegExExecutor(succinct_core, regex) {
   }
 
   ~RegExExecutorBlackBox() {
   }
 
-  void execute() {
-    compute(final_res, re);
+  void Execute() {
+    Compute(final_results_, regex_);
   }
 
  private:
-  void compute(RegExResult &res, RegEx *r) {
-    switch (r->getType()) {
-      case RegExType::Blank: {
+  void Compute(RegExResult &results, RegEx *regex) {
+    switch (regex->GetType()) {
+      case RegExType::BLANK: {
         fprintf(
             stderr,
             "RegEx blank is a place-holder and should not appear in the expression!\n");
         exit(0);
         break;
       }
-      case RegExType::Primitive: {
-        switch (((RegExPrimitive *) r)->getPrimitiveType()) {
-          case RegExPrimitiveType::Mgram: {
-            regexMgram(res, (RegExPrimitive *) r);
+      case RegExType::PRIMITIVE: {
+        switch (((RegExPrimitive *) regex)->GetPrimitiveType()) {
+          case RegExPrimitiveType::MGRAM: {
+            MgramSearch(results, (RegExPrimitive *) regex);
             break;
           }
-          case RegExPrimitiveType::Range:
-          case RegExPrimitiveType::Dot: {
-            std::string primitive = ((RegExPrimitive *) r)->getPrimitive();
+          case RegExPrimitiveType::RANGE:
+          case RegExPrimitiveType::DOT: {
+            std::string primitive = ((RegExPrimitive *) regex)->GetPrimitive();
             if (primitive == ".") {
-              primitive = std::string(s_core->getAlphabet());
+              primitive = std::string(succinct_core_->getAlphabet());
             }
             for (auto c : primitive) {
               RegExPrimitive char_primitive(std::string(1, c));
-              regexMgram(res, &char_primitive);
+              MgramSearch(results, &char_primitive);
             }
             break;
           }
         }
         break;
       }
-      case RegExType::Union: {
+      case RegExType::UNION: {
         RegExResult first_res, second_res;
-        compute(first_res, ((RegExUnion *) r)->getFirst());
-        compute(second_res, ((RegExUnion *) r)->getSecond());
-        regexUnion(res, first_res, second_res);
+        Compute(first_res, ((RegExUnion *) regex)->GetFirst());
+        Compute(second_res, ((RegExUnion *) regex)->GetSecond());
+        Union(results, first_res, second_res);
         break;
       }
-      case RegExType::Concat: {
+      case RegExType::CONCAT: {
         RegExResult first_res, second_res;
-        compute(first_res, ((RegExConcat *) r)->getLeft());
-        compute(second_res, ((RegExConcat *) r)->getRight());
-        regexConcat(res, first_res, second_res);
+        Compute(first_res, ((RegExConcat *) regex)->getLeft());
+        Compute(second_res, ((RegExConcat *) regex)->getRight());
+        Concat(results, first_res, second_res);
         break;
       }
-      case RegExType::Repeat: {
+      case RegExType::REPEAT: {
         RegExResult internal_res;
-        compute(internal_res, ((RegExRepeat *) r)->getInternal());
-        regexRepeat(res, internal_res, ((RegExRepeat *) r)->getRepeatType());
+        Compute(internal_res, ((RegExRepeat *) regex)->GetInternal());
+        Repeat(results, internal_res, ((RegExRepeat *) regex)->GetRepeatType());
         break;
       }
     }
   }
 
-  void regexMgram(RegExResult &mgram_res, RegExPrimitive *rp) {
+  void MgramSearch(RegExResult &mgram_results,
+                   RegExPrimitive *regex_primitive) {
     std::vector<int64_t> offsets;
-    std::string mgram = rp->getPrimitive();
+    std::string mgram = regex_primitive->GetPrimitive();
     size_t len = mgram.length();
-    std::pair<int64_t, int64_t> range = s_core->bw_search(mgram);
+    std::pair<int64_t, int64_t> range = succinct_core_->bw_search(mgram);
     if (range.first > range.second)
       return;
     offsets.reserve((uint64_t) (range.second - range.first + 1));
     for (int64_t i = range.first; i <= range.second; i++) {
-      offsets.push_back((int64_t) s_core->lookupSA(i));
+      offsets.push_back((int64_t) succinct_core_->lookupSA(i));
     }
     for (auto offset : offsets)
-      mgram_res.insert(OffsetLength(offset, len));
+      mgram_results.insert(OffsetLength(offset, len));
   }
 
-  void regexUnion(RegExResult &union_res, RegExResult &a, RegExResult &b) {
-    std::set_union(a.begin(), a.end(), b.begin(), b.end(),
-                   std::inserter(union_res, union_res.begin()));
+  void Union(RegExResult &union_results, RegExResult &first,
+             RegExResult &second) {
+    std::set_union(first.begin(), first.end(), second.begin(), second.end(),
+                   std::inserter(union_results, union_results.begin()));
   }
 
-  void regexConcat(RegExResult &concat_res, RegExResult &left,
-                   RegExResult &right) {
+  void Concat(RegExResult &concat_results, RegExResult &left,
+              RegExResult &right) {
 
     RegExResultIterator left_it, right_it;
     for (left_it = left.begin(), right_it = right.begin();
@@ -136,29 +138,29 @@ class RegExExecutorBlackBox : public RegExExecutor {
         break;
 
       if (right_it->first == left_it->first + left_it->second)
-        concat_res.insert(
+        concat_results.insert(
             OffsetLength(left_it->first, left_it->second + right_it->second));
     }
   }
 
-  void regexRepeat(RegExResult &repeat_res, RegExResult &a,
-                   RegExRepeatType r_type, int min = -1, int max = -1) {
-    switch (r_type) {
+  void Repeat(RegExResult &repeat_results, RegExResult &internal,
+              RegExRepeatType repeat_type, int min = -1, int max = -1) {
+    switch (repeat_type) {
       case RegExRepeatType::ZeroOrMore: {
         size_t concat_size;
         RegExResult concat_res;
-        repeat_res = concat_res = a;
+        repeat_results = concat_res = internal;
 
         do {
           RegExResult concat_temp_res;
-          regexConcat(concat_temp_res, concat_res, a);
+          Concat(concat_temp_res, concat_res, internal);
           concat_res = concat_temp_res;
 
           concat_size = concat_res.size();
 
           RegExResult repeat_temp_res;
-          regexUnion(repeat_temp_res, repeat_res, concat_res);
-          repeat_res = repeat_temp_res;
+          Union(repeat_temp_res, repeat_results, concat_res);
+          repeat_results = repeat_temp_res;
 
         } while (concat_size);
         break;
@@ -167,18 +169,18 @@ class RegExExecutorBlackBox : public RegExExecutor {
         // FIXME: .* is equivalent to .+ for now.
         size_t concat_size;
         RegExResult concat_res;
-        repeat_res = concat_res = a;
+        repeat_results = concat_res = internal;
 
         do {
           RegExResult concat_temp_res;
-          regexConcat(concat_temp_res, concat_res, a);
+          Concat(concat_temp_res, concat_res, internal);
           concat_res = concat_temp_res;
 
           concat_size = concat_res.size();
 
           RegExResult repeat_temp_res;
-          regexUnion(repeat_temp_res, repeat_res, concat_res);
-          repeat_res = repeat_temp_res;
+          Union(repeat_temp_res, repeat_results, concat_res);
+          repeat_results = repeat_temp_res;
 
         } while (concat_size);
         break;
@@ -186,13 +188,13 @@ class RegExExecutorBlackBox : public RegExExecutor {
       case RegExRepeatType::MinToMax: {
         size_t concat_size;
         RegExResult concat_res, min_res;
-        min_res = concat_res = a;
+        min_res = concat_res = internal;
         size_t num_repeats = 1;
 
         // Get to min repeats
         while (num_repeats < min) {
           RegExResult concat_temp_res;
-          regexConcat(concat_temp_res, concat_res, a);
+          Concat(concat_temp_res, concat_res, internal);
           concat_res = concat_temp_res;
 
           num_repeats++;
@@ -203,14 +205,14 @@ class RegExExecutorBlackBox : public RegExExecutor {
 
         do {
           RegExResult concat_temp_res;
-          regexConcat(concat_temp_res, concat_res, a);
+          Concat(concat_temp_res, concat_res, internal);
           concat_res = concat_temp_res;
 
           concat_size = concat_res.size();
 
           RegExResult repeat_temp_res;
-          regexUnion(repeat_temp_res, repeat_res, concat_res);
-          repeat_res = repeat_temp_res;
+          Union(repeat_temp_res, repeat_results, concat_res);
+          repeat_results = repeat_temp_res;
 
           num_repeats++;
         } while (concat_size && num_repeats < max);
@@ -225,82 +227,83 @@ class RegExExecutorSuccinct : public RegExExecutor {
  public:
   typedef std::pair<int64_t, int64_t> Range;
   typedef struct ResultEntry {
-    ResultEntry(Range _range, size_t _length) {
-      range = _range;
-      length = _length;
+    ResultEntry(Range range, size_t length) {
+      range_ = range;
+      length_ = length;
     }
-    Range range;
-    size_t length;
+    Range range_;
+    size_t length_;
   } ResultEntry;
   struct ResultEntryComparator {
     bool operator()(const ResultEntry &lhs, const ResultEntry &rhs) {
-      if (lhs.range == rhs.range)
-        return lhs.length < rhs.length;
-      return lhs.range < rhs.range;
+      if (lhs.range_ == rhs.range_)
+        return lhs.length_ < rhs.length_;
+      return lhs.range_ < rhs.range_;
     }
-  } comp;
+  } result_comparator;
   typedef std::set<ResultEntry, ResultEntryComparator> ResultSet;
   typedef ResultSet::iterator ResultIterator;
 
-  RegExExecutorSuccinct(SuccinctCore *s_core, RegEx *re)
-      : RegExExecutor(s_core, re) {
+  RegExExecutorSuccinct(SuccinctCore *succinct_core, RegEx *regex)
+      : RegExExecutor(succinct_core, regex) {
   }
 
-  size_t count() {
+  size_t Count() {
     size_t sum = 0;
-    compute(regex_res, re);
+    Compute(regex_results_, regex_);
 
-    for (ResultIterator r_it = regex_res.begin(); r_it != regex_res.end();
-        r_it++) {
-      Range range = r_it->range;
-      if (!isEmpty(range))
+    for (ResultIterator r_it = regex_results_.begin();
+        r_it != regex_results_.end(); r_it++) {
+      Range range = r_it->range_;
+      if (!IsEmpty(range))
         sum += (range.second - range.first + 1);
     }
 
     return sum;
   }
 
-  void execute() {
-    compute(regex_res, re);
+  void Execute() {
+    Compute(regex_results_, regex_);
 
     // Process final results
     std::map<int64_t, size_t> sa_buf;
-    std::vector<std::pair<size_t, size_t>> res;
-    for (ResultIterator r_it = regex_res.begin(); r_it != regex_res.end();
-        r_it++) {
-      Range range = r_it->range;
-      if (!isEmpty(range)) {
+    std::vector<std::pair<size_t, size_t>> results;
+    for (ResultIterator r_it = regex_results_.begin();
+        r_it != regex_results_.end(); r_it++) {
+      Range range = r_it->range_;
+      if (!IsEmpty(range)) {
         for (int64_t i = range.first; i <= range.second; i++) {
           if (sa_buf.find(i) == sa_buf.end()) {
-            sa_buf[i] = s_core->lookupSA(i);
+            sa_buf[i] = succinct_core_->lookupSA(i);
           }
-          res.push_back(OffsetLength(sa_buf[i], r_it->length));
+          results.push_back(OffsetLength(sa_buf[i], r_it->length_));
         }
       }
     }
-    final_res = std::set<std::pair<size_t, size_t>>(res.begin(), res.end());
+    final_results_ = std::set<std::pair<size_t, size_t>>(results.begin(),
+                                                         results.end());
   }
 
  protected:
-  virtual void compute(ResultSet &results, RegEx *r) = 0;
+  virtual void Compute(ResultSet &results, RegEx *regex) = 0;
 
-  bool isEmpty(Range range) {
+  bool IsEmpty(Range range) {
     return range.first > range.second;
   }
 
-  bool isEmpty(ResultEntry entry) {
-    return isEmpty(entry.range);
+  bool IsEmpty(ResultEntry entry) {
+    return IsEmpty(entry.range_);
   }
 
-  bool isEmpty(ResultSet results) {
+  bool IsEmpty(ResultSet results) {
     for (auto result : results) {
-      if (!isEmpty(result.range))
+      if (!IsEmpty(result.range_))
         return false;
     }
     return results.empty();
   }
 
-  ResultSet regex_res;
+  ResultSet regex_results_;
 };
 
 #endif

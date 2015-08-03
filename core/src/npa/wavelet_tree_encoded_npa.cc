@@ -1,12 +1,12 @@
-#include "../../include/npa/wavelet_tree_encoded_npa.h"
+#include "npa/wavelet_tree_encoded_npa.h"
 
 WaveletTreeEncodedNPA::WaveletTreeEncodedNPA(uint64_t npa_size,
                                              uint64_t sigma_size,
                                              uint32_t context_len,
                                              uint32_t sampling_rate,
-                                             bitmap_t *data_bitmap,
-                                             bitmap_t *compactSA,
-                                             bitmap_t *compactISA,
+                                             Bitmap *data_bitmap,
+                                             Bitmap *compactSA,
+                                             Bitmap *compactISA,
                                              SuccinctAllocator &s_allocator,
                                              SuccinctBase *s_base)
     : NPA(npa_size, sigma_size, context_len, sampling_rate,
@@ -44,7 +44,7 @@ void WaveletTreeEncodedNPA::CreateWaveletTree(WaveletNode **w, uint64_t s,
   std::vector<uint64_t> v1, v1_c, v0, v0_c;
 
   (*w) = new WaveletNode;
-  bitmap_t *B = new bitmap_t;
+  Bitmap *B = new Bitmap;
   SuccinctBase::init_bitmap(&(B), v.size(), s_allocator_);
   (*w)->id = m;
 
@@ -102,8 +102,8 @@ uint64_t WaveletTreeEncodedNPA::LookupWaveletTree(WaveletNode *tree,
 
 }
 
-void WaveletTreeEncodedNPA::Encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
-                                   bitmap_t *compactISA) {
+void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
+                                   Bitmap *compactISA) {
   uint32_t logn, q;
   uint64_t k1, k2, k = 0, l_off = 0, c_id, c_val, npa_val, p = 0;
 
@@ -117,7 +117,7 @@ void WaveletTreeEncodedNPA::Encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
   uint64_t *sizes, *starts;
   uint64_t last_i = 0;
 
-  logn = SuccinctUtils::int_log_2(npa_size_ + 1);
+  logn = SuccinctUtils::IntegerLog2(npa_size_ + 1);
 
   for (uint64_t i = 0; i < npa_size_; i++) {
     uint64_t c_val = ComputeContextValue(data_bitmap, i);
@@ -138,7 +138,7 @@ void WaveletTreeEncodedNPA::Encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
   assert(k == contexts_.size());
   context_size.clear();
 
-  bitmap_t *E = new bitmap_t;
+  Bitmap *E = new Bitmap;
   table = new std::vector<uint64_t>*[k];
   cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
   col_nec_ = new std::vector<uint64_t>[sigma_size_];
@@ -308,7 +308,7 @@ size_t WaveletTreeEncodedNPA::Serialize(std::ostream& out) {
   typedef std::map<uint64_t, uint64_t>::iterator iterator_t;
 
   // Output NPA scheme
-  out.write(reinterpret_cast<const char *>(&(npa_scheme_)), sizeof(uint64_t));
+  out.write(reinterpret_cast<const char *>(&(encoding_scheme_)), sizeof(uint64_t));
   out_size += sizeof(uint64_t);
 
   // Output NPA size
@@ -365,7 +365,7 @@ size_t WaveletTreeEncodedNPA::Deserialize(std::istream& in) {
   size_t in_size = 0;
 
   // Read NPA scheme
-  in.read(reinterpret_cast<char *>(&(npa_scheme_)), sizeof(uint64_t));
+  in.read(reinterpret_cast<char *>(&(encoding_scheme_)), sizeof(uint64_t));
   in_size += sizeof(uint64_t);
 
   // Read NPA size
@@ -422,9 +422,9 @@ size_t WaveletTreeEncodedNPA::Deserialize(std::istream& in) {
 
 size_t WaveletTreeEncodedNPA::MemoryMap(std::string filename) {
   uint8_t *data, *data_beg;
-  data = data_beg = (uint8_t *) SuccinctUtils::memory_map(filename);
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
 
-  npa_scheme_ = (NPAEncodingScheme) (*((uint64_t *) data));
+  encoding_scheme_ = (NPAEncodingScheme) (*((uint64_t *) data));
   data += sizeof(uint64_t);
   npa_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);

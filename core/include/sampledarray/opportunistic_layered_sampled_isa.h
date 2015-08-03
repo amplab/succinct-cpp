@@ -18,10 +18,9 @@ class OpportunisticLayeredSampledISA : public OpportunisticLayeredSampledArray {
   uint64_t operator[](uint64_t i);
 
  protected:
-  NPA *npa;
+  void SampleLayered(bitmap_t *SA, uint64_t n);
 
-  void layered_sample(bitmap_t *SA, uint64_t n);
-
+  NPA *npa_;
 };
 
 #endif

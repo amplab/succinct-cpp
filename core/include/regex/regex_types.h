@@ -4,67 +4,67 @@
 #include <iostream>
 
 enum RegExType {
-  Union,
-  Concat,
-  Repeat,
-  Primitive,
-  Blank
+  UNION,
+  CONCAT,
+  REPEAT,
+  PRIMITIVE,
+  BLANK
 };
 
 class RegEx {
  public:
-  RegEx(RegExType re_type) {
-    this->re_type = re_type;
+  RegEx(RegExType regex_type) {
+    regex_type_ = regex_type;
   }
 
-  RegExType getType() {
-    return re_type;
+  RegExType GetType() {
+    return regex_type_;
   }
 
  private:
-  RegExType re_type;
+  RegExType regex_type_;
 };
 
 class RegExUnion : public RegEx {
  public:
   RegExUnion(RegEx *first, RegEx *second)
-      : RegEx(RegExType::Union) {
-    this->first = first;
-    this->second = second;
+      : RegEx(RegExType::UNION) {
+    first_ = first;
+    second_ = second;
   }
 
-  RegEx *getFirst() {
-    return first;
+  RegEx *GetFirst() {
+    return first_;
   }
 
-  RegEx *getSecond() {
-    return second;
+  RegEx *GetSecond() {
+    return second_;
   }
 
  private:
-  RegEx *first;
-  RegEx *second;
+  RegEx *first_;
+  RegEx *second_;
 };
 
 class RegExConcat : public RegEx {
  public:
-  RegExConcat(RegEx *first, RegEx *second)
-      : RegEx(RegExType::Concat) {
-    this->first = first;
-    this->second = second;
+  RegExConcat(RegEx *left, RegEx *right)
+      : RegEx(RegExType::CONCAT) {
+    this->left_ = left;
+    this->right_ = right;
   }
 
   RegEx *getLeft() {
-    return first;
+    return left_;
   }
 
   RegEx *getRight() {
-    return second;
+    return right_;
   }
 
  private:
-  RegEx *first;
-  RegEx *second;
+  RegEx *left_;
+  RegEx *right_;
 };
 
 enum RegExRepeatType {
@@ -75,51 +75,51 @@ enum RegExRepeatType {
 
 class RegExRepeat : public RegEx {
  public:
-  RegExRepeat(RegEx *internal, RegExRepeatType r_type, int min = -1, int max =
-                  -1)
-      : RegEx(RegExType::Repeat) {
-    this->internal = internal;
-    this->r_type = r_type;
-    this->min = min;
-    this->max = max;
+  RegExRepeat(RegEx *internal, RegExRepeatType repeat_type, int min = -1,
+              int max = -1)
+      : RegEx(RegExType::REPEAT) {
+    this->internal_ = internal;
+    this->repeat_type_ = repeat_type;
+    this->min_ = min;
+    this->max_ = max;
   }
 
-  RegEx *getInternal() {
-    return internal;
+  RegEx *GetInternal() {
+    return internal_;
   }
 
-  RegExRepeatType getRepeatType() {
-    return r_type;
+  RegExRepeatType GetRepeatType() {
+    return repeat_type_;
   }
 
-  int getMin() {
-    return min;
+  int GetMin() {
+    return min_;
   }
 
-  int getMax() {
-    return max;
+  int GetMax() {
+    return max_;
   }
 
  private:
-  RegEx *internal;
-  RegExRepeatType r_type;
-  int min;
-  int max;
+  RegEx *internal_;
+  RegExRepeatType repeat_type_;
+  int min_;
+  int max_;
 };
 
 enum RegExPrimitiveType {
-  Mgram,
-  Dot,
-  Range
+  MGRAM,
+  DOT,
+  RANGE
 };
 
 class RegExPrimitive : public RegEx {
  public:
-  RegExPrimitive(std::string primitive, RegExPrimitiveType p_type =
-                     RegExPrimitiveType::Mgram)
-      : RegEx(RegExType::Primitive) {
-    this->p_type = p_type;
-    if (p_type == RegExPrimitiveType::Range) {
+  RegExPrimitive(std::string primitive, RegExPrimitiveType primitive_type =
+                     RegExPrimitiveType::MGRAM)
+      : RegEx(RegExType::PRIMITIVE) {
+    this->primitive_type_ = primitive_type;
+    if (primitive_type == RegExPrimitiveType::RANGE) {
       // Expand all ranges
       std::string buf = "";
       for (size_t i = 0; i < primitive.length(); i++) {
@@ -131,26 +131,26 @@ class RegExPrimitive : public RegEx {
       }
       primitive = buf;
     }
-    this->primitive = primitive;
+    this->primitive_ = primitive;
   }
 
-  std::string getPrimitive() {
-    return primitive;
+  std::string GetPrimitive() {
+    return primitive_;
   }
 
-  RegExPrimitiveType getPrimitiveType() {
-    return p_type;
+  RegExPrimitiveType GetPrimitiveType() {
+    return primitive_type_;
   }
 
  private:
-  std::string primitive;
-  RegExPrimitiveType p_type;
+  std::string primitive_;
+  RegExPrimitiveType primitive_type_;
 };
 
 class RegExBlank : public RegEx {
  public:
   RegExBlank()
-      : RegEx(RegExType::Blank) {
+      : RegEx(RegExType::BLANK) {
   }
 };
 

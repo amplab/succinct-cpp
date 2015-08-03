@@ -5,8 +5,8 @@
 
 class SampledArray {
  public:
-  SampledArray(SamplingScheme scheme) {
-    this->scheme = scheme;
+  SampledArray(SamplingScheme sampling_scheme) {
+    sampling_scheme_ = sampling_scheme;
   }
   virtual ~SampledArray() {
   }
@@ -16,22 +16,22 @@ class SampledArray {
     return operator[](i);
   }
 
-  virtual size_t serialize(std::ostream& out) = 0;
-  virtual size_t deserialize(std::istream& in) = 0;
-  virtual size_t memorymap(std::string filename) = 0;
+  virtual size_t Serialize(std::ostream& out) = 0;
+  virtual size_t Deserialize(std::istream& in) = 0;
+  virtual size_t MemoryMap(std::string filename) = 0;
 
-  SamplingScheme get_sampling_scheme() {
-    return scheme;
+  SamplingScheme GetSamplingScheme() {
+    return sampling_scheme_;
   }
 
-  virtual uint32_t get_sampling_rate() = 0;
+  virtual uint32_t GetSamplingRate() = 0;
 
-  virtual bool is_sampled(uint64_t i) = 0;
+  virtual bool IsSampled(uint64_t i) = 0;
 
-  virtual size_t storage_size() = 0;
+  virtual size_t StorageSize() = 0;
 
  private:
-  SamplingScheme scheme;
+  SamplingScheme sampling_scheme_;
 };
 
 #endif /* SAMPLED_ARRAY_HPP */

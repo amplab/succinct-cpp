@@ -4,9 +4,9 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
-                                           bitmap_t *data_bitmap,
-                                           bitmap_t *compactSA,
-                                           bitmap_t *compactISA,
+                                           Bitmap *data_bitmap,
+                                           Bitmap *compactSA,
+                                           Bitmap *compactISA,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
@@ -62,7 +62,7 @@ uint32_t EliasGammaEncodedNPA::EliasGammaEncodingSize(uint64_t n) {
 }
 
 // Encode a sorted vector using elias gamma encoding
-void EliasGammaEncodedNPA::EliasGammaEncode(bitmap_t **B,
+void EliasGammaEncodedNPA::EliasGammaEncode(Bitmap **B,
                                               std::vector<uint64_t> &deltas,
                                               uint64_t size) {
   if (size == 0) {
@@ -81,7 +81,7 @@ void EliasGammaEncodedNPA::EliasGammaEncode(bitmap_t **B,
 
 // Decode a particular elias-gamma encoded delta value at a provided offset
 // in the deltas bitmap
-uint64_t EliasGammaEncodedNPA::EliasGammaDecode(bitmap_t *B,
+uint64_t EliasGammaEncodedNPA::EliasGammaDecode(Bitmap *B,
                                                   uint64_t *offset) {
   uint32_t N = 0;
 #if USE_BSR
@@ -100,7 +100,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaDecode(bitmap_t *B,
 }
 
 // Compute the prefix sum of the elias-gamma encoded deltas
-uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(bitmap_t *B,
+uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B,
                                                       uint64_t offset,
                                                       uint64_t i) {
   uint64_t delta_sum = 0;
@@ -225,15 +225,15 @@ void EliasGammaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
   if (max_sample == 0)
     dv->sample_bits = 1;
   else
-    dv->sample_bits = (uint8_t) SuccinctUtils::int_log_2(max_sample + 1);
+    dv->sample_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_sample + 1);
 
   if (max_offset == 0)
     dv->delta_offset_bits = 1;
   else
-    dv->delta_offset_bits = (uint8_t) SuccinctUtils::int_log_2(max_offset + 1);
+    dv->delta_offset_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_offset + 1);
 
-  dv->samples = new bitmap_t;
-  dv->deltas = new bitmap_t;
+  dv->samples = new Bitmap;
+  dv->deltas = new Bitmap;
   SuccinctBase::create_bitmap_array(&(dv->samples),
                                     (_samples.size() == 0) ?
                                     NULL :
@@ -242,7 +242,7 @@ void EliasGammaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
                                     s_allocator_);
 
   EliasGammaEncode(&(dv->deltas), _deltas, cum_delta_size);
-  dv->delta_offsets = new bitmap_t;
+  dv->delta_offsets = new Bitmap;
   SuccinctBase::create_bitmap_array(
       &(dv->delta_offsets),
       (_delta_offsets.size() == 0) ? NULL : &_delta_offsets[0],

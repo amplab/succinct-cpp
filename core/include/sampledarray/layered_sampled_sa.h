@@ -15,13 +15,12 @@ class LayeredSampledSA : public LayeredSampledArray {
   // Access element at index i
   uint64_t operator[](uint64_t i);
 
-  size_t reconstruct_layer(uint32_t layer_id);
+  size_t ReconstructLayer(uint32_t layer_id);
 
  protected:
+  void SampleLayered(bitmap_t *SA, uint64_t n);
+
   NPA *npa;
-
-  void layered_sample(bitmap_t *SA, uint64_t n);
-
 };
 
 #endif /* LAYEREDSAMPLEDSA_HPP */

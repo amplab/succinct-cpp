@@ -17,21 +17,21 @@ class SampledByValueSA : public FlatSampledArray {
   virtual uint64_t operator[](uint64_t i);
 
   // Get d_bpos
-  dictionary_t *get_d_bpos();
+  Dictionary *GetSampledPositions();
 
   // Set d_bpos
-  void set_d_bpos(dictionary_t *d_bpos);
+  void SetSampledPositions(Dictionary *sampled_positions);
 
  protected:
   // Sample original SA by value
-  virtual void sample(bitmap_t *original, uint64_t n);
+  virtual void Sample(bitmap_t *original, uint64_t n);
 
   // Check if index is sampled
-  bool is_sampled(uint64_t i);
+  bool IsSampled(uint64_t i);
 
  private:
-  dictionary_t *d_bpos;
-  SuccinctBase *s_base;
+  Dictionary *sampled_positions_;
+  SuccinctBase *succinct_base_;
 };
 
 #endif

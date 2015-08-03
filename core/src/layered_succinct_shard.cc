@@ -25,11 +25,11 @@ LayeredSuccinctShard::LayeredSuccinctShard(
 size_t LayeredSuccinctShard::remove_layer(uint32_t layer_id) {
   size_t size = 0;
   if (!opportunistic) {
-    size += ((LayeredSampledArray *) SA)->delete_layer(layer_id);
-    size += ((LayeredSampledArray *) ISA)->delete_layer(layer_id);
+    size += ((LayeredSampledArray *) SA)->DestroyLayer(layer_id);
+    size += ((LayeredSampledArray *) ISA)->DestroyLayer(layer_id);
   } else {
-    size += ((OpportunisticLayeredSampledArray *) SA)->delete_layer(layer_id);
-    size += ((OpportunisticLayeredSampledArray *) ISA)->delete_layer(layer_id);
+    size += ((OpportunisticLayeredSampledArray *) SA)->DestroyLayer(layer_id);
+    size += ((OpportunisticLayeredSampledArray *) ISA)->DestroyLayer(layer_id);
   }
   return size;
 }
@@ -37,11 +37,11 @@ size_t LayeredSuccinctShard::remove_layer(uint32_t layer_id) {
 size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
   size_t size = 0;
   if (!opportunistic) {
-    size += ((LayeredSampledSA *) SA)->reconstruct_layer(layer_id);
-    size += ((LayeredSampledISA *) ISA)->reconstruct_layer(layer_id);
+    size += ((LayeredSampledSA *) SA)->ReconstructLayer(layer_id);
+    size += ((LayeredSampledISA *) ISA)->ReconstructLayer(layer_id);
   } else {
-    size += ((OpportunisticLayeredSampledSA *) SA)->reconstruct_layer(layer_id);
-    size += ((OpportunisticLayeredSampledISA *) ISA)->reconstruct_layer(
+    size += ((OpportunisticLayeredSampledSA *) SA)->ReconstructLayer(layer_id);
+    size += ((OpportunisticLayeredSampledISA *) ISA)->ReconstructLayer(
         layer_id);
   }
   return size;
@@ -65,7 +65,7 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
     for (int64_t i = 0; i < len; i++) {
       result[i] = alphabet[lookupC(idx)];
       uint64_t next_pos = start + i + 1;
-      if (ISA_lay->is_sampled(next_pos)) {
+      if (ISA_lay->IsSampled(next_pos)) {
         idx = lookupISA(next_pos);
       } else {
         idx = lookupNPA(idx);
@@ -88,22 +88,22 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
   int64_t len = end - start - 1;
   result.resize(len);
   uint64_t idx = lookupISA(start);
-  ISA_opp->store(start, idx);
+  ISA_opp->Store(start, idx);
   for (int64_t i = 0; i < len; i++) {
     result[i] = alphabet[lookupC(idx)];
     uint64_t next_pos = start + i + 1;
-    if (ISA_opp->is_sampled(next_pos)) {
+    if (ISA_opp->IsSampled(next_pos)) {
       idx = lookupISA(next_pos);
     } else {
       idx = lookupNPA(idx);
     }
-    ISA_opp->store(next_pos, idx);
+    ISA_opp->Store(next_pos, idx);
   }
 }
 
 uint64_t LayeredSuccinctShard::num_sampled_values() {
   if (opportunistic) {
-    return ((OpportunisticLayeredSampledISA *) ISA)->get_num_sampled_values();
+    return ((OpportunisticLayeredSampledISA *) ISA)->GetNumSampledValues();
   }
   return 0;
 }
@@ -122,7 +122,7 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key,
     for (int64_t i = 0; i < len; i++) {
       result[i] = alphabet[lookupC(idx)];
       uint64_t next_pos = (start + i + 1) % original_size();
-      if (ISA_lay->is_sampled(next_pos)) {
+      if (ISA_lay->IsSampled(next_pos)) {
         idx = lookupISA(next_pos);
       } else {
         idx = lookupNPA(idx);
@@ -140,15 +140,15 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key,
   int64_t start = value_offsets[pos] + offset;
   result.resize(len);
   uint64_t idx = lookupISA(start);
-  ISA_opp->store(start, idx);
+  ISA_opp->Store(start, idx);
   for (int64_t i = 0; i < len; i++) {
     result[i] = alphabet[lookupC(idx)];
     uint64_t next_pos = (start + i + 1) % original_size();
-    if (ISA_opp->is_sampled(next_pos)) {
+    if (ISA_opp->IsSampled(next_pos)) {
       idx = lookupISA(next_pos);
     } else {
       idx = lookupNPA(idx);
     }
-    ISA_opp->store(next_pos, idx);
+    ISA_opp->Store(next_pos, idx);
   }
 }

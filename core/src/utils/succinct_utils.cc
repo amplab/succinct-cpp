@@ -1,7 +1,7 @@
 #include "../../include/utils/succinct_utils.h"
 
 // Returns the number of set bits in a 64 bit integer
-uint64_t SuccinctUtils::popcount(uint64_t n) {
+uint64_t SuccinctUtils::PopCount(uint64_t n) {
   // TODO: Add support for hardware instruction
   n -= (n >> 1) & m1;
   n = (n & m2) + ((n >> 2) & m2);
@@ -10,7 +10,7 @@ uint64_t SuccinctUtils::popcount(uint64_t n) {
 }
 
 // Returns integer logarithm to the base 2
-uint32_t SuccinctUtils::int_log_2(uint64_t n) {
+uint32_t SuccinctUtils::IntegerLog2(uint64_t n) {
   // TODO: Add support for hardware instruction
   uint32_t l = ISPOWOF2(n) ? 0 : 1;
   while (n >>= 1)
@@ -19,14 +19,14 @@ uint32_t SuccinctUtils::int_log_2(uint64_t n) {
 }
 
 // Returns a modulo n
-uint64_t SuccinctUtils::modulo(int64_t a, uint64_t n) {
+uint64_t SuccinctUtils::Modulo(int64_t a, uint64_t n) {
   while (a < 0)
     a += n;
   return a % n;
 }
 
 // Memory map a file and return mapped buffer
-void* SuccinctUtils::memory_map(std::string filename) {
+void* SuccinctUtils::MemoryMap(std::string filename) {
   struct stat st;
   stat(filename.c_str(), &st);
 

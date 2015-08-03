@@ -41,12 +41,12 @@ void SuccinctBase::init_tables() {
   }
   q[16] = 1;
   for (uint64_t i = 0; i <= 65535; i++) {
-    uint64_t p = SuccinctUtils::popcount(i);
+    uint64_t p = SuccinctUtils::PopCount(i);
     decode_table[p % 16][q[p]] = (uint16_t) i;
     encode_table[p % 16][i] = q[p];
     q[p]++;
     for (uint64_t j = 0; j < 16; j++) {
-      smallrank[i][j] = (uint8_t) SuccinctUtils::popcount(i >> (15 - j));
+      smallrank[i][j] = (uint8_t) SuccinctUtils::PopCount(i >> (15 - j));
     }
   }
 }
@@ -353,25 +353,25 @@ uint64_t SuccinctBase::create_dictionary(SuccinctBase::BitMap *B,
       count++;
     }
     if (i % 64 == 0) {
-      p = SuccinctUtils::popcount((B->bitmap[i / 64] >> 48) & 65535);
+      p = SuccinctUtils::PopCount((B->bitmap[i / 64] >> 48) & 65535);
       p = p % 16;
       size += offbits[p];
       dict.push_back(p);
       dict.push_back(encode_table[p][(B->bitmap[i / 64] >> 48) & 65535]);
 
-      p = SuccinctUtils::popcount((B->bitmap[i / 64] >> 32) & 65535);
+      p = SuccinctUtils::PopCount((B->bitmap[i / 64] >> 32) & 65535);
       p = p % 16;
       size += offbits[p];
       dict.push_back(p % 16);
       dict.push_back(encode_table[p][(B->bitmap[i / 64] >> 32) & 65535]);
 
-      p = SuccinctUtils::popcount((B->bitmap[i / 64] >> 16) & 65535);
+      p = SuccinctUtils::PopCount((B->bitmap[i / 64] >> 16) & 65535);
       p = p % 16;
       size += offbits[p];
       dict.push_back(p % 16);
       dict.push_back(encode_table[p][(B->bitmap[i / 64] >> 16) & 65535]);
 
-      p = SuccinctUtils::popcount(B->bitmap[i / 64] & 65535);
+      p = SuccinctUtils::PopCount(B->bitmap[i / 64] & 65535);
       p = p % 16;
       size += offbits[p];
       dict.push_back(p % 16);

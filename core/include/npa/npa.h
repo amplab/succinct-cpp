@@ -1,19 +1,21 @@
 #ifndef NPA_H
 #define NPA_H
 
-#include "../succinct_base.h"
+#include "utils/definitions.h"
+#include "succinct_base.h"
 
 class NPA {
  public:
+
+  // Type definitions
   typedef enum npa_encoding_scheme {
     WAVELET_TREE_ENCODED = 0,
     ELIAS_DELTA_ENCODED = 1,
     ELIAS_GAMMA_ENCODED = 2
   } NPAEncodingScheme;
 
-  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::BitMap Bitmap;
 
- public:
   // Constructor
   NPA(uint64_t npa_size, uint64_t sigma_size, uint32_t context_len,
       uint32_t sampling_rate, NPAEncodingScheme encoding_scheme,
@@ -52,8 +54,8 @@ class NPA {
   }
 
   // Encode NPA based on the encoding scheme
-  virtual void Encode(bitmap_t *data_bitmap, bitmap_t *compactSA,
-                      bitmap_t *compactISA) = 0;
+  virtual void Encode(Bitmap *data_bitmap, Bitmap *compactSA,
+                      Bitmap *compactISA) = 0;
 
   // Access element at index i
   virtual uint64_t operator[](uint64_t i) = 0;
@@ -91,9 +93,9 @@ class NPA {
 
  protected:
 
-  bool CompareDataBitmap(bitmap_t *data_bitmap, uint64_t i, uint64_t j,
+  bool CompareDataBitmap(Bitmap *data_bitmap, uint64_t i, uint64_t j,
                            uint64_t k) {
-    uint32_t sigma_bits = SuccinctUtils::int_log_2(sigma_size_);
+    uint32_t sigma_bits = SuccinctUtils::IntegerLog2(sigma_size_);
     for (uint64_t p = i; p < i + k; p++)
       if (SuccinctBase::lookup_bitmap_array(data_bitmap, p, sigma_bits)
           != SuccinctBase::lookup_bitmap_array(data_bitmap, j++, sigma_bits))
@@ -102,8 +104,8 @@ class NPA {
     return true;
   }
 
-  uint64_t ComputeContextValue(bitmap_t *data_bitmap, uint32_t i) {
-    uint32_t sigma_bits = SuccinctUtils::int_log_2(sigma_size_ + 1);
+  uint64_t ComputeContextValue(Bitmap *data_bitmap, uint32_t i) {
+    uint32_t sigma_bits = SuccinctUtils::IntegerLog2(sigma_size_ + 1);
     uint64_t val = 0;
     uint64_t max = MIN(i + context_len_, npa_size_);
     for (uint64_t p = i; p < max; p++) {

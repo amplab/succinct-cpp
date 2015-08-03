@@ -6,10 +6,10 @@
 class WaveletTreeEncodedNPA : public NPA {
 
  public:
-  typedef SuccinctBase::Dictionary dictionary_t;
+  typedef SuccinctBase::Dictionary Dictionary;
 
   typedef struct _wletnode {
-    dictionary_t D;
+    Dictionary D;
     char id;
     struct _wletnode *lt, *rt;
   } WaveletNode;
@@ -17,8 +17,8 @@ class WaveletTreeEncodedNPA : public NPA {
   // Constructor
   WaveletTreeEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                         uint32_t context_len, uint32_t sampling_rate,
-                        bitmap_t *data_bitmap, bitmap_t *compactSA,
-                        bitmap_t *compactISA, SuccinctAllocator &s_allocator,
+                        Bitmap *data_bitmap, Bitmap *compactSA,
+                        Bitmap *compactISA, SuccinctAllocator &s_allocator,
                         SuccinctBase *s_base);
 
   WaveletTreeEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
@@ -29,8 +29,8 @@ class WaveletTreeEncodedNPA : public NPA {
   }
 
   // Encode EliasDeltaEncodedNPA
-  virtual void Encode(bitmap_t *data_bitmap, bitmap_t *compact_sa,
-                      bitmap_t *compact_isa);
+  virtual void Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
+                      Bitmap *compact_isa);
 
   // Access element at index i
   virtual uint64_t operator[](uint64_t i);

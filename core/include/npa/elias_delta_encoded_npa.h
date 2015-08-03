@@ -17,8 +17,8 @@ class EliasDeltaEncodedNPA : public DeltaEncodedNPA {
  public:
   EliasDeltaEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                        uint32_t context_len, uint32_t sampling_rate,
-                       bitmap_t *data_bitmap, bitmap_t *compact_sa,
-                       bitmap_t *compact_isa, SuccinctAllocator &s_allocator);
+                       Bitmap *data_bitmap, Bitmap *compact_sa,
+                       Bitmap *compact_isa, SuccinctAllocator &s_allocator);
 
   EliasDeltaEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
                        SuccinctAllocator &s_allocator);
@@ -29,15 +29,15 @@ class EliasDeltaEncodedNPA : public DeltaEncodedNPA {
  private:
   uint32_t EliasDeltaEncodingSize(uint64_t n);
 
-  void EliasDeltaEncode(bitmap_t **B, std::vector<uint64_t> &deltas,
+  void EliasDeltaEncode(Bitmap **B, std::vector<uint64_t> &deltas,
                         uint64_t size);
 
   // Decode a particular Elias-Delta encoded delta value at a provided offset
   // in the deltas bitmaps
-  uint64_t EliasDeltaDecode(bitmap_t *B, uint64_t *offset);
+  uint64_t EliasDeltaDecode(Bitmap *B, uint64_t *offset);
 
   // Compute the prefix sum for the Elias-Delta encoded deltas
-  uint64_t EliasDeltaPrefixSum(bitmap_t *B, uint64_t offset, uint64_t i);
+  uint64_t EliasDeltaPrefixSum(Bitmap *B, uint64_t offset, uint64_t i);
 
 };
 

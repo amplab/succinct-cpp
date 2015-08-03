@@ -245,7 +245,7 @@ class AdaptBenchmark : public Benchmark {
  private:
   void GenerateRandoms() {
     uint64_t query_count = query_client_->get_num_keys();
-    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
+    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%llu...\n",
             skew_, query_count);
     ZipfGenerator z(skew_, query_count);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");

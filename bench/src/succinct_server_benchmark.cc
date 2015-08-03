@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/succinct_server_benchmark.h"
+#include "succinct_server_benchmark.h"
 
 void print_usage(char *exec) {
   fprintf(stderr, "Usage: %s [-t num-threads] bench-type\n", exec);

@@ -7,16 +7,16 @@
 #define USE_PREFIXSUM_TABLE 1
 
 /* Gamma prefix sum table functions */
-#define PREFIX_OFF(i)   ((prefixsum[(i)] >> 24) & 0xFF)
-#define PREFIX_CNT(i)   ((prefixsum[i] >> 16) & 0xFF)
-#define PREFIX_SUM(i)   (prefixsum[i] & 0xFFFF)
+#define PREFIX_OFF(i)   ((prefixsum_[(i)] >> 24) & 0xFF)
+#define PREFIX_CNT(i)   ((prefixsum_[i] >> 16) & 0xFF)
+#define PREFIX_SUM(i)   (prefixsum_[i] & 0xFFFF)
 
 class EliasGammaEncodedNPA : public DeltaEncodedNPA {
  public:
   EliasGammaEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                        uint32_t context_len, uint32_t sampling_rate,
-                       bitmap_t *data_bitmap, bitmap_t *compactSA,
-                       bitmap_t *compactISA, SuccinctAllocator &s_allocator);
+                       Bitmap *data_bitmap, Bitmap *compactSA,
+                       Bitmap *compactISA, SuccinctAllocator &s_allocator);
 
   EliasGammaEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
                        SuccinctAllocator &s_allocator);
@@ -52,15 +52,15 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   void InitPrefixSum();
 
   // Encode a sorted vector using elias-gamma encoding
-  void EliasGammaEncode(bitmap_t **B, std::vector<uint64_t> &deltas,
+  void EliasGammaEncode(Bitmap **B, std::vector<uint64_t> &deltas,
                           uint64_t size);
 
   // Decode a particular elias-gamma encoded delta value at a provided offset
   // in the deltas bitmap
-  uint64_t EliasGammaDecode(bitmap_t *B, uint64_t *offset);
+  uint64_t EliasGammaDecode(Bitmap *B, uint64_t *offset);
 
   // Compute the prefix sum of elias-gamma encoded delta values
-  uint64_t EliasGammaPrefixSum(bitmap_t *B, uint64_t offset, uint64_t i);
+  uint64_t EliasGammaPrefixSum(Bitmap *B, uint64_t offset, uint64_t i);
 
   // Pre-computed prefix sums for elias gamma encoded NPA
   uint32_t prefixsum_[65536];

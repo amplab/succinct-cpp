@@ -79,7 +79,7 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
           break;
         case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
           assert(
-              SA->get_sampling_scheme()
+              SA->GetSamplingScheme()
                   == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
           ISA = new SampledByValueISA(sa_sampling_rate, npa, s_allocator, this);
           break;
@@ -151,7 +151,7 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
           break;
         case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
           assert(
-              SA->get_sampling_scheme()
+              SA->GetSamplingScheme()
                   == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
           ISA = new SampledByValueISA(sa_sampling_rate, npa, s_allocator, this);
           break;
@@ -202,7 +202,7 @@ void SuccinctCore::construct(const char* filename, uint32_t sa_sampling_rate,
   data[fsize] = (char) 1;
 
   input_size = fsize + 1;
-  uint32_t bits = SuccinctUtils::int_log_2(input_size + 1);
+  uint32_t bits = SuccinctUtils::IntegerLog2(input_size + 1);
 
   // Construct Suffix Array
   // TODO: Remove dependency from divsufsortxx library
@@ -220,7 +220,7 @@ void SuccinctCore::construct(const char* filename, uint32_t sa_sampling_rate,
 
   // Compact input data
   BitMap *data_bitmap = new BitMap;
-  int sigma_bits = SuccinctUtils::int_log_2(alphabet_size + 1);
+  int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size + 1);
   init_bitmap(&data_bitmap, input_size * sigma_bits, s_allocator);
   for (uint64_t i = 0; i < input_size; i++) {
     set_bitmap_array(&data_bitmap, i, alphabet_map[data[i]].second, sigma_bits);
@@ -293,9 +293,9 @@ void SuccinctCore::construct(const char* filename, uint32_t sa_sampling_rate,
                                   s_allocator);
       break;
     case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-      assert(SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+      assert(SA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
       ISA = new SampledByValueISA(sa_sampling_rate, npa, compactSA, input_size,
-                                  ((SampledByValueSA *) SA)->get_d_bpos(),
+                                  ((SampledByValueSA *) SA)->GetSampledPositions(),
                                   s_allocator, this);
       break;
     case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
@@ -318,7 +318,7 @@ void SuccinctCore::construct(const char* filename, uint32_t sa_sampling_rate,
 }
 
 void SuccinctCore::construct_aux(BitMap *compactSA, const char *data) {
-  uint32_t bits = SuccinctUtils::int_log_2(input_size + 1);
+  uint32_t bits = SuccinctUtils::IntegerLog2(input_size + 1);
   alphabet_size = 1;
 
   for (uint64_t i = 1; i < input_size; ++i) {
@@ -415,12 +415,12 @@ size_t SuccinctCore::serialize() {
     out.write(reinterpret_cast<const char *>(&alphabet[i]), sizeof(char));
   }
 
-  out_size += SA->serialize(sa_out);
-  out_size += ISA->serialize(isa_out);
+  out_size += SA->Serialize(sa_out);
+  out_size += ISA->Serialize(isa_out);
 
-  if (SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
-    assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
-    out_size += serialize_dictionary(((SampledByValueSA *) SA)->get_d_bpos(),
+  if (SA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
+    assert(ISA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+    out_size += serialize_dictionary(((SampledByValueSA *) SA)->GetSampledPositions(),
                                      out);
   }
 
@@ -481,17 +481,17 @@ size_t SuccinctCore::deserialize() {
   }
 
   // Deserialize SA, ISA
-  in_size += SA->deserialize(sa_in);
-  in_size += ISA->deserialize(isa_in);
+  in_size += SA->Deserialize(sa_in);
+  in_size += ISA->Deserialize(isa_in);
 
   // Deserialize bitmap marking positions of sampled values if the sampling scheme
   // is sample by value.
-  if (SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
+  if (SA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
     Dictionary *d_bpos = new Dictionary;
-    assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+    assert(ISA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
     in_size += deserialize_dictionary(&d_bpos, in);
-    ((SampledByValueSA *) SA)->set_d_bpos(d_bpos);
-    ((SampledByValueISA *) ISA)->set_d_bpos(d_bpos);
+    ((SampledByValueSA *) SA)->SetSampledPositions(d_bpos);
+    ((SampledByValueISA *) ISA)->SetSampledPositions(d_bpos);
   }
 
   // Deserialize NPA based on the NPA encoding scheme.
@@ -527,7 +527,7 @@ size_t SuccinctCore::memorymap() {
   assert(stat(succinct_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
   uint8_t *data_beg, *data;
-  data = data_beg = (uint8_t *) SuccinctUtils::memory_map(
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
       succinct_path + "/metadata");
 
   input_size = *((uint64_t *) data);
@@ -560,17 +560,17 @@ size_t SuccinctCore::memorymap() {
   data += (sizeof(char) * (alphabet_size + 1));
 
   // Memory map SA and ISA
-  data += SA->memorymap(succinct_path + "/sa");
-  data += ISA->memorymap(succinct_path + "/isa");
+  data += SA->MemoryMap(succinct_path + "/sa");
+  data += ISA->MemoryMap(succinct_path + "/isa");
 
   // Memory map bitmap marking positions of sampled values if the sampling scheme
   // is sample by value.
-  if (SA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
+  if (SA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
     Dictionary *d_bpos;
-    assert(ISA->get_sampling_scheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+    assert(ISA->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
     data += memorymap_dictionary(&d_bpos, data);
-    ((SampledByValueSA *) SA)->set_d_bpos(d_bpos);
-    ((SampledByValueISA *) ISA)->set_d_bpos(d_bpos);
+    ((SampledByValueSA *) SA)->SetSampledPositions(d_bpos);
+    ((SampledByValueISA *) ISA)->SetSampledPositions(d_bpos);
   }
 
   // Memory map NPA based on the NPA encoding scheme.
@@ -607,8 +607,8 @@ size_t SuccinctCore::storage_size() {
       + alphabet_map.size()
           * (sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t));
   tot_size += sizeof(alphabet_size) + alphabet_size * sizeof(char);
-  tot_size += SA->storage_size();
-  tot_size += ISA->storage_size();
+  tot_size += SA->StorageSize();
+  tot_size += ISA->StorageSize();
   tot_size += npa->StorageSize();
   return tot_size;
 }
@@ -621,8 +621,8 @@ void SuccinctCore::print_storage_breakdown() {
           * (sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t));
   metadata_size += sizeof(alphabet_size) + alphabet_size * sizeof(char);
   fprintf(stderr, "Metadata size = %zu\n", metadata_size);
-  fprintf(stderr, "SA size = %zu\n", SA->storage_size());
-  fprintf(stderr, "ISA size = %zu\n", ISA->storage_size());
+  fprintf(stderr, "SA size = %zu\n", SA->StorageSize());
+  fprintf(stderr, "ISA size = %zu\n", ISA->StorageSize());
   fprintf(stderr, "NPA size = %zu\n", npa->StorageSize());
 }
 

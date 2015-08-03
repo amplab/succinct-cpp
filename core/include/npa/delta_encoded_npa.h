@@ -8,9 +8,9 @@
 class DeltaEncodedNPA : public NPA {
  public:
   typedef struct {
-    bitmap_t *samples;
-    bitmap_t *deltas;
-    bitmap_t *delta_offsets;
+    Bitmap *samples;
+    Bitmap *deltas;
+    Bitmap *delta_offsets;
 
     uint8_t sample_bits;
     uint8_t delta_offset_bits;
@@ -82,7 +82,7 @@ class DeltaEncodedNPA : public NPA {
 
   // Return lower bound integer log (base 2) for n
   static uint32_t LowerLog2(uint64_t n) {
-    return SuccinctUtils::int_log_2(n + 1) - 1;
+    return SuccinctUtils::IntegerLog2(n + 1) - 1;
   }
 
   // Create delta encoded vector
@@ -108,8 +108,8 @@ class DeltaEncodedNPA : public NPA {
   }
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
-  virtual void Encode(bitmap_t *data_bitmap, bitmap_t *compact_sa,
-                      bitmap_t *compact_isa) {
+  virtual void Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
+                      Bitmap *compact_isa) {
     uint32_t logn, q;
     uint64_t k1, k2, k = 0, l_off = 0, c_id, c_val, npa_val, p = 0;
 
@@ -121,7 +121,7 @@ class DeltaEncodedNPA : public NPA {
     uint64_t *sizes, *starts;
     uint64_t last_i = 0;
 
-    logn = SuccinctUtils::int_log_2(npa_size_ + 1);
+    logn = SuccinctUtils::IntegerLog2(npa_size_ + 1);
 
     for (uint64_t i = 0; i < npa_size_; i++) {
       uint64_t c_val = ComputeContextValue(data_bitmap, i);
@@ -142,7 +142,7 @@ class DeltaEncodedNPA : public NPA {
     assert(k == contexts_.size());
     context_size.clear();
 
-    bitmap_t *E = new bitmap_t;
+    Bitmap *E = new Bitmap;
     table = new std::vector<uint64_t>*[k];
     cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
     col_nec_ = new std::vector<uint64_t>[sigma_size_];
@@ -426,7 +426,7 @@ class DeltaEncodedNPA : public NPA {
 
   virtual size_t MemoryMap(std::string filename) {
     uint8_t *data, *data_beg;
-    data = data_beg = (uint8_t *) SuccinctUtils::memory_map(filename);
+    data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
 
     encoding_scheme_ = (NPAEncodingScheme) (*((uint64_t *) data));
     data += sizeof(uint64_t);

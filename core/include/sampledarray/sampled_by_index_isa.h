@@ -17,7 +17,7 @@ class SampledByIndexISA : public FlatSampledArray {
 
  protected:
   // Sample by index for ISA using original SA
-  virtual void sample(bitmap_t *original, uint64_t n);
+  virtual void Sample(bitmap_t *original, uint64_t n);
 };
 
 #endif

@@ -342,7 +342,7 @@ class DynamicLoadBalancerBenchmark : public Benchmark {
 
   void generate_randoms() {
     uint64_t q_cnt = query_client[0]->get_num_keys();
-    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
+    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%llu...\n",
             skew, q_cnt);
     ZipfGenerator z(skew, q_cnt);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");

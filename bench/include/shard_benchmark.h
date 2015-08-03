@@ -25,17 +25,17 @@ class ShardBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       result = (shard_->*function)(randoms_[i]);
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Warmup chksum = %lu\n", sum);
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       t0 = rdtsc();
       result = (shard_->*function)(randoms_[i]);
@@ -44,17 +44,17 @@ class ShardBenchmark : public Benchmark {
       result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Measure chksum = %lu\n", sum);
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       result = (shard_->*function)(randoms_[i]);
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
@@ -69,18 +69,18 @@ class ShardBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
       shard_->get(result, randoms_[i]);
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Warmup chksum = %lu\n", sum);
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
@@ -91,18 +91,18 @@ class ShardBenchmark : public Benchmark {
                     << "\n";
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Measure chksum = %lu\n", sum);
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
       shard_->get(result, randoms_[i]);
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
@@ -117,18 +117,18 @@ class ShardBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
       shard_->access(result, randoms_[i], 0, len);
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Warmup chksum = %lu\n", sum);
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
@@ -138,18 +138,18 @@ class ShardBenchmark : public Benchmark {
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Measure chksum = %lu\n", sum);
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
       shard_->access(result, randoms_[i], 0, len);
       sum = (sum + result.length()) % shard_->original_size();
     }
-    fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
@@ -164,18 +164,18 @@ class ShardBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       uint64_t result;
       result = shard_->count(queries_[i]);
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Warmup chksum = %lu\n", sum);
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       uint64_t result;
       t0 = GetTimestamp();
@@ -185,18 +185,18 @@ class ShardBenchmark : public Benchmark {
       result_stream << queries_[i] << "\t" << tdiff << "\n";
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Measure chksum = %lu\n", sum);
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries...\n", kCooldownCount);
+    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       uint64_t result;
       result = shard_->count(queries_[i]);
       sum = (sum + result) % shard_->original_size();
     }
-    fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
@@ -210,18 +210,18 @@ class ShardBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries_...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries_...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount / 100; i++) {
       std::set<int64_t> result;
       shard_->search(result, queries_[i]);
       sum = (sum + result.size()) % shard_->original_size();
     }
-    fprintf(stderr, "Warmup chksum = %lu\n", sum);
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %lu queries_...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries_...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount / 100;
         i < (kWarmupCount + kMeasureCount) / 100; i++) {
       std::set<int64_t> result;
@@ -232,19 +232,19 @@ class ShardBenchmark : public Benchmark {
       result_stream << result.size() << "\t" << tdiff << "\n";
       sum = (sum + result.size()) % shard_->original_size();
     }
-    fprintf(stderr, "Measure chksum = %lu\n", sum);
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
     // Cooldown
     sum = 0;
-    fprintf(stderr, "Cooling down for %lu queries_...\n", kCooldownCount);
+    fprintf(stderr, "Cooling down for %llu queries_...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount;
         i < (kWarmupCount + kMeasureCount + kCooldownCount) / 100; i++) {
       std::set<int64_t> result;
       shard_->search(result, queries_[i]);
       sum = (sum + result.size()) % shard_->original_size();
     }
-    fprintf(stderr, "Cooldown chksum = %lu\n", sum);
+    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();

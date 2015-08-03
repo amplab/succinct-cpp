@@ -245,7 +245,7 @@ class DynamicAdaptBenchmark : public Benchmark {
       query_count += query_client_->get_num_keys(i);
       cumulative_query_counts.push_back(query_count);
     }
-    fprintf(stderr, "Found %lu keys.\n", query_count);
+    fprintf(stderr, "Found %llu keys.\n", query_count);
     fprintf(stderr, "Generating zipf distribution...\n");
     ZipfGenerator z(skew_, query_count);
     fprintf(stderr, "Generated zipf distribution, generating keys..\n");

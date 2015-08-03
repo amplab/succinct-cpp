@@ -6,8 +6,8 @@
 class RegExPlanner {
  public:
   RegExPlanner(SuccinctCore *s_file, RegEx *re) {
-    this->s_core = s_file;
-    this->re = re;
+    this->succinct_core_ = s_file;
+    this->regex_ = re;
   }
 
   virtual ~RegExPlanner() {
@@ -17,19 +17,19 @@ class RegExPlanner {
   virtual RegEx* plan() = 0;
 
  protected:
-  SuccinctCore *s_core;
-  RegEx *re;
+  SuccinctCore *succinct_core_;
+  RegEx *regex_;
 };
 
 class NaiveRegExPlanner : public RegExPlanner {
  public:
-  NaiveRegExPlanner(SuccinctCore *s_core, RegEx *re)
-      : RegExPlanner(s_core, re) {
+  NaiveRegExPlanner(SuccinctCore *succinct_core, RegEx *regex)
+      : RegExPlanner(succinct_core, regex) {
   }
 
   // Does no cost estimation
   virtual RegEx* plan() {
-    return re;
+    return regex_;
   }
 };
 

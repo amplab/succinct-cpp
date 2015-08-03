@@ -12,40 +12,40 @@ class buf_allocator : public std::allocator<T> {
   };
 
   T* allocate(size_t n, const void *hint = 0) {
-    if (buf == NULL) {
+    if (buf_ == NULL) {
       return std::allocator<T>::allocate(n, hint);
     }
-    return buf;
+    return buf_;
   }
 
   void deallocate(T* p, size_t n) {
-    if (buf == NULL) {
+    if (buf_ == NULL) {
       std::allocator<T>::deallocate(p, n);
     }
   }
 
   buf_allocator() throw ()
       : std::allocator<T>() {
-    this->buf = NULL;
+    buf_ = NULL;
   }
 
   buf_allocator(const std::allocator<T> &a) throw ()
       : std::allocator<T>(a) {
-    this->buf = NULL;
+    buf_ = NULL;
   }
 
   buf_allocator(const buf_allocator &a) throw ()
       : std::allocator<T>(a) {
-    this->buf = NULL;
+    buf_ = NULL;
   }
 
   buf_allocator(T* buf) throw ()
       : std::allocator<T>() {
-    this->buf = buf;
+    buf_ = buf;
   }
 
  private:
-  T* buf;
+  T* buf_;
 
 };
 

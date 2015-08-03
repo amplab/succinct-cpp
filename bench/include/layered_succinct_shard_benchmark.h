@@ -112,7 +112,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
  private:
   void GenerateRandoms() {
     uint64_t q_cnt = layered_succinct_shard_->num_keys();
-    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%lu...\n",
+    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%llu...\n",
             key_skew_, q_cnt);
     ZipfGenerator z(key_skew_, q_cnt);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");

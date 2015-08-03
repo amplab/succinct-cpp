@@ -23,15 +23,15 @@
 class SuccinctUtils {
  public:
   // Returns the number of set bits in a 64 bit integer
-  static uint64_t popcount(uint64_t n);
+  static uint64_t PopCount(uint64_t n);
 
   // Returns integer logarithm to the base 2
-  static uint32_t int_log_2(uint64_t n);
+  static uint32_t IntegerLog2(uint64_t n);
 
   // Returns a modulo n
-  static uint64_t modulo(int64_t a, uint64_t n);
+  static uint64_t Modulo(int64_t a, uint64_t n);
 
-  static void* memory_map(std::string filename);
+  static void* MemoryMap(std::string filename);
 };
 
 #endif

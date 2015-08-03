@@ -9,40 +9,40 @@
 
 // Debug
 void display(RegEx *re) {
-  switch (re->getType()) {
-    case RegExType::Blank: {
+  switch (re->GetType()) {
+    case RegExType::BLANK: {
       fprintf(stderr, "<blank>");
       break;
     }
-    case RegExType::Primitive: {
+    case RegExType::PRIMITIVE: {
       RegExPrimitive *p = ((RegExPrimitive *) re);
       std::string p_type;
-      switch (p->getPrimitiveType()) {
-        case RegExPrimitiveType::Mgram: {
+      switch (p->GetPrimitiveType()) {
+        case RegExPrimitiveType::MGRAM: {
           p_type = "mgram";
           break;
         }
-        case RegExPrimitiveType::Dot: {
+        case RegExPrimitiveType::DOT: {
           p_type = "dot";
           break;
         }
-        case RegExPrimitiveType::Range: {
+        case RegExPrimitiveType::RANGE: {
           p_type = "range";
           break;
         }
         default:
           p_type = "unknown";
       }
-      fprintf(stderr, "\"%s\":%s", p->getPrimitive().c_str(), p_type.c_str());
+      fprintf(stderr, "\"%s\":%s", p->GetPrimitive().c_str(), p_type.c_str());
       break;
     }
-    case RegExType::Repeat: {
+    case RegExType::REPEAT: {
       fprintf(stderr, "repeat(");
-      display(((RegExRepeat *) re)->getInternal());
+      display(((RegExRepeat *) re)->GetInternal());
       fprintf(stderr, ")");
       break;
     }
-    case RegExType::Concat: {
+    case RegExType::CONCAT: {
       fprintf(stderr, "concat(");
       display(((RegExConcat *) re)->getLeft());
       fprintf(stderr, ",");
@@ -50,11 +50,11 @@ void display(RegEx *re) {
       fprintf(stderr, ")");
       break;
     }
-    case RegExType::Union: {
+    case RegExType::UNION: {
       fprintf(stderr, "union(");
-      display(((RegExUnion *) re)->getFirst());
+      display(((RegExUnion *) re)->GetFirst());
       fprintf(stderr, ",");
-      display(((RegExUnion *) re)->getSecond());
+      display(((RegExUnion *) re)->GetSecond());
       fprintf(stderr, ")");
       break;
     }

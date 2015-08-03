@@ -17,7 +17,7 @@ class SuccinctAllocator {
    * Enable the use of huge pages.
    *
    */
-  bool use_hugepages();
+  bool UseHugePages();
 
   /*
    * Allocates a block of size bytes of memory, returning a pointer to the
@@ -55,7 +55,7 @@ class SuccinctAllocator {
   void *s_memset(void* ptr, int value, size_t num);
 
  private:
-  bool s_use_hugepages;
+  bool use_hugepages_;
 
 };
 #endif

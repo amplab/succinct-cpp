@@ -64,7 +64,7 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
     }
     case SuccinctMode::LOAD_MEMORY_MAPPED: {
       uint8_t *data, *data_beg;
-      data = data_beg = (uint8_t *) SuccinctUtils::memory_map(
+      data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
           succinct_path + "/keyval");
 
       // Read keys
@@ -226,11 +226,11 @@ size_t SuccinctShard::num_keys() {
 }
 
 uint32_t SuccinctShard::sa_sampling_rate() {
-  return SA->get_sampling_rate();
+  return SA->GetSamplingRate();
 }
 
 uint32_t SuccinctShard::isa_sampling_rate() {
-  return ISA->get_sampling_rate();
+  return ISA->GetSamplingRate();
 }
 
 uint32_t SuccinctShard::npa_sampling_rate() {
@@ -260,7 +260,7 @@ void SuccinctShard::access(std::string& result, int64_t key, int32_t offset,
   for (int64_t i = 0; i < len; i++) {
     result[i] = alphabet[lookupC(idx)];
     uint64_t next_pos = start + i + 1;
-    if ((next_pos % ISA->get_sampling_rate()) == 0) {
+    if ((next_pos % ISA->GetSamplingRate()) == 0) {
       idx = lookupISA(next_pos);
     } else {
       idx = lookupNPA(idx);
@@ -283,7 +283,7 @@ void SuccinctShard::get(std::string& result, int64_t key) {
   for (int64_t i = 0; i < len; i++) {
     result[i] = alphabet[lookupC(idx)];
     uint64_t next_pos = start + i + 1;
-    if (ISA->is_sampled(next_pos)) {
+    if (ISA->IsSampled(next_pos)) {
       idx = lookupISA(next_pos);
     } else {
       idx = lookupNPA(idx);
@@ -403,7 +403,7 @@ size_t SuccinctShard::memorymap() {
   size_t core_size = SuccinctCore::memorymap();
 
   uint8_t *data, *data_beg;
-  data = data_beg = (uint8_t *) SuccinctUtils::memory_map(
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
       succinct_path + "/keyval");
 
   // Read keys

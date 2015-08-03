@@ -161,8 +161,8 @@ int main(int argc, char **argv) {
       size_t deleted_size = 0;
       for (size_t i = 0; i < deleted_layers.size(); i++) {
         uint32_t layer_id = deleted_layers.at(i);
-        deleted_size += SA->delete_layer(layer_id);
-        deleted_size += ISA->delete_layer(layer_id);
+        deleted_size += SA->DestroyLayer(layer_id);
+        deleted_size += ISA->DestroyLayer(layer_id);
       }
 
       fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
@@ -178,8 +178,8 @@ int main(int argc, char **argv) {
       size_t deleted_size = 0;
       for (size_t i = 0; i < deleted_layers.size(); i++) {
         uint32_t layer_id = deleted_layers.at(i);
-        deleted_size += SA->delete_layer(layer_id);
-        deleted_size += ISA->delete_layer(layer_id);
+        deleted_size += SA->DestroyLayer(layer_id);
+        deleted_size += ISA->DestroyLayer(layer_id);
       }
       fprintf(stderr, "Deleted data size = %lu\n", deleted_size / 8);
     }
@@ -218,9 +218,9 @@ int main(int argc, char **argv) {
     for (uint32_t i = 0; i < created_layers.size(); i++) {
       uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
-        ((LayeredSampledSA *) SA)->reconstruct_layer(created_layers.at(i));
+        ((LayeredSampledSA *) SA)->ReconstructLayer(created_layers.at(i));
       } else {
-        ((OpportunisticLayeredSampledSA *) SA)->reconstruct_layer(
+        ((OpportunisticLayeredSampledSA *) SA)->ReconstructLayer(
             created_layers.at(i));
       }
       uint64_t end_time = Benchmark::GetTimestamp();
@@ -237,9 +237,9 @@ int main(int argc, char **argv) {
     for (uint32_t i = 0; i < created_layers.size(); i++) {
       uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
-        ((LayeredSampledISA *) ISA)->reconstruct_layer(created_layers.at(i));
+        ((LayeredSampledISA *) ISA)->ReconstructLayer(created_layers.at(i));
       } else {
-        ((OpportunisticLayeredSampledISA *) ISA)->reconstruct_layer(
+        ((OpportunisticLayeredSampledISA *) ISA)->ReconstructLayer(
             created_layers.at(i));
       }
       uint64_t end_time = Benchmark::GetTimestamp();

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "../regex_types.h"
+#include "regex/regex_types.h"
 
 // Grammar:
 //   <regex> ::= <term> '|' <regex>
@@ -29,64 +29,64 @@ class ParseException : public std::exception {
 class RegExParser {
  public:
   RegExParser(char *exp) {
-    this->exp = exp;
-    this->blank = new RegExBlank();
+    this->exp_ = exp;
+    this->blank_ = new RegExBlank();
   }
 
   ~RegExParser() {
-    delete blank;
+    delete blank_;
   }
 
-  RegEx *parse() {
-    return regex();
+  RegEx *Parse() {
+    return Regex();
   }
 
  private:
-  char peek() {
-    return exp[0];
+  char Peek() {
+    return exp_[0];
   }
 
-  void eat(char c) {
-    if (peek() == c) {
-      exp = exp + 1;
+  void Eat(char c) {
+    if (Peek() == c) {
+      exp_ = exp_ + 1;
     } else {
       throw new ParseException;
     }
   }
 
-  char next() {
-    char c = peek();
-    eat(c);
+  char Next() {
+    char c = Peek();
+    Eat(c);
     return c;
   }
 
-  bool more() {
-    return (strlen(exp) > 0);
+  bool More() {
+    return (strlen(exp_) > 0);
   }
 
-  RegEx *regex() {
-    RegEx *t = term();
-    if (more() && peek() == '|') {
-      eat('|');
-      RegEx *r = regex();
+  RegEx *Regex() {
+    RegEx *t = Term();
+    if (More() && Peek() == '|') {
+      Eat('|');
+      RegEx *r = Regex();
       return new RegExUnion(t, r);
     }
     return t;
   }
 
-  RegEx *concat(RegEx *a, RegEx *b) {
-    if (a->getType() == RegExType::Blank) {
+  RegEx *Concat(RegEx *a, RegEx *b) {
+    if (a->GetType() == RegExType::BLANK) {
       return b;
-    } else if (b->getType() == RegExType::Blank) {
+    } else if (b->GetType() == RegExType::BLANK) {
       return a;
-    } else if (a->getType() == RegExType::Primitive
-        && b->getType() == RegExType::Primitive) {
-      if (((RegExPrimitive *) a)->getPrimitiveType()
-          == RegExPrimitiveType::Mgram
-          && ((RegExPrimitive *) b)->getPrimitiveType()
-              == RegExPrimitiveType::Mgram) {
-        std::string a_str = ((RegExPrimitive *) a)->getPrimitive();
-        std::string b_str = ((RegExPrimitive *) b)->getPrimitive();
+    } else if (a->GetType() == RegExType::PRIMITIVE
+        && b->GetType() == RegExType::PRIMITIVE) {
+      if (((RegExPrimitive *) a)->GetPrimitiveType()
+          == RegExPrimitiveType::MGRAM
+          && ((RegExPrimitive *) b)->GetPrimitiveType()
+              == RegExPrimitiveType::MGRAM) {
+        std::string a_str = ((RegExPrimitive *) a)->GetPrimitive();
+        std::string b_str = ((RegExPrimitive *) b)->GetPrimitive();
         RegEx *ret = new RegExPrimitive(a_str + b_str);
         delete a;
         delete b;
@@ -96,82 +96,82 @@ class RegExParser {
     return new RegExConcat(a, b);
   }
 
-  RegEx *term() {
-    RegEx *f = blank;
-    while (more() && peek() != ')' && peek() != '|') {
-      RegEx *next_f = factor();
-      f = concat(f, next_f);
+  RegEx *Term() {
+    RegEx *f = blank_;
+    while (More() && Peek() != ')' && Peek() != '|') {
+      RegEx *next_f = Factor();
+      f = Concat(f, next_f);
     }
     return f;
   }
 
-  RegEx *factor() {
-    RegEx *b = base();
+  RegEx *Factor() {
+    RegEx *b = Base();
 
-    if (more() && peek() == '*') {
-      eat('*');
+    if (More() && Peek() == '*') {
+      Eat('*');
       b = new RegExRepeat(b, RegExRepeatType::ZeroOrMore);
-    } else if (more() && peek() == '+') {
-      eat('+');
+    } else if (More() && Peek() == '+') {
+      Eat('+');
       b = new RegExRepeat(b, RegExRepeatType::OneOrMore);
-    } else if (more() && peek() == '{') {
-      eat('{');
-      int min = nextInt();
-      eat(',');
-      int max = nextInt();
-      eat('}');
+    } else if (More() && Peek() == '{') {
+      Eat('{');
+      int min = NextInt();
+      Eat(',');
+      int max = NextInt();
+      Eat('}');
       b = new RegExRepeat(b, RegExRepeatType::MinToMax, min, max);
     }
 
     return b;
   }
 
-  RegEx *base() {
-    if (peek() == '(') {
-      eat('(');
-      RegEx *r = regex();
-      eat(')');
+  RegEx *Base() {
+    if (Peek() == '(') {
+      Eat('(');
+      RegEx *r = Regex();
+      Eat(')');
       return r;
     }
-    return primitive();
+    return Primitive();
   }
 
-  char nextChar() {
-    if (peek() == '\\') {
-      eat('\\');
+  char NextChar() {
+    if (Peek() == '\\') {
+      Eat('\\');
     }
-    return next();
+    return Next();
   }
 
-  int nextInt() {
+  int NextInt() {
     int num = 0;
-    while (peek() >= 48 && peek() <= 57) {
-      num = num * 10 + (next() - 48);
+    while (Peek() >= 48 && Peek() <= 57) {
+      num = num * 10 + (Next() - 48);
     }
     return num;
   }
 
-  RegEx* primitive() {
+  RegEx* Primitive() {
     std::string p = "";
-    while (more() && peek() != '|' && peek() != '(' && peek() != ')'
-        && peek() != '*' && peek() != '+' && peek() != '{' && peek() != '}') {
-      p += nextChar();
+    while (More() && Peek() != '|' && Peek() != '(' && Peek() != ')'
+        && Peek() != '*' && Peek() != '+' && Peek() != '{' && Peek() != '}') {
+      p += NextChar();
     }
-    return parsePrimitives(p);
+    return ParsePrimitives(p);
   }
 
-  RegEx* parsePrimitives(std::string p_str) {
-    RegEx* p = nextPrimitive(p_str);
+  RegEx* ParsePrimitives(std::string p_str) {
+    RegEx* p = NextPrimitive(p_str);
     if (p_str.length() != 0) {
-      return new RegExConcat(p, parsePrimitives(p_str));
+      return new RegExConcat(p, ParsePrimitives(p_str));
     }
     return p;
   }
 
-  RegEx* nextPrimitive(std::string &p_str) {
+  RegEx* NextPrimitive(std::string &p_str) {
     if (p_str[0] == '.') {
       p_str = p_str.substr(1);
-      return new RegExPrimitive(".", RegExPrimitiveType::Dot);
+      return new RegExPrimitive(".", RegExPrimitiveType::DOT);
     } else if (p_str[0] == '[') {
       size_t p_pos = 1;
       while (p_pos < p_str.length() && p_str[p_pos] != ']') {
@@ -181,7 +181,7 @@ class RegExParser {
         throw new ParseException;
       std::string str = p_str.substr(1, p_pos - 1);
       p_str = p_str.substr(p_pos + 1);
-      return new RegExPrimitive(str, RegExPrimitiveType::Range);
+      return new RegExPrimitive(str, RegExPrimitiveType::RANGE);
     }
     size_t p_pos = 0;
     while (p_pos < p_str.length() && p_str[p_pos] != '.' && p_str[p_pos] != '['
@@ -190,22 +190,22 @@ class RegExParser {
     }
     std::string str = p_str.substr(0, p_pos);
     p_str = p_str.substr(p_pos);
-    return new RegExPrimitive(str, RegExPrimitiveType::Mgram);
+    return new RegExPrimitive(str, RegExPrimitiveType::MGRAM);
   }
 
-  RegExPrimitiveType getPrimitiveType(std::string mgram) {
+  RegExPrimitiveType GetPrimitiveType(std::string mgram) {
     if (mgram == ".") {
-      return RegExPrimitiveType::Dot;
+      return RegExPrimitiveType::DOT;
     } else if (mgram[0] == '[') {
       if (mgram[mgram.length() - 1] != ']')
         throw new ParseException;
-      return RegExPrimitiveType::Range;
+      return RegExPrimitiveType::RANGE;
     }
-    return RegExPrimitiveType::Mgram;
+    return RegExPrimitiveType::MGRAM;
   }
 
-  char *exp;
-  RegEx *blank;
+  char *exp_;
+  RegEx *blank_;
 };
 
 #endif

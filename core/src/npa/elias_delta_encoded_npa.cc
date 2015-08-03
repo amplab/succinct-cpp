@@ -4,9 +4,9 @@ EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
-                                           bitmap_t *data_bitmap,
-                                           bitmap_t *compactSA,
-                                           bitmap_t *compactISA,
+                                           Bitmap *data_bitmap,
+                                           Bitmap *compactSA,
+                                           Bitmap *compactISA,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
@@ -147,22 +147,22 @@ void EliasDeltaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
   if (max_sample == 0)
     dv->sample_bits = 1;
   else
-    dv->sample_bits = (uint8_t) SuccinctUtils::int_log_2(max_sample + 1);
+    dv->sample_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_sample + 1);
 
   if (max_offset == 0)
     dv->delta_offset_bits = 1;
   else
-    dv->delta_offset_bits = (uint8_t) SuccinctUtils::int_log_2(max_offset + 1);
+    dv->delta_offset_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_offset + 1);
 
-  dv->samples = new bitmap_t;
-  dv->deltas = new bitmap_t;
+  dv->samples = new Bitmap;
+  dv->deltas = new Bitmap;
   SuccinctBase::create_bitmap_array(
       &(dv->samples), (_samples.size() == 0) ? NULL : &_samples[0],
       _samples.size(), dv->sample_bits, s_allocator_);
 
   EliasDeltaEncode(&(dv->deltas), _deltas, cum_delta_size);
 
-  dv->delta_offsets = new bitmap_t;
+  dv->delta_offsets = new Bitmap;
   SuccinctBase::create_bitmap_array(
       &(dv->delta_offsets),
       (_delta_offsets.size() == 0) ? NULL : &_delta_offsets[0],
