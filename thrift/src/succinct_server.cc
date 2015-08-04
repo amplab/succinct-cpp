@@ -368,6 +368,14 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     return qhandlers.at(host_id).get_num_keys(shard_id);
   }
 
+  int64_t get_tot_size() {
+    int64_t tot_size = 0;
+    for(auto client : qservers) {
+      tot_size += client.get_shard_size();
+    }
+    return tot_size;
+  }
+
   int32_t connect_to_handlers() {
     // Create connections to all Succinct Clients
     for (int i = 0; i < hostnames.size(); i++) {

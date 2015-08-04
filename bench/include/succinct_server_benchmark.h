@@ -264,18 +264,21 @@ class SuccinctServerBenchmark : public Benchmark {
     result_stream.close();
   }
 
-  void BenchmarkFlatExtractLatency(std::string result_path, int32_t fetch_length) {
+  void BenchmarkFlatExtractLatency(std::string result_path,
+                                   int32_t fetch_length) {
 
     TimeStamp t0, t1, tdiff;
     uint64_t sum;
     std::ofstream result_stream(result_path);
+    int64_t tot_size = client_->get_tot_size();
 
     // Warmup
     sum = 0;
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
-      client_->flat_extract(result, randoms_[i], fetch_length);
+      int64_t pos = llrand() % (tot_size - fetch_length);
+      client_->flat_extract(result, pos, fetch_length);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -286,8 +289,9 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
+      int64_t pos = llrand() % (tot_size - fetch_length);
       t0 = GetTimestamp();
-      client_->flat_extract(result, randoms_[i], fetch_length);
+      client_->flat_extract(result, pos, fetch_length);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
@@ -582,6 +586,16 @@ class SuccinctServerBenchmark : public Benchmark {
   } ThreadData;
 
   static const uint64_t kMaxSum = 10000;
+
+  unsigned long long llrand() {
+    unsigned long long r = 0;
+
+    for (int i = 0; i < 5; ++i) {
+      r = (r << 15) | (rand() & 0x7FFF);
+    }
+
+    return r & 0xFFFFFFFFFFFFFFFFULL;
+  }
 
   void GenerateRandoms(uint32_t num_shards, uint32_t num_keys) {
     uint64_t query_count = kWarmupCount + kCooldownCount + kMeasureCount;

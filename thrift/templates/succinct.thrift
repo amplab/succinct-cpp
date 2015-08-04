@@ -38,6 +38,7 @@ service SuccinctService {
     i32 get_num_hosts(),
     i32 get_num_shards(1:i32 host_id),
     i32 get_num_keys(1:i32 shard_id),
+    i64 get_tot_size(),
 }
 
 service QueryService {

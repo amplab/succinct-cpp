@@ -42,6 +42,7 @@ class SuccinctServiceIf {
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
+  virtual int64_t get_tot_size() = 0;
 };
 
 class SuccinctServiceIfFactory {
@@ -163,6 +164,10 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   }
   int32_t get_num_keys(const int32_t /* shard_id */) {
     int32_t _return = 0;
+    return _return;
+  }
+  int64_t get_tot_size() {
+    int64_t _return = 0;
     return _return;
   }
 };
@@ -3071,6 +3076,100 @@ class SuccinctService_get_num_keys_presult {
 
 };
 
+
+class SuccinctService_get_tot_size_args {
+ public:
+
+  SuccinctService_get_tot_size_args() {
+  }
+
+  virtual ~SuccinctService_get_tot_size_args() throw() {}
+
+
+  bool operator == (const SuccinctService_get_tot_size_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const SuccinctService_get_tot_size_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_tot_size_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_get_tot_size_pargs {
+ public:
+
+
+  virtual ~SuccinctService_get_tot_size_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_tot_size_result__isset {
+  _SuccinctService_get_tot_size_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_tot_size_result__isset;
+
+class SuccinctService_get_tot_size_result {
+ public:
+
+  SuccinctService_get_tot_size_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_get_tot_size_result() throw() {}
+
+  int64_t success;
+
+  _SuccinctService_get_tot_size_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_get_tot_size_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_get_tot_size_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_get_tot_size_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_get_tot_size_presult__isset {
+  _SuccinctService_get_tot_size_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_get_tot_size_presult__isset;
+
+class SuccinctService_get_tot_size_presult {
+ public:
+
+
+  virtual ~SuccinctService_get_tot_size_presult() throw() {}
+
+  int64_t* success;
+
+  _SuccinctService_get_tot_size_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class SuccinctServiceClient : virtual public SuccinctServiceIf {
  public:
   SuccinctServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -3172,6 +3271,9 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   int32_t get_num_keys(const int32_t shard_id);
   void send_get_num_keys(const int32_t shard_id);
   int32_t recv_get_num_keys();
+  int64_t get_tot_size();
+  void send_get_tot_size();
+  int64_t recv_get_tot_size();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -3214,6 +3316,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_tot_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   SuccinctServiceProcessor(boost::shared_ptr<SuccinctServiceIf> iface) :
     iface_(iface) {
@@ -3244,6 +3347,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
     processMap_["get_num_shards"] = &SuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &SuccinctServiceProcessor::process_get_num_keys;
+    processMap_["get_tot_size"] = &SuccinctServiceProcessor::process_get_tot_size;
   }
 
   virtual ~SuccinctServiceProcessor() {}
@@ -3527,6 +3631,15 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->get_num_keys(shard_id);
     }
     return ifaces_[i]->get_num_keys(shard_id);
+  }
+
+  int64_t get_tot_size() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_tot_size();
+    }
+    return ifaces_[i]->get_tot_size();
   }
 
 };
