@@ -59,7 +59,7 @@ class FileBenchmark : public Benchmark {
 
     // Warmup
     fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = 0; i < 100; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       result = succinct_file_->Count(queries_[i]);
       sum = (sum + result) % succinct_file_->GetOriginalSize();
     }
@@ -92,7 +92,7 @@ class FileBenchmark : public Benchmark {
 
     // Warmup
     fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = 0; i < 100; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::vector<int64_t> result;
       succinct_file_->Search(result, queries_[i]);
       sum = (sum + result.size()) % succinct_file_->GetOriginalSize();
@@ -165,7 +165,7 @@ class FileBenchmark : public Benchmark {
 
     // Warmup
     fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = 0; i < 100; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       result = succinct_file_->Count(queries_[i]);
       sum = (sum + result) % succinct_file_->GetOriginalSize();
     }
@@ -198,7 +198,7 @@ class FileBenchmark : public Benchmark {
 
     // Warmup
     fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = 0; i < 100; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::vector<int64_t> result;
       succinct_file_->Search(result, queries_[i]);
       sum = (sum + result.size()) % succinct_file_->GetOriginalSize();
