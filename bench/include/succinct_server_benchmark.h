@@ -271,6 +271,7 @@ class SuccinctServerBenchmark : public Benchmark {
     uint64_t sum;
     std::ofstream result_stream(result_path);
     int64_t tot_size = client_->get_tot_size();
+    fprintf(stderr, "Tot size = %lld\n", tot_size);
 
     // Warmup
     sum = 0;

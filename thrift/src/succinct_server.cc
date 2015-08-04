@@ -78,6 +78,7 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     for (auto client : qservers) {
       shard_map[offset] = client_id;
       offset_map[client_id] = offset;
+      fprintf(stderr, "(%zu, %zu)\n", offset, client_id);
       client_id++;
       offset += client.get_shard_size();
     }
