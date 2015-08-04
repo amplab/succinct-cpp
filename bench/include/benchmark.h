@@ -69,9 +69,9 @@ class Benchmark {
   }
 
  protected:
-  static const uint64_t kWarmupCount = 100000;
+  static const uint64_t kWarmupCount = 1000;
   static const uint64_t kMeasureCount = 100000;
-  static const uint64_t kCooldownCount = 5000;
+  static const uint64_t kCooldownCount = 1000;
 
   static const uint64_t kWarmupTime = 120000000;
   static const uint64_t kMeasureTime = 300000000;
