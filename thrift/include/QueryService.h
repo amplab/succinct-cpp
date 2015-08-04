@@ -22,7 +22,11 @@ class QueryServiceIf {
   virtual void regex_search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual void regex_count(std::vector<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
+  virtual void flat_extract(std::string& _return, const int64_t offset, const int64_t length) = 0;
+  virtual int64_t flat_count(const std::string& query) = 0;
+  virtual void flat_search(std::vector<int64_t> & _return, const std::string& query) = 0;
   virtual int32_t get_num_keys() = 0;
+  virtual int64_t get_shard_size() = 0;
 };
 
 class QueryServiceIfFactory {
@@ -75,8 +79,22 @@ class QueryServiceNull : virtual public QueryServiceIf {
     int64_t _return = 0;
     return _return;
   }
+  void flat_extract(std::string& /* _return */, const int64_t /* offset */, const int64_t /* length */) {
+    return;
+  }
+  int64_t flat_count(const std::string& /* query */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  void flat_search(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
   int32_t get_num_keys() {
     int32_t _return = 0;
+    return _return;
+  }
+  int64_t get_shard_size() {
+    int64_t _return = 0;
     return _return;
   }
 };
@@ -855,6 +873,339 @@ class QueryService_count_presult {
 
 };
 
+typedef struct _QueryService_flat_extract_args__isset {
+  _QueryService_flat_extract_args__isset() : offset(false), length(false) {}
+  bool offset;
+  bool length;
+} _QueryService_flat_extract_args__isset;
+
+class QueryService_flat_extract_args {
+ public:
+
+  QueryService_flat_extract_args() : offset(0), length(0) {
+  }
+
+  virtual ~QueryService_flat_extract_args() throw() {}
+
+  int64_t offset;
+  int64_t length;
+
+  _QueryService_flat_extract_args__isset __isset;
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_length(const int64_t val) {
+    length = val;
+  }
+
+  bool operator == (const QueryService_flat_extract_args & rhs) const
+  {
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(length == rhs.length))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_extract_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_extract_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_flat_extract_pargs {
+ public:
+
+
+  virtual ~QueryService_flat_extract_pargs() throw() {}
+
+  const int64_t* offset;
+  const int64_t* length;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_extract_result__isset {
+  _QueryService_flat_extract_result__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_extract_result__isset;
+
+class QueryService_flat_extract_result {
+ public:
+
+  QueryService_flat_extract_result() : success() {
+  }
+
+  virtual ~QueryService_flat_extract_result() throw() {}
+
+  std::string success;
+
+  _QueryService_flat_extract_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_flat_extract_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_extract_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_extract_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_extract_presult__isset {
+  _QueryService_flat_extract_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_extract_presult__isset;
+
+class QueryService_flat_extract_presult {
+ public:
+
+
+  virtual ~QueryService_flat_extract_presult() throw() {}
+
+  std::string* success;
+
+  _QueryService_flat_extract_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _QueryService_flat_count_args__isset {
+  _QueryService_flat_count_args__isset() : query(false) {}
+  bool query;
+} _QueryService_flat_count_args__isset;
+
+class QueryService_flat_count_args {
+ public:
+
+  QueryService_flat_count_args() : query() {
+  }
+
+  virtual ~QueryService_flat_count_args() throw() {}
+
+  std::string query;
+
+  _QueryService_flat_count_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const QueryService_flat_count_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_count_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_count_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_flat_count_pargs {
+ public:
+
+
+  virtual ~QueryService_flat_count_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_count_result__isset {
+  _QueryService_flat_count_result__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_count_result__isset;
+
+class QueryService_flat_count_result {
+ public:
+
+  QueryService_flat_count_result() : success(0) {
+  }
+
+  virtual ~QueryService_flat_count_result() throw() {}
+
+  int64_t success;
+
+  _QueryService_flat_count_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_flat_count_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_count_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_count_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_count_presult__isset {
+  _QueryService_flat_count_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_count_presult__isset;
+
+class QueryService_flat_count_presult {
+ public:
+
+
+  virtual ~QueryService_flat_count_presult() throw() {}
+
+  int64_t* success;
+
+  _QueryService_flat_count_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _QueryService_flat_search_args__isset {
+  _QueryService_flat_search_args__isset() : query(false) {}
+  bool query;
+} _QueryService_flat_search_args__isset;
+
+class QueryService_flat_search_args {
+ public:
+
+  QueryService_flat_search_args() : query() {
+  }
+
+  virtual ~QueryService_flat_search_args() throw() {}
+
+  std::string query;
+
+  _QueryService_flat_search_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const QueryService_flat_search_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_search_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_search_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_flat_search_pargs {
+ public:
+
+
+  virtual ~QueryService_flat_search_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_search_result__isset {
+  _QueryService_flat_search_result__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_search_result__isset;
+
+class QueryService_flat_search_result {
+ public:
+
+  QueryService_flat_search_result() {
+  }
+
+  virtual ~QueryService_flat_search_result() throw() {}
+
+  std::vector<int64_t>  success;
+
+  _QueryService_flat_search_result__isset __isset;
+
+  void __set_success(const std::vector<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_flat_search_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_flat_search_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_flat_search_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_flat_search_presult__isset {
+  _QueryService_flat_search_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_flat_search_presult__isset;
+
+class QueryService_flat_search_presult {
+ public:
+
+
+  virtual ~QueryService_flat_search_presult() throw() {}
+
+  std::vector<int64_t> * success;
+
+  _QueryService_flat_search_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class QueryService_get_num_keys_args {
  public:
@@ -949,6 +1300,100 @@ class QueryService_get_num_keys_presult {
 
 };
 
+
+class QueryService_get_shard_size_args {
+ public:
+
+  QueryService_get_shard_size_args() {
+  }
+
+  virtual ~QueryService_get_shard_size_args() throw() {}
+
+
+  bool operator == (const QueryService_get_shard_size_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const QueryService_get_shard_size_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_get_shard_size_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_get_shard_size_pargs {
+ public:
+
+
+  virtual ~QueryService_get_shard_size_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_get_shard_size_result__isset {
+  _QueryService_get_shard_size_result__isset() : success(false) {}
+  bool success;
+} _QueryService_get_shard_size_result__isset;
+
+class QueryService_get_shard_size_result {
+ public:
+
+  QueryService_get_shard_size_result() : success(0) {
+  }
+
+  virtual ~QueryService_get_shard_size_result() throw() {}
+
+  int64_t success;
+
+  _QueryService_get_shard_size_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_get_shard_size_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_get_shard_size_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_get_shard_size_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_get_shard_size_presult__isset {
+  _QueryService_get_shard_size_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_get_shard_size_presult__isset;
+
+class QueryService_get_shard_size_presult {
+ public:
+
+
+  virtual ~QueryService_get_shard_size_presult() throw() {}
+
+  int64_t* success;
+
+  _QueryService_get_shard_size_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class QueryServiceClient : virtual public QueryServiceIf {
  public:
   QueryServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -990,9 +1435,21 @@ class QueryServiceClient : virtual public QueryServiceIf {
   int64_t count(const std::string& query);
   void send_count(const std::string& query);
   int64_t recv_count();
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t length);
+  void send_flat_extract(const int64_t offset, const int64_t length);
+  void recv_flat_extract(std::string& _return);
+  int64_t flat_count(const std::string& query);
+  void send_flat_count(const std::string& query);
+  int64_t recv_flat_count();
+  void flat_search(std::vector<int64_t> & _return, const std::string& query);
+  void send_flat_search(const std::string& query);
+  void recv_flat_search(std::vector<int64_t> & _return);
   int32_t get_num_keys();
   void send_get_num_keys();
   int32_t recv_get_num_keys();
+  int64_t get_shard_size();
+  void send_get_shard_size();
+  int64_t recv_get_shard_size();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1015,7 +1472,11 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_regex_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_regex_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_extract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_get_shard_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   QueryServiceProcessor(boost::shared_ptr<QueryServiceIf> iface) :
     iface_(iface) {
@@ -1026,7 +1487,11 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["regex_search"] = &QueryServiceProcessor::process_regex_search;
     processMap_["regex_count"] = &QueryServiceProcessor::process_regex_count;
     processMap_["count"] = &QueryServiceProcessor::process_count;
+    processMap_["flat_extract"] = &QueryServiceProcessor::process_flat_extract;
+    processMap_["flat_count"] = &QueryServiceProcessor::process_flat_count;
+    processMap_["flat_search"] = &QueryServiceProcessor::process_flat_search;
     processMap_["get_num_keys"] = &QueryServiceProcessor::process_get_num_keys;
+    processMap_["get_shard_size"] = &QueryServiceProcessor::process_get_shard_size;
   }
 
   virtual ~QueryServiceProcessor() {}
@@ -1123,6 +1588,35 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
     return ifaces_[i]->count(query);
   }
 
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t length) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_extract(_return, offset, length);
+    }
+    ifaces_[i]->flat_extract(_return, offset, length);
+    return;
+  }
+
+  int64_t flat_count(const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_count(query);
+    }
+    return ifaces_[i]->flat_count(query);
+  }
+
+  void flat_search(std::vector<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_search(_return, query);
+    }
+    ifaces_[i]->flat_search(_return, query);
+    return;
+  }
+
   int32_t get_num_keys() {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -1130,6 +1624,15 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
       ifaces_[i]->get_num_keys();
     }
     return ifaces_[i]->get_num_keys();
+  }
+
+  int64_t get_shard_size() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_shard_size();
+    }
+    return ifaces_[i]->get_shard_size();
   }
 
 };

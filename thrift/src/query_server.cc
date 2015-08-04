@@ -93,12 +93,28 @@ class QueryServiceHandler : virtual public QueryServiceIf {
     }
   }
 
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t length) {
+    fd->FlatExtract(_return, offset, length);
+  }
+
+  int64_t flat_count(const std::string& query) {
+    return fd->FlatCount(query);
+  }
+
+  void flat_search(std::vector<int64_t>& _return, const std::string& query) {
+    fd->FlatSearch(_return, query);
+  }
+
   int64_t count(const std::string& query) {
     return fd->Count(query);
   }
 
   int32_t get_num_keys() {
     return fd->GetNumKeys();
+  }
+
+  int64_t get_shard_size() {
+    return fd->GetOriginalSize();
   }
 
  private:

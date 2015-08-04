@@ -300,7 +300,7 @@ int64_t SuccinctShard::GetKeyPos(const int64_t value_offset) {
           || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
 }
 
-void SuccinctShard::Search(std::set<int64_t> &result, std::string str) {
+void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
@@ -313,22 +313,46 @@ void SuccinctShard::Search(std::set<int64_t> &result, std::string str) {
 }
 
 void SuccinctShard::RegexSearch(std::set<std::pair<size_t, size_t>> &result,
-                                 std::string query, bool opt) {
+                                const std::string& query, bool opt) {
   SRegEx re(query, this, opt);
   re.execute();
   re.get_results(result);
 }
 
 void SuccinctShard::RegexCount(std::vector<size_t> &result,
-                                std::string query) {
+                               const std::string& query) {
   SRegEx re(query, this);
   re.count(result);
 }
 
-int64_t SuccinctShard::Count(std::string str) {
+int64_t SuccinctShard::Count(const std::string& str) {
   std::set<int64_t> result;
   Search(result, str);
   return result.size();
+}
+
+void SuccinctShard::FlatExtract(std::string& result, int64_t offset, int64_t len) {
+  result = "";
+  uint64_t idx = LookupISA(offset);
+  for (uint64_t k = 0; k < len; k++) {
+    result += alphabet_[LookupC(idx)];
+    idx = LookupNPA(idx);
+  }
+}
+
+int64_t SuccinctShard::FlatCount(const std::string& str) {
+  std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
+  return range.second - range.first + 1;
+}
+
+void SuccinctShard::FlatSearch(std::vector<int64_t>& result, const std::string& str) {
+  std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
+  if (range.first > range.second)
+    return;
+  result.reserve((uint64_t) (range.second - range.first + 1));
+  for (int64_t i = range.first; i <= range.second; i++) {
+    result.push_back((int64_t) LookupSA(i));
+  }
 }
 
 size_t SuccinctShard::Serialize() {

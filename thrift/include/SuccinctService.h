@@ -33,6 +33,12 @@ class SuccinctServiceIf {
   virtual void regex_count_local(std::vector<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int64_t count_local(const std::string& query) = 0;
+  virtual void flat_extract(std::string& _return, const int64_t offset, const int64_t length) = 0;
+  virtual void flat_extract_local(std::string& _return, const int64_t offset, const int64_t length) = 0;
+  virtual int64_t flat_count(const std::string& query) = 0;
+  virtual int64_t flat_count_local(const std::string& query) = 0;
+  virtual void flat_search(std::vector<int64_t> & _return, const std::string& query) = 0;
+  virtual void flat_search_local(std::vector<int64_t> & _return, const std::string& query) = 0;
   virtual int32_t get_num_hosts() = 0;
   virtual int32_t get_num_shards(const int32_t host_id) = 0;
   virtual int32_t get_num_keys(const int32_t shard_id) = 0;
@@ -126,6 +132,26 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
   int64_t count_local(const std::string& /* query */) {
     int64_t _return = 0;
     return _return;
+  }
+  void flat_extract(std::string& /* _return */, const int64_t /* offset */, const int64_t /* length */) {
+    return;
+  }
+  void flat_extract_local(std::string& /* _return */, const int64_t /* offset */, const int64_t /* length */) {
+    return;
+  }
+  int64_t flat_count(const std::string& /* query */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  int64_t flat_count_local(const std::string& /* query */) {
+    int64_t _return = 0;
+    return _return;
+  }
+  void flat_search(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void flat_search_local(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
   }
   int32_t get_num_hosts() {
     int32_t _return = 0;
@@ -2069,6 +2095,672 @@ class SuccinctService_count_local_presult {
 
 };
 
+typedef struct _SuccinctService_flat_extract_args__isset {
+  _SuccinctService_flat_extract_args__isset() : offset(false), length(false) {}
+  bool offset;
+  bool length;
+} _SuccinctService_flat_extract_args__isset;
+
+class SuccinctService_flat_extract_args {
+ public:
+
+  SuccinctService_flat_extract_args() : offset(0), length(0) {
+  }
+
+  virtual ~SuccinctService_flat_extract_args() throw() {}
+
+  int64_t offset;
+  int64_t length;
+
+  _SuccinctService_flat_extract_args__isset __isset;
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_length(const int64_t val) {
+    length = val;
+  }
+
+  bool operator == (const SuccinctService_flat_extract_args & rhs) const
+  {
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(length == rhs.length))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_extract_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_extract_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_extract_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_extract_pargs() throw() {}
+
+  const int64_t* offset;
+  const int64_t* length;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_extract_result__isset {
+  _SuccinctService_flat_extract_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_extract_result__isset;
+
+class SuccinctService_flat_extract_result {
+ public:
+
+  SuccinctService_flat_extract_result() : success() {
+  }
+
+  virtual ~SuccinctService_flat_extract_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_flat_extract_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_extract_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_extract_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_extract_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_extract_presult__isset {
+  _SuccinctService_flat_extract_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_extract_presult__isset;
+
+class SuccinctService_flat_extract_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_extract_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_flat_extract_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_flat_extract_local_args__isset {
+  _SuccinctService_flat_extract_local_args__isset() : offset(false), length(false) {}
+  bool offset;
+  bool length;
+} _SuccinctService_flat_extract_local_args__isset;
+
+class SuccinctService_flat_extract_local_args {
+ public:
+
+  SuccinctService_flat_extract_local_args() : offset(0), length(0) {
+  }
+
+  virtual ~SuccinctService_flat_extract_local_args() throw() {}
+
+  int64_t offset;
+  int64_t length;
+
+  _SuccinctService_flat_extract_local_args__isset __isset;
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_length(const int64_t val) {
+    length = val;
+  }
+
+  bool operator == (const SuccinctService_flat_extract_local_args & rhs) const
+  {
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(length == rhs.length))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_extract_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_extract_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_extract_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_extract_local_pargs() throw() {}
+
+  const int64_t* offset;
+  const int64_t* length;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_extract_local_result__isset {
+  _SuccinctService_flat_extract_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_extract_local_result__isset;
+
+class SuccinctService_flat_extract_local_result {
+ public:
+
+  SuccinctService_flat_extract_local_result() : success() {
+  }
+
+  virtual ~SuccinctService_flat_extract_local_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_flat_extract_local_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_extract_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_extract_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_extract_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_extract_local_presult__isset {
+  _SuccinctService_flat_extract_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_extract_local_presult__isset;
+
+class SuccinctService_flat_extract_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_extract_local_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_flat_extract_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_flat_count_args__isset {
+  _SuccinctService_flat_count_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_flat_count_args__isset;
+
+class SuccinctService_flat_count_args {
+ public:
+
+  SuccinctService_flat_count_args() : query() {
+  }
+
+  virtual ~SuccinctService_flat_count_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_flat_count_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_flat_count_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_count_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_count_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_count_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_count_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_count_result__isset {
+  _SuccinctService_flat_count_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_count_result__isset;
+
+class SuccinctService_flat_count_result {
+ public:
+
+  SuccinctService_flat_count_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_flat_count_result() throw() {}
+
+  int64_t success;
+
+  _SuccinctService_flat_count_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_count_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_count_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_count_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_count_presult__isset {
+  _SuccinctService_flat_count_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_count_presult__isset;
+
+class SuccinctService_flat_count_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_count_presult() throw() {}
+
+  int64_t* success;
+
+  _SuccinctService_flat_count_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_flat_count_local_args__isset {
+  _SuccinctService_flat_count_local_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_flat_count_local_args__isset;
+
+class SuccinctService_flat_count_local_args {
+ public:
+
+  SuccinctService_flat_count_local_args() : query() {
+  }
+
+  virtual ~SuccinctService_flat_count_local_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_flat_count_local_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_flat_count_local_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_count_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_count_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_count_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_count_local_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_count_local_result__isset {
+  _SuccinctService_flat_count_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_count_local_result__isset;
+
+class SuccinctService_flat_count_local_result {
+ public:
+
+  SuccinctService_flat_count_local_result() : success(0) {
+  }
+
+  virtual ~SuccinctService_flat_count_local_result() throw() {}
+
+  int64_t success;
+
+  _SuccinctService_flat_count_local_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_count_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_count_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_count_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_count_local_presult__isset {
+  _SuccinctService_flat_count_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_count_local_presult__isset;
+
+class SuccinctService_flat_count_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_count_local_presult() throw() {}
+
+  int64_t* success;
+
+  _SuccinctService_flat_count_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_flat_search_args__isset {
+  _SuccinctService_flat_search_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_flat_search_args__isset;
+
+class SuccinctService_flat_search_args {
+ public:
+
+  SuccinctService_flat_search_args() : query() {
+  }
+
+  virtual ~SuccinctService_flat_search_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_flat_search_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_flat_search_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_search_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_search_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_search_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_search_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_search_result__isset {
+  _SuccinctService_flat_search_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_search_result__isset;
+
+class SuccinctService_flat_search_result {
+ public:
+
+  SuccinctService_flat_search_result() {
+  }
+
+  virtual ~SuccinctService_flat_search_result() throw() {}
+
+  std::vector<int64_t>  success;
+
+  _SuccinctService_flat_search_result__isset __isset;
+
+  void __set_success(const std::vector<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_search_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_search_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_search_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_search_presult__isset {
+  _SuccinctService_flat_search_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_search_presult__isset;
+
+class SuccinctService_flat_search_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_search_presult() throw() {}
+
+  std::vector<int64_t> * success;
+
+  _SuccinctService_flat_search_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _SuccinctService_flat_search_local_args__isset {
+  _SuccinctService_flat_search_local_args__isset() : query(false) {}
+  bool query;
+} _SuccinctService_flat_search_local_args__isset;
+
+class SuccinctService_flat_search_local_args {
+ public:
+
+  SuccinctService_flat_search_local_args() : query() {
+  }
+
+  virtual ~SuccinctService_flat_search_local_args() throw() {}
+
+  std::string query;
+
+  _SuccinctService_flat_search_local_args__isset __isset;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  bool operator == (const SuccinctService_flat_search_local_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_search_local_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_search_local_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_flat_search_local_pargs {
+ public:
+
+
+  virtual ~SuccinctService_flat_search_local_pargs() throw() {}
+
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_search_local_result__isset {
+  _SuccinctService_flat_search_local_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_search_local_result__isset;
+
+class SuccinctService_flat_search_local_result {
+ public:
+
+  SuccinctService_flat_search_local_result() {
+  }
+
+  virtual ~SuccinctService_flat_search_local_result() throw() {}
+
+  std::vector<int64_t>  success;
+
+  _SuccinctService_flat_search_local_result__isset __isset;
+
+  void __set_success(const std::vector<int64_t> & val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_flat_search_local_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_flat_search_local_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_flat_search_local_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_flat_search_local_presult__isset {
+  _SuccinctService_flat_search_local_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_flat_search_local_presult__isset;
+
+class SuccinctService_flat_search_local_presult {
+ public:
+
+
+  virtual ~SuccinctService_flat_search_local_presult() throw() {}
+
+  std::vector<int64_t> * success;
+
+  _SuccinctService_flat_search_local_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class SuccinctService_get_num_hosts_args {
  public:
@@ -2453,6 +3145,24 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   int64_t count_local(const std::string& query);
   void send_count_local(const std::string& query);
   int64_t recv_count_local();
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t length);
+  void send_flat_extract(const int64_t offset, const int64_t length);
+  void recv_flat_extract(std::string& _return);
+  void flat_extract_local(std::string& _return, const int64_t offset, const int64_t length);
+  void send_flat_extract_local(const int64_t offset, const int64_t length);
+  void recv_flat_extract_local(std::string& _return);
+  int64_t flat_count(const std::string& query);
+  void send_flat_count(const std::string& query);
+  int64_t recv_flat_count();
+  int64_t flat_count_local(const std::string& query);
+  void send_flat_count_local(const std::string& query);
+  int64_t recv_flat_count_local();
+  void flat_search(std::vector<int64_t> & _return, const std::string& query);
+  void send_flat_search(const std::string& query);
+  void recv_flat_search(std::vector<int64_t> & _return);
+  void flat_search_local(std::vector<int64_t> & _return, const std::string& query);
+  void send_flat_search_local(const std::string& query);
+  void recv_flat_search_local(std::vector<int64_t> & _return);
   int32_t get_num_hosts();
   void send_get_num_hosts();
   int32_t recv_get_num_hosts();
@@ -2495,6 +3205,12 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_regex_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_extract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_extract_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_flat_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2519,6 +3235,12 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["regex_count_local"] = &SuccinctServiceProcessor::process_regex_count_local;
     processMap_["count"] = &SuccinctServiceProcessor::process_count;
     processMap_["count_local"] = &SuccinctServiceProcessor::process_count_local;
+    processMap_["flat_extract"] = &SuccinctServiceProcessor::process_flat_extract;
+    processMap_["flat_extract_local"] = &SuccinctServiceProcessor::process_flat_extract_local;
+    processMap_["flat_count"] = &SuccinctServiceProcessor::process_flat_count;
+    processMap_["flat_count_local"] = &SuccinctServiceProcessor::process_flat_count_local;
+    processMap_["flat_search"] = &SuccinctServiceProcessor::process_flat_search;
+    processMap_["flat_search_local"] = &SuccinctServiceProcessor::process_flat_search_local;
     processMap_["get_num_hosts"] = &SuccinctServiceProcessor::process_get_num_hosts;
     processMap_["get_num_shards"] = &SuccinctServiceProcessor::process_get_num_shards;
     processMap_["get_num_keys"] = &SuccinctServiceProcessor::process_get_num_keys;
@@ -2720,6 +3442,64 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->count_local(query);
     }
     return ifaces_[i]->count_local(query);
+  }
+
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t length) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_extract(_return, offset, length);
+    }
+    ifaces_[i]->flat_extract(_return, offset, length);
+    return;
+  }
+
+  void flat_extract_local(std::string& _return, const int64_t offset, const int64_t length) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_extract_local(_return, offset, length);
+    }
+    ifaces_[i]->flat_extract_local(_return, offset, length);
+    return;
+  }
+
+  int64_t flat_count(const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_count(query);
+    }
+    return ifaces_[i]->flat_count(query);
+  }
+
+  int64_t flat_count_local(const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_count_local(query);
+    }
+    return ifaces_[i]->flat_count_local(query);
+  }
+
+  void flat_search(std::vector<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_search(_return, query);
+    }
+    ifaces_[i]->flat_search(_return, query);
+    return;
+  }
+
+  void flat_search_local(std::vector<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->flat_search_local(_return, query);
+    }
+    ifaces_[i]->flat_search_local(_return, query);
+    return;
   }
 
   int32_t get_num_hosts() {

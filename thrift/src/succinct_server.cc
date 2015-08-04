@@ -74,6 +74,14 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
       }
     }
 
+    size_t offset = 0, client_id = 0;
+    for (auto client : qservers) {
+      shard_map[offset] = client_id;
+      offset_map[client_id] = offset;
+      client_id++;
+      offset += client.get_shard_size();
+    }
+
     fprintf(stderr, "All QueryServers successfully initialized!\n");
 
     return 0;
@@ -256,6 +264,51 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     }
   }
 
+  void flat_extract(std::string& _return, const int64_t offset, const int64_t len) {
+    flat_extract_local(_return, offset, len);
+  }
+
+  void flat_extract_local(std::string& _return, const int64_t offset, const int64_t len) {
+    auto it = std::prev(shard_map.upper_bound(offset));
+    size_t shard_id = it->second;
+    size_t shard_offset = it->first;
+    qservers.at(shard_id).flat_extract(_return, offset - shard_offset, len);
+  }
+
+  void flat_search_local(std::vector<int64_t> & _return, const std::string& query) {
+    for (int j = 0; j < qservers.size(); j++) {
+      qservers[j].send_flat_search(query);
+    }
+
+    for (int j = 0; j < qservers.size(); j++) {
+      std::vector<int64_t> offsets;
+      qservers[j].recv_flat_search(offsets);
+      for(auto offset : offsets) {
+        _return.push_back(offset_map[j] + offset);
+      }
+    }
+  }
+
+  void flat_search(std::vector<int64_t> & _return, const std::string& query) {
+    flat_search_local(_return, query);
+  }
+
+  int64_t flat_count_local(const std::string& query) {
+    int64_t ret = 0;
+    for (int j = 0; j < qservers.size(); j++) {
+      qservers[j].send_flat_count(query);
+    }
+
+    for (int j = 0; j < qservers.size(); j++) {
+      ret += qservers[j].recv_flat_count();
+    }
+    return ret;
+  }
+
+  int64_t flat_count(const std::string& query) {
+    return flat_count_local(query);
+  }
+
   int64_t count_local(const std::string& query) {
     int64_t ret = 0;
     for (int j = 0; j < qservers.size(); j++) {
@@ -425,6 +478,8 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
   std::vector<boost::shared_ptr<TTransport>> qserver_transports;
   std::vector<boost::shared_ptr<TTransport>> qhandler_transports;
   std::map<int, SuccinctServiceClient> qhandlers;
+  std::map<int64_t, size_t> shard_map;
+  std::map<size_t, int64_t> offset_map;
   uint32_t num_shards;
   uint32_t local_host_id;
   uint32_t num_failures;

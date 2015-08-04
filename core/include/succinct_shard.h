@@ -53,14 +53,20 @@ class SuccinctShard : public SuccinctCore {
 
   void Access(std::string& result, int64_t key, int32_t offset, int32_t len);
 
-  int64_t Count(std::string str);
+  int64_t Count(const std::string& str);
 
-  void Search(std::set<int64_t>& result, std::string str);
+  void Search(std::set<int64_t>& result, const std::string& str);
+
+  int64_t FlatCount(const std::string& str);
+
+  void FlatSearch(std::vector<int64_t>& result, const std::string& str);
+
+  void FlatExtract(std::string& result, int64_t offset, int64_t len);
 
   void RegexSearch(std::set<std::pair<size_t, size_t>>& result,
-                    std::string str, bool opt = true);
+                   const std::string& str, bool opt = true);
 
-  void RegexCount(std::vector<size_t>& result, std::string str);
+  void RegexCount(std::vector<size_t>& result, const std::string& str);
 
   // Serialize succinct data structures
   virtual size_t Serialize();
