@@ -284,7 +284,7 @@ class FileBenchmark : public Benchmark {
     BenchmarkExtractTicks(succinct_file_->Name() + ".extract.ticks");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking extract...\n");
-    BenchmarkExtractTicks(succinct_file_->Name() + ".extract");
+    BenchmarkExtract(succinct_file_->Name() + ".extract");
     fprintf(stderr, "Done!\n\n");
     if (queries_.size() == 0) {
       fprintf(stderr, "[WARNING]: No queries have been loaded.\n");
