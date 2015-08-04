@@ -44,7 +44,7 @@ class SuccinctFile : public SuccinctCore {
                        uint64_t max_sep);
 
  private:
-  std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
+  // std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
   std::pair<int64_t, int64_t> GetRange(const char *str, uint64_t len);
 
   uint64_t ComputeContextValue(const char *str, uint64_t pos);

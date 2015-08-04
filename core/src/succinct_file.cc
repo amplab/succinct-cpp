@@ -22,7 +22,7 @@ uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
   return val;
 }
 
-std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
+std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
                                                          uint64_t len) {
   std::pair<int64_t, int64_t> range(0, -1);
   uint64_t m = strlen(p);
@@ -57,6 +57,7 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
   return range;
 }
 
+/*
 std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
                                                     uint64_t len) {
   uint64_t m = strlen(p);
@@ -121,6 +122,7 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
 
   return range;
 }
+*/
 
 std::string SuccinctFile::Name() {
   return input_filename_;
