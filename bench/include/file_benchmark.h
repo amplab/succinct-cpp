@@ -146,7 +146,7 @@ class FileBenchmark : public Benchmark {
       succinct_file_->Extract(result, randoms_[i], extract_length);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
+      result_stream << result.length() << "\t" << tdiff << "\n";
       sum = (sum + result.length()) % succinct_file_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
@@ -252,7 +252,7 @@ class FileBenchmark : public Benchmark {
       succinct_file_->Extract(result, randoms_[i], extract_length);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
-      result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
+      result_stream << result.length() << "\t" << tdiff << "\n";
       sum = (sum + result.length()) % succinct_file_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
