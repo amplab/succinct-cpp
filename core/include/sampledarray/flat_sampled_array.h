@@ -52,7 +52,7 @@ class FlatSampledArray : public SampledArray {
   virtual uint64_t operator[](uint64_t i) = 0;
 
   virtual uint64_t GetSampleAt(uint64_t i) {
-    return SuccinctBase::lookup_bitmap_array(data_, i, data_bits_);
+    return SuccinctBase::LookupBitmapArray(data_, i, data_bits_);
   }
 
   virtual size_t Serialize(std::ostream& out) {
@@ -69,7 +69,7 @@ class FlatSampledArray : public SampledArray {
               sizeof(uint32_t));
     out_size += sizeof(uint32_t);
 
-    out_size += SuccinctBase::serialize_bitmap(data_, out);
+    out_size += SuccinctBase::SerializeBitmap(data_, out);
 
     return out_size;
   }
@@ -86,7 +86,7 @@ class FlatSampledArray : public SampledArray {
     in.read(reinterpret_cast<char *>(&sampling_rate_), sizeof(uint32_t));
     in_size += sizeof(uint32_t);
 
-    in_size += SuccinctBase::deserialize_bitmap(&data_, in);
+    in_size += SuccinctBase::DeserializeBitmap(&data_, in);
 
     return in_size;
   }
@@ -104,14 +104,14 @@ class FlatSampledArray : public SampledArray {
     sampling_rate_ = *((uint32_t *) data_buf);
     data_buf += sizeof(uint32_t);
 
-    data_buf += SuccinctBase::memorymap_bitmap(&data_, data_buf);
+    data_buf += SuccinctBase::MemoryMapBitmap(&data_, data_buf);
 
     return data_buf - data_beg;
   }
 
   virtual size_t StorageSize() {
     return sizeof(uint64_t) + sizeof(uint8_t) + sizeof(uint64_t)
-        + sizeof(uint32_t) + SuccinctBase::bitmap_size(data_);
+        + sizeof(uint32_t) + SuccinctBase::BitmapSize(data_);
   }
 
  protected:

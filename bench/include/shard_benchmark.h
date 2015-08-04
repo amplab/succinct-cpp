@@ -28,7 +28,7 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       result = (shard_->*function)(randoms_[i]);
-      sum = (sum + result) % shard_->original_size();
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
@@ -42,7 +42,7 @@ class ShardBenchmark : public Benchmark {
       t1 = rdtsc();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
-      sum = (sum + result) % shard_->original_size();
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
@@ -52,7 +52,7 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       result = (shard_->*function)(randoms_[i]);
-      sum = (sum + result) % shard_->original_size();
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
@@ -72,8 +72,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
-      shard_->get(result, randoms_[i]);
-      sum = (sum + result.length()) % shard_->original_size();
+      shard_->Get(result, randoms_[i]);
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
@@ -84,12 +84,12 @@ class ShardBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
-      shard_->get(result, randoms_[i]);
+      shard_->Get(result, randoms_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << result.length() << "\t" << tdiff
                     << "\n";
-      sum = (sum + result.length()) % shard_->original_size();
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
@@ -99,8 +99,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
-      shard_->get(result, randoms_[i]);
-      sum = (sum + result.length()) % shard_->original_size();
+      shard_->Get(result, randoms_[i]);
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
@@ -120,8 +120,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
-      shard_->access(result, randoms_[i], 0, len);
-      sum = (sum + result.length()) % shard_->original_size();
+      shard_->Access(result, randoms_[i], 0, len);
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
@@ -132,11 +132,11 @@ class ShardBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
-      shard_->access(result, randoms_[i], 0, len);
+      shard_->Access(result, randoms_[i], 0, len);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
-      sum = (sum + result.length()) % shard_->original_size();
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
@@ -146,8 +146,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
-      shard_->access(result, randoms_[i], 0, len);
-      sum = (sum + result.length()) % shard_->original_size();
+      shard_->Access(result, randoms_[i], 0, len);
+      sum = (sum + result.length()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
@@ -167,8 +167,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       uint64_t result;
-      result = shard_->count(queries_[i]);
-      sum = (sum + result) % shard_->original_size();
+      result = shard_->Count(queries_[i]);
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
@@ -179,11 +179,11 @@ class ShardBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       uint64_t result;
       t0 = GetTimestamp();
-      result = shard_->count(queries_[i]);
+      result = shard_->Count(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << queries_[i] << "\t" << tdiff << "\n";
-      sum = (sum + result) % shard_->original_size();
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
@@ -193,8 +193,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       uint64_t result;
-      result = shard_->count(queries_[i]);
-      sum = (sum + result) % shard_->original_size();
+      result = shard_->Count(queries_[i]);
+      sum = (sum + result) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
@@ -213,8 +213,8 @@ class ShardBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries_...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount / 100; i++) {
       std::set<int64_t> result;
-      shard_->search(result, queries_[i]);
-      sum = (sum + result.size()) % shard_->original_size();
+      shard_->Search(result, queries_[i]);
+      sum = (sum + result.size()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
     fprintf(stderr, "Warmup complete.\n");
@@ -226,11 +226,11 @@ class ShardBenchmark : public Benchmark {
         i < (kWarmupCount + kMeasureCount) / 100; i++) {
       std::set<int64_t> result;
       t0 = GetTimestamp();
-      shard_->search(result, queries_[i]);
+      shard_->Search(result, queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << result.size() << "\t" << tdiff << "\n";
-      sum = (sum + result.size()) % shard_->original_size();
+      sum = (sum + result.size()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
@@ -241,8 +241,8 @@ class ShardBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount + kMeasureCount;
         i < (kWarmupCount + kMeasureCount + kCooldownCount) / 100; i++) {
       std::set<int64_t> result;
-      shard_->search(result, queries_[i]);
-      sum = (sum + result.size()) % shard_->original_size();
+      shard_->Search(result, queries_[i]);
+      sum = (sum + result.size()) % shard_->GetOriginalSize();
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
     fprintf(stderr, "Cooldown complete.\n");
@@ -258,7 +258,7 @@ class ShardBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
 
@@ -266,7 +266,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -277,7 +277,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
 
@@ -301,7 +301,7 @@ class ShardBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
         i++;
       }
 
@@ -309,7 +309,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        shard_->access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -320,7 +320,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
         i++;
       }
 
@@ -345,7 +345,7 @@ class ShardBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        value = shard_->count(queries_[i % randoms_.size()]);
+        value = shard_->Count(queries_[i % randoms_.size()]);
         i++;
       }
 
@@ -353,7 +353,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        value = shard_->count(queries_[i % randoms_.size()]);
+        value = shard_->Count(queries_[i % randoms_.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -364,7 +364,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        value = shard_->count(queries_[i % randoms_.size()]);
+        value = shard_->Count(queries_[i % randoms_.size()]);
         i++;
       }
 
@@ -389,7 +389,7 @@ class ShardBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
 
@@ -397,7 +397,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -408,7 +408,7 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->get(value, randoms_[i % randoms_.size()]);
+        shard_->Get(value, randoms_[i % randoms_.size()]);
         i++;
       }
 
@@ -428,7 +428,7 @@ class ShardBenchmark : public Benchmark {
   void GenerateRandoms() {
     uint64_t q_cnt = kWarmupCount + kCooldownCount + kMeasureCount;
     for (uint64_t i = 0; i < q_cnt; i++) {
-      randoms_.push_back(rand() % shard_->num_keys());
+      randoms_.push_back(rand() % shard_->GetNumKeys());
     }
   }
 

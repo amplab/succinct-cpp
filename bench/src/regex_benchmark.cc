@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 
     std::cout << "Serializing Succinct data structures...\n";
     std::ofstream s_out(filename + ".succinct");
-    s_file->serialize();
+    s_file->Serialize();
     s_out.close();
   } else {
     std::cout << "De-serializing Succinct data structures...\n";

@@ -2,18 +2,18 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/shard_benchmark.h"
-
-#include "../../core/include/succinct_shard.h"
+#include "shard_benchmark.h"
+#include "succinct_shard.h"
+#include "npa/npa.h"
 
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d delete-layers] [-c create-layers] [-n npa_sampling_rate] [-t type] [-l len] [-q queryfile] [file]\n",
+      "Usage: %s [-m mode] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-d delete-layers] [-c create-layers] [-n npa_sampling_rate] [-r npa_encoding_scheme] [-t type] [-l len] [-q queryfile] [file]\n",
       exec);
 }
 
-SamplingScheme scheme_from_opt(int opt) {
+SamplingScheme SamplingSchemeFromOption(int opt) {
   switch (opt) {
     case 0:
       return SamplingScheme::FLAT_SAMPLE_BY_INDEX;
@@ -28,8 +28,21 @@ SamplingScheme scheme_from_opt(int opt) {
   }
 }
 
+NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
+  switch (opt) {
+    case 0:
+      return NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED;
+    case 1:
+      return NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
+    case 2:
+      return NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED;
+    default:
+      return NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
+  }
+}
+
 int main(int argc, char **argv) {
-  if (argc < 2 || argc > 22) {
+  if (argc < 2 || argc > 24) {
     print_usage(argv[0]);
     return -1;
   }
@@ -44,9 +57,11 @@ int main(int argc, char **argv) {
   std::string type = "latency-get";
   int32_t len = 100;
   SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
+  NPA::NPAEncodingScheme npa_scheme =
+      NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
   std::string querypath = "";
 
-  while ((c = getopt(argc, argv, "m:s:i:x:c:d:n:t:l:q:")) != -1) {
+  while ((c = getopt(argc, argv, "m:s:i:x:c:d:n:r:t:l:q:")) != -1) {
     switch (c) {
       case 'm': {
         mode = atoi(optarg);
@@ -61,7 +76,7 @@ int main(int argc, char **argv) {
         break;
       }
       case 'x': {
-        scheme = scheme_from_opt(atoi(optarg));
+        scheme = SamplingSchemeFromOption(atoi(optarg));
         break;
       }
       case 'c': {
@@ -92,6 +107,10 @@ int main(int argc, char **argv) {
       }
       case 'n': {
         npa_sampling_rate = atoi(optarg);
+        break;
+      }
+      case 'r': {
+        npa_scheme = EncodingSchemeFromOption(atoi(optarg));
         break;
       }
       case 't': {
@@ -131,32 +150,32 @@ int main(int argc, char **argv) {
     fprintf(stderr, "SuccinctMode = Construct in memory.\n");
     fd = new SuccinctShard(0, inputpath, SuccinctMode::CONSTRUCT_IN_MEMORY,
                            sa_sampling_rate, isa_sampling_rate,
-                           npa_sampling_rate, scheme, scheme);
+                           npa_sampling_rate, scheme, scheme, npa_scheme);
     // Serialize
-    fd->serialize();
+    fd->Serialize();
   } else if (mode == 1) {
     fprintf(stderr, "SuccinctMode = Load in memory.\n");
     fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_IN_MEMORY,
                            sa_sampling_rate, isa_sampling_rate,
-                           npa_sampling_rate, scheme, scheme);
+                           npa_sampling_rate, scheme, scheme, npa_scheme);
   } else if (mode == 2) {
     fprintf(stderr, "SuccinctMode = Load memory mapped.\n");
     fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_MEMORY_MAPPED,
                            sa_sampling_rate, isa_sampling_rate,
-                           npa_sampling_rate, scheme, scheme);
+                           npa_sampling_rate, scheme, scheme, npa_scheme);
   } else {
     // Only modes 0, 1, 3 supported for now
     assert(0);
   }
 
-  fprintf(stderr, "shard size = %lu\n", fd->storage_size());
+  fprintf(stderr, "shard size = %lu\n", fd->StorageSize());
   fprintf(stderr, "sampling scheme = %u\n", scheme);
 
   if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
     fprintf(stderr, "Scheme = LayeredSampledByIndex\n");
     if (!deleted_layers.empty()) {
-      LayeredSampledArray *SA = (LayeredSampledArray *) fd->getSA();
-      LayeredSampledArray *ISA = (LayeredSampledArray *) fd->getISA();
+      LayeredSampledArray *SA = (LayeredSampledArray *) fd->GetSA();
+      LayeredSampledArray *ISA = (LayeredSampledArray *) fd->GetISA();
 
       size_t deleted_size = 0;
       for (size_t i = 0; i < deleted_layers.size(); i++) {
@@ -171,9 +190,9 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Scheme = OpportunisticLayeredSampledByIndex\n");
     if (!deleted_layers.empty()) {
       OpportunisticLayeredSampledArray *SA =
-          (OpportunisticLayeredSampledArray *) fd->getSA();
+          (OpportunisticLayeredSampledArray *) fd->GetSA();
       OpportunisticLayeredSampledArray *ISA =
-          (OpportunisticLayeredSampledArray *) fd->getISA();
+          (OpportunisticLayeredSampledArray *) fd->GetISA();
 
       size_t deleted_size = 0;
       for (size_t i = 0; i < deleted_layers.size(); i++) {
@@ -187,11 +206,14 @@ int main(int argc, char **argv) {
 
   ShardBenchmark s_bench(fd, querypath);
   if (type == "latency-sa") {
-    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupSA, "latency_results_sa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::LookupSA,
+                                    "latency_results_sa");
   } else if (type == "latency-isa") {
-    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupISA, "latency_results_isa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::LookupISA,
+                                    "latency_results_isa");
   } else if (type == "latency-npa") {
-    s_bench.BenchmarkLookupFunction(&SuccinctShard::lookupNPA, "latency_results_npa");
+    s_bench.BenchmarkLookupFunction(&SuccinctShard::LookupNPA,
+                                    "latency_results_npa");
   } else if (type == "latency-access") {
     s_bench.BenchmarkAccessLatency("latency_results_access", len);
   } else if (type == "latency-get") {
@@ -214,7 +236,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
       return 0;
     }
-    LayeredSampledArray *SA = (LayeredSampledArray *) fd->getSA();
+    LayeredSampledArray *SA = (LayeredSampledArray *) fd->GetSA();
     for (uint32_t i = 0; i < created_layers.size(); i++) {
       uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
@@ -233,7 +255,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Invalid sampling scheme for reconstruction.\n");
       return 0;
     }
-    LayeredSampledArray *ISA = (LayeredSampledArray *) fd->getISA();
+    LayeredSampledArray *ISA = (LayeredSampledArray *) fd->GetISA();
     for (uint32_t i = 0; i < created_layers.size(); i++) {
       uint64_t start_time = Benchmark::GetTimestamp();
       if (scheme == SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
@@ -247,7 +269,7 @@ int main(int argc, char **argv) {
               created_layers.at(i), end_time - start_time);
     }
   } else if (type == "storage-breakdown") {
-    fd->print_storage_breakdown();
+    fd->PrintStorageBreakdown();
   } else {
     assert(0);
   }

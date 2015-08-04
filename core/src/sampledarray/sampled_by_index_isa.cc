@@ -29,10 +29,10 @@ void SampledByIndexISA::Sample(bitmap_t *SA, uint64_t n) {
   data_size_ = (n / sampling_rate_) + 1;
 
   data_ = new bitmap_t;
-  SuccinctBase::init_bitmap(&data_, data_size_ * data_bits_, succinct_allocator_);
+  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_, succinct_allocator_);
 
   for (uint64_t i = 0; i < n; i++) {
-    uint64_t sa_val = SuccinctBase::lookup_bitmap_array(SA, i, data_bits_);
+    uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
     /*
      if(i % sampling_rate == 0) {
      SuccinctBase::set_bitmap_array(&data, (i / sampling_rate), sa_val,
@@ -40,7 +40,7 @@ void SampledByIndexISA::Sample(bitmap_t *SA, uint64_t n) {
      }
      */
     if (sa_val % sampling_rate_ == 0) {
-      SuccinctBase::set_bitmap_array(&data_, (sa_val / sampling_rate_), i,
+      SuccinctBase::SetBitmapArray(&data_, (sa_val / sampling_rate_), i,
                                      data_bits_);
     }
   }
@@ -50,7 +50,7 @@ uint64_t SampledByIndexISA::operator [](uint64_t i) {
 
   assert(i < original_size_);
   uint64_t sample_idx = i / sampling_rate_;
-  uint64_t sample = SuccinctBase::lookup_bitmap_array(data_, sample_idx,
+  uint64_t sample = SuccinctBase::LookupBitmapArray(data_, sample_idx,
                                                       data_bits_);
   uint64_t pos = sample;
   i -= (sample_idx * sampling_rate_);

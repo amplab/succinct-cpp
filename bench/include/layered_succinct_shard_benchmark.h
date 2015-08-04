@@ -29,7 +29,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
         sa_sampling_rate, isa_sampling_rate);
     if (construct) {
       // Serialize and save to file
-      layered_succinct_shard_->serialize();
+      layered_succinct_shard_->Serialize();
     }
 
     GenerateRandoms();
@@ -42,7 +42,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
   void MeasureAccessThroughput(uint32_t fetch_length) {
     fprintf(stderr, "Starting access throughput measurement...");
-    size_t storage_size = layered_succinct_shard_->storage_size();
+    size_t storage_size = layered_succinct_shard_->StorageSize();
     std::string res;
     std::ofstream res_stream(results_file_ + ".access",
                              std::ofstream::out | std::ofstream::app);
@@ -63,7 +63,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
   void MeasureGetThroughput() {
     fprintf(stderr, "Starting get throughput measurement...");
-    size_t storage_size = layered_succinct_shard_->storage_size();
+    size_t storage_size = layered_succinct_shard_->StorageSize();
     std::string res;
     std::ofstream res_stream(results_file_ + ".get",
                              std::ofstream::out | std::ofstream::app);
@@ -83,7 +83,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
   void MeasureSearchThroughput() {
     fprintf(stderr, "Starting search throughput measurement...");
-    size_t storage_size = layered_succinct_shard_->storage_size();
+    size_t storage_size = layered_succinct_shard_->StorageSize();
     std::set<int64_t> res;
     std::ofstream res_stream(results_file_ + ".search",
                              std::ofstream::out | std::ofstream::app);
@@ -91,7 +91,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (num_ops <= randoms_.size()) {
-      layered_succinct_shard_->search(res, queries_[num_ops % queries_.size()]);
+      layered_succinct_shard_->Search(res, queries_[num_ops % queries_.size()]);
       num_ops++;
     }
     TimeStamp diff = GetTimestamp() - start_time;
@@ -111,7 +111,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
  private:
   void GenerateRandoms() {
-    uint64_t q_cnt = layered_succinct_shard_->num_keys();
+    uint64_t q_cnt = layered_succinct_shard_->GetNumKeys();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%llu...\n",
             key_skew_, q_cnt);
     ZipfGenerator z(key_skew_, q_cnt);
@@ -123,7 +123,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   }
 
   void GenerateLengths() {
-    uint64_t q_cnt = layered_succinct_shard_->num_keys();
+    uint64_t q_cnt = layered_succinct_shard_->GetNumKeys();
     int32_t min_len = 100;
     int32_t max_len = 500;
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%u...\n",

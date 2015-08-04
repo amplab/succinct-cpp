@@ -19,12 +19,12 @@ LayeredSampledSA::LayeredSampledSA(uint32_t target_sampling_rate,
 
 void LayeredSampledSA::SampleLayered(bitmap_t *SA, uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
-    uint64_t sa_val = SuccinctBase::lookup_bitmap_array(SA, i, data_bits_);
+    uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
     if (i % target_sampling_rate_ == 0) {
       Layer l;
       GetLayer(&l, i);
       bitmap_t *data = layer_data_[l.layer_id];
-      SuccinctBase::set_bitmap_array(&data, l.layer_idx, sa_val, data_bits_);
+      SuccinctBase::SetBitmapArray(&data, l.layer_idx, sa_val, data_bits_);
     }
   }
 }
@@ -56,7 +56,7 @@ size_t LayeredSampledSA::ReconstructLayer(uint32_t layer_id) {
         (layer_id == (num_layers_ - 1)) ?
             layer_sampling_rate : layer_sampling_rate * 2;
     uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
-    SuccinctBase::init_bitmap(&layer_data_[layer_id], num_entries * data_bits_,
+    SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
                               succinct_allocator_);
     uint64_t idx, offset;
     std::vector<bool> is_computed(num_entries, false);
@@ -84,7 +84,7 @@ size_t LayeredSampledSA::ReconstructLayer(uint32_t layer_id) {
         uint64_t cur_val =
             (sa_val < count) ?
                 original_size_ - (count - sa_val) : sa_val - count;
-        SuccinctBase::set_bitmap_array(&layer_data_[layer_id], pos, cur_val,
+        SuccinctBase::SetBitmapArray(&layer_data_[layer_id], pos, cur_val,
                                        data_bits_);
         is_computed[pos] = true;
       }

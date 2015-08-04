@@ -19,12 +19,12 @@ LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
 
 void LayeredSampledISA::SampleLayered(bitmap_t *SA, uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
-    uint64_t sa_val = SuccinctBase::lookup_bitmap_array(SA, i, data_bits_);
+    uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
     if (sa_val % target_sampling_rate_ == 0) {
       Layer l;
       GetLayer(&l, sa_val);
       bitmap_t *data = layer_data_[l.layer_id];
-      SuccinctBase::set_bitmap_array(&data, l.layer_idx, i, data_bits_);
+      SuccinctBase::SetBitmapArray(&data, l.layer_idx, i, data_bits_);
     }
   }
 }
@@ -34,7 +34,7 @@ uint64_t LayeredSampledISA::operator[](uint64_t i) {
 
   Layer l;
   i = GetLayerLeq(&l, i);
-  uint64_t pos = SuccinctBase::lookup_bitmap_array(layer_data_[l.layer_id],
+  uint64_t pos = SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
                                                    l.layer_idx, data_bits_);
 
   while (i--) {
@@ -52,7 +52,7 @@ size_t LayeredSampledISA::ReconstructLayer(uint32_t layer_id) {
         (layer_id == (num_layers_ - 1)) ?
             layer_sampling_rate : layer_sampling_rate * 2;
     uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
-    SuccinctBase::init_bitmap(&layer_data_[layer_id], num_entries * data_bits_,
+    SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
                               succinct_allocator_);
     uint64_t idx, offset;
     std::vector<bool> is_computed(num_entries, false);
@@ -65,12 +65,12 @@ size_t LayeredSampledISA::ReconstructLayer(uint32_t layer_id) {
         continue;
       Layer l;
       idx = GetLayerLeq(&l, idx);
-      uint64_t pos = SuccinctBase::lookup_bitmap_array(layer_data_[l.layer_id],
+      uint64_t pos = SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
                                                        l.layer_idx, data_bits_);
       while (idx--) {
         pos = (*npa)[pos];
       }
-      SuccinctBase::set_bitmap_array(&layer_data_[layer_id], i, pos, data_bits_);
+      SuccinctBase::SetBitmapArray(&layer_data_[layer_id], i, pos, data_bits_);
     }
     size = layer_data_[layer_id]->size;
     CREATE_LAYER(layer_id);

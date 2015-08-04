@@ -61,7 +61,7 @@ class LayeredSampledArray : public SampledArray {
           (i == (num_layers_ - 1)) ?
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (n / layer_sampling_rate) + 1;
-      SuccinctBase::init_bitmap(&layer_data_[i], num_entries * data_bits_,
+      SuccinctBase::InitBitmap(&layer_data_[i], num_entries * data_bits_,
                                 succinct_allocator);
     }
 
@@ -155,7 +155,7 @@ class LayeredSampledArray : public SampledArray {
 
     Layer l;
     GetLayer(&l, i);
-    return SuccinctBase::lookup_bitmap_array(layer_data_[l.layer_id],
+    return SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
                                              l.layer_idx, data_bits_);
   }
 
@@ -165,7 +165,7 @@ class LayeredSampledArray : public SampledArray {
       DELETE_LAYER(layer_id);
       size = layer_data_[layer_id]->size;
       usleep(10000);                      // TODO: This is very hacky
-      SuccinctBase::destroy_bitmap(&layer_data_[layer_id], succinct_allocator_);
+      SuccinctBase::DestroyBitmap(&layer_data_[layer_id], succinct_allocator_);
       layer_data_[layer_id] = NULL;
     }
     return size;
@@ -180,7 +180,7 @@ class LayeredSampledArray : public SampledArray {
           (layer_id == (num_layers_ - 1)) ?
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
-      SuccinctBase::init_bitmap(&layer_data_[layer_id],
+      SuccinctBase::InitBitmap(&layer_data_[layer_id],
                                 num_entries * data_bits_, succinct_allocator_);
       uint64_t idx;
       if (layer_id == this->num_layers_ - 1) {
@@ -188,7 +188,7 @@ class LayeredSampledArray : public SampledArray {
           idx = i * layer_sampling_rate;
           if (idx > original_size_)
             break;
-          SuccinctBase::set_bitmap_array(&layer_data_[layer_id], i, at(idx),
+          SuccinctBase::SetBitmapArray(&layer_data_[layer_id], i, at(idx),
                                          data_bits_);
         }
       } else {
@@ -196,7 +196,7 @@ class LayeredSampledArray : public SampledArray {
           idx = i * layer_sampling_rate + (layer_sampling_rate / 2);
           if (idx > original_size_)
             break;
-          SuccinctBase::set_bitmap_array(&layer_data_[layer_id], i, at(idx),
+          SuccinctBase::SetBitmapArray(&layer_data_[layer_id], i, at(idx),
                                          data_bits_);
         }
       }
@@ -220,7 +220,7 @@ class LayeredSampledArray : public SampledArray {
     out_size += sizeof(uint64_t);
 
     for (uint32_t i = 0; i < this->num_layers_; i++) {
-      out_size += SuccinctBase::serialize_bitmap(layer_data_[i], out);
+      out_size += SuccinctBase::SerializeBitmap(layer_data_[i], out);
     }
 
     return out_size;
@@ -238,7 +238,7 @@ class LayeredSampledArray : public SampledArray {
 
     layer_data_ = new bitmap_t*[this->num_layers_];
     for (uint32_t i = 0; i < this->num_layers_; i++) {
-      in_size += SuccinctBase::deserialize_bitmap(&layer_data_[i], in);
+      in_size += SuccinctBase::DeserializeBitmap(&layer_data_[i], in);
     }
 
     return in_size;
@@ -257,7 +257,7 @@ class LayeredSampledArray : public SampledArray {
 
     layer_data_ = new bitmap_t*[this->num_layers_];
     for (uint32_t i = 0; i < this->num_layers_; i++) {
-      data += SuccinctBase::memorymap_bitmap(&layer_data_[i], data);
+      data += SuccinctBase::MemoryMapBitmap(&layer_data_[i], data);
     }
 
     return data - data_beg;
@@ -270,7 +270,7 @@ class LayeredSampledArray : public SampledArray {
     tot_size += this->sampling_range_ * (sizeof(uint32_t) + sizeof(uint64_t));
     tot_size += sizeof(bitmap_t*) * this->num_layers_;
     for (uint32_t i = 0; i < this->num_layers_; i++) {
-      tot_size += SuccinctBase::bitmap_size(layer_data_[i]);
+      tot_size += SuccinctBase::BitmapSize(layer_data_[i]);
     }
     return tot_size;
   }

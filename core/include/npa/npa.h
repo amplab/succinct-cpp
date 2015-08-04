@@ -97,8 +97,8 @@ class NPA {
                            uint64_t k) {
     uint32_t sigma_bits = SuccinctUtils::IntegerLog2(sigma_size_);
     for (uint64_t p = i; p < i + k; p++)
-      if (SuccinctBase::lookup_bitmap_array(data_bitmap, p, sigma_bits)
-          != SuccinctBase::lookup_bitmap_array(data_bitmap, j++, sigma_bits))
+      if (SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits)
+          != SuccinctBase::LookupBitmapArray(data_bitmap, j++, sigma_bits))
         return false;
 
     return true;
@@ -110,13 +110,13 @@ class NPA {
     uint64_t max = MIN(i + context_len_, npa_size_);
     for (uint64_t p = i; p < max; p++) {
       val = val * sigma_size_
-          + SuccinctBase::lookup_bitmap_array(data_bitmap, p, sigma_bits);
+          + SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits);
     }
 
     if (max < i + context_len_) {
       for (uint64_t p = 0; p < (i + context_len_) % npa_size_; p++) {
         val = val * sigma_size_
-            + SuccinctBase::lookup_bitmap_array(data_bitmap, p, sigma_bits);
+            + SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits);
       }
     }
 

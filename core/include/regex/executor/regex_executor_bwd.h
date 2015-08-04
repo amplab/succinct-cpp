@@ -19,16 +19,16 @@ class RegExExecutorBwd : public RegExExecutorSuccinct {
         RegExPrimitive *p = (RegExPrimitive *) regex;
         switch (p->GetPrimitiveType()) {
           case RegExPrimitiveType::MGRAM: {
-            Range range = succinct_core_->bw_search(p->GetPrimitive());
+            Range range = succinct_core_->BwdSearch(p->GetPrimitive());
             if (!IsEmpty(range))
               results.insert(ResultEntry(range, p->GetPrimitive().length()));
             break;
           }
           case RegExPrimitiveType::DOT: {
-            for (char c : std::string(succinct_core_->getAlphabet())) {
+            for (char c : std::string(succinct_core_->GetAlphabet())) {
               if (c == '\n' || c == (char) 1)
                 continue;
-              Range range = succinct_core_->bw_search(std::string(1, c));
+              Range range = succinct_core_->BwdSearch(std::string(1, c));
               if (!IsEmpty(range))
                 results.insert(ResultEntry(range, 1));
             }
@@ -36,7 +36,7 @@ class RegExExecutorBwd : public RegExExecutorSuccinct {
           }
           case RegExPrimitiveType::RANGE: {
             for (char c : p->GetPrimitive()) {
-              Range range = succinct_core_->bw_search(std::string(1, c));
+              Range range = succinct_core_->BwdSearch(std::string(1, c));
               if (!IsEmpty(range))
                 results.insert(ResultEntry(range, 1));
             }
@@ -98,7 +98,7 @@ class RegExExecutorBwd : public RegExExecutorSuccinct {
         RegExPrimitive *p = (RegExPrimitive *) regex;
         switch (p->GetPrimitiveType()) {
           case RegExPrimitiveType::MGRAM: {
-            Range range = succinct_core_->continue_bw_search(
+            Range range = succinct_core_->ContinueBwdSearch(
                 p->GetPrimitive(), right_result.range_);
             if (!IsEmpty(range))
               concat_results.insert(
@@ -107,10 +107,10 @@ class RegExExecutorBwd : public RegExExecutorSuccinct {
             break;
           }
           case RegExPrimitiveType::DOT: {
-            for (char c : std::string(succinct_core_->getAlphabet())) {
+            for (char c : std::string(succinct_core_->GetAlphabet())) {
               if (c == '\n' || c == (char) 1)
                 continue;
-              Range range = succinct_core_->continue_bw_search(
+              Range range = succinct_core_->ContinueBwdSearch(
                   std::string(1, c), right_result.range_);
               if (!IsEmpty(range))
                 concat_results.insert(
@@ -120,7 +120,7 @@ class RegExExecutorBwd : public RegExExecutorSuccinct {
           }
           case RegExPrimitiveType::RANGE: {
             for (char c : p->GetPrimitive()) {
-              Range range = succinct_core_->continue_bw_search(
+              Range range = succinct_core_->ContinueBwdSearch(
                   std::string(1, c), right_result.range_);
               if (!IsEmpty(range))
                 concat_results.insert(

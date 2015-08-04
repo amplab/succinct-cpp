@@ -52,12 +52,12 @@ class QueryServiceHandler : virtual public QueryServiceIf {
     if (construct) {
       fprintf(stderr, "Serializing data structures for file %s\n",
               filename.c_str());
-      fd->serialize();
+      fd->Serialize();
     } else {
       fprintf(stderr, "Read data structures from file %s\n", filename.c_str());
     }
     fprintf(stderr, "Succinct data structures with original size = %llu\n",
-            fd->original_size());
+            fd->GetOriginalSize());
     fprintf(stderr, "Done initializing...\n");
     fprintf(stderr, "Waiting for queries...\n");
     is_init = true;
@@ -65,21 +65,21 @@ class QueryServiceHandler : virtual public QueryServiceIf {
   }
 
   void get(std::string& _return, const int64_t key) {
-    fd->get(_return, key);
+    fd->Get(_return, key);
   }
 
   void access(std::string& _return, const int64_t key, const int32_t offset,
               const int32_t len) {
-    fd->access(_return, key, offset, len);
+    fd->Access(_return, key, offset, len);
   }
 
   void search(std::set<int64_t>& _return, const std::string& query) {
-    fd->search(_return, query);
+    fd->Search(_return, query);
   }
 
   void regex_search(std::set<int64_t> &_return, const std::string &query) {
     std::set<std::pair<size_t, size_t>> results;
-    fd->regex_search(results, query, regex_opt);
+    fd->RegexSearch(results, query, regex_opt);
     for (auto res : results) {
       _return.insert((int64_t) res.first);
     }
@@ -87,18 +87,18 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
   void regex_count(std::vector<int64_t> & _return, const std::string& query) {
     std::vector<size_t> results;
-    fd->regex_count(results, query);
+    fd->RegexCount(results, query);
     for (auto res : results) {
       _return.push_back((int64_t) res);
     }
   }
 
   int64_t count(const std::string& query) {
-    return fd->count(query);
+    return fd->Count(query);
   }
 
   int32_t get_num_keys() {
-    return fd->num_keys();
+    return fd->GetNumKeys();
   }
 
  private:

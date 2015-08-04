@@ -53,82 +53,82 @@ class SuccinctCore : public SuccinctBase {
 
   /* Lookup functions for each of the core data structures */
   // Lookup NPA at index i
-  uint64_t lookupNPA(uint64_t i);
+  uint64_t LookupNPA(uint64_t i);
 
   // Lookup SA at index i
-  uint64_t lookupSA(uint64_t i);
+  uint64_t LookupSA(uint64_t i);
 
   // Lookup ISA at index i
-  uint64_t lookupISA(uint64_t i);
+  uint64_t LookupISA(uint64_t i);
 
   // Get index of value v in C
-  uint64_t lookupC(uint64_t val);
+  uint64_t LookupC(uint64_t val);
 
-  char charAt(uint64_t i);
+  char CharAt(uint64_t i);
 
   // Serialize succinct data structures
-  virtual size_t serialize();
+  virtual size_t Serialize();
 
   // Deserialize succinct data structures
-  virtual size_t deserialize();
+  virtual size_t Deserialize();
 
   // Memory map succinct data structures
-  virtual size_t memorymap();
+  virtual size_t MemoryMap();
 
   // Get size of original input
-  uint64_t original_size();
+  uint64_t GetOriginalSize();
 
   // Get succinct core size
-  virtual size_t storage_size();
+  virtual size_t StorageSize();
 
-  virtual void print_storage_breakdown();
+  virtual void PrintStorageBreakdown();
 
   // Get SA
-  SampledArray *getSA();
+  SampledArray *GetSA();
 
   // Get ISA
-  SampledArray *getISA();
+  SampledArray *GetISA();
 
   // Get NPA
-  NPA *getNPA();
+  NPA *GetNPA();
 
   // Get alphabet
-  char *getAlphabet();
+  char *GetAlphabet();
 
-  inline int compare(std::string mgram, int64_t pos);
-  inline int compare(std::string mgram, int64_t pos, size_t offset);
+  inline int Compare(std::string mgram, int64_t pos);
+  inline int Compare(std::string mgram, int64_t pos, size_t offset);
 
-  Range bw_search(std::string mgram);
-  Range continue_bw_search(std::string mgram, Range range);
+  Range BwdSearch(std::string mgram);
+  Range ContinueBwdSearch(std::string mgram, Range range);
 
-  Range fw_search(std::string mgram);
-  Range continue_fw_search(std::string mgram, Range range, size_t len);
+  Range FwdSearch(std::string mgram);
+  Range ContinueFwdSearch(std::string mgram, Range range, size_t len);
 
  protected:
 
   /* Metadata */
-  std::string filename;               // Name of input file
-  std::string succinct_path;          // Name of succinct path
-  uint64_t input_size;                // Size of input
+  std::string filename_;               // Name of input file
+  std::string succinct_path_;          // Name of succinct path
+  uint64_t input_size_;                // Size of input
 
   /* Primary data structures */
-  SampledArray *SA;                   // Suffix Array
-  SampledArray *ISA;                  // Inverse Suffix Array
-  NPA *npa;                           // Next Pointer Array
-  std::vector<uint64_t> Cinv_idx;     // Indexes into Cinv;
+  SampledArray *sa_;                   // Suffix Array
+  SampledArray *isa_;                  // Inverse Suffix Array
+  NPA *npa_;                           // Next Pointer Array
+  std::vector<uint64_t> Cinv_idx_;     // Indexes into Cinv;
 
   /* Auxiliary data structures */
-  char *alphabet;
-  AlphabetMap alphabet_map;
-  uint32_t alphabet_size;             // Size of the input alphabet
+  char *alphabet_;
+  AlphabetMap alphabet_map_;
+  uint32_t alphabet_size_;             // Size of the input alphabet_
 
  private:
   /* Construct functions */
   // Create all auxiliary data structures
-  void construct_aux(BitMap *compactSA, const char *data);
+  void ConstructAuxiliary(BitMap *compactSA, const char *data);
 
-  // Parent construct function
-  void construct(const char* filename, uint32_t sa_sampling_rate,
+  // Parent Construct function
+  void Construct(const char* filename, uint32_t sa_sampling_rate,
                  uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
                  uint32_t context_len, SamplingScheme sa_sampling_scheme,
                  SamplingScheme isa_sampling_scheme,
@@ -136,9 +136,9 @@ class SuccinctCore : public SuccinctBase {
                  uint32_t sampling_range);
 
   // Helper functions
-  bool compare_data_bitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
-  uint64_t get_context_val(BitMap *T, uint32_t i);
+  bool CompareDataBitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
+  uint64_t GetContextValue(BitMap *T, uint32_t i);
 
-  bool is_sampled(uint64_t i);
+  bool IsSampled(uint64_t i);
 };
 #endif

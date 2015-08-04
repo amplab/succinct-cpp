@@ -18,11 +18,10 @@ class WaveletTreeEncodedNPA : public NPA {
   WaveletTreeEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                         uint32_t context_len, uint32_t sampling_rate,
                         Bitmap *data_bitmap, Bitmap *compactSA,
-                        Bitmap *compactISA, SuccinctAllocator &s_allocator,
-                        SuccinctBase *s_base);
+                        Bitmap *compactISA, SuccinctAllocator &s_allocator);
 
   WaveletTreeEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
-                        SuccinctAllocator &s_allocator, SuccinctBase *s_base);
+                        SuccinctAllocator &s_allocator);
 
   // Virtual destructor
   ~WaveletTreeEncodedNPA() {
@@ -55,8 +54,13 @@ class WaveletTreeEncodedNPA : public NPA {
   uint64_t LookupWaveletTree(WaveletNode *tree, uint64_t c_pos,
                               uint64_t sl_pos, uint64_t s, uint64_t e);
 
+  size_t SerializeWaveletTree(WaveletNode *root, std::ostream& out);
+  size_t DeserializeWaveletTree(WaveletNode **root, std::istream& in);
+
+  size_t SerializeWaveletNode(WaveletNode *node, std::ostream& out);
+  size_t DeserializeWaveletNode(WaveletNode **node, std::istream& in);
+
  private:
-  SuccinctBase *succinct_base_;
   uint64_t *column_sizes_;
   WaveletNode **wavelet_tree_;
 

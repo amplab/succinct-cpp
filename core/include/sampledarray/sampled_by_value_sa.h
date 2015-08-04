@@ -7,11 +7,10 @@ class SampledByValueSA : public FlatSampledArray {
  public:
   // Constructor
   SampledByValueSA(uint32_t sampling_rate, NPA *npa, bitmap_t *SA,
-                   uint64_t sa_n, SuccinctAllocator &s_allocator,
-                   SuccinctBase *_base);
+                   uint64_t sa_n, SuccinctAllocator &s_allocator);
 
   SampledByValueSA(uint32_t sampling_rate, NPA *npa,
-                   SuccinctAllocator &s_allocator, SuccinctBase *_base);
+                   SuccinctAllocator &s_allocator);
 
   // Access element at index i
   virtual uint64_t operator[](uint64_t i);
@@ -31,7 +30,6 @@ class SampledByValueSA : public FlatSampledArray {
 
  private:
   Dictionary *sampled_positions_;
-  SuccinctBase *succinct_base_;
 };
 
 #endif

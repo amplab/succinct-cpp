@@ -19,12 +19,12 @@ OpportunisticLayeredSampledSA::OpportunisticLayeredSampledSA(
 
 void OpportunisticLayeredSampledSA::layered_sample(bitmap_t *SA, uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
-    uint64_t sa_val = SuccinctBase::lookup_bitmap_array(SA, i, data_bits_);
+    uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
     if (i % target_sampling_rate_ == 0) {
       Layer l;
       GetLayer(&l, i);
       bitmap_t *data = layer_data_[l.layer_id];
-      SuccinctBase::set_bitmap_array(&data, l.layer_idx, sa_val, data_bits_);
+      SuccinctBase::SetBitmapArray(&data, l.layer_idx, sa_val, data_bits_);
     }
   }
 }

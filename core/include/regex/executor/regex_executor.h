@@ -69,7 +69,7 @@ class RegExExecutorBlackBox : public RegExExecutor {
           case RegExPrimitiveType::DOT: {
             std::string primitive = ((RegExPrimitive *) regex)->GetPrimitive();
             if (primitive == ".") {
-              primitive = std::string(succinct_core_->getAlphabet());
+              primitive = std::string(succinct_core_->GetAlphabet());
             }
             for (auto c : primitive) {
               RegExPrimitive char_primitive(std::string(1, c));
@@ -108,12 +108,12 @@ class RegExExecutorBlackBox : public RegExExecutor {
     std::vector<int64_t> offsets;
     std::string mgram = regex_primitive->GetPrimitive();
     size_t len = mgram.length();
-    std::pair<int64_t, int64_t> range = succinct_core_->bw_search(mgram);
+    std::pair<int64_t, int64_t> range = succinct_core_->BwdSearch(mgram);
     if (range.first > range.second)
       return;
     offsets.reserve((uint64_t) (range.second - range.first + 1));
     for (int64_t i = range.first; i <= range.second; i++) {
-      offsets.push_back((int64_t) succinct_core_->lookupSA(i));
+      offsets.push_back((int64_t) succinct_core_->LookupSA(i));
     }
     for (auto offset : offsets)
       mgram_results.insert(OffsetLength(offset, len));
@@ -274,7 +274,7 @@ class RegExExecutorSuccinct : public RegExExecutor {
       if (!IsEmpty(range)) {
         for (int64_t i = range.first; i <= range.second; i++) {
           if (sa_buf.find(i) == sa_buf.end()) {
-            sa_buf[i] = succinct_core_->lookupSA(i);
+            sa_buf[i] = succinct_core_->LookupSA(i);
           }
           results.push_back(OffsetLength(sa_buf[i], r_it->length_));
         }

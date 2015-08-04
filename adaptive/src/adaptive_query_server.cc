@@ -57,12 +57,12 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
     if (construct) {
       fprintf(stderr, "Serializing data structures for file %s\n",
               filename.c_str());
-      fd->serialize();
+      fd->Serialize();
     } else {
       fprintf(stderr, "Read data structures from file %s\n", filename.c_str());
     }
     fprintf(stderr, "Succinct data structures with original size = %llu\n",
-            fd->original_size());
+            fd->GetOriginalSize());
     fprintf(stderr, "Done initializing...\n");
     fprintf(stderr, "Waiting for queries...\n");
     is_init = true;
@@ -98,15 +98,15 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
   }
 
   void search(std::set<int64_t>& _return, const std::string& query) {
-    fd->search(_return, query);
+    fd->Search(_return, query);
   }
 
   int64_t count(const std::string& query) {
-    return fd->count(query);
+    return fd->Count(query);
   }
 
   int32_t get_num_keys() {
-    return fd->num_keys();
+    return fd->GetNumKeys();
   }
 
   int64_t remove_layer(const int32_t layer_id) {
@@ -134,7 +134,7 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
   }
 
   int64_t storage_size() {
-    return fd->storage_size();
+    return fd->StorageSize();
   }
 
   int64_t num_sampled_values() {

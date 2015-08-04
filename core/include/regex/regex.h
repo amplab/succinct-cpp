@@ -144,7 +144,7 @@ class SRegEx {
               char c;
               size_t len = 1;
               while (true) {
-                c = s_core->charAt(start_pos + len);
+                c = s_core->CharAt(start_pos + len);
                 if (range.find(c) != std::string::npos) {
                   range_results.insert(
                       OffsetLength(it->first, it->second + len));
@@ -163,7 +163,7 @@ class SRegEx {
               char c;
               size_t len = 1;
               while (true) {
-                c = s_core->charAt(start_pos + len);
+                c = s_core->CharAt(start_pos + len);
                 if (range.find(c) != std::string::npos) {
                   range_results.insert(
                       OffsetLength(it->first, it->second + len));
@@ -178,7 +178,7 @@ class SRegEx {
             for (RegExResultsIterator it = last_results.begin();
                 it != last_results.end(); it++) {
               size_t cur_pos = it->first + it->second;
-              char c = s_core->charAt(cur_pos);
+              char c = s_core->CharAt(cur_pos);
               if (range.find(c) != std::string::npos) {
                 range_results.insert(OffsetLength(it->first, it->second + 1));
               }
@@ -221,7 +221,7 @@ class SRegEx {
                 for (RegExResultsIterator it = last_results.begin();
                     it != last_results.end(); it++) {
                   size_t cur_pos = it->first - 1;
-                  char c = s_core->charAt(cur_pos);
+                  char c = s_core->CharAt(cur_pos);
                   if (range.find(c) != std::string::npos) {
                     range_results.insert(
                         OffsetLength(it->first - 1, it->second + 1));
@@ -233,7 +233,7 @@ class SRegEx {
                 for (RegExResultsIterator it = last_results.begin();
                     it != last_results.end(); it++) {
                   size_t cur_pos = it->first - 1;
-                  char c = s_core->charAt(cur_pos);
+                  char c = s_core->CharAt(cur_pos);
                   if (range.find(c) != std::string::npos) {
                     range_results.insert(
                         OffsetLength(it->first - 1, it->second + 1));
@@ -244,7 +244,7 @@ class SRegEx {
                 for (RegExResultsIterator it = last_results.begin();
                     it != last_results.end(); it++) {
                   size_t cur_pos = it->first - 1;
-                  char c = s_core->charAt(cur_pos);
+                  char c = s_core->CharAt(cur_pos);
                   if (range.find(c) != std::string::npos) {
                     range_results.insert(
                         OffsetLength(it->first - 1, it->second + 1));

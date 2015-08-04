@@ -33,12 +33,6 @@
 
 class SuccinctBase {
  public:
-
-  SuccinctBase();
-
-  virtual ~SuccinctBase() {
-  }
-
   /* ===================================================================== */
   /* Basic data structures used in Succinct */
   // Basic constants
@@ -63,108 +57,112 @@ class SuccinctBase {
 
   /* Constant tables used for encoding/decoding
    * dictionary and delta encoded vector */
-  uint16_t *decode_table[17];
-  std::map<uint16_t, uint16_t> encode_table[17];
-  uint16_t C16[17];
-  uint8_t offbits[17];
-  uint8_t smallrank[65536][16];
+  static uint16_t *decode_table[17];
+  static std::map<uint16_t, uint16_t> encode_table[17];
+  static uint16_t C16[17];
+  static uint8_t offbits[17];
+  static uint8_t smallrank[65536][16];
+
+  SuccinctBase();
+
+  virtual ~SuccinctBase() {
+  }
 
   // Rank for vectors -- implemented as a binary search
-  static uint64_t get_rank1(std::vector<uint64_t> *V, uint64_t val);
+  static uint64_t GetRank1(std::vector<uint64_t> *V, uint64_t val);
 
   // Serialize vector to output stream
-  static size_t serialize_vector(std::vector<uint64_t> &v, std::ostream& out);
+  static size_t SerializeVector(std::vector<uint64_t> &v, std::ostream& out);
 
   // Deserialize vector from input stream
-  static size_t deserialize_vector(std::vector<uint64_t> &v, std::istream& in);
+  static size_t DeserializeVector(std::vector<uint64_t> &v, std::istream& in);
 
   // Memory map vector from buffer
-  static size_t memorymap_vector(std::vector<uint64_t> &v, uint8_t *buf);
+  static size_t MemoryMapVector(std::vector<uint64_t> &v, uint8_t *buf);
 
   /* BitMap access/modifier functions */
   // Initialize a bitmap with a specified size
-  static void init_bitmap(BitMap **B, uint64_t size_in_bits,
-                          SuccinctAllocator s_allocator);
+  static void InitBitmap(BitMap **B, uint64_t size_in_bits,
+                         SuccinctAllocator& s_allocator);
 
   // Initialize a bitmap with a specified size, with all bits set
-  static void init_bitmap_set(BitMap **B, uint64_t size_in_bits,
-                              SuccinctAllocator s_allocator);
+  static void InitBitmapSet(BitMap **B, uint64_t size_in_bits,
+                            SuccinctAllocator& s_allocator);
 
   // Clear the contents of the bitmap and unset all bits
-  static void clear_bitmap(BitMap **B, SuccinctAllocator s_allocator);
+  static void ClearBitmap(BitMap **B, SuccinctAllocator& s_allocator);
 
   // Destroy a bitmap
-  static void destroy_bitmap(BitMap **B, SuccinctAllocator s_allocator);
+  static void DestroyBitmap(BitMap **B, SuccinctAllocator& s_allocator);
 
   // Create bitmap from an array with specified bit-width
-  static void create_bitmap_array(BitMap **B, uint64_t *A, uint64_t n,
-                                  uint32_t b, SuccinctAllocator s_allocator);
+  static void CreateBitmapArray(BitMap **B, uint64_t *A, uint64_t n, uint32_t b,
+                                SuccinctAllocator s_allocator);
 
   // Set a value in the bitmap, treating it as an array of fixed length
-  static void set_bitmap_array(BitMap **B, uint64_t i, uint64_t val,
-                               uint32_t b);
+  static void SetBitmapArray(BitMap **B, uint64_t i, uint64_t val, uint32_t b);
 
   // Lookup a value in the bitmap, treating it as an array of fixed length
-  static uint64_t lookup_bitmap_array(BitMap *B, uint64_t i, uint32_t b);
+  static uint64_t LookupBitmapArray(BitMap *B, uint64_t i, uint32_t b);
 
   // Set a value in the bitmap at a specified offset
-  static void set_bitmap_pos(BitMap **B, uint64_t pos, uint64_t val,
+  static void SetBitmapAtPos(BitMap **B, uint64_t pos, uint64_t val,
                              uint32_t b);
 
   // Lookup a value in the bitmap at a specified offset
-  static uint64_t lookup_bitmap_pos(BitMap *B, uint64_t pos, uint32_t b);
+  static uint64_t LookupBitmapAtPos(BitMap *B, uint64_t pos, uint32_t b);
 
   // Serialize bitmap to output stream
-  static size_t serialize_bitmap(BitMap *B, std::ostream& out);
+  static size_t SerializeBitmap(BitMap *B, std::ostream& out);
 
   // Deserialize bitmap from input stream
-  static size_t deserialize_bitmap(BitMap **B, std::istream& in);
+  static size_t DeserializeBitmap(BitMap **B, std::istream& in);
 
   // Memory map dictionary from buf
-  static size_t memorymap_bitmap(BitMap **B, uint8_t *buf);
+  static size_t MemoryMapBitmap(BitMap **B, uint8_t *buf);
 
   /* Dictionary access/modifier functions */
   // Create dictionary from a bitmap
-  uint64_t create_dictionary(BitMap *B, Dictionary *D);
+  static uint64_t CreateDictionary(BitMap *B, Dictionary *D, SuccinctAllocator& s_allocator);
 
   // Get the 1-rank of the dictionary at the specified index
-  uint64_t get_rank1(Dictionary *D, uint64_t i);
+  static uint64_t GetRank1(Dictionary *D, uint64_t i);
 
   // Get the 0-rank of the dictionary at the specified index
-  uint64_t get_rank0(Dictionary *D, uint64_t i);
+  static uint64_t GetRank0(Dictionary *D, uint64_t i);
 
   // Get the 1-select of the dictionary at the specified index
-  uint64_t get_select1(Dictionary *D, uint64_t i);
+  static uint64_t GetSelect1(Dictionary *D, uint64_t i);
 
   // Get the 0-select of the dictionary at the specified index
-  uint64_t get_select0(Dictionary *D, uint64_t i);
+  static uint64_t GetSelect0(Dictionary *D, uint64_t i);
 
   // Serialize dictionary to output stream
-  size_t serialize_dictionary(Dictionary *D, std::ostream& out);
+  static size_t SerializeDictionary(Dictionary *D, std::ostream& out);
 
   // Deserialize dictionary from input stream
-  size_t deserialize_dictionary(Dictionary **D, std::istream& in);
+  static size_t DeserializeDictionary(Dictionary *D, std::istream& in);
 
   // Memory map dictionary
-  size_t memorymap_dictionary(Dictionary **D, uint8_t *buf);
+  static size_t MemoryMapDictionary(Dictionary **D, uint8_t *buf);
 
   // Get size of bitmap
-  static size_t bitmap_size(BitMap *B);
+  static size_t BitmapSize(BitMap *B);
 
   // Get size of dictionary
-  static size_t dictionary_size(Dictionary *D);
+  static size_t DictionarySize(Dictionary *D);
 
   // Get size of vector
-  static size_t vector_size(std::vector<uint64_t> &v);
+  static size_t VectorSize(std::vector<uint64_t> &v);
 
   // Get size of SuccinctBase
-  virtual size_t storage_size();
+  virtual size_t StorageSize();
 
  protected:
   SuccinctAllocator s_allocator;
 
  private:
-  void init_tables();
+  static void InitTables();
 
 };
 
