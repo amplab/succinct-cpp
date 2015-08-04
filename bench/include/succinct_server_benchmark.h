@@ -264,6 +264,112 @@ class SuccinctServerBenchmark : public Benchmark {
     result_stream.close();
   }
 
+  void BenchmarkFlatExtractLatency(std::string result_path, int32_t fetch_length) {
+
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
+    std::ofstream result_stream(result_path);
+
+    // Warmup
+    sum = 0;
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < kWarmupCount; i++) {
+      std::string result;
+      client_->flat_extract(result, randoms_[i], fetch_length);
+      sum = (sum + result.length()) % kMaxSum;
+    }
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
+    fprintf(stderr, "Warmup complete.\n");
+
+    // Measure
+    sum = 0;
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
+    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+      std::string result;
+      t0 = GetTimestamp();
+      client_->flat_extract(result, randoms_[i], fetch_length);
+      t1 = GetTimestamp();
+      tdiff = t1 - t0;
+      result_stream << randoms_[i] << "\t" << tdiff << "\n";
+      sum = (sum + result.length()) % kMaxSum;
+    }
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
+    fprintf(stderr, "Measure complete.\n");
+
+    result_stream.close();
+
+  }
+
+  void BenchmarkFlatCountLatency(std::string result_path) {
+
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
+    std::ofstream result_stream(result_path);
+
+    // Warmup
+    sum = 0;
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
+      uint64_t result;
+      result = client_->flat_count(queries_[i]);
+      sum = (sum + result) % kMaxSum;
+    }
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
+    fprintf(stderr, "Warmup complete.\n");
+
+    // Measure
+    sum = 0;
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
+    for (uint64_t i = 0; i < queries_.size(); i++) {
+      uint64_t result;
+      t0 = GetTimestamp();
+      result = client_->flat_count(queries_[i]);
+      t1 = GetTimestamp();
+      tdiff = t1 - t0;
+      result_stream << queries_[i] << "\t" << tdiff << "\n";
+      sum = (sum + result) % kMaxSum;
+    }
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
+    fprintf(stderr, "Measure complete.\n");
+
+    result_stream.close();
+
+  }
+
+  void BenchmarkFlatSearchLatency(std::string result_path) {
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
+    std::ofstream result_stream(result_path);
+
+    // Warmup
+    sum = 0;
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
+      std::vector<int64_t> result;
+      client_->flat_search(result, queries_[i]);
+      sum = (sum + result.size()) % kMaxSum;
+    }
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
+    fprintf(stderr, "Warmup complete.\n");
+
+    // Measure
+    sum = 0;
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
+    for (uint64_t i = 0; i < queries_.size(); i++) {
+      std::vector<int64_t> result;
+      t0 = GetTimestamp();
+      client_->flat_search(result, queries_[i]);
+      t1 = GetTimestamp();
+      tdiff = t1 - t0;
+      result_stream << result.size() << "\t" << tdiff << "\n";
+      sum = (sum + result.size()) % kMaxSum;
+    }
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
+    fprintf(stderr, "Measure complete.\n");
+
+    result_stream.close();
+  }
+
   static void *GetThroughput(void *ptr) {
     ThreadData data = *((ThreadData*) ptr);
     std::cout << "GET\n";

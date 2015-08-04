@@ -68,6 +68,10 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkRegexSearchLatency("latency_results_regex_search");
   } else if (benchmark_type == "latency-regex-count") {
     s_bench.BenchmarkRegexCountLatency("latency_results_regex_count");
+  } else if (benchmark_type == "latency-flat") {
+    s_bench.BenchmarkFlatExtractLatency("latency_results_flat_extract", 1000);
+    s_bench.BenchmarkFlatCountLatency("latency_results_flat_count");
+    s_bench.BenchmarkFlatSearchLatency("latency_results_flat_search");
   } else if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
   } else if (benchmark_type == "throughput-access") {
