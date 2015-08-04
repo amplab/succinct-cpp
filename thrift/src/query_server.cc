@@ -25,7 +25,8 @@ class QueryServiceHandler : virtual public QueryServiceIf {
  public:
   QueryServiceHandler(std::string filename, bool construct,
                       uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
-                      SamplingScheme sampling_scheme, NPA::NPAEncodingScheme npa_scheme,
+                      SamplingScheme sampling_scheme,
+                      NPA::NPAEncodingScheme npa_scheme,
                       bool regex_opt = true) {
     this->fd = NULL;
     this->construct = construct;
@@ -51,7 +52,8 @@ class QueryServiceHandler : virtual public QueryServiceIf {
         filename,
         construct ?
             SuccinctMode::CONSTRUCT_IN_MEMORY : SuccinctMode::LOAD_IN_MEMORY,
-        sa_sampling_rate, isa_sampling_rate, sampling_scheme, 128, npa_scheme);
+        sa_sampling_rate, isa_sampling_rate, 128, sampling_scheme,
+        sampling_scheme, npa_scheme);
     if (construct) {
       fprintf(stderr, "Serializing data structures for file %s\n",
               filename.c_str());
@@ -230,7 +232,8 @@ int main(int argc, char **argv) {
 
   shared_ptr<QueryServiceHandler> handler(
       new QueryServiceHandler(filename, construct, sa_sampling_rate,
-                              isa_sampling_rate, scheme, npa_scheme, regex_opt));
+                              isa_sampling_rate, scheme, npa_scheme,
+                              regex_opt));
   shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
   try {
