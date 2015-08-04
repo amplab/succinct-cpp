@@ -144,7 +144,7 @@ class SuccinctServerBenchmark : public Benchmark {
     // Warmup
     sum = 0;
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
-    for (uint64_t i = 0; i < kWarmupCount; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       uint64_t result;
       result = client_->count(queries_[i]);
       sum = (sum + result) % kMaxSum;
@@ -155,7 +155,7 @@ class SuccinctServerBenchmark : public Benchmark {
     // Measure
     sum = 0;
     fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+    for (uint64_t i = 0; i < queries_.size(); i++) {
       uint64_t result;
       t0 = GetTimestamp();
       result = client_->count(queries_[i]);
@@ -166,17 +166,6 @@ class SuccinctServerBenchmark : public Benchmark {
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
-
-    // Cooldown
-    sum = 0;
-    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
-    for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
-      uint64_t result;
-      result = client_->count(queries_[i]);
-      sum = (sum + result) % kMaxSum;
-    }
-    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
-    fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
 
@@ -190,7 +179,7 @@ class SuccinctServerBenchmark : public Benchmark {
     // Warmup
     sum = 0;
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
-    for (uint64_t i = 0; i < kWarmupCount; i++) {
+    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::set<int64_t> result;
       client_->search(result, queries_[i]);
       sum = (sum + result.size()) % kMaxSum;
@@ -201,7 +190,7 @@ class SuccinctServerBenchmark : public Benchmark {
     // Measure
     sum = 0;
     fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+    for (uint64_t i = 0; i < queries_.size(); i++) {
       std::set<int64_t> result;
       t0 = GetTimestamp();
       client_->search(result, queries_[i]);
@@ -212,17 +201,6 @@ class SuccinctServerBenchmark : public Benchmark {
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
-
-    // Cooldown
-    sum = 0;
-    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
-    for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
-      std::set<int64_t> result;
-      client_->search(result, queries_[i]);
-      sum = (sum + result.size()) % kMaxSum;
-    }
-    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
-    fprintf(stderr, "Cooldown complete.\n");
 
     result_stream.close();
   }
@@ -274,8 +252,8 @@ class SuccinctServerBenchmark : public Benchmark {
         client_->regex_search(result, queries_[i]);
         t1 = GetTimestamp();
         tdiff = t1 - t0;
-        result_stream << i << "\t" << j << "\t" << result.size() << "\t" << tdiff
-                   << "\n";
+        result_stream << i << "\t" << j << "\t" << result.size() << "\t"
+                      << tdiff << "\n";
         result_stream.flush();
         sum = (sum + result.size()) % kMaxSum;
       }
@@ -521,10 +499,13 @@ class SuccinctServerBenchmark : public Benchmark {
       return;
     }
 
-    std::string line;
+    std::string line, query, query_count;
     while (getline(inputfile, line)) {
       // Extract key and value
-      queries_.push_back(line);
+      int split_index = line.find_first_of('\t');
+      query = line.substr(0, split_index);
+      query_count = line.substr(split_index + 1);
+      queries_.push_back(query);
     }
     inputfile.close();
   }
