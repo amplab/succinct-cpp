@@ -321,12 +321,12 @@ class FileBenchmark : public Benchmark {
       return;
     }
 
-    std::string line, bin, query;
+    std::string line, query, query_count;
     while (getline(inputfile, line)) {
       // Extract key and value
       int split_index = line.find_first_of('\t');
-      bin = line.substr(0, split_index);
-      query = line.substr(split_index + 1);
+      query = line.substr(0, split_index);
+      query_count = line.substr(split_index + 1);
       queries_.push_back(query);
     }
     inputfile.close();

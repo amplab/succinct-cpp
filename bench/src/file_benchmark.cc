@@ -7,7 +7,7 @@
 #include "../../core/include/succinct_file.h"
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
+  fprintf(stderr, "Usage: %s [-m mode] [-q query_file] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
