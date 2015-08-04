@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(succinct CXX)
+project(succinct-construct CXX)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -15,21 +15,12 @@ else()
 endif()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-# Builds all of Succinct's sub-modules
-add_subdirectory(core)
-add_subdirectory(thrift)
-add_subdirectory(adaptive)
-add_subdirectory(construct)
-add_subdirectory(bench)
+file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-# Testing framework
-# Build google testing framework
-add_subdirectory(external/gtest-1.7.0)
+set(INCLUDE include ../core/include)
+include_directories(${INCLUDE})
+add_executable(construct src/construct.cc)
 
-# Build and run all tests for succinct
-add_subdirectory(test)
-
-enable_testing()
-add_test(CoreTest ${TESTS_PATH}/core_test ${PROJECT_SOURCE_DIR}/test/data)
+target_link_libraries(construct succinct)
