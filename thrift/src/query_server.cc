@@ -173,7 +173,7 @@ void print_usage(char *exec) {
 
 int main(int argc, char **argv) {
 
-  if (argc < 2 || argc > 11) {
+  if (argc < 2 || argc > 15) {
     print_usage(argv[0]);
     return -1;
   }
@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
   NPA::NPAEncodingScheme npa_scheme =
       NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
 
-  while ((c = getopt(argc, argv, "m:p:s:i:o")) != -1) {
+  while ((c = getopt(argc, argv, "m:p:s:i:r:x:o")) != -1) {
     switch (c) {
       case 'm':
         mode = atoi(optarg);
