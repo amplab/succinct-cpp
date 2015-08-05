@@ -45,7 +45,7 @@ class NPA {
     return npa_size_;
   }
 
-  uint64_t get_context_len() {
+  uint64_t GetContextLength() {
     return context_len_;
   }
 
@@ -104,19 +104,19 @@ class NPA {
     return true;
   }
 
-  uint64_t ComputeContextValue(Bitmap *data_bitmap, uint32_t i) {
+  uint64_t ComputeContextValue(Bitmap *data_bitmap, uint64_t i) {
     uint32_t sigma_bits = SuccinctUtils::IntegerLog2(sigma_size_ + 1);
     uint64_t val = 0;
-    uint64_t max = MIN(i + context_len_, npa_size_);
-    for (uint64_t p = i; p < max; p++) {
+    uint64_t max = std::min(i + context_len_, npa_size_);
+    for (uint64_t t = i; t < max; t++) {
       val = val * sigma_size_
-          + SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits);
+          + SuccinctBase::LookupBitmapArray(data_bitmap, t, sigma_bits);
     }
 
     if (max < i + context_len_) {
-      for (uint64_t p = 0; p < (i + context_len_) % npa_size_; p++) {
+      for (uint64_t t = 0; t < (i + context_len_) % npa_size_; t++) {
         val = val * sigma_size_
-            + SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits);
+            + SuccinctBase::LookupBitmapArray(data_bitmap, t, sigma_bits);
       }
     }
 

@@ -106,13 +106,13 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
 
 uint64_t SuccinctShard::ComputeContextValue(const char *p, uint64_t i) {
   uint64_t val = 0;
-  uint64_t max = MIN((i + npa_->get_context_len()), input_size_);
+  uint64_t max = MIN((i + npa_->GetContextLength()), input_size_);
   for (uint64_t t = i; t < max; t++) {
     val = val * alphabet_size_ + alphabet_map_[p[t]].second;
   }
 
-  if (max < i + npa_->get_context_len()) {
-    for (uint64_t t = 0; t < (i + npa_->get_context_len()) % input_size_; t++) {
+  if (max < i + npa_->GetContextLength()) {
+    for (uint64_t t = 0; t < (i + npa_->GetContextLength()) % input_size_; t++) {
       val = val * alphabet_size_ + alphabet_map_[p[t]].second;
     }
   }

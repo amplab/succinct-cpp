@@ -33,12 +33,6 @@ void SampledByIndexISA::Sample(bitmap_t *SA, uint64_t n) {
 
   for (uint64_t i = 0; i < n; i++) {
     uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
-    /*
-     if(i % sampling_rate == 0) {
-     SuccinctBase::set_bitmap_array(&data, (i / sampling_rate), sa_val,
-     data_bits);
-     }
-     */
     if (sa_val % sampling_rate_ == 0) {
       SuccinctBase::SetBitmapArray(&data_, (sa_val / sampling_rate_), i,
                                      data_bits_);
