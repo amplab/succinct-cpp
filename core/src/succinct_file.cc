@@ -23,7 +23,7 @@ uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
   return val;
 }
 
-std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
+std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
                                                        uint64_t len) {
   std::pair<int64_t, int64_t> range(0, -1);
   uint64_t m = strlen(p);
@@ -59,6 +59,7 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
   return range;
 }
 
+/*
 std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
                                                    uint64_t len) {
   uint64_t m = strlen(p);
@@ -153,21 +154,10 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
 
   return range;
 }
+*/
 
 std::string SuccinctFile::Name() {
   return input_filename_;
-}
-
-void SuccinctFile::ReadChunk(std::string& out, const int64_t out_pos,
-                             const int64_t chunk_id, const int64_t chunk_start,
-                             const int64_t chunk_end) {
-  uint64_t offset = chunk_id * isa_->GetSamplingRate();
-  uint64_t idx = LookupISA(offset);
-  for (uint64_t k = 0; k < isa_->GetSamplingRate(); k++) {
-    out[out_pos + k] = alphabet_[LookupC(idx)];
-    idx = LookupNPA(idx);
-  }
-
 }
 
 void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
