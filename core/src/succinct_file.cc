@@ -179,7 +179,6 @@ void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
   if (range.first > range.second)
     return;
   result.resize((uint64_t) (range.second - range.first + 1));
-#pragma omp parallel for
   for (int64_t i = range.first; i <= range.second; i++) {
     result[i - range.first] = ((int64_t) LookupSA(i));
   }
