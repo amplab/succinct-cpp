@@ -47,12 +47,13 @@ class WaveletTreeEncodedNPA : public NPA {
 
  protected:
   // Create wavelet tree
-  void CreateWaveletTree(WaveletNode **w, uint64_t s, uint64_t e,
-                          std::vector<uint64_t> &v, std::vector<uint64_t> &v_c);
+  void CreateWaveletTree(WaveletNode **w, uint32_t start, uint32_t end,
+                         std::vector<uint64_t> &values,
+                         std::vector<uint64_t> &value_contexts);
 
   // Lookup wavelet tree
-  uint64_t LookupWaveletTree(WaveletNode *tree, uint64_t c_pos,
-                              uint64_t sl_pos, uint64_t s, uint64_t e);
+  uint64_t LookupWaveletTree(WaveletNode *tree, uint64_t context_pos, uint64_t cell_pos,
+                             uint64_t start, uint64_t end);
 
   size_t SerializeWaveletTree(WaveletNode *root, std::ostream& out);
   size_t DeserializeWaveletTree(WaveletNode **root, std::istream& in);

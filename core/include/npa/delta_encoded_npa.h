@@ -164,7 +164,7 @@ class DeltaEncodedNPA : public NPA {
         (SuccinctBase::LookupBitmapArray(compact_sa, 0, logn) + 1) % npa_size_,
         logn);
     table[c_val][l_off / k].push_back(npa_val);
-    starts[c_val] = MIN(starts[c_val], npa_val);
+    starts[c_val] = std::min(starts[c_val], npa_val);
 
     sigma_list.push_back(npa_val);
 
@@ -215,7 +215,7 @@ class DeltaEncodedNPA : public NPA {
       // Push npa value to npa table: note indices. indexed by context value, and l_offs / k
       table[c_val][l_off / k].push_back(npa_val);
       assert(table[c_val][l_off / k].back() == npa_val);
-      starts[c_val] = MIN(starts[c_val], npa_val);
+      starts[c_val] = std::min(starts[c_val], npa_val);
     }
 
     CreateDeltaEncodedVector(&(del_npa_[l_off / k]), sigma_list);

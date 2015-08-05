@@ -25,15 +25,15 @@ WaveletTreeEncodedNPA::WaveletTreeEncodedNPA(uint32_t context_len,
 }
 
 void WaveletTreeEncodedNPA::CreateWaveletTree(
-    WaveletNode **root, uint64_t start, uint64_t end,
+    WaveletNode **root, uint32_t start, uint32_t end,
     std::vector<uint64_t> &values, std::vector<uint64_t> &value_contexts) {
   if (start == end) {
     (*root) = NULL;
     return;
   }
 
-  unsigned char mid = value_contexts.at((values.size() - 1) / 2);
-  mid = MIN(mid, end - 1);
+  uint32_t mid = value_contexts.at((values.size() - 1) / 2);
+  mid = std::min(mid, end - 1);
 
   uint64_t r;
   std::vector<uint64_t> right_values, right_value_contexts, left_values,
@@ -100,8 +100,8 @@ uint64_t WaveletTreeEncodedNPA::LookupWaveletTree(WaveletNode *tree,
 
 }
 
-void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
-                                   Bitmap *compactISA) {
+void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
+                                   Bitmap *compact_isa) {
   uint32_t logn, q;
   uint64_t k1, k2, k = 0, l_off = 0, c_id, c_val, npa_val, p = 0;
 
@@ -109,7 +109,7 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
   std::vector<uint64_t> **table;
   std::vector<std::pair<std::vector<uint64_t>, unsigned char> > context;
   std::vector<uint64_t> cell;
-  std::vector<uint64_t> v, v_c;
+  std::vector<uint64_t> values, value_contexts;
 
   bool flag;
   uint64_t *sizes, *starts;
@@ -150,15 +150,15 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
 
   SuccinctBase::InitBitmap(&(E), k * sigma_size_, s_allocator_);
 
-  k1 = SuccinctBase::LookupBitmapArray(compactSA, 0, logn);
+  k1 = SuccinctBase::LookupBitmapArray(compact_sa, 0, logn);
   c_id = ComputeContextValue(data_bitmap, (k1 + 1) % npa_size_);
   c_val = contexts_[c_id];
   npa_val = SuccinctBase::LookupBitmapArray(
-      compactISA,
-      (SuccinctBase::LookupBitmapArray(compactSA, 0, logn) + 1) % npa_size_,
+      compact_isa,
+      (SuccinctBase::LookupBitmapArray(compact_sa, 0, logn) + 1) % npa_size_,
       logn);
   table[c_val][l_off / k].push_back(npa_val);
-  starts[c_val] = MIN(starts[c_val], npa_val);
+  starts[c_val] = std::min(starts[c_val], npa_val);
 
   SETBITVAL(E, c_val);
   col_nec_[0].push_back(c_val);
@@ -166,8 +166,8 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
   cell_offsets_[0].push_back(0);
 
   for (uint64_t i = 1; i < npa_size_; i++) {
-    k1 = SuccinctBase::LookupBitmapArray(compactSA, i, logn);
-    k2 = SuccinctBase::LookupBitmapArray(compactSA, i - 1, logn);
+    k1 = SuccinctBase::LookupBitmapArray(compact_sa, i, logn);
+    k2 = SuccinctBase::LookupBitmapArray(compact_sa, i - 1, logn);
 
     c_id = ComputeContextValue(data_bitmap, (k1 + 1) % npa_size_);
     c_val = contexts_[c_id];
@@ -193,15 +193,15 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
 
     // Obtain actual npa value
     npa_val = SuccinctBase::LookupBitmapArray(
-        compactISA,
-        (SuccinctBase::LookupBitmapArray(compactSA, i, logn) + 1) % npa_size_,
+        compact_isa,
+        (SuccinctBase::LookupBitmapArray(compact_sa, i, logn) + 1) % npa_size_,
         logn);
 
     assert(l_off / k < sigma_size_);
     // Push npa value to npa table: note indices. indexed by context value, and l_offs / k
     table[c_val][l_off / k].push_back(npa_val);
     assert(table[c_val][l_off / k].back() == npa_val);
-    starts[c_val] = MIN(starts[c_val], npa_val);
+    starts[c_val] = std::min(starts[c_val], npa_val);
   }
 
   for (uint64_t i = 0; i < k; i++) {
@@ -235,13 +235,14 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compactSA,
 
     for (size_t j = 0; j < context.size(); j++) {
       for (size_t t = 0; t < context[j].first.size(); t++) {
-        v.push_back(context[j].first[t]);
-        v_c.push_back(j);
+        values.push_back(context[j].first[t]);
+        value_contexts.push_back(j);
       }
     }
-    CreateWaveletTree(&wavelet_tree_[i], 0, context.size() - 1, v, v_c);
-    v.clear();
-    v_c.clear();
+    CreateWaveletTree(&wavelet_tree_[i], 0, context.size() - 1, values,
+                      value_contexts);
+    values.clear();
+    value_contexts.clear();
     context.clear();
   }
 
@@ -354,8 +355,7 @@ size_t WaveletTreeEncodedNPA::Serialize(std::ostream& out) {
   out_size += sizeof(uint64_t);
 
   // Output context_len
-  out.write(reinterpret_cast<const char *>(&(context_len_)),
-            sizeof(uint32_t));
+  out.write(reinterpret_cast<const char *>(&(context_len_)), sizeof(uint32_t));
   out_size += sizeof(uint32_t);
 
   // Output sampling rate
@@ -365,12 +365,10 @@ size_t WaveletTreeEncodedNPA::Serialize(std::ostream& out) {
 
   // Output contexts
   uint64_t context_size = contexts_.size();
-  out.write(reinterpret_cast<const char *>(&(context_size)),
-            sizeof(uint64_t));
+  out.write(reinterpret_cast<const char *>(&(context_size)), sizeof(uint64_t));
   for (iterator_t it = contexts_.begin(); it != contexts_.end(); ++it) {
     out.write(reinterpret_cast<const char *>(&(it->first)), sizeof(uint64_t));
-    out.write(reinterpret_cast<const char *>(&(it->second)),
-              sizeof(uint64_t));
+    out.write(reinterpret_cast<const char *>(&(it->second)), sizeof(uint64_t));
   }
 
   // Output row_offsets
@@ -396,7 +394,8 @@ size_t WaveletTreeEncodedNPA::Serialize(std::ostream& out) {
 
   // Output column sizes
   for (uint64_t i = 0; i < contexts_.size(); i++) {
-    out.write(reinterpret_cast<const char *>(&(column_sizes_[i])), sizeof(uint64_t));
+    out.write(reinterpret_cast<const char *>(&(column_sizes_[i])),
+              sizeof(uint64_t));
     out_size += sizeof(uint64_t);
   }
 
