@@ -47,20 +47,20 @@ int main(int argc, char **argv) {
 
   FileBenchmark *file_bench;
   if (mode == 0) {
-    SuccinctFile fd(inputpath);
+    SuccinctFile *fd = new SuccinctFile(inputpath);
 
     // Serialize and save to file
     std::ofstream s_out(inputpath + ".succinct");
-    fd.Serialize();
+    fd->Serialize();
     s_out.close();
 
     // Create benchmark
-    file_bench = new FileBenchmark(&fd, querypath);
+    file_bench = new FileBenchmark(fd, querypath);
   } else if (mode == 1) {
-    SuccinctFile fd(inputpath, SuccinctMode::LOAD_IN_MEMORY);
+    SuccinctFile *fd = new SuccinctFile(inputpath, SuccinctMode::LOAD_IN_MEMORY);
 
     // Create benchmark
-    file_bench = new FileBenchmark(&fd, querypath);
+    file_bench = new FileBenchmark(fd, querypath);
   } else {
     // Only modes 0, 1 supported for now
     fprintf(stderr, "Unsupported mode %u.\n", mode);
