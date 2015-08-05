@@ -1,17 +1,18 @@
+#include "file_benchmark.h"
+
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 
-#include "file_benchmark.h"
-
-#include "../../core/include/succinct_file.h"
+#include "succinct_file.h"
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [-m mode] [-q query_file] [file]\n", exec);
+  fprintf(stderr,
+          "Usage: %s [-m mode] [-q query_file] [-t bench_type] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2 || argc > 6) {
+  if (argc < 2 || argc > 8) {
     print_usage(argv[0]);
     return -1;
   }
@@ -19,7 +20,8 @@ int main(int argc, char **argv) {
   int c;
   uint32_t mode = 0;
   std::string querypath = "";
-  while ((c = getopt(argc, argv, "m:q:")) != -1) {
+  std::string benchtype = "all";
+  while ((c = getopt(argc, argv, "m:q:t:")) != -1) {
     switch (c) {
       case 'm':
         mode = atoi(optarg);
@@ -27,8 +29,12 @@ int main(int argc, char **argv) {
       case 'q':
         querypath = std::string(optarg);
         break;
+      case 't':
+        benchtype = std::string(optarg);
+        break;
       default:
-        mode = 0;
+        fprintf(stderr, "Error parsing arguments.\n");
+        return -1;
     }
   }
 
@@ -39,6 +45,7 @@ int main(int argc, char **argv) {
 
   std::string inputpath = std::string(argv[optind]);
 
+  FileBenchmark *file_bench;
   if (mode == 0) {
     SuccinctFile fd(inputpath);
 
@@ -47,20 +54,35 @@ int main(int argc, char **argv) {
     fd.Serialize();
     s_out.close();
 
-    // Benchmark core and file functions
-    FileBenchmark s_bench(&fd, querypath);
-    s_bench.BenchmarkCore();
-    s_bench.BenchmarkFile();
+    // Create benchmark
+    file_bench = new FileBenchmark(&fd, querypath);
   } else if (mode == 1) {
     SuccinctFile fd(inputpath, SuccinctMode::LOAD_IN_MEMORY);
 
-    // Benchmark core and file functions
-    FileBenchmark s_bench(&fd, querypath);
-    s_bench.BenchmarkCore();
-    s_bench.BenchmarkFile();
+    // Create benchmark
+    file_bench = new FileBenchmark(&fd, querypath);
   } else {
     // Only modes 0, 1 supported for now
-    assert(0);
+    fprintf(stderr, "Unsupported mode %u.\n", mode);
+    return -1;
+  }
+
+  if (benchtype == "all") {
+    file_bench->BenchmarkCore();
+    file_bench->BenchmarkFile();
+  } else if (benchtype == "core") {
+    file_bench->BenchmarkCore();
+  } else if (benchtype == "file") {
+    file_bench->BenchmarkFile();
+  } else if (benchtype == "search") {
+    file_bench->BenchmarkSearch(inputpath + ".search");
+  } else if (benchtype == "count") {
+    file_bench->BenchmarkCount(inputpath + ".count");
+  } else if (benchtype == "extract") {
+    file_bench->BenchmarkExtract(inputpath + ".extract");
+  } else {
+    fprintf(stderr, "Unsupported benchmark type %s.\n", benchtype.c_str());
+    return -1;
   }
 
   return 0;

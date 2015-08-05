@@ -21,11 +21,6 @@ class SuccinctFile : public SuccinctCore {
   void Extract(std::string& result, uint64_t offset, uint64_t len);
 
   /*
-   * Extract character at specified position
-   */
-  char CharAt(uint64_t pos);
-
-  /*
    * Get the count of a string in the Succinct file
    */
   uint64_t Count(std::string str);

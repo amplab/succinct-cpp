@@ -137,11 +137,6 @@ void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
   }
 }
 
-char SuccinctFile::CharAt(uint64_t pos) {
-  uint64_t idx = LookupISA(pos);
-  return alphabet_[LookupC(idx)];
-}
-
 uint64_t SuccinctFile::Count(std::string str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   return range.second - range.first + 1;
@@ -152,7 +147,7 @@ void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
   if (range.first > range.second)
     return;
   result.resize((uint64_t) (range.second - range.first + 1));
-#pragma omp parallel for
+// #pragma omp parallel for
   for (int64_t i = range.first; i <= range.second; i++) {
     result[i - range.first] = ((int64_t) LookupSA(i));
   }
