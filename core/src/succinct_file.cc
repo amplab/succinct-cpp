@@ -1,4 +1,4 @@
-#include "../include/succinct_file.h"
+#include "succinct_file.h"
 
 SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode)
     : SuccinctCore(filename.c_str(), s_mode) {
@@ -151,9 +151,10 @@ void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
-  result.reserve((uint64_t) (range.second - range.first + 1));
+  result.resize((uint64_t) (range.second - range.first + 1));
+#pragma omp parallel for
   for (int64_t i = range.first; i <= range.second; i++) {
-    result.push_back((int64_t) LookupSA(i));
+    result[i - range.first] = ((int64_t) LookupSA(i));
   }
 }
 

@@ -331,7 +331,7 @@ class SuccinctServerBenchmark : public Benchmark {
       result = client_->flat_count(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
-      result_stream << queries_[i] << "\t" << tdiff << "\n";
+      result_stream << result << "\t" << tdiff << "\n";
       sum = (sum + result) % kMaxSum;
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
