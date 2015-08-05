@@ -498,12 +498,13 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = MAX(ep, 0);
+  ep = std::max(ep, 0LL);
   sel += ep * two32;
   val -= rank_l3[ep];
   pos += pos_l3[ep];
   sp = ep * two32 / 2048;
-  ep = MIN(((ep + 1) * two32 / 2048), ceil((double) size / 2048.0)) - 1;
+  ep = std::min(((ep + 1) * two32 / 2048),
+                SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
     m = (sp + ep) / 2;
@@ -514,7 +515,7 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = MAX(ep, 0);
+  ep = std::max(ep, 0LL);
   sel += ep * 2048;
   val -= GETRANKL2(rank_l12[ep]);
   pos += GETPOSL2(pos_l12[ep]);
@@ -578,8 +579,8 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
 // Get the 0-select of the dictionary at the specified index
 uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
   uint64_t val = i + 1;
-  long sp = 0;
-  long ep = D->size / two32;
+  int64_t sp = 0;
+  int64_t ep = D->size / two32;
   uint64_t m, r = 0;
   uint64_t pos = 0;
   uint64_t block_class, block_offset;
@@ -601,12 +602,13 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = MAX(ep, 0);
+  ep = std::max(ep, 0LL);
   sel += ep * two32;
   val -= (ep * two32 - rank_l3[ep]);
   pos += pos_l3[ep];
   sp = ep * two32 / 2048;
-  ep = MIN(((ep + 1) * two32 / 2048), ceil((double) size / 2048.0)) - 1;
+  ep = std::min(((ep + 1) * two32 / 2048),
+                SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
     m = (sp + ep) / 2;
@@ -617,7 +619,7 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = MAX(ep, 0);
+  ep = std::max(ep, 0LL);
   sel += ep * 2048;
   val -= (ep * 2048 - GETRANKL2(rank_l12[ep]));
   pos += GETPOSL2(pos_l12[ep]);

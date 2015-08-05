@@ -25,6 +25,10 @@ uint64_t SuccinctUtils::Modulo(int64_t a, uint64_t n) {
   return a % n;
 }
 
+uint64_t SuccinctUtils::NumBlocks(uint64_t val, uint64_t block_size) {
+  return (val % block_size) == 0 ? (val / block_size) : (val / block_size) + 1;
+}
+
 // Memory map a file and return mapped buffer
 void* SuccinctUtils::MemoryMap(std::string filename) {
   struct stat st;

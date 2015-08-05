@@ -31,6 +31,8 @@ class SuccinctUtils {
   // Returns a modulo n
   static uint64_t Modulo(int64_t a, uint64_t n);
 
+  static uint64_t NumBlocks(uint64_t val, uint64_t num_blocks);
+
   static void* MemoryMap(std::string filename);
 };
 
