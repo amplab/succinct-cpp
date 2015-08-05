@@ -34,7 +34,7 @@ int64_t SuccinctUtils::Max(int64_t first, int64_t second) {
 }
 
 int64_t SuccinctUtils::Min(int64_t first, int64_t second) {
-  return (first > second) ? first : second;
+  return (first < second) ? first : second;
 }
 
 // Memory map a file and return mapped buffer
