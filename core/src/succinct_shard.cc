@@ -234,7 +234,7 @@ uint32_t SuccinctShard::GetISASamplngRate() {
 }
 
 uint32_t SuccinctShard::GetNPASamplingRate() {
-  return npa_->get_sampling_rate();
+  return npa_->GetSamplingRate();
 }
 
 int64_t SuccinctShard::GetValueOffsetPos(const int64_t key) {

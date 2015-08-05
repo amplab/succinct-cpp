@@ -498,13 +498,13 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = std::max(ep, 0LL);
+  ep = SuccinctUtils::Max(ep, 0LL);
   sel += ep * two32;
   val -= rank_l3[ep];
   pos += pos_l3[ep];
   sp = ep * two32 / 2048;
-  ep = std::min(((ep + 1) * two32 / 2048),
-                SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
+  ep = SuccinctUtils::Min(((ep + 1) * two32 / 2048),
+                          SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
     m = (sp + ep) / 2;
@@ -515,7 +515,7 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = std::max(ep, 0LL);
+  ep = SuccinctUtils::Max(ep, 0LL);
   sel += ep * 2048;
   val -= GETRANKL2(rank_l12[ep]);
   pos += GETPOSL2(pos_l12[ep]);
@@ -602,13 +602,13 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = std::max(ep, 0LL);
+  ep = SuccinctUtils::Max(ep, 0LL);
   sel += ep * two32;
   val -= (ep * two32 - rank_l3[ep]);
   pos += pos_l3[ep];
   sp = ep * two32 / 2048;
-  ep = std::min(((ep + 1) * two32 / 2048),
-                SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
+  ep = SuccinctUtils::Min(((ep + 1) * two32 / 2048),
+                          SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
     m = (sp + ep) / 2;
@@ -619,7 +619,7 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
       ep = m - 1;
   }
 
-  ep = std::max(ep, 0LL);
+  ep = SuccinctUtils::Max(ep, 0LL);
   sel += ep * 2048;
   val -= (ep * 2048 - GETRANKL2(rank_l12[ep]));
   pos += GETPOSL2(pos_l12[ep]);

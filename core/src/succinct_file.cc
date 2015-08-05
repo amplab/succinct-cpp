@@ -8,7 +8,7 @@ SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode)
 
 uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
   uint64_t val = 0;
-  uint64_t max = std::min((i + npa_->GetContextLength()), input_size_);
+  uint64_t max = SuccinctUtils::Min((i + npa_->GetContextLength()), input_size_);
   for (uint64_t t = i; t < max; t++) {
     val = val * alphabet_size_ + alphabet_map_[p[t]].second;
   }

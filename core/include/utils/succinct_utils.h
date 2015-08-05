@@ -33,6 +33,9 @@ class SuccinctUtils {
 
   static uint64_t NumBlocks(uint64_t val, uint64_t num_blocks);
 
+  static int64_t Max(int64_t first, int64_t second);
+  static int64_t Min(int64_t first, int64_t second);
+
   static void* MemoryMap(std::string filename);
 };
 

@@ -493,7 +493,7 @@ size_t SuccinctCore::Deserialize() {
   }
 
   // Deserialize NPA based on the NPA encoding scheme.
-  switch (npa_->encoding_scheme()) {
+  switch (npa_->GetEncodingScheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
       in_size += ((EliasDeltaEncodedNPA *) npa_)->Deserialize(npa_in);
       break;
@@ -572,7 +572,7 @@ size_t SuccinctCore::MemoryMap() {
   }
 
   // Memory map NPA based on the NPA encoding scheme.
-  switch (npa_->encoding_scheme()) {
+  switch (npa_->GetEncodingScheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
       data += ((EliasDeltaEncodedNPA *) npa_)->MemoryMap(
           succinct_path_ + "/npa");

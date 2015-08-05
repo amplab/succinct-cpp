@@ -36,12 +36,12 @@ class NPA {
   }
 
   // Returns the encoding scheme for the NPA
-  NPAEncodingScheme encoding_scheme() {
+  NPAEncodingScheme GetEncodingScheme() {
     return encoding_scheme_;
   }
 
   // Get size of NPA
-  uint64_t npa_size() {
+  uint64_t GetSize() {
     return npa_size_;
   }
 
@@ -49,7 +49,7 @@ class NPA {
     return context_len_;
   }
 
-  uint32_t get_sampling_rate() {
+  uint32_t GetSamplingRate() {
     return sampling_rate_;
   }
 
@@ -104,19 +104,19 @@ class NPA {
     return true;
   }
 
-  uint64_t ComputeContextValue(Bitmap *data_bitmap, uint64_t i) {
+  uint64_t ComputeContextValue(Bitmap *data_bitmap, uint32_t i) {
     uint32_t sigma_bits = SuccinctUtils::IntegerLog2(sigma_size_ + 1);
     uint64_t val = 0;
-    uint64_t max = std::min(i + context_len_, npa_size_);
+    uint64_t max = SuccinctUtils::Min(i + context_len_, npa_size_);
     for (uint64_t t = i; t < max; t++) {
       val = val * sigma_size_
           + SuccinctBase::LookupBitmapArray(data_bitmap, t, sigma_bits);
     }
 
     if (max < i + context_len_) {
-      for (uint64_t t = 0; t < (i + context_len_) % npa_size_; t++) {
+      for (uint64_t p = 0; p < (i + context_len_) % npa_size_; p++) {
         val = val * sigma_size_
-            + SuccinctBase::LookupBitmapArray(data_bitmap, t, sigma_bits);
+            + SuccinctBase::LookupBitmapArray(data_bitmap, p, sigma_bits);
       }
     }
 
