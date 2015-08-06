@@ -36,8 +36,8 @@ class SuccinctBase {
   /* ===================================================================== */
   /* Basic data structures used in Succinct */
   // Basic constants
-  static const uint64_t two32 = 1L << 32;
-  static const uint64_t all_ones = ~(0ULL);
+  static const uint64_t kTwo32 = 1L << 32;
+  static const uint64_t kAllOnes = ~(0ULL);
 
   // Bitmap stored as a 64-bit array
   typedef struct _bitmap {

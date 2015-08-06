@@ -26,18 +26,18 @@ WaveletTreeEncodedNPA::WaveletTreeEncodedNPA(uint32_t context_len,
 
 void WaveletTreeEncodedNPA::CreateWaveletTree(
     WaveletNode **root, uint32_t start, uint32_t end,
-    std::vector<uint64_t> &values, std::vector<uint64_t> &value_contexts) {
+    std::vector<uint64_t> &values, std::vector<uint64_t> &value_columns) {
   if (start == end) {
     (*root) = NULL;
     return;
   }
 
-  uint32_t mid = value_contexts.at((values.size() - 1) / 2);
+  uint32_t mid = value_columns.at((values.size() - 1) / 2);
   mid = SuccinctUtils::Min(mid, end - 1);
 
   uint64_t r;
-  std::vector<uint64_t> right_values, right_value_contexts, left_values,
-      left_value_contexts;
+  std::vector<uint64_t> right_values, right_value_columns, left_values,
+      left_value_columns;
 
   (*root) = new WaveletNode;
   Bitmap *B = new Bitmap;
@@ -45,7 +45,7 @@ void WaveletTreeEncodedNPA::CreateWaveletTree(
   (*root)->id = mid;
 
   for (uint64_t i = 0; i < values.size(); i++) {
-    if (value_contexts.at(i) > mid && value_contexts.at(i) <= end) {
+    if (value_columns.at(i) > mid && value_columns.at(i) <= end) {
       SETBITVAL((B), values.at(i));
     }
   }
@@ -54,28 +54,28 @@ void WaveletTreeEncodedNPA::CreateWaveletTree(
   SuccinctBase::DestroyBitmap(&B, s_allocator_);
 
   for (uint64_t i = 0; i < values.size(); i++) {
-    if (value_contexts.at(i) > mid && value_contexts.at(i) <= end) {
+    if (value_columns.at(i) > mid && value_columns.at(i) <= end) {
       r = SuccinctBase::GetRank1(&((*root)->D), values.at(i)) - 1;
       assert(r >= 0);
       right_values.push_back(r);
-      right_value_contexts.push_back(value_contexts.at(i));
+      right_value_columns.push_back(value_columns.at(i));
     } else {
       r = SuccinctBase::GetRank0(&((*root)->D), values.at(i)) - 1;
       assert(r >= 0);
       left_values.push_back(r);
-      left_value_contexts.push_back(value_contexts.at(i));
+      left_value_columns.push_back(value_columns.at(i));
     }
   }
 
   CreateWaveletTree(&((*root)->lt), start, mid, left_values,
-                    left_value_contexts);
+                    left_value_columns);
   left_values.clear();
-  left_value_contexts.clear();
+  left_value_columns.clear();
 
   CreateWaveletTree(&((*root)->rt), mid + 1, end, right_values,
-                    right_value_contexts);
+                    right_value_columns);
   right_values.clear();
-  right_value_contexts.clear();
+  right_value_columns.clear();
 }
 
 uint64_t WaveletTreeEncodedNPA::LookupWaveletTree(WaveletNode *tree,
@@ -109,7 +109,7 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
   std::vector<uint64_t> **table;
   std::vector<std::pair<std::vector<uint64_t>, unsigned char> > context;
   std::vector<uint64_t> cell;
-  std::vector<uint64_t> values, value_contexts;
+  std::vector<uint64_t> values, value_columns;
 
   bool flag;
   uint64_t *sizes, *starts;
@@ -236,13 +236,13 @@ void WaveletTreeEncodedNPA::Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
     for (size_t j = 0; j < context.size(); j++) {
       for (size_t t = 0; t < context[j].first.size(); t++) {
         values.push_back(context[j].first[t]);
-        value_contexts.push_back(j);
+        value_columns.push_back(j);
       }
     }
     CreateWaveletTree(&wavelet_tree_[i], 0, context.size() - 1, values,
-                      value_contexts);
+                      value_columns);
     values.clear();
-    value_contexts.clear();
+    value_columns.clear();
     context.clear();
   }
 

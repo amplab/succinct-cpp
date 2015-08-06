@@ -306,7 +306,7 @@ size_t SuccinctBase::MemoryMapBitmap(SuccinctBase::BitMap **B, uint8_t* buf) {
 uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
                                         SuccinctBase::Dictionary *D,
                                         SuccinctAllocator& s_allocator) {
-  uint64_t l3_size = (B->size / two32) + 1;
+  uint64_t l3_size = (B->size / kTwo32) + 1;
   uint64_t l2_size = (B->size / 2048) + 1;
   uint64_t l1_size = (B->size / 512) + 1;
   uint64_t count = 0;
@@ -332,13 +332,13 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
   rank_l1[0] = 0;
 
   for (i = 0; i < B->size; i++) {
-    if (i % two32 == 0) {
-      D->rank_l3[i / two32] = count;
-      D->pos_l3[i / two32] = size;
+    if (i % kTwo32 == 0) {
+      D->rank_l3[i / kTwo32] = count;
+      D->pos_l3[i / kTwo32] = size;
     }
     if (i % 2048 == 0) {
-      rank_l2[i / 2048] = count - D->rank_l3[i / two32];
-      pos_l2[i / 2048] = size - D->pos_l3[i / two32];
+      rank_l2[i / 2048] = count - D->rank_l3[i / kTwo32];
+      pos_l2[i / 2048] = size - D->pos_l3[i / kTwo32];
       D->rank_l12[i / 2048] = rank_l2[i / 2048] << 32;
       D->pos_l12[i / 2048] = pos_l2[i / 2048] << 31;
       flag = 0;
@@ -411,7 +411,9 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
 // Get the 1-rank of the dictionary at the specified index
 uint64_t SuccinctBase::GetRank1(SuccinctBase::Dictionary *D, uint64_t i) {
 
-  uint64_t l3_idx = i / two32;
+  assert(i < D->size);
+
+  uint64_t l3_idx = i / kTwo32;
   uint64_t l2_idx = i / 2048;
   uint16_t l1_idx = i % 512;
   uint16_t rem = (i % 2048) / 512;
@@ -473,7 +475,7 @@ uint64_t SuccinctBase::GetRank0(SuccinctBase::Dictionary *D, uint64_t i) {
 uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
   uint64_t val = i + 1;
   int64_t sp = 0;
-  int64_t ep = D->size / two32;
+  int64_t ep = D->size / kTwo32;
   uint64_t m, r;
   uint64_t pos = 0;
   uint64_t block_class, block_offset;
@@ -497,11 +499,11 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
   }
 
   ep = SuccinctUtils::Max(ep, 0LL);
-  sel += ep * two32;
+  sel += ep * kTwo32;
   val -= rank_l3[ep];
   pos += pos_l3[ep];
-  sp = ep * two32 / 2048;
-  ep = SuccinctUtils::Min(((ep + 1) * two32 / 2048),
+  sp = ep * kTwo32 / 2048;
+  ep = SuccinctUtils::Min(((ep + 1) * kTwo32 / 2048),
                           SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
@@ -578,7 +580,7 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
 uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
   uint64_t val = i + 1;
   int64_t sp = 0;
-  int64_t ep = D->size / two32;
+  int64_t ep = D->size / kTwo32;
   uint64_t m, r = 0;
   uint64_t pos = 0;
   uint64_t block_class, block_offset;
@@ -593,7 +595,7 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
 
   while (sp <= ep) {
     m = (sp + ep) / 2;
-    r = m * two32 - rank_l3[m];
+    r = m * kTwo32 - rank_l3[m];
     if (val > r)
       sp = m + 1;
     else
@@ -601,11 +603,11 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
   }
 
   ep = SuccinctUtils::Max(ep, 0LL);
-  sel += ep * two32;
-  val -= (ep * two32 - rank_l3[ep]);
+  sel += ep * kTwo32;
+  val -= (ep * kTwo32 - rank_l3[ep]);
   pos += pos_l3[ep];
-  sp = ep * two32 / 2048;
-  ep = SuccinctUtils::Min(((ep + 1) * two32 / 2048),
+  sp = ep * kTwo32 / 2048;
+  ep = SuccinctUtils::Min(((ep + 1) * kTwo32 / 2048),
                           SuccinctUtils::NumBlocks(size, 2048UL)) - 1;
 
   while (sp <= ep) {
