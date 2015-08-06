@@ -28,112 +28,110 @@ class QueryServiceHandler : virtual public QueryServiceIf {
                       SamplingScheme sampling_scheme,
                       NPA::NPAEncodingScheme npa_scheme,
                       bool regex_opt = true) {
-    this->fd = NULL;
-    this->construct = construct;
-    this->filename = filename;
-    this->is_init = false;
-    std::ifstream input(filename);
-    this->num_keys = std::count(std::istreambuf_iterator<char>(input),
-                                std::istreambuf_iterator<char>(), '\n');
-    input.close();
-    this->sa_sampling_rate = sa_sampling_rate;
-    this->isa_sampling_rate = isa_sampling_rate;
-    this->regex_opt = regex_opt;
-    this->sampling_scheme = sampling_scheme;
-    this->npa_scheme = npa_scheme;
+    succinct_shard_ = NULL;
+    construct_ = construct;
+    filename_ = filename;
+    is_init_ = false;
+    num_keys_ = 0;
+    sa_sampling_rate_ = sa_sampling_rate;
+    isa_sampling_rate_ = isa_sampling_rate;
+    regex_opt_ = regex_opt;
+    sampling_scheme_ = sampling_scheme;
+    npa_scheme_ = npa_scheme;
   }
 
-  int32_t init(int32_t id) {
+  int32_t Initialize(int32_t id) {
     fprintf(stderr, "Received INIT signal, initializing data structures...\n");
-    fprintf(stderr, "Construct is set to %d\n", construct);
+    fprintf(stderr, "Construct is set to %d\n", construct_);
 
-    fd = new SuccinctShard(
+    succinct_shard_ = new SuccinctShard(
         id,
-        filename,
-        construct ?
+        filename_,
+        construct_ ?
             SuccinctMode::CONSTRUCT_IN_MEMORY : SuccinctMode::LOAD_IN_MEMORY,
-        sa_sampling_rate, isa_sampling_rate, 128, sampling_scheme,
-        sampling_scheme, npa_scheme);
-    if (construct) {
+        sa_sampling_rate_, isa_sampling_rate_, 128, sampling_scheme_,
+        sampling_scheme_, npa_scheme_);
+    if (construct_) {
       fprintf(stderr, "Serializing data structures for file %s\n",
-              filename.c_str());
-      fd->Serialize();
+              filename_.c_str());
+      succinct_shard_->Serialize();
     } else {
-      fprintf(stderr, "Read data structures from file %s\n", filename.c_str());
+      fprintf(stderr, "Read data structures from file %s\n", filename_.c_str());
     }
     fprintf(stderr, "Succinct data structures with original size = %llu\n",
-            fd->GetOriginalSize());
+            succinct_shard_->GetOriginalSize());
     fprintf(stderr, "Done initializing...\n");
     fprintf(stderr, "Waiting for queries...\n");
-    is_init = true;
+    is_init_ = true;
+    num_keys_ = succinct_shard_->GetNumKeys();
     return 0;
   }
 
-  void get(std::string& _return, const int64_t key) {
-    fd->Get(_return, key);
+  void Get(std::string& _return, const int64_t key) {
+    succinct_shard_->Get(_return, key);
   }
 
-  void access(std::string& _return, const int64_t key, const int32_t offset,
+  void Access(std::string& _return, const int64_t key, const int32_t offset,
               const int32_t len) {
-    fd->Access(_return, key, offset, len);
+    succinct_shard_->Access(_return, key, offset, len);
   }
 
-  void search(std::set<int64_t>& _return, const std::string& query) {
-    fd->Search(_return, query);
+  void Search(std::set<int64_t>& _return, const std::string& query) {
+    succinct_shard_->Search(_return, query);
   }
 
-  void regex_search(std::set<int64_t> &_return, const std::string &query) {
+  void RegexSearch(std::set<int64_t> &_return, const std::string &query) {
     std::set<std::pair<size_t, size_t>> results;
-    fd->RegexSearch(results, query, regex_opt);
+    succinct_shard_->RegexSearch(results, query, regex_opt_);
     for (auto res : results) {
       _return.insert((int64_t) res.first);
     }
   }
 
-  void regex_count(std::vector<int64_t> & _return, const std::string& query) {
+  void RegexCount(std::vector<int64_t> & _return, const std::string& query) {
     std::vector<size_t> results;
-    fd->RegexCount(results, query);
+    succinct_shard_->RegexCount(results, query);
     for (auto res : results) {
       _return.push_back((int64_t) res);
     }
   }
 
-  void flat_extract(std::string& _return, const int64_t offset,
+  void FlatExtract(std::string& _return, const int64_t offset,
                     const int64_t length) {
-    fd->FlatExtract(_return, offset, length);
+    succinct_shard_->FlatExtract(_return, offset, length);
   }
 
-  int64_t flat_count(const std::string& query) {
-    return fd->FlatCount(query);
+  int64_t FlatCount(const std::string& query) {
+    return succinct_shard_->FlatCount(query);
   }
 
-  void flat_search(std::vector<int64_t>& _return, const std::string& query) {
-    fd->FlatSearch(_return, query);
+  void FlatSearch(std::vector<int64_t>& _return, const std::string& query) {
+    succinct_shard_->FlatSearch(_return, query);
   }
 
-  int64_t count(const std::string& query) {
-    return fd->Count(query);
+  int64_t Count(const std::string& query) {
+    return succinct_shard_->Count(query);
   }
 
-  int32_t get_num_keys() {
-    return fd->GetNumKeys();
+  int32_t GetNumKeys() {
+    return succinct_shard_->GetNumKeys();
   }
 
-  int64_t get_shard_size() {
-    return fd->GetOriginalSize();
+  int64_t GetShardSize() {
+    return succinct_shard_->GetOriginalSize();
   }
 
  private:
-  SuccinctShard *fd;
-  bool construct;
-  std::string filename;
-  bool is_init;
-  uint32_t num_keys;
-  uint32_t sa_sampling_rate;
-  uint32_t isa_sampling_rate;
-  SamplingScheme sampling_scheme;
-  NPA::NPAEncodingScheme npa_scheme;
-  bool regex_opt;
+  SuccinctShard *succinct_shard_;
+  bool construct_;
+  std::string filename_;
+  bool is_init_;
+  uint32_t num_keys_;
+  uint32_t sa_sampling_rate_;
+  uint32_t isa_sampling_rate_;
+  SamplingScheme sampling_scheme_;
+  NPA::NPAEncodingScheme npa_scheme_;
+  bool regex_opt_;
 };
 
 SamplingScheme SamplingSchemeFromOption(int opt) {
@@ -167,7 +165,7 @@ NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-m mode] [-p port] [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-r npa_encoding_scheme] [-o] [file]\n",
+      "Usage: %s [-m mode] [-p port] [-s sa_sampling_rate_] [-i isa_sampling_rate_] [-x sampling_scheme_] [-r npa_encoding_scheme] [-o] [file]\n",
       exec);
 }
 

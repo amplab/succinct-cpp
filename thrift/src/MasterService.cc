@@ -8,7 +8,7 @@
 
 
 
-uint32_t MasterService_get_client_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MasterService_GetClient_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -35,25 +35,25 @@ uint32_t MasterService_get_client_args::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t MasterService_get_client_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MasterService_GetClient_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("MasterService_get_client_args");
+  xfer += oprot->writeStructBegin("MasterService_GetClient_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t MasterService_get_client_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MasterService_GetClient_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("MasterService_get_client_pargs");
+  xfer += oprot->writeStructBegin("MasterService_GetClient_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t MasterService_get_client_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MasterService_GetClient_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -93,11 +93,11 @@ uint32_t MasterService_get_client_result::read(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t MasterService_get_client_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MasterService_GetClient_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("MasterService_get_client_result");
+  xfer += oprot->writeStructBegin("MasterService_GetClient_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -109,7 +109,7 @@ uint32_t MasterService_get_client_result::write(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t MasterService_get_client_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MasterService_GetClient_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -149,18 +149,18 @@ uint32_t MasterService_get_client_presult::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-void MasterServiceClient::get_client(std::string& _return)
+void MasterServiceClient::GetClient(std::string& _return)
 {
-  send_get_client();
-  recv_get_client(_return);
+  send_GetClient();
+  recv_GetClient(_return);
 }
 
-void MasterServiceClient::send_get_client()
+void MasterServiceClient::send_GetClient()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_client", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetClient", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  MasterService_get_client_pargs args;
+  MasterService_GetClient_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -168,7 +168,7 @@ void MasterServiceClient::send_get_client()
   oprot_->getTransport()->flush();
 }
 
-void MasterServiceClient::recv_get_client(std::string& _return)
+void MasterServiceClient::recv_GetClient(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -188,12 +188,12 @@ void MasterServiceClient::recv_get_client(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_client") != 0) {
+  if (fname.compare("GetClient") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  MasterService_get_client_presult result;
+  MasterService_GetClient_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -203,7 +203,7 @@ void MasterServiceClient::recv_get_client(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_client failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetClient failed: unknown result");
 }
 
 bool MasterServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
@@ -225,38 +225,38 @@ bool MasterServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol*
   return true;
 }
 
-void MasterServiceProcessor::process_get_client(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void MasterServiceProcessor::process_GetClient(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("MasterService.get_client", callContext);
+    ctx = this->eventHandler_->getContext("MasterService.GetClient", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MasterService.get_client");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MasterService.GetClient");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "MasterService.get_client");
+    this->eventHandler_->preRead(ctx, "MasterService.GetClient");
   }
 
-  MasterService_get_client_args args;
+  MasterService_GetClient_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "MasterService.get_client", bytes);
+    this->eventHandler_->postRead(ctx, "MasterService.GetClient", bytes);
   }
 
-  MasterService_get_client_result result;
+  MasterService_GetClient_result result;
   try {
-    iface_->get_client(result.success);
+    iface_->GetClient(result.success);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "MasterService.get_client");
+      this->eventHandler_->handlerError(ctx, "MasterService.GetClient");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_client", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetClient", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -265,17 +265,17 @@ void MasterServiceProcessor::process_get_client(int32_t seqid, ::apache::thrift:
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "MasterService.get_client");
+    this->eventHandler_->preWrite(ctx, "MasterService.GetClient");
   }
 
-  oprot->writeMessageBegin("get_client", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetClient", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "MasterService.get_client", bytes);
+    this->eventHandler_->postWrite(ctx, "MasterService.GetClient", bytes);
   }
 }
 

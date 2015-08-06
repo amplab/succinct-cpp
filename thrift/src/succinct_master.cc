@@ -27,7 +27,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
 
  public:
   SuccinctMaster(std::vector<std::string> hostnames) {
-    this->hostnames = hostnames;
+    this->hostnames_ = hostnames;
 
     std::vector<SuccinctServiceClient> clients;
     std::vector<boost::shared_ptr<TTransport> > transports;
@@ -57,7 +57,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
       try {
         fprintf(stderr, "Starting initialization at %s\n",
                 hostnames[i].c_str());
-        clients[i].send_start_servers();
+        clients[i].send_StartLocalServers();
       } catch (std::exception& e) {
         fprintf(stderr, "Could not send start_servers signal to %s: %s\n",
                 hostnames[i].c_str(), e.what());
@@ -68,7 +68,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     // Cleanup connections
     for (int i = 0; i < hostnames.size(); i++) {
       try {
-        clients[i].recv_start_servers();
+        clients[i].recv_StartLocalServers();
         fprintf(stderr, "Finished initialization at %s\n",
                 hostnames[i].c_str());
       } catch (std::exception& e) {
@@ -89,12 +89,12 @@ class SuccinctMaster : virtual public MasterServiceIf {
     fprintf(stderr, "Done!\n");
   }
 
-  void get_client(std::string& _return) {
-    _return = hostnames[rand() % hostnames.size()];
+  void GetClient(std::string& _return) {
+    _return = hostnames_[rand() % hostnames_.size()];
   }
 
  private:
-  std::vector<std::string> hostnames;
+  std::vector<std::string> hostnames_;
 };
 
 void print_usage(char *exec) {

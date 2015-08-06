@@ -30,7 +30,7 @@ class SuccinctServerBenchmark : public Benchmark {
       client_ = new SuccinctServiceClient(protocol);
       transport->open();
       fprintf(stderr, "Connected!\n");
-      client_->connect_to_handlers();
+      client_->ConnectToHandlers();
     } else {
       client_ = NULL;
     }
@@ -52,7 +52,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
-      client_->get(result, randoms_[i]);
+      client_->Get(result, randoms_[i]);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -64,7 +64,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
-      client_->get(result, randoms_[i]);
+      client_->Get(result, randoms_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
@@ -78,7 +78,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
-      client_->get(result, randoms_[i]);
+      client_->Get(result, randoms_[i]);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
@@ -99,7 +99,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
-      client_->access(result, randoms_[i], 0, fetch_length);
+      client_->Access(result, randoms_[i], 0, fetch_length);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -111,7 +111,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
       std::string result;
       t0 = GetTimestamp();
-      client_->access(result, randoms_[i], 0, fetch_length);
+      client_->Access(result, randoms_[i], 0, fetch_length);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
@@ -125,7 +125,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
     for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
       std::string result;
-      client_->access(result, randoms_[i], 0, fetch_length);
+      client_->Access(result, randoms_[i], 0, fetch_length);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Cooldown chksum = %llu\n", sum);
@@ -146,7 +146,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       uint64_t result;
-      result = client_->count(queries_[i]);
+      result = client_->Count(queries_[i]);
       sum = (sum + result) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -158,7 +158,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = 0; i < queries_.size(); i++) {
       uint64_t result;
       t0 = GetTimestamp();
-      result = client_->count(queries_[i]);
+      result = client_->Count(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << queries_[i] << "\t" << tdiff << "\n";
@@ -181,7 +181,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::set<int64_t> result;
-      client_->search(result, queries_[i]);
+      client_->Search(result, queries_[i]);
       sum = (sum + result.size()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -193,7 +193,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = 0; i < queries_.size(); i++) {
       std::set<int64_t> result;
       t0 = GetTimestamp();
-      client_->search(result, queries_[i]);
+      client_->Search(result, queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << result.size() << "\t" << tdiff << "\n";
@@ -218,7 +218,7 @@ class SuccinctServerBenchmark : public Benchmark {
         fprintf(stderr, "Running iteration %u of query %u\n", j, i);
         std::vector<int64_t> result;
         t0 = GetTimestamp();
-        client_->regex_count(result, queries_[i]);
+        client_->RegexCount(result, queries_[i]);
         t1 = GetTimestamp();
         tdiff = t1 - t0;
         result_stream << i << "\t" << j << "\t";
@@ -249,7 +249,7 @@ class SuccinctServerBenchmark : public Benchmark {
         fprintf(stderr, "Running iteration %u of query %u\n", j, i);
         std::set<int64_t> result;
         t0 = GetTimestamp();
-        client_->regex_search(result, queries_[i]);
+        client_->RegexSearch(result, queries_[i]);
         t1 = GetTimestamp();
         tdiff = t1 - t0;
         result_stream << i << "\t" << j << "\t" << result.size() << "\t"
@@ -270,7 +270,7 @@ class SuccinctServerBenchmark : public Benchmark {
     TimeStamp t0, t1, tdiff;
     uint64_t sum;
     std::ofstream result_stream(result_path);
-    int64_t tot_size = client_->get_tot_size();
+    int64_t tot_size = client_->GetTotSize();
     fprintf(stderr, "Tot size = %lld\n", tot_size);
 
     // Warmup
@@ -279,7 +279,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = 0; i < kWarmupCount; i++) {
       std::string result;
       int64_t pos = llrand() % (tot_size - fetch_length);
-      client_->flat_extract(result, pos, fetch_length);
+      client_->FlatExtract(result, pos, fetch_length);
       sum = (sum + result.length()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -292,7 +292,7 @@ class SuccinctServerBenchmark : public Benchmark {
       std::string result;
       int64_t pos = llrand() % (tot_size - fetch_length);
       t0 = GetTimestamp();
-      client_->flat_extract(result, pos, fetch_length);
+      client_->FlatExtract(result, pos, fetch_length);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << randoms_[i] << "\t" << tdiff << "\n";
@@ -316,7 +316,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       uint64_t result;
-      result = client_->flat_count(queries_[i]);
+      result = client_->FlatCount(queries_[i]);
       sum = (sum + result) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -328,7 +328,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = 0; i < queries_.size(); i++) {
       uint64_t result;
       t0 = GetTimestamp();
-      result = client_->flat_count(queries_[i]);
+      result = client_->FlatCount(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << result << "\t" << tdiff << "\n";
@@ -351,7 +351,7 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::vector<int64_t> result;
-      client_->flat_search(result, queries_[i]);
+      client_->FlatSearch(result, queries_[i]);
       sum = (sum + result.size()) % kMaxSum;
     }
     fprintf(stderr, "Warmup chksum = %llu\n", sum);
@@ -363,7 +363,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint64_t i = 0; i < queries_.size(); i++) {
       std::vector<int64_t> result;
       t0 = GetTimestamp();
-      client_->flat_search(result, queries_[i]);
+      client_->FlatSearch(result, queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << result.size() << "\t" << tdiff << "\n";
@@ -388,7 +388,7 @@ class SuccinctServerBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        client.get(value, data.randoms[i % data.randoms.size()]);
+        client.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -396,7 +396,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        client.get(value, data.randoms[i % data.randoms.size()]);
+        client.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -406,7 +406,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        client.get(value, data.randoms[i % data.randoms.size()]);
+        client.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -436,7 +436,7 @@ class SuccinctServerBenchmark : public Benchmark {
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         SuccinctServiceClient *client = new SuccinctServiceClient(protocol);
         transport->open();
-        client->connect_to_handlers();
+        client->ConnectToHandlers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
@@ -487,7 +487,7 @@ class SuccinctServerBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        client.access(value, data.randoms[i % data.randoms.size()], 0,
+        client.Access(value, data.randoms[i % data.randoms.size()], 0,
                       data.fetch_length);
         i++;
       }
@@ -496,7 +496,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        client.access(value, data.randoms[i % data.randoms.size()], 0,
+        client.Access(value, data.randoms[i % data.randoms.size()], 0,
                       data.fetch_length);
         i++;
       }
@@ -507,7 +507,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        client.access(value, data.randoms[i % data.randoms.size()], 0,
+        client.Access(value, data.randoms[i % data.randoms.size()], 0,
                       data.fetch_length);
         i++;
       }
@@ -539,7 +539,7 @@ class SuccinctServerBenchmark : public Benchmark {
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         SuccinctServiceClient *client = new SuccinctServiceClient(protocol);
         transport->open();
-        client->connect_to_handlers();
+        client->ConnectToHandlers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;

@@ -15,18 +15,18 @@
 class QueryServiceIf {
  public:
   virtual ~QueryServiceIf() {}
-  virtual int32_t init(const int32_t id) = 0;
-  virtual void get(std::string& _return, const int64_t key) = 0;
-  virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
-  virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void regex_search(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void regex_count(std::vector<int64_t> & _return, const std::string& query) = 0;
-  virtual int64_t count(const std::string& query) = 0;
-  virtual void flat_extract(std::string& _return, const int64_t offset, const int64_t length) = 0;
-  virtual int64_t flat_count(const std::string& query) = 0;
-  virtual void flat_search(std::vector<int64_t> & _return, const std::string& query) = 0;
-  virtual int32_t get_num_keys() = 0;
-  virtual int64_t get_shard_size() = 0;
+  virtual int32_t Initialize(const int32_t id) = 0;
+  virtual void Get(std::string& _return, const int64_t key) = 0;
+  virtual void Access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
+  virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void RegexSearch(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void RegexCount(std::vector<int64_t> & _return, const std::string& query) = 0;
+  virtual int64_t Count(const std::string& query) = 0;
+  virtual void FlatExtract(std::string& _return, const int64_t offset, const int64_t length) = 0;
+  virtual int64_t FlatCount(const std::string& query) = 0;
+  virtual void FlatSearch(std::vector<int64_t> & _return, const std::string& query) = 0;
+  virtual int32_t GetNumKeys() = 0;
+  virtual int64_t GetShardSize() = 0;
 };
 
 class QueryServiceIfFactory {
@@ -56,81 +56,81 @@ class QueryServiceIfSingletonFactory : virtual public QueryServiceIfFactory {
 class QueryServiceNull : virtual public QueryServiceIf {
  public:
   virtual ~QueryServiceNull() {}
-  int32_t init(const int32_t /* id */) {
+  int32_t Initialize(const int32_t /* id */) {
     int32_t _return = 0;
     return _return;
   }
-  void get(std::string& /* _return */, const int64_t /* key */) {
+  void Get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
-  void access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
+  void Access(std::string& /* _return */, const int64_t /* key */, const int32_t /* offset */, const int32_t /* len */) {
     return;
   }
-  void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+  void Search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  void regex_search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+  void RegexSearch(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  void regex_count(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+  void RegexCount(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  int64_t count(const std::string& /* query */) {
+  int64_t Count(const std::string& /* query */) {
     int64_t _return = 0;
     return _return;
   }
-  void flat_extract(std::string& /* _return */, const int64_t /* offset */, const int64_t /* length */) {
+  void FlatExtract(std::string& /* _return */, const int64_t /* offset */, const int64_t /* length */) {
     return;
   }
-  int64_t flat_count(const std::string& /* query */) {
+  int64_t FlatCount(const std::string& /* query */) {
     int64_t _return = 0;
     return _return;
   }
-  void flat_search(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+  void FlatSearch(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  int32_t get_num_keys() {
+  int32_t GetNumKeys() {
     int32_t _return = 0;
     return _return;
   }
-  int64_t get_shard_size() {
+  int64_t GetShardSize() {
     int64_t _return = 0;
     return _return;
   }
 };
 
-typedef struct _QueryService_init_args__isset {
-  _QueryService_init_args__isset() : id(false) {}
+typedef struct _QueryService_Initialize_args__isset {
+  _QueryService_Initialize_args__isset() : id(false) {}
   bool id;
-} _QueryService_init_args__isset;
+} _QueryService_Initialize_args__isset;
 
-class QueryService_init_args {
+class QueryService_Initialize_args {
  public:
 
-  QueryService_init_args() : id(0) {
+  QueryService_Initialize_args() : id(0) {
   }
 
-  virtual ~QueryService_init_args() throw() {}
+  virtual ~QueryService_Initialize_args() throw() {}
 
   int32_t id;
 
-  _QueryService_init_args__isset __isset;
+  _QueryService_Initialize_args__isset __isset;
 
   void __set_id(const int32_t val) {
     id = val;
   }
 
-  bool operator == (const QueryService_init_args & rhs) const
+  bool operator == (const QueryService_Initialize_args & rhs) const
   {
     if (!(id == rhs.id))
       return false;
     return true;
   }
-  bool operator != (const QueryService_init_args &rhs) const {
+  bool operator != (const QueryService_Initialize_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_init_args & ) const;
+  bool operator < (const QueryService_Initialize_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -138,11 +138,11 @@ class QueryService_init_args {
 };
 
 
-class QueryService_init_pargs {
+class QueryService_Initialize_pargs {
  public:
 
 
-  virtual ~QueryService_init_pargs() throw() {}
+  virtual ~QueryService_Initialize_pargs() throw() {}
 
   const int32_t* id;
 
@@ -150,95 +150,95 @@ class QueryService_init_pargs {
 
 };
 
-typedef struct _QueryService_init_result__isset {
-  _QueryService_init_result__isset() : success(false) {}
+typedef struct _QueryService_Initialize_result__isset {
+  _QueryService_Initialize_result__isset() : success(false) {}
   bool success;
-} _QueryService_init_result__isset;
+} _QueryService_Initialize_result__isset;
 
-class QueryService_init_result {
+class QueryService_Initialize_result {
  public:
 
-  QueryService_init_result() : success(0) {
+  QueryService_Initialize_result() : success(0) {
   }
 
-  virtual ~QueryService_init_result() throw() {}
+  virtual ~QueryService_Initialize_result() throw() {}
 
   int32_t success;
 
-  _QueryService_init_result__isset __isset;
+  _QueryService_Initialize_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const QueryService_init_result & rhs) const
+  bool operator == (const QueryService_Initialize_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_init_result &rhs) const {
+  bool operator != (const QueryService_Initialize_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_init_result & ) const;
+  bool operator < (const QueryService_Initialize_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_init_presult__isset {
-  _QueryService_init_presult__isset() : success(false) {}
+typedef struct _QueryService_Initialize_presult__isset {
+  _QueryService_Initialize_presult__isset() : success(false) {}
   bool success;
-} _QueryService_init_presult__isset;
+} _QueryService_Initialize_presult__isset;
 
-class QueryService_init_presult {
+class QueryService_Initialize_presult {
  public:
 
 
-  virtual ~QueryService_init_presult() throw() {}
+  virtual ~QueryService_Initialize_presult() throw() {}
 
   int32_t* success;
 
-  _QueryService_init_presult__isset __isset;
+  _QueryService_Initialize_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_get_args__isset {
-  _QueryService_get_args__isset() : key(false) {}
+typedef struct _QueryService_Get_args__isset {
+  _QueryService_Get_args__isset() : key(false) {}
   bool key;
-} _QueryService_get_args__isset;
+} _QueryService_Get_args__isset;
 
-class QueryService_get_args {
+class QueryService_Get_args {
  public:
 
-  QueryService_get_args() : key(0) {
+  QueryService_Get_args() : key(0) {
   }
 
-  virtual ~QueryService_get_args() throw() {}
+  virtual ~QueryService_Get_args() throw() {}
 
   int64_t key;
 
-  _QueryService_get_args__isset __isset;
+  _QueryService_Get_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
   }
 
-  bool operator == (const QueryService_get_args & rhs) const
+  bool operator == (const QueryService_Get_args & rhs) const
   {
     if (!(key == rhs.key))
       return false;
     return true;
   }
-  bool operator != (const QueryService_get_args &rhs) const {
+  bool operator != (const QueryService_Get_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_args & ) const;
+  bool operator < (const QueryService_Get_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -246,11 +246,11 @@ class QueryService_get_args {
 };
 
 
-class QueryService_get_pargs {
+class QueryService_Get_pargs {
  public:
 
 
-  virtual ~QueryService_get_pargs() throw() {}
+  virtual ~QueryService_Get_pargs() throw() {}
 
   const int64_t* key;
 
@@ -258,83 +258,83 @@ class QueryService_get_pargs {
 
 };
 
-typedef struct _QueryService_get_result__isset {
-  _QueryService_get_result__isset() : success(false) {}
+typedef struct _QueryService_Get_result__isset {
+  _QueryService_Get_result__isset() : success(false) {}
   bool success;
-} _QueryService_get_result__isset;
+} _QueryService_Get_result__isset;
 
-class QueryService_get_result {
+class QueryService_Get_result {
  public:
 
-  QueryService_get_result() : success() {
+  QueryService_Get_result() : success() {
   }
 
-  virtual ~QueryService_get_result() throw() {}
+  virtual ~QueryService_Get_result() throw() {}
 
   std::string success;
 
-  _QueryService_get_result__isset __isset;
+  _QueryService_Get_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const QueryService_get_result & rhs) const
+  bool operator == (const QueryService_Get_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_get_result &rhs) const {
+  bool operator != (const QueryService_Get_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_result & ) const;
+  bool operator < (const QueryService_Get_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_get_presult__isset {
-  _QueryService_get_presult__isset() : success(false) {}
+typedef struct _QueryService_Get_presult__isset {
+  _QueryService_Get_presult__isset() : success(false) {}
   bool success;
-} _QueryService_get_presult__isset;
+} _QueryService_Get_presult__isset;
 
-class QueryService_get_presult {
+class QueryService_Get_presult {
  public:
 
 
-  virtual ~QueryService_get_presult() throw() {}
+  virtual ~QueryService_Get_presult() throw() {}
 
   std::string* success;
 
-  _QueryService_get_presult__isset __isset;
+  _QueryService_Get_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_access_args__isset {
-  _QueryService_access_args__isset() : key(false), offset(false), len(false) {}
+typedef struct _QueryService_Access_args__isset {
+  _QueryService_Access_args__isset() : key(false), offset(false), len(false) {}
   bool key;
   bool offset;
   bool len;
-} _QueryService_access_args__isset;
+} _QueryService_Access_args__isset;
 
-class QueryService_access_args {
+class QueryService_Access_args {
  public:
 
-  QueryService_access_args() : key(0), offset(0), len(0) {
+  QueryService_Access_args() : key(0), offset(0), len(0) {
   }
 
-  virtual ~QueryService_access_args() throw() {}
+  virtual ~QueryService_Access_args() throw() {}
 
   int64_t key;
   int32_t offset;
   int32_t len;
 
-  _QueryService_access_args__isset __isset;
+  _QueryService_Access_args__isset __isset;
 
   void __set_key(const int64_t val) {
     key = val;
@@ -348,7 +348,7 @@ class QueryService_access_args {
     len = val;
   }
 
-  bool operator == (const QueryService_access_args & rhs) const
+  bool operator == (const QueryService_Access_args & rhs) const
   {
     if (!(key == rhs.key))
       return false;
@@ -358,11 +358,11 @@ class QueryService_access_args {
       return false;
     return true;
   }
-  bool operator != (const QueryService_access_args &rhs) const {
+  bool operator != (const QueryService_Access_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_access_args & ) const;
+  bool operator < (const QueryService_Access_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -370,11 +370,11 @@ class QueryService_access_args {
 };
 
 
-class QueryService_access_pargs {
+class QueryService_Access_pargs {
  public:
 
 
-  virtual ~QueryService_access_pargs() throw() {}
+  virtual ~QueryService_Access_pargs() throw() {}
 
   const int64_t* key;
   const int32_t* offset;
@@ -384,95 +384,95 @@ class QueryService_access_pargs {
 
 };
 
-typedef struct _QueryService_access_result__isset {
-  _QueryService_access_result__isset() : success(false) {}
+typedef struct _QueryService_Access_result__isset {
+  _QueryService_Access_result__isset() : success(false) {}
   bool success;
-} _QueryService_access_result__isset;
+} _QueryService_Access_result__isset;
 
-class QueryService_access_result {
+class QueryService_Access_result {
  public:
 
-  QueryService_access_result() : success() {
+  QueryService_Access_result() : success() {
   }
 
-  virtual ~QueryService_access_result() throw() {}
+  virtual ~QueryService_Access_result() throw() {}
 
   std::string success;
 
-  _QueryService_access_result__isset __isset;
+  _QueryService_Access_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const QueryService_access_result & rhs) const
+  bool operator == (const QueryService_Access_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_access_result &rhs) const {
+  bool operator != (const QueryService_Access_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_access_result & ) const;
+  bool operator < (const QueryService_Access_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_access_presult__isset {
-  _QueryService_access_presult__isset() : success(false) {}
+typedef struct _QueryService_Access_presult__isset {
+  _QueryService_Access_presult__isset() : success(false) {}
   bool success;
-} _QueryService_access_presult__isset;
+} _QueryService_Access_presult__isset;
 
-class QueryService_access_presult {
+class QueryService_Access_presult {
  public:
 
 
-  virtual ~QueryService_access_presult() throw() {}
+  virtual ~QueryService_Access_presult() throw() {}
 
   std::string* success;
 
-  _QueryService_access_presult__isset __isset;
+  _QueryService_Access_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_search_args__isset {
-  _QueryService_search_args__isset() : query(false) {}
+typedef struct _QueryService_Search_args__isset {
+  _QueryService_Search_args__isset() : query(false) {}
   bool query;
-} _QueryService_search_args__isset;
+} _QueryService_Search_args__isset;
 
-class QueryService_search_args {
+class QueryService_Search_args {
  public:
 
-  QueryService_search_args() : query() {
+  QueryService_Search_args() : query() {
   }
 
-  virtual ~QueryService_search_args() throw() {}
+  virtual ~QueryService_Search_args() throw() {}
 
   std::string query;
 
-  _QueryService_search_args__isset __isset;
+  _QueryService_Search_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_search_args & rhs) const
+  bool operator == (const QueryService_Search_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_search_args &rhs) const {
+  bool operator != (const QueryService_Search_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_search_args & ) const;
+  bool operator < (const QueryService_Search_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -480,11 +480,11 @@ class QueryService_search_args {
 };
 
 
-class QueryService_search_pargs {
+class QueryService_Search_pargs {
  public:
 
 
-  virtual ~QueryService_search_pargs() throw() {}
+  virtual ~QueryService_Search_pargs() throw() {}
 
   const std::string* query;
 
@@ -492,95 +492,95 @@ class QueryService_search_pargs {
 
 };
 
-typedef struct _QueryService_search_result__isset {
-  _QueryService_search_result__isset() : success(false) {}
+typedef struct _QueryService_Search_result__isset {
+  _QueryService_Search_result__isset() : success(false) {}
   bool success;
-} _QueryService_search_result__isset;
+} _QueryService_Search_result__isset;
 
-class QueryService_search_result {
+class QueryService_Search_result {
  public:
 
-  QueryService_search_result() {
+  QueryService_Search_result() {
   }
 
-  virtual ~QueryService_search_result() throw() {}
+  virtual ~QueryService_Search_result() throw() {}
 
   std::set<int64_t>  success;
 
-  _QueryService_search_result__isset __isset;
+  _QueryService_Search_result__isset __isset;
 
   void __set_success(const std::set<int64_t> & val) {
     success = val;
   }
 
-  bool operator == (const QueryService_search_result & rhs) const
+  bool operator == (const QueryService_Search_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_search_result &rhs) const {
+  bool operator != (const QueryService_Search_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_search_result & ) const;
+  bool operator < (const QueryService_Search_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_search_presult__isset {
-  _QueryService_search_presult__isset() : success(false) {}
+typedef struct _QueryService_Search_presult__isset {
+  _QueryService_Search_presult__isset() : success(false) {}
   bool success;
-} _QueryService_search_presult__isset;
+} _QueryService_Search_presult__isset;
 
-class QueryService_search_presult {
+class QueryService_Search_presult {
  public:
 
 
-  virtual ~QueryService_search_presult() throw() {}
+  virtual ~QueryService_Search_presult() throw() {}
 
   std::set<int64_t> * success;
 
-  _QueryService_search_presult__isset __isset;
+  _QueryService_Search_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_regex_search_args__isset {
-  _QueryService_regex_search_args__isset() : query(false) {}
+typedef struct _QueryService_RegexSearch_args__isset {
+  _QueryService_RegexSearch_args__isset() : query(false) {}
   bool query;
-} _QueryService_regex_search_args__isset;
+} _QueryService_RegexSearch_args__isset;
 
-class QueryService_regex_search_args {
+class QueryService_RegexSearch_args {
  public:
 
-  QueryService_regex_search_args() : query() {
+  QueryService_RegexSearch_args() : query() {
   }
 
-  virtual ~QueryService_regex_search_args() throw() {}
+  virtual ~QueryService_RegexSearch_args() throw() {}
 
   std::string query;
 
-  _QueryService_regex_search_args__isset __isset;
+  _QueryService_RegexSearch_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_regex_search_args & rhs) const
+  bool operator == (const QueryService_RegexSearch_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_regex_search_args &rhs) const {
+  bool operator != (const QueryService_RegexSearch_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_regex_search_args & ) const;
+  bool operator < (const QueryService_RegexSearch_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -588,11 +588,11 @@ class QueryService_regex_search_args {
 };
 
 
-class QueryService_regex_search_pargs {
+class QueryService_RegexSearch_pargs {
  public:
 
 
-  virtual ~QueryService_regex_search_pargs() throw() {}
+  virtual ~QueryService_RegexSearch_pargs() throw() {}
 
   const std::string* query;
 
@@ -600,95 +600,95 @@ class QueryService_regex_search_pargs {
 
 };
 
-typedef struct _QueryService_regex_search_result__isset {
-  _QueryService_regex_search_result__isset() : success(false) {}
+typedef struct _QueryService_RegexSearch_result__isset {
+  _QueryService_RegexSearch_result__isset() : success(false) {}
   bool success;
-} _QueryService_regex_search_result__isset;
+} _QueryService_RegexSearch_result__isset;
 
-class QueryService_regex_search_result {
+class QueryService_RegexSearch_result {
  public:
 
-  QueryService_regex_search_result() {
+  QueryService_RegexSearch_result() {
   }
 
-  virtual ~QueryService_regex_search_result() throw() {}
+  virtual ~QueryService_RegexSearch_result() throw() {}
 
   std::set<int64_t>  success;
 
-  _QueryService_regex_search_result__isset __isset;
+  _QueryService_RegexSearch_result__isset __isset;
 
   void __set_success(const std::set<int64_t> & val) {
     success = val;
   }
 
-  bool operator == (const QueryService_regex_search_result & rhs) const
+  bool operator == (const QueryService_RegexSearch_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_regex_search_result &rhs) const {
+  bool operator != (const QueryService_RegexSearch_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_regex_search_result & ) const;
+  bool operator < (const QueryService_RegexSearch_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_regex_search_presult__isset {
-  _QueryService_regex_search_presult__isset() : success(false) {}
+typedef struct _QueryService_RegexSearch_presult__isset {
+  _QueryService_RegexSearch_presult__isset() : success(false) {}
   bool success;
-} _QueryService_regex_search_presult__isset;
+} _QueryService_RegexSearch_presult__isset;
 
-class QueryService_regex_search_presult {
+class QueryService_RegexSearch_presult {
  public:
 
 
-  virtual ~QueryService_regex_search_presult() throw() {}
+  virtual ~QueryService_RegexSearch_presult() throw() {}
 
   std::set<int64_t> * success;
 
-  _QueryService_regex_search_presult__isset __isset;
+  _QueryService_RegexSearch_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_regex_count_args__isset {
-  _QueryService_regex_count_args__isset() : query(false) {}
+typedef struct _QueryService_RegexCount_args__isset {
+  _QueryService_RegexCount_args__isset() : query(false) {}
   bool query;
-} _QueryService_regex_count_args__isset;
+} _QueryService_RegexCount_args__isset;
 
-class QueryService_regex_count_args {
+class QueryService_RegexCount_args {
  public:
 
-  QueryService_regex_count_args() : query() {
+  QueryService_RegexCount_args() : query() {
   }
 
-  virtual ~QueryService_regex_count_args() throw() {}
+  virtual ~QueryService_RegexCount_args() throw() {}
 
   std::string query;
 
-  _QueryService_regex_count_args__isset __isset;
+  _QueryService_RegexCount_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_regex_count_args & rhs) const
+  bool operator == (const QueryService_RegexCount_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_regex_count_args &rhs) const {
+  bool operator != (const QueryService_RegexCount_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_regex_count_args & ) const;
+  bool operator < (const QueryService_RegexCount_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -696,11 +696,11 @@ class QueryService_regex_count_args {
 };
 
 
-class QueryService_regex_count_pargs {
+class QueryService_RegexCount_pargs {
  public:
 
 
-  virtual ~QueryService_regex_count_pargs() throw() {}
+  virtual ~QueryService_RegexCount_pargs() throw() {}
 
   const std::string* query;
 
@@ -708,95 +708,95 @@ class QueryService_regex_count_pargs {
 
 };
 
-typedef struct _QueryService_regex_count_result__isset {
-  _QueryService_regex_count_result__isset() : success(false) {}
+typedef struct _QueryService_RegexCount_result__isset {
+  _QueryService_RegexCount_result__isset() : success(false) {}
   bool success;
-} _QueryService_regex_count_result__isset;
+} _QueryService_RegexCount_result__isset;
 
-class QueryService_regex_count_result {
+class QueryService_RegexCount_result {
  public:
 
-  QueryService_regex_count_result() {
+  QueryService_RegexCount_result() {
   }
 
-  virtual ~QueryService_regex_count_result() throw() {}
+  virtual ~QueryService_RegexCount_result() throw() {}
 
   std::vector<int64_t>  success;
 
-  _QueryService_regex_count_result__isset __isset;
+  _QueryService_RegexCount_result__isset __isset;
 
   void __set_success(const std::vector<int64_t> & val) {
     success = val;
   }
 
-  bool operator == (const QueryService_regex_count_result & rhs) const
+  bool operator == (const QueryService_RegexCount_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_regex_count_result &rhs) const {
+  bool operator != (const QueryService_RegexCount_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_regex_count_result & ) const;
+  bool operator < (const QueryService_RegexCount_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_regex_count_presult__isset {
-  _QueryService_regex_count_presult__isset() : success(false) {}
+typedef struct _QueryService_RegexCount_presult__isset {
+  _QueryService_RegexCount_presult__isset() : success(false) {}
   bool success;
-} _QueryService_regex_count_presult__isset;
+} _QueryService_RegexCount_presult__isset;
 
-class QueryService_regex_count_presult {
+class QueryService_RegexCount_presult {
  public:
 
 
-  virtual ~QueryService_regex_count_presult() throw() {}
+  virtual ~QueryService_RegexCount_presult() throw() {}
 
   std::vector<int64_t> * success;
 
-  _QueryService_regex_count_presult__isset __isset;
+  _QueryService_RegexCount_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_count_args__isset {
-  _QueryService_count_args__isset() : query(false) {}
+typedef struct _QueryService_Count_args__isset {
+  _QueryService_Count_args__isset() : query(false) {}
   bool query;
-} _QueryService_count_args__isset;
+} _QueryService_Count_args__isset;
 
-class QueryService_count_args {
+class QueryService_Count_args {
  public:
 
-  QueryService_count_args() : query() {
+  QueryService_Count_args() : query() {
   }
 
-  virtual ~QueryService_count_args() throw() {}
+  virtual ~QueryService_Count_args() throw() {}
 
   std::string query;
 
-  _QueryService_count_args__isset __isset;
+  _QueryService_Count_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_count_args & rhs) const
+  bool operator == (const QueryService_Count_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_count_args &rhs) const {
+  bool operator != (const QueryService_Count_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_count_args & ) const;
+  bool operator < (const QueryService_Count_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -804,11 +804,11 @@ class QueryService_count_args {
 };
 
 
-class QueryService_count_pargs {
+class QueryService_Count_pargs {
  public:
 
 
-  virtual ~QueryService_count_pargs() throw() {}
+  virtual ~QueryService_Count_pargs() throw() {}
 
   const std::string* query;
 
@@ -816,81 +816,81 @@ class QueryService_count_pargs {
 
 };
 
-typedef struct _QueryService_count_result__isset {
-  _QueryService_count_result__isset() : success(false) {}
+typedef struct _QueryService_Count_result__isset {
+  _QueryService_Count_result__isset() : success(false) {}
   bool success;
-} _QueryService_count_result__isset;
+} _QueryService_Count_result__isset;
 
-class QueryService_count_result {
+class QueryService_Count_result {
  public:
 
-  QueryService_count_result() : success(0) {
+  QueryService_Count_result() : success(0) {
   }
 
-  virtual ~QueryService_count_result() throw() {}
+  virtual ~QueryService_Count_result() throw() {}
 
   int64_t success;
 
-  _QueryService_count_result__isset __isset;
+  _QueryService_Count_result__isset __isset;
 
   void __set_success(const int64_t val) {
     success = val;
   }
 
-  bool operator == (const QueryService_count_result & rhs) const
+  bool operator == (const QueryService_Count_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_count_result &rhs) const {
+  bool operator != (const QueryService_Count_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_count_result & ) const;
+  bool operator < (const QueryService_Count_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_count_presult__isset {
-  _QueryService_count_presult__isset() : success(false) {}
+typedef struct _QueryService_Count_presult__isset {
+  _QueryService_Count_presult__isset() : success(false) {}
   bool success;
-} _QueryService_count_presult__isset;
+} _QueryService_Count_presult__isset;
 
-class QueryService_count_presult {
+class QueryService_Count_presult {
  public:
 
 
-  virtual ~QueryService_count_presult() throw() {}
+  virtual ~QueryService_Count_presult() throw() {}
 
   int64_t* success;
 
-  _QueryService_count_presult__isset __isset;
+  _QueryService_Count_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_flat_extract_args__isset {
-  _QueryService_flat_extract_args__isset() : offset(false), length(false) {}
+typedef struct _QueryService_FlatExtract_args__isset {
+  _QueryService_FlatExtract_args__isset() : offset(false), length(false) {}
   bool offset;
   bool length;
-} _QueryService_flat_extract_args__isset;
+} _QueryService_FlatExtract_args__isset;
 
-class QueryService_flat_extract_args {
+class QueryService_FlatExtract_args {
  public:
 
-  QueryService_flat_extract_args() : offset(0), length(0) {
+  QueryService_FlatExtract_args() : offset(0), length(0) {
   }
 
-  virtual ~QueryService_flat_extract_args() throw() {}
+  virtual ~QueryService_FlatExtract_args() throw() {}
 
   int64_t offset;
   int64_t length;
 
-  _QueryService_flat_extract_args__isset __isset;
+  _QueryService_FlatExtract_args__isset __isset;
 
   void __set_offset(const int64_t val) {
     offset = val;
@@ -900,7 +900,7 @@ class QueryService_flat_extract_args {
     length = val;
   }
 
-  bool operator == (const QueryService_flat_extract_args & rhs) const
+  bool operator == (const QueryService_FlatExtract_args & rhs) const
   {
     if (!(offset == rhs.offset))
       return false;
@@ -908,11 +908,11 @@ class QueryService_flat_extract_args {
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_extract_args &rhs) const {
+  bool operator != (const QueryService_FlatExtract_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_extract_args & ) const;
+  bool operator < (const QueryService_FlatExtract_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -920,11 +920,11 @@ class QueryService_flat_extract_args {
 };
 
 
-class QueryService_flat_extract_pargs {
+class QueryService_FlatExtract_pargs {
  public:
 
 
-  virtual ~QueryService_flat_extract_pargs() throw() {}
+  virtual ~QueryService_FlatExtract_pargs() throw() {}
 
   const int64_t* offset;
   const int64_t* length;
@@ -933,95 +933,95 @@ class QueryService_flat_extract_pargs {
 
 };
 
-typedef struct _QueryService_flat_extract_result__isset {
-  _QueryService_flat_extract_result__isset() : success(false) {}
+typedef struct _QueryService_FlatExtract_result__isset {
+  _QueryService_FlatExtract_result__isset() : success(false) {}
   bool success;
-} _QueryService_flat_extract_result__isset;
+} _QueryService_FlatExtract_result__isset;
 
-class QueryService_flat_extract_result {
+class QueryService_FlatExtract_result {
  public:
 
-  QueryService_flat_extract_result() : success() {
+  QueryService_FlatExtract_result() : success() {
   }
 
-  virtual ~QueryService_flat_extract_result() throw() {}
+  virtual ~QueryService_FlatExtract_result() throw() {}
 
   std::string success;
 
-  _QueryService_flat_extract_result__isset __isset;
+  _QueryService_FlatExtract_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const QueryService_flat_extract_result & rhs) const
+  bool operator == (const QueryService_FlatExtract_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_extract_result &rhs) const {
+  bool operator != (const QueryService_FlatExtract_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_extract_result & ) const;
+  bool operator < (const QueryService_FlatExtract_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_flat_extract_presult__isset {
-  _QueryService_flat_extract_presult__isset() : success(false) {}
+typedef struct _QueryService_FlatExtract_presult__isset {
+  _QueryService_FlatExtract_presult__isset() : success(false) {}
   bool success;
-} _QueryService_flat_extract_presult__isset;
+} _QueryService_FlatExtract_presult__isset;
 
-class QueryService_flat_extract_presult {
+class QueryService_FlatExtract_presult {
  public:
 
 
-  virtual ~QueryService_flat_extract_presult() throw() {}
+  virtual ~QueryService_FlatExtract_presult() throw() {}
 
   std::string* success;
 
-  _QueryService_flat_extract_presult__isset __isset;
+  _QueryService_FlatExtract_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_flat_count_args__isset {
-  _QueryService_flat_count_args__isset() : query(false) {}
+typedef struct _QueryService_FlatCount_args__isset {
+  _QueryService_FlatCount_args__isset() : query(false) {}
   bool query;
-} _QueryService_flat_count_args__isset;
+} _QueryService_FlatCount_args__isset;
 
-class QueryService_flat_count_args {
+class QueryService_FlatCount_args {
  public:
 
-  QueryService_flat_count_args() : query() {
+  QueryService_FlatCount_args() : query() {
   }
 
-  virtual ~QueryService_flat_count_args() throw() {}
+  virtual ~QueryService_FlatCount_args() throw() {}
 
   std::string query;
 
-  _QueryService_flat_count_args__isset __isset;
+  _QueryService_FlatCount_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_flat_count_args & rhs) const
+  bool operator == (const QueryService_FlatCount_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_count_args &rhs) const {
+  bool operator != (const QueryService_FlatCount_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_count_args & ) const;
+  bool operator < (const QueryService_FlatCount_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1029,11 +1029,11 @@ class QueryService_flat_count_args {
 };
 
 
-class QueryService_flat_count_pargs {
+class QueryService_FlatCount_pargs {
  public:
 
 
-  virtual ~QueryService_flat_count_pargs() throw() {}
+  virtual ~QueryService_FlatCount_pargs() throw() {}
 
   const std::string* query;
 
@@ -1041,95 +1041,95 @@ class QueryService_flat_count_pargs {
 
 };
 
-typedef struct _QueryService_flat_count_result__isset {
-  _QueryService_flat_count_result__isset() : success(false) {}
+typedef struct _QueryService_FlatCount_result__isset {
+  _QueryService_FlatCount_result__isset() : success(false) {}
   bool success;
-} _QueryService_flat_count_result__isset;
+} _QueryService_FlatCount_result__isset;
 
-class QueryService_flat_count_result {
+class QueryService_FlatCount_result {
  public:
 
-  QueryService_flat_count_result() : success(0) {
+  QueryService_FlatCount_result() : success(0) {
   }
 
-  virtual ~QueryService_flat_count_result() throw() {}
+  virtual ~QueryService_FlatCount_result() throw() {}
 
   int64_t success;
 
-  _QueryService_flat_count_result__isset __isset;
+  _QueryService_FlatCount_result__isset __isset;
 
   void __set_success(const int64_t val) {
     success = val;
   }
 
-  bool operator == (const QueryService_flat_count_result & rhs) const
+  bool operator == (const QueryService_FlatCount_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_count_result &rhs) const {
+  bool operator != (const QueryService_FlatCount_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_count_result & ) const;
+  bool operator < (const QueryService_FlatCount_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_flat_count_presult__isset {
-  _QueryService_flat_count_presult__isset() : success(false) {}
+typedef struct _QueryService_FlatCount_presult__isset {
+  _QueryService_FlatCount_presult__isset() : success(false) {}
   bool success;
-} _QueryService_flat_count_presult__isset;
+} _QueryService_FlatCount_presult__isset;
 
-class QueryService_flat_count_presult {
+class QueryService_FlatCount_presult {
  public:
 
 
-  virtual ~QueryService_flat_count_presult() throw() {}
+  virtual ~QueryService_FlatCount_presult() throw() {}
 
   int64_t* success;
 
-  _QueryService_flat_count_presult__isset __isset;
+  _QueryService_FlatCount_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _QueryService_flat_search_args__isset {
-  _QueryService_flat_search_args__isset() : query(false) {}
+typedef struct _QueryService_FlatSearch_args__isset {
+  _QueryService_FlatSearch_args__isset() : query(false) {}
   bool query;
-} _QueryService_flat_search_args__isset;
+} _QueryService_FlatSearch_args__isset;
 
-class QueryService_flat_search_args {
+class QueryService_FlatSearch_args {
  public:
 
-  QueryService_flat_search_args() : query() {
+  QueryService_FlatSearch_args() : query() {
   }
 
-  virtual ~QueryService_flat_search_args() throw() {}
+  virtual ~QueryService_FlatSearch_args() throw() {}
 
   std::string query;
 
-  _QueryService_flat_search_args__isset __isset;
+  _QueryService_FlatSearch_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_flat_search_args & rhs) const
+  bool operator == (const QueryService_FlatSearch_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_search_args &rhs) const {
+  bool operator != (const QueryService_FlatSearch_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_search_args & ) const;
+  bool operator < (const QueryService_FlatSearch_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1137,11 +1137,11 @@ class QueryService_flat_search_args {
 };
 
 
-class QueryService_flat_search_pargs {
+class QueryService_FlatSearch_pargs {
  public:
 
 
-  virtual ~QueryService_flat_search_pargs() throw() {}
+  virtual ~QueryService_FlatSearch_pargs() throw() {}
 
   const std::string* query;
 
@@ -1149,82 +1149,82 @@ class QueryService_flat_search_pargs {
 
 };
 
-typedef struct _QueryService_flat_search_result__isset {
-  _QueryService_flat_search_result__isset() : success(false) {}
+typedef struct _QueryService_FlatSearch_result__isset {
+  _QueryService_FlatSearch_result__isset() : success(false) {}
   bool success;
-} _QueryService_flat_search_result__isset;
+} _QueryService_FlatSearch_result__isset;
 
-class QueryService_flat_search_result {
+class QueryService_FlatSearch_result {
  public:
 
-  QueryService_flat_search_result() {
+  QueryService_FlatSearch_result() {
   }
 
-  virtual ~QueryService_flat_search_result() throw() {}
+  virtual ~QueryService_FlatSearch_result() throw() {}
 
   std::vector<int64_t>  success;
 
-  _QueryService_flat_search_result__isset __isset;
+  _QueryService_FlatSearch_result__isset __isset;
 
   void __set_success(const std::vector<int64_t> & val) {
     success = val;
   }
 
-  bool operator == (const QueryService_flat_search_result & rhs) const
+  bool operator == (const QueryService_FlatSearch_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_flat_search_result &rhs) const {
+  bool operator != (const QueryService_FlatSearch_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_flat_search_result & ) const;
+  bool operator < (const QueryService_FlatSearch_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_flat_search_presult__isset {
-  _QueryService_flat_search_presult__isset() : success(false) {}
+typedef struct _QueryService_FlatSearch_presult__isset {
+  _QueryService_FlatSearch_presult__isset() : success(false) {}
   bool success;
-} _QueryService_flat_search_presult__isset;
+} _QueryService_FlatSearch_presult__isset;
 
-class QueryService_flat_search_presult {
+class QueryService_FlatSearch_presult {
  public:
 
 
-  virtual ~QueryService_flat_search_presult() throw() {}
+  virtual ~QueryService_FlatSearch_presult() throw() {}
 
   std::vector<int64_t> * success;
 
-  _QueryService_flat_search_presult__isset __isset;
+  _QueryService_FlatSearch_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 
-class QueryService_get_num_keys_args {
+class QueryService_GetNumKeys_args {
  public:
 
-  QueryService_get_num_keys_args() {
+  QueryService_GetNumKeys_args() {
   }
 
-  virtual ~QueryService_get_num_keys_args() throw() {}
+  virtual ~QueryService_GetNumKeys_args() throw() {}
 
 
-  bool operator == (const QueryService_get_num_keys_args & /* rhs */) const
+  bool operator == (const QueryService_GetNumKeys_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const QueryService_get_num_keys_args &rhs) const {
+  bool operator != (const QueryService_GetNumKeys_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_num_keys_args & ) const;
+  bool operator < (const QueryService_GetNumKeys_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1232,93 +1232,93 @@ class QueryService_get_num_keys_args {
 };
 
 
-class QueryService_get_num_keys_pargs {
+class QueryService_GetNumKeys_pargs {
  public:
 
 
-  virtual ~QueryService_get_num_keys_pargs() throw() {}
+  virtual ~QueryService_GetNumKeys_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_get_num_keys_result__isset {
-  _QueryService_get_num_keys_result__isset() : success(false) {}
+typedef struct _QueryService_GetNumKeys_result__isset {
+  _QueryService_GetNumKeys_result__isset() : success(false) {}
   bool success;
-} _QueryService_get_num_keys_result__isset;
+} _QueryService_GetNumKeys_result__isset;
 
-class QueryService_get_num_keys_result {
+class QueryService_GetNumKeys_result {
  public:
 
-  QueryService_get_num_keys_result() : success(0) {
+  QueryService_GetNumKeys_result() : success(0) {
   }
 
-  virtual ~QueryService_get_num_keys_result() throw() {}
+  virtual ~QueryService_GetNumKeys_result() throw() {}
 
   int32_t success;
 
-  _QueryService_get_num_keys_result__isset __isset;
+  _QueryService_GetNumKeys_result__isset __isset;
 
   void __set_success(const int32_t val) {
     success = val;
   }
 
-  bool operator == (const QueryService_get_num_keys_result & rhs) const
+  bool operator == (const QueryService_GetNumKeys_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_get_num_keys_result &rhs) const {
+  bool operator != (const QueryService_GetNumKeys_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_num_keys_result & ) const;
+  bool operator < (const QueryService_GetNumKeys_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_get_num_keys_presult__isset {
-  _QueryService_get_num_keys_presult__isset() : success(false) {}
+typedef struct _QueryService_GetNumKeys_presult__isset {
+  _QueryService_GetNumKeys_presult__isset() : success(false) {}
   bool success;
-} _QueryService_get_num_keys_presult__isset;
+} _QueryService_GetNumKeys_presult__isset;
 
-class QueryService_get_num_keys_presult {
+class QueryService_GetNumKeys_presult {
  public:
 
 
-  virtual ~QueryService_get_num_keys_presult() throw() {}
+  virtual ~QueryService_GetNumKeys_presult() throw() {}
 
   int32_t* success;
 
-  _QueryService_get_num_keys_presult__isset __isset;
+  _QueryService_GetNumKeys_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 
-class QueryService_get_shard_size_args {
+class QueryService_GetShardSize_args {
  public:
 
-  QueryService_get_shard_size_args() {
+  QueryService_GetShardSize_args() {
   }
 
-  virtual ~QueryService_get_shard_size_args() throw() {}
+  virtual ~QueryService_GetShardSize_args() throw() {}
 
 
-  bool operator == (const QueryService_get_shard_size_args & /* rhs */) const
+  bool operator == (const QueryService_GetShardSize_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const QueryService_get_shard_size_args &rhs) const {
+  bool operator != (const QueryService_GetShardSize_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_shard_size_args & ) const;
+  bool operator < (const QueryService_GetShardSize_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1326,69 +1326,69 @@ class QueryService_get_shard_size_args {
 };
 
 
-class QueryService_get_shard_size_pargs {
+class QueryService_GetShardSize_pargs {
  public:
 
 
-  virtual ~QueryService_get_shard_size_pargs() throw() {}
+  virtual ~QueryService_GetShardSize_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_get_shard_size_result__isset {
-  _QueryService_get_shard_size_result__isset() : success(false) {}
+typedef struct _QueryService_GetShardSize_result__isset {
+  _QueryService_GetShardSize_result__isset() : success(false) {}
   bool success;
-} _QueryService_get_shard_size_result__isset;
+} _QueryService_GetShardSize_result__isset;
 
-class QueryService_get_shard_size_result {
+class QueryService_GetShardSize_result {
  public:
 
-  QueryService_get_shard_size_result() : success(0) {
+  QueryService_GetShardSize_result() : success(0) {
   }
 
-  virtual ~QueryService_get_shard_size_result() throw() {}
+  virtual ~QueryService_GetShardSize_result() throw() {}
 
   int64_t success;
 
-  _QueryService_get_shard_size_result__isset __isset;
+  _QueryService_GetShardSize_result__isset __isset;
 
   void __set_success(const int64_t val) {
     success = val;
   }
 
-  bool operator == (const QueryService_get_shard_size_result & rhs) const
+  bool operator == (const QueryService_GetShardSize_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_get_shard_size_result &rhs) const {
+  bool operator != (const QueryService_GetShardSize_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_get_shard_size_result & ) const;
+  bool operator < (const QueryService_GetShardSize_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_get_shard_size_presult__isset {
-  _QueryService_get_shard_size_presult__isset() : success(false) {}
+typedef struct _QueryService_GetShardSize_presult__isset {
+  _QueryService_GetShardSize_presult__isset() : success(false) {}
   bool success;
-} _QueryService_get_shard_size_presult__isset;
+} _QueryService_GetShardSize_presult__isset;
 
-class QueryService_get_shard_size_presult {
+class QueryService_GetShardSize_presult {
  public:
 
 
-  virtual ~QueryService_get_shard_size_presult() throw() {}
+  virtual ~QueryService_GetShardSize_presult() throw() {}
 
   int64_t* success;
 
-  _QueryService_get_shard_size_presult__isset __isset;
+  _QueryService_GetShardSize_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1414,42 +1414,42 @@ class QueryServiceClient : virtual public QueryServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  int32_t init(const int32_t id);
-  void send_init(const int32_t id);
-  int32_t recv_init();
-  void get(std::string& _return, const int64_t key);
-  void send_get(const int64_t key);
-  void recv_get(std::string& _return);
-  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
-  void send_access(const int64_t key, const int32_t offset, const int32_t len);
-  void recv_access(std::string& _return);
-  void search(std::set<int64_t> & _return, const std::string& query);
-  void send_search(const std::string& query);
-  void recv_search(std::set<int64_t> & _return);
-  void regex_search(std::set<int64_t> & _return, const std::string& query);
-  void send_regex_search(const std::string& query);
-  void recv_regex_search(std::set<int64_t> & _return);
-  void regex_count(std::vector<int64_t> & _return, const std::string& query);
-  void send_regex_count(const std::string& query);
-  void recv_regex_count(std::vector<int64_t> & _return);
-  int64_t count(const std::string& query);
-  void send_count(const std::string& query);
-  int64_t recv_count();
-  void flat_extract(std::string& _return, const int64_t offset, const int64_t length);
-  void send_flat_extract(const int64_t offset, const int64_t length);
-  void recv_flat_extract(std::string& _return);
-  int64_t flat_count(const std::string& query);
-  void send_flat_count(const std::string& query);
-  int64_t recv_flat_count();
-  void flat_search(std::vector<int64_t> & _return, const std::string& query);
-  void send_flat_search(const std::string& query);
-  void recv_flat_search(std::vector<int64_t> & _return);
-  int32_t get_num_keys();
-  void send_get_num_keys();
-  int32_t recv_get_num_keys();
-  int64_t get_shard_size();
-  void send_get_shard_size();
-  int64_t recv_get_shard_size();
+  int32_t Initialize(const int32_t id);
+  void send_Initialize(const int32_t id);
+  int32_t recv_Initialize();
+  void Get(std::string& _return, const int64_t key);
+  void send_Get(const int64_t key);
+  void recv_Get(std::string& _return);
+  void Access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len);
+  void send_Access(const int64_t key, const int32_t offset, const int32_t len);
+  void recv_Access(std::string& _return);
+  void Search(std::set<int64_t> & _return, const std::string& query);
+  void send_Search(const std::string& query);
+  void recv_Search(std::set<int64_t> & _return);
+  void RegexSearch(std::set<int64_t> & _return, const std::string& query);
+  void send_RegexSearch(const std::string& query);
+  void recv_RegexSearch(std::set<int64_t> & _return);
+  void RegexCount(std::vector<int64_t> & _return, const std::string& query);
+  void send_RegexCount(const std::string& query);
+  void recv_RegexCount(std::vector<int64_t> & _return);
+  int64_t Count(const std::string& query);
+  void send_Count(const std::string& query);
+  int64_t recv_Count();
+  void FlatExtract(std::string& _return, const int64_t offset, const int64_t length);
+  void send_FlatExtract(const int64_t offset, const int64_t length);
+  void recv_FlatExtract(std::string& _return);
+  int64_t FlatCount(const std::string& query);
+  void send_FlatCount(const std::string& query);
+  int64_t recv_FlatCount();
+  void FlatSearch(std::vector<int64_t> & _return, const std::string& query);
+  void send_FlatSearch(const std::string& query);
+  void recv_FlatSearch(std::vector<int64_t> & _return);
+  int32_t GetNumKeys();
+  void send_GetNumKeys();
+  int32_t recv_GetNumKeys();
+  int64_t GetShardSize();
+  void send_GetShardSize();
+  int64_t recv_GetShardSize();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1465,33 +1465,33 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (QueryServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_init(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_regex_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_regex_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_flat_extract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_flat_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_flat_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_get_shard_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_RegexSearch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_RegexCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_FlatExtract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_FlatCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_FlatSearch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetNumKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetShardSize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   QueryServiceProcessor(boost::shared_ptr<QueryServiceIf> iface) :
     iface_(iface) {
-    processMap_["init"] = &QueryServiceProcessor::process_init;
-    processMap_["get"] = &QueryServiceProcessor::process_get;
-    processMap_["access"] = &QueryServiceProcessor::process_access;
-    processMap_["search"] = &QueryServiceProcessor::process_search;
-    processMap_["regex_search"] = &QueryServiceProcessor::process_regex_search;
-    processMap_["regex_count"] = &QueryServiceProcessor::process_regex_count;
-    processMap_["count"] = &QueryServiceProcessor::process_count;
-    processMap_["flat_extract"] = &QueryServiceProcessor::process_flat_extract;
-    processMap_["flat_count"] = &QueryServiceProcessor::process_flat_count;
-    processMap_["flat_search"] = &QueryServiceProcessor::process_flat_search;
-    processMap_["get_num_keys"] = &QueryServiceProcessor::process_get_num_keys;
-    processMap_["get_shard_size"] = &QueryServiceProcessor::process_get_shard_size;
+    processMap_["Initialize"] = &QueryServiceProcessor::process_Initialize;
+    processMap_["Get"] = &QueryServiceProcessor::process_Get;
+    processMap_["Access"] = &QueryServiceProcessor::process_Access;
+    processMap_["Search"] = &QueryServiceProcessor::process_Search;
+    processMap_["RegexSearch"] = &QueryServiceProcessor::process_RegexSearch;
+    processMap_["RegexCount"] = &QueryServiceProcessor::process_RegexCount;
+    processMap_["Count"] = &QueryServiceProcessor::process_Count;
+    processMap_["FlatExtract"] = &QueryServiceProcessor::process_FlatExtract;
+    processMap_["FlatCount"] = &QueryServiceProcessor::process_FlatCount;
+    processMap_["FlatSearch"] = &QueryServiceProcessor::process_FlatSearch;
+    processMap_["GetNumKeys"] = &QueryServiceProcessor::process_GetNumKeys;
+    processMap_["GetShardSize"] = &QueryServiceProcessor::process_GetShardSize;
   }
 
   virtual ~QueryServiceProcessor() {}
@@ -1520,119 +1520,119 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  int32_t init(const int32_t id) {
+  int32_t Initialize(const int32_t id) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->init(id);
+      ifaces_[i]->Initialize(id);
     }
-    return ifaces_[i]->init(id);
+    return ifaces_[i]->Initialize(id);
   }
 
-  void get(std::string& _return, const int64_t key) {
+  void Get(std::string& _return, const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get(_return, key);
+      ifaces_[i]->Get(_return, key);
     }
-    ifaces_[i]->get(_return, key);
+    ifaces_[i]->Get(_return, key);
     return;
   }
 
-  void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
+  void Access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->access(_return, key, offset, len);
+      ifaces_[i]->Access(_return, key, offset, len);
     }
-    ifaces_[i]->access(_return, key, offset, len);
+    ifaces_[i]->Access(_return, key, offset, len);
     return;
   }
 
-  void search(std::set<int64_t> & _return, const std::string& query) {
+  void Search(std::set<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->search(_return, query);
+      ifaces_[i]->Search(_return, query);
     }
-    ifaces_[i]->search(_return, query);
+    ifaces_[i]->Search(_return, query);
     return;
   }
 
-  void regex_search(std::set<int64_t> & _return, const std::string& query) {
+  void RegexSearch(std::set<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->regex_search(_return, query);
+      ifaces_[i]->RegexSearch(_return, query);
     }
-    ifaces_[i]->regex_search(_return, query);
+    ifaces_[i]->RegexSearch(_return, query);
     return;
   }
 
-  void regex_count(std::vector<int64_t> & _return, const std::string& query) {
+  void RegexCount(std::vector<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->regex_count(_return, query);
+      ifaces_[i]->RegexCount(_return, query);
     }
-    ifaces_[i]->regex_count(_return, query);
+    ifaces_[i]->RegexCount(_return, query);
     return;
   }
 
-  int64_t count(const std::string& query) {
+  int64_t Count(const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->count(query);
+      ifaces_[i]->Count(query);
     }
-    return ifaces_[i]->count(query);
+    return ifaces_[i]->Count(query);
   }
 
-  void flat_extract(std::string& _return, const int64_t offset, const int64_t length) {
+  void FlatExtract(std::string& _return, const int64_t offset, const int64_t length) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->flat_extract(_return, offset, length);
+      ifaces_[i]->FlatExtract(_return, offset, length);
     }
-    ifaces_[i]->flat_extract(_return, offset, length);
+    ifaces_[i]->FlatExtract(_return, offset, length);
     return;
   }
 
-  int64_t flat_count(const std::string& query) {
+  int64_t FlatCount(const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->flat_count(query);
+      ifaces_[i]->FlatCount(query);
     }
-    return ifaces_[i]->flat_count(query);
+    return ifaces_[i]->FlatCount(query);
   }
 
-  void flat_search(std::vector<int64_t> & _return, const std::string& query) {
+  void FlatSearch(std::vector<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->flat_search(_return, query);
+      ifaces_[i]->FlatSearch(_return, query);
     }
-    ifaces_[i]->flat_search(_return, query);
+    ifaces_[i]->FlatSearch(_return, query);
     return;
   }
 
-  int32_t get_num_keys() {
+  int32_t GetNumKeys() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_num_keys();
+      ifaces_[i]->GetNumKeys();
     }
-    return ifaces_[i]->get_num_keys();
+    return ifaces_[i]->GetNumKeys();
   }
 
-  int64_t get_shard_size() {
+  int64_t GetShardSize() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_shard_size();
+      ifaces_[i]->GetShardSize();
     }
-    return ifaces_[i]->get_shard_size();
+    return ifaces_[i]->GetShardSize();
   }
 
 };

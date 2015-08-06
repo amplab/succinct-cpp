@@ -15,7 +15,7 @@
 class MasterServiceIf {
  public:
   virtual ~MasterServiceIf() {}
-  virtual void get_client(std::string& _return) = 0;
+  virtual void GetClient(std::string& _return) = 0;
 };
 
 class MasterServiceIfFactory {
@@ -45,30 +45,30 @@ class MasterServiceIfSingletonFactory : virtual public MasterServiceIfFactory {
 class MasterServiceNull : virtual public MasterServiceIf {
  public:
   virtual ~MasterServiceNull() {}
-  void get_client(std::string& /* _return */) {
+  void GetClient(std::string& /* _return */) {
     return;
   }
 };
 
 
-class MasterService_get_client_args {
+class MasterService_GetClient_args {
  public:
 
-  MasterService_get_client_args() {
+  MasterService_GetClient_args() {
   }
 
-  virtual ~MasterService_get_client_args() throw() {}
+  virtual ~MasterService_GetClient_args() throw() {}
 
 
-  bool operator == (const MasterService_get_client_args & /* rhs */) const
+  bool operator == (const MasterService_GetClient_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const MasterService_get_client_args &rhs) const {
+  bool operator != (const MasterService_GetClient_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const MasterService_get_client_args & ) const;
+  bool operator < (const MasterService_GetClient_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -76,69 +76,69 @@ class MasterService_get_client_args {
 };
 
 
-class MasterService_get_client_pargs {
+class MasterService_GetClient_pargs {
  public:
 
 
-  virtual ~MasterService_get_client_pargs() throw() {}
+  virtual ~MasterService_GetClient_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _MasterService_get_client_result__isset {
-  _MasterService_get_client_result__isset() : success(false) {}
+typedef struct _MasterService_GetClient_result__isset {
+  _MasterService_GetClient_result__isset() : success(false) {}
   bool success;
-} _MasterService_get_client_result__isset;
+} _MasterService_GetClient_result__isset;
 
-class MasterService_get_client_result {
+class MasterService_GetClient_result {
  public:
 
-  MasterService_get_client_result() : success() {
+  MasterService_GetClient_result() : success() {
   }
 
-  virtual ~MasterService_get_client_result() throw() {}
+  virtual ~MasterService_GetClient_result() throw() {}
 
   std::string success;
 
-  _MasterService_get_client_result__isset __isset;
+  _MasterService_GetClient_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const MasterService_get_client_result & rhs) const
+  bool operator == (const MasterService_GetClient_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const MasterService_get_client_result &rhs) const {
+  bool operator != (const MasterService_GetClient_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const MasterService_get_client_result & ) const;
+  bool operator < (const MasterService_GetClient_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _MasterService_get_client_presult__isset {
-  _MasterService_get_client_presult__isset() : success(false) {}
+typedef struct _MasterService_GetClient_presult__isset {
+  _MasterService_GetClient_presult__isset() : success(false) {}
   bool success;
-} _MasterService_get_client_presult__isset;
+} _MasterService_GetClient_presult__isset;
 
-class MasterService_get_client_presult {
+class MasterService_GetClient_presult {
  public:
 
 
-  virtual ~MasterService_get_client_presult() throw() {}
+  virtual ~MasterService_GetClient_presult() throw() {}
 
   std::string* success;
 
-  _MasterService_get_client_presult__isset __isset;
+  _MasterService_GetClient_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -164,9 +164,9 @@ class MasterServiceClient : virtual public MasterServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void get_client(std::string& _return);
-  void send_get_client();
-  void recv_get_client(std::string& _return);
+  void GetClient(std::string& _return);
+  void send_GetClient();
+  void recv_GetClient(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -182,11 +182,11 @@ class MasterServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (MasterServiceProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_get_client(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetClient(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   MasterServiceProcessor(boost::shared_ptr<MasterServiceIf> iface) :
     iface_(iface) {
-    processMap_["get_client"] = &MasterServiceProcessor::process_get_client;
+    processMap_["GetClient"] = &MasterServiceProcessor::process_GetClient;
   }
 
   virtual ~MasterServiceProcessor() {}
@@ -215,13 +215,13 @@ class MasterServiceMultiface : virtual public MasterServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void get_client(std::string& _return) {
+  void GetClient(std::string& _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->get_client(_return);
+      ifaces_[i]->GetClient(_return);
     }
-    ifaces_[i]->get_client(_return);
+    ifaces_[i]->GetClient(_return);
     return;
   }
 

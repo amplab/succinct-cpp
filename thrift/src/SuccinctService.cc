@@ -8,7 +8,7 @@
 
 
 
-uint32_t SuccinctService_connect_to_handlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToHandlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -35,25 +35,25 @@ uint32_t SuccinctService_connect_to_handlers_args::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_handlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToHandlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_handlers_args");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToHandlers_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_handlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToHandlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_handlers_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToHandlers_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_handlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToHandlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -93,11 +93,11 @@ uint32_t SuccinctService_connect_to_handlers_result::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_handlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToHandlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_handlers_result");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToHandlers_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -109,7 +109,7 @@ uint32_t SuccinctService_connect_to_handlers_result::write(::apache::thrift::pro
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_handlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToHandlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -149,7 +149,7 @@ uint32_t SuccinctService_connect_to_handlers_presult::read(::apache::thrift::pro
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromHandlers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -176,25 +176,25 @@ uint32_t SuccinctService_disconnect_from_handlers_args::read(::apache::thrift::p
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromHandlers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_handlers_args");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromHandlers_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromHandlers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_handlers_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromHandlers_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromHandlers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -234,11 +234,11 @@ uint32_t SuccinctService_disconnect_from_handlers_result::read(::apache::thrift:
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromHandlers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_handlers_result");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromHandlers_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -250,7 +250,7 @@ uint32_t SuccinctService_disconnect_from_handlers_result::write(::apache::thrift
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_handlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromHandlers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -290,7 +290,7 @@ uint32_t SuccinctService_disconnect_from_handlers_presult::read(::apache::thrift
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToLocalServers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -317,25 +317,25 @@ uint32_t SuccinctService_connect_to_local_servers_args::read(::apache::thrift::p
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToLocalServers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_local_servers_args");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToLocalServers_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToLocalServers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_local_servers_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToLocalServers_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToLocalServers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -375,11 +375,11 @@ uint32_t SuccinctService_connect_to_local_servers_result::read(::apache::thrift:
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_ConnectToLocalServers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_connect_to_local_servers_result");
+  xfer += oprot->writeStructBegin("SuccinctService_ConnectToLocalServers_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -391,7 +391,7 @@ uint32_t SuccinctService_connect_to_local_servers_result::write(::apache::thrift
   return xfer;
 }
 
-uint32_t SuccinctService_connect_to_local_servers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_ConnectToLocalServers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -431,7 +431,7 @@ uint32_t SuccinctService_connect_to_local_servers_presult::read(::apache::thrift
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromLocalServers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -458,25 +458,25 @@ uint32_t SuccinctService_disconnect_from_local_servers_args::read(::apache::thri
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromLocalServers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_local_servers_args");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromLocalServers_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromLocalServers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_local_servers_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromLocalServers_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromLocalServers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -516,11 +516,11 @@ uint32_t SuccinctService_disconnect_from_local_servers_result::read(::apache::th
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_DisconnectFromLocalServers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_disconnect_from_local_servers_result");
+  xfer += oprot->writeStructBegin("SuccinctService_DisconnectFromLocalServers_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -532,7 +532,7 @@ uint32_t SuccinctService_disconnect_from_local_servers_result::write(::apache::t
   return xfer;
 }
 
-uint32_t SuccinctService_disconnect_from_local_servers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_DisconnectFromLocalServers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -572,7 +572,7 @@ uint32_t SuccinctService_disconnect_from_local_servers_presult::read(::apache::t
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_StartLocalServers_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -599,25 +599,25 @@ uint32_t SuccinctService_start_servers_args::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_StartLocalServers_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_start_servers_args");
+  xfer += oprot->writeStructBegin("SuccinctService_StartLocalServers_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_StartLocalServers_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_start_servers_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_StartLocalServers_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_StartLocalServers_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -657,11 +657,11 @@ uint32_t SuccinctService_start_servers_result::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_StartLocalServers_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_start_servers_result");
+  xfer += oprot->writeStructBegin("SuccinctService_StartLocalServers_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -673,7 +673,7 @@ uint32_t SuccinctService_start_servers_result::write(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_start_servers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_StartLocalServers_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -713,7 +713,7 @@ uint32_t SuccinctService_start_servers_presult::read(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Initialize_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -753,9 +753,9 @@ uint32_t SuccinctService_initialize_args::read(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Initialize_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_initialize_args");
+  xfer += oprot->writeStructBegin("SuccinctService_Initialize_args");
 
   xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->mode);
@@ -766,9 +766,9 @@ uint32_t SuccinctService_initialize_args::write(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Initialize_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_initialize_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_Initialize_pargs");
 
   xfer += oprot->writeFieldBegin("mode", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->mode)));
@@ -779,7 +779,7 @@ uint32_t SuccinctService_initialize_pargs::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Initialize_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -819,11 +819,11 @@ uint32_t SuccinctService_initialize_result::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Initialize_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_initialize_result");
+  xfer += oprot->writeStructBegin("SuccinctService_Initialize_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -835,7 +835,7 @@ uint32_t SuccinctService_initialize_result::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_initialize_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Initialize_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -875,7 +875,7 @@ uint32_t SuccinctService_initialize_presult::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -915,9 +915,9 @@ uint32_t SuccinctService_get_args::read(::apache::thrift::protocol::TProtocol* i
   return xfer;
 }
 
-uint32_t SuccinctService_get_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Get_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_args");
+  xfer += oprot->writeStructBegin("SuccinctService_Get_args");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64(this->key);
@@ -928,9 +928,9 @@ uint32_t SuccinctService_get_args::write(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t SuccinctService_get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_Get_pargs");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->key)));
@@ -941,7 +941,7 @@ uint32_t SuccinctService_get_pargs::write(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t SuccinctService_get_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Get_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -981,11 +981,11 @@ uint32_t SuccinctService_get_result::read(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t SuccinctService_get_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Get_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_result");
+  xfer += oprot->writeStructBegin("SuccinctService_Get_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -997,7 +997,7 @@ uint32_t SuccinctService_get_result::write(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t SuccinctService_get_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Get_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1037,7 +1037,7 @@ uint32_t SuccinctService_get_presult::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1085,9 +1085,9 @@ uint32_t SuccinctService_get_local_args::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_GetLocal_args");
 
   xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->qserver_id);
@@ -1102,9 +1102,9 @@ uint32_t SuccinctService_get_local_args::write(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_GetLocal_pargs");
 
   xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->qserver_id)));
@@ -1119,7 +1119,7 @@ uint32_t SuccinctService_get_local_pargs::write(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1159,11 +1159,11 @@ uint32_t SuccinctService_get_local_result::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_GetLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -1175,7 +1175,7 @@ uint32_t SuccinctService_get_local_result::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_get_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1215,7 +1215,7 @@ uint32_t SuccinctService_get_local_presult::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_access_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Access_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1271,9 +1271,9 @@ uint32_t SuccinctService_access_args::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t SuccinctService_access_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Access_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_access_args");
+  xfer += oprot->writeStructBegin("SuccinctService_Access_args");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64(this->key);
@@ -1292,9 +1292,9 @@ uint32_t SuccinctService_access_args::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t SuccinctService_access_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Access_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_access_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_Access_pargs");
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->key)));
@@ -1313,7 +1313,7 @@ uint32_t SuccinctService_access_pargs::write(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_access_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Access_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1353,11 +1353,11 @@ uint32_t SuccinctService_access_result::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_access_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Access_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_access_result");
+  xfer += oprot->writeStructBegin("SuccinctService_Access_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -1369,7 +1369,7 @@ uint32_t SuccinctService_access_result::write(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t SuccinctService_access_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Access_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1409,7 +1409,7 @@ uint32_t SuccinctService_access_presult::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_AccessLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1473,9 +1473,9 @@ uint32_t SuccinctService_access_local_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_AccessLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_access_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_AccessLocal_args");
 
   xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->qserver_id);
@@ -1498,9 +1498,9 @@ uint32_t SuccinctService_access_local_args::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_AccessLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_access_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_AccessLocal_pargs");
 
   xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->qserver_id)));
@@ -1523,7 +1523,7 @@ uint32_t SuccinctService_access_local_pargs::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_AccessLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1563,11 +1563,11 @@ uint32_t SuccinctService_access_local_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_AccessLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_access_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_AccessLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -1579,7 +1579,7 @@ uint32_t SuccinctService_access_local_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_access_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_AccessLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1619,7 +1619,7 @@ uint32_t SuccinctService_access_local_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_search_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Search_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1659,9 +1659,9 @@ uint32_t SuccinctService_search_args::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t SuccinctService_search_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Search_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_search_args");
+  xfer += oprot->writeStructBegin("SuccinctService_Search_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -1672,9 +1672,9 @@ uint32_t SuccinctService_search_args::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t SuccinctService_search_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Search_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_search_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_Search_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -1685,7 +1685,7 @@ uint32_t SuccinctService_search_pargs::write(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_search_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Search_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1738,11 +1738,11 @@ uint32_t SuccinctService_search_result::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_search_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Search_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_search_result");
+  xfer += oprot->writeStructBegin("SuccinctService_Search_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
@@ -1762,7 +1762,7 @@ uint32_t SuccinctService_search_result::write(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t SuccinctService_search_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Search_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1815,7 +1815,7 @@ uint32_t SuccinctService_search_presult::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_SearchLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1855,9 +1855,9 @@ uint32_t SuccinctService_search_local_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_SearchLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_search_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_SearchLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -1868,9 +1868,9 @@ uint32_t SuccinctService_search_local_args::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_SearchLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_search_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_SearchLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -1881,7 +1881,7 @@ uint32_t SuccinctService_search_local_pargs::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_SearchLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1934,11 +1934,11 @@ uint32_t SuccinctService_search_local_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_SearchLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_search_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_SearchLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
@@ -1958,7 +1958,7 @@ uint32_t SuccinctService_search_local_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_search_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_SearchLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2011,7 +2011,7 @@ uint32_t SuccinctService_search_local_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearch_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2051,9 +2051,9 @@ uint32_t SuccinctService_regex_search_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearch_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_args");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearch_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -2064,9 +2064,9 @@ uint32_t SuccinctService_regex_search_args::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearch_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearch_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -2077,7 +2077,7 @@ uint32_t SuccinctService_regex_search_pargs::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearch_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2130,11 +2130,11 @@ uint32_t SuccinctService_regex_search_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearch_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_result");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearch_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
@@ -2154,7 +2154,7 @@ uint32_t SuccinctService_regex_search_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearch_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2207,7 +2207,7 @@ uint32_t SuccinctService_regex_search_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearchLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2247,9 +2247,9 @@ uint32_t SuccinctService_regex_search_local_args::read(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearchLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearchLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -2260,9 +2260,9 @@ uint32_t SuccinctService_regex_search_local_args::write(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearchLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearchLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -2273,7 +2273,7 @@ uint32_t SuccinctService_regex_search_local_pargs::write(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearchLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2326,11 +2326,11 @@ uint32_t SuccinctService_regex_search_local_result::read(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexSearchLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_regex_search_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexSearchLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_SET, 0);
@@ -2350,7 +2350,7 @@ uint32_t SuccinctService_regex_search_local_result::write(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t SuccinctService_regex_search_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexSearchLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2403,7 +2403,7 @@ uint32_t SuccinctService_regex_search_local_presult::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCount_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2443,9 +2443,9 @@ uint32_t SuccinctService_regex_count_args::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCount_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_args");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCount_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -2456,9 +2456,9 @@ uint32_t SuccinctService_regex_count_args::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCount_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCount_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -2469,7 +2469,7 @@ uint32_t SuccinctService_regex_count_pargs::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCount_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2521,11 +2521,11 @@ uint32_t SuccinctService_regex_count_result::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCount_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_result");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCount_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
@@ -2545,7 +2545,7 @@ uint32_t SuccinctService_regex_count_result::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCount_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2597,7 +2597,7 @@ uint32_t SuccinctService_regex_count_presult::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCountLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2637,9 +2637,9 @@ uint32_t SuccinctService_regex_count_local_args::read(::apache::thrift::protocol
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCountLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCountLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -2650,9 +2650,9 @@ uint32_t SuccinctService_regex_count_local_args::write(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCountLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCountLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -2663,7 +2663,7 @@ uint32_t SuccinctService_regex_count_local_pargs::write(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCountLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2715,11 +2715,11 @@ uint32_t SuccinctService_regex_count_local_result::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_RegexCountLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_regex_count_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_RegexCountLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
@@ -2739,7 +2739,7 @@ uint32_t SuccinctService_regex_count_local_result::write(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_regex_count_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_RegexCountLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2791,7 +2791,7 @@ uint32_t SuccinctService_regex_count_local_presult::read(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2831,9 +2831,9 @@ uint32_t SuccinctService_count_args::read(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t SuccinctService_count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_count_args");
+  xfer += oprot->writeStructBegin("SuccinctService_Count_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -2844,9 +2844,9 @@ uint32_t SuccinctService_count_args::write(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t SuccinctService_count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_count_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_Count_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -2857,7 +2857,7 @@ uint32_t SuccinctService_count_pargs::write(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t SuccinctService_count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2897,11 +2897,11 @@ uint32_t SuccinctService_count_result::read(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t SuccinctService_count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_Count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_count_result");
+  xfer += oprot->writeStructBegin("SuccinctService_Count_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
@@ -2913,7 +2913,7 @@ uint32_t SuccinctService_count_result::write(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_Count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2953,7 +2953,7 @@ uint32_t SuccinctService_count_presult::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_CountLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -2993,9 +2993,9 @@ uint32_t SuccinctService_count_local_args::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_CountLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_count_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_CountLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -3006,9 +3006,9 @@ uint32_t SuccinctService_count_local_args::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_CountLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_count_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_CountLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -3019,7 +3019,7 @@ uint32_t SuccinctService_count_local_pargs::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_CountLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3059,11 +3059,11 @@ uint32_t SuccinctService_count_local_result::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_CountLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_count_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_CountLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
@@ -3075,7 +3075,7 @@ uint32_t SuccinctService_count_local_result::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_count_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_CountLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3115,7 +3115,7 @@ uint32_t SuccinctService_count_local_presult::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtract_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3163,9 +3163,9 @@ uint32_t SuccinctService_flat_extract_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtract_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtract_args");
 
   xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64(this->offset);
@@ -3180,9 +3180,9 @@ uint32_t SuccinctService_flat_extract_args::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtract_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtract_pargs");
 
   xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->offset)));
@@ -3197,7 +3197,7 @@ uint32_t SuccinctService_flat_extract_pargs::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtract_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3237,11 +3237,11 @@ uint32_t SuccinctService_flat_extract_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtract_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtract_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -3253,7 +3253,7 @@ uint32_t SuccinctService_flat_extract_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtract_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3293,7 +3293,7 @@ uint32_t SuccinctService_flat_extract_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtractLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3341,9 +3341,9 @@ uint32_t SuccinctService_flat_extract_local_args::read(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtractLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtractLocal_args");
 
   xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64(this->offset);
@@ -3358,9 +3358,9 @@ uint32_t SuccinctService_flat_extract_local_args::write(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtractLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtractLocal_pargs");
 
   xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 1);
   xfer += oprot->writeI64((*(this->offset)));
@@ -3375,7 +3375,7 @@ uint32_t SuccinctService_flat_extract_local_pargs::write(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtractLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3415,11 +3415,11 @@ uint32_t SuccinctService_flat_extract_local_result::read(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatExtractLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_extract_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatExtractLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -3431,7 +3431,7 @@ uint32_t SuccinctService_flat_extract_local_result::write(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t SuccinctService_flat_extract_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatExtractLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3471,7 +3471,7 @@ uint32_t SuccinctService_flat_extract_local_presult::read(::apache::thrift::prot
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCount_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3511,9 +3511,9 @@ uint32_t SuccinctService_flat_count_args::read(::apache::thrift::protocol::TProt
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCount_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCount_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -3524,9 +3524,9 @@ uint32_t SuccinctService_flat_count_args::write(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCount_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCount_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -3537,7 +3537,7 @@ uint32_t SuccinctService_flat_count_pargs::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCount_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3577,11 +3577,11 @@ uint32_t SuccinctService_flat_count_result::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCount_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCount_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
@@ -3593,7 +3593,7 @@ uint32_t SuccinctService_flat_count_result::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCount_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3633,7 +3633,7 @@ uint32_t SuccinctService_flat_count_presult::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCountLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3673,9 +3673,9 @@ uint32_t SuccinctService_flat_count_local_args::read(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCountLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCountLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -3686,9 +3686,9 @@ uint32_t SuccinctService_flat_count_local_args::write(::apache::thrift::protocol
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCountLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCountLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -3699,7 +3699,7 @@ uint32_t SuccinctService_flat_count_local_pargs::write(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCountLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3739,11 +3739,11 @@ uint32_t SuccinctService_flat_count_local_result::read(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatCountLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_count_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatCountLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
@@ -3755,7 +3755,7 @@ uint32_t SuccinctService_flat_count_local_result::write(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_flat_count_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatCountLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3795,7 +3795,7 @@ uint32_t SuccinctService_flat_count_local_presult::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearch_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3835,9 +3835,9 @@ uint32_t SuccinctService_flat_search_args::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearch_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearch_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -3848,9 +3848,9 @@ uint32_t SuccinctService_flat_search_args::write(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearch_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearch_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -3861,7 +3861,7 @@ uint32_t SuccinctService_flat_search_pargs::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearch_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3913,11 +3913,11 @@ uint32_t SuccinctService_flat_search_result::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearch_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearch_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
@@ -3937,7 +3937,7 @@ uint32_t SuccinctService_flat_search_result::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearch_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -3989,7 +3989,7 @@ uint32_t SuccinctService_flat_search_presult::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearchLocal_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4029,9 +4029,9 @@ uint32_t SuccinctService_flat_search_local_args::read(::apache::thrift::protocol
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearchLocal_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_local_args");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearchLocal_args");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->query);
@@ -4042,9 +4042,9 @@ uint32_t SuccinctService_flat_search_local_args::write(::apache::thrift::protoco
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearchLocal_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_local_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearchLocal_pargs");
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->query)));
@@ -4055,7 +4055,7 @@ uint32_t SuccinctService_flat_search_local_pargs::write(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearchLocal_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4107,11 +4107,11 @@ uint32_t SuccinctService_flat_search_local_result::read(::apache::thrift::protoc
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_FlatSearchLocal_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_flat_search_local_result");
+  xfer += oprot->writeStructBegin("SuccinctService_FlatSearchLocal_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
@@ -4131,7 +4131,7 @@ uint32_t SuccinctService_flat_search_local_result::write(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_flat_search_local_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_FlatSearchLocal_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4183,7 +4183,7 @@ uint32_t SuccinctService_flat_search_local_presult::read(::apache::thrift::proto
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumHosts_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4210,25 +4210,25 @@ uint32_t SuccinctService_get_num_hosts_args::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumHosts_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_hosts_args");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumHosts_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumHosts_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_hosts_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumHosts_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumHosts_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4268,11 +4268,11 @@ uint32_t SuccinctService_get_num_hosts_result::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumHosts_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_hosts_result");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumHosts_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -4284,7 +4284,7 @@ uint32_t SuccinctService_get_num_hosts_result::write(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_hosts_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumHosts_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4324,7 +4324,7 @@ uint32_t SuccinctService_get_num_hosts_presult::read(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumShards_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4364,9 +4364,9 @@ uint32_t SuccinctService_get_num_shards_args::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumShards_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_shards_args");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumShards_args");
 
   xfer += oprot->writeFieldBegin("host_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->host_id);
@@ -4377,9 +4377,9 @@ uint32_t SuccinctService_get_num_shards_args::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumShards_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_shards_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumShards_pargs");
 
   xfer += oprot->writeFieldBegin("host_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->host_id)));
@@ -4390,7 +4390,7 @@ uint32_t SuccinctService_get_num_shards_pargs::write(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumShards_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4430,11 +4430,11 @@ uint32_t SuccinctService_get_num_shards_result::read(::apache::thrift::protocol:
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumShards_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_shards_result");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumShards_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -4446,7 +4446,7 @@ uint32_t SuccinctService_get_num_shards_result::write(::apache::thrift::protocol
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_shards_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumShards_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4486,7 +4486,7 @@ uint32_t SuccinctService_get_num_shards_presult::read(::apache::thrift::protocol
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumKeys_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4526,9 +4526,9 @@ uint32_t SuccinctService_get_num_keys_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumKeys_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_keys_args");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumKeys_args");
 
   xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->shard_id);
@@ -4539,9 +4539,9 @@ uint32_t SuccinctService_get_num_keys_args::write(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumKeys_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_keys_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumKeys_pargs");
 
   xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->shard_id)));
@@ -4552,7 +4552,7 @@ uint32_t SuccinctService_get_num_keys_pargs::write(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumKeys_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4592,11 +4592,11 @@ uint32_t SuccinctService_get_num_keys_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetNumKeys_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_num_keys_result");
+  xfer += oprot->writeStructBegin("SuccinctService_GetNumKeys_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
@@ -4608,7 +4608,7 @@ uint32_t SuccinctService_get_num_keys_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_get_num_keys_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetNumKeys_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4648,7 +4648,7 @@ uint32_t SuccinctService_get_num_keys_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetTotSize_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4675,25 +4675,25 @@ uint32_t SuccinctService_get_tot_size_args::read(::apache::thrift::protocol::TPr
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetTotSize_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_tot_size_args");
+  xfer += oprot->writeStructBegin("SuccinctService_GetTotSize_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetTotSize_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("SuccinctService_get_tot_size_pargs");
+  xfer += oprot->writeStructBegin("SuccinctService_GetTotSize_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetTotSize_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4733,11 +4733,11 @@ uint32_t SuccinctService_get_tot_size_result::read(::apache::thrift::protocol::T
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t SuccinctService_GetTotSize_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("SuccinctService_get_tot_size_result");
+  xfer += oprot->writeStructBegin("SuccinctService_GetTotSize_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
@@ -4749,7 +4749,7 @@ uint32_t SuccinctService_get_tot_size_result::write(::apache::thrift::protocol::
   return xfer;
 }
 
-uint32_t SuccinctService_get_tot_size_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t SuccinctService_GetTotSize_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4789,18 +4789,18 @@ uint32_t SuccinctService_get_tot_size_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-int32_t SuccinctServiceClient::connect_to_handlers()
+int32_t SuccinctServiceClient::ConnectToHandlers()
 {
-  send_connect_to_handlers();
-  return recv_connect_to_handlers();
+  send_ConnectToHandlers();
+  return recv_ConnectToHandlers();
 }
 
-void SuccinctServiceClient::send_connect_to_handlers()
+void SuccinctServiceClient::send_ConnectToHandlers()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("ConnectToHandlers", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_connect_to_handlers_pargs args;
+  SuccinctService_ConnectToHandlers_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4808,7 +4808,7 @@ void SuccinctServiceClient::send_connect_to_handlers()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_connect_to_handlers()
+int32_t SuccinctServiceClient::recv_ConnectToHandlers()
 {
 
   int32_t rseqid = 0;
@@ -4828,13 +4828,13 @@ int32_t SuccinctServiceClient::recv_connect_to_handlers()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("connect_to_handlers") != 0) {
+  if (fname.compare("ConnectToHandlers") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_connect_to_handlers_presult result;
+  SuccinctService_ConnectToHandlers_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -4843,21 +4843,21 @@ int32_t SuccinctServiceClient::recv_connect_to_handlers()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "connect_to_handlers failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "ConnectToHandlers failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::disconnect_from_handlers()
+int32_t SuccinctServiceClient::DisconnectFromHandlers()
 {
-  send_disconnect_from_handlers();
-  return recv_disconnect_from_handlers();
+  send_DisconnectFromHandlers();
+  return recv_DisconnectFromHandlers();
 }
 
-void SuccinctServiceClient::send_disconnect_from_handlers()
+void SuccinctServiceClient::send_DisconnectFromHandlers()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("DisconnectFromHandlers", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_disconnect_from_handlers_pargs args;
+  SuccinctService_DisconnectFromHandlers_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4865,7 +4865,7 @@ void SuccinctServiceClient::send_disconnect_from_handlers()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_disconnect_from_handlers()
+int32_t SuccinctServiceClient::recv_DisconnectFromHandlers()
 {
 
   int32_t rseqid = 0;
@@ -4885,13 +4885,13 @@ int32_t SuccinctServiceClient::recv_disconnect_from_handlers()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("disconnect_from_handlers") != 0) {
+  if (fname.compare("DisconnectFromHandlers") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_disconnect_from_handlers_presult result;
+  SuccinctService_DisconnectFromHandlers_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -4900,21 +4900,21 @@ int32_t SuccinctServiceClient::recv_disconnect_from_handlers()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "disconnect_from_handlers failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "DisconnectFromHandlers failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::connect_to_local_servers()
+int32_t SuccinctServiceClient::ConnectToLocalServers()
 {
-  send_connect_to_local_servers();
-  return recv_connect_to_local_servers();
+  send_ConnectToLocalServers();
+  return recv_ConnectToLocalServers();
 }
 
-void SuccinctServiceClient::send_connect_to_local_servers()
+void SuccinctServiceClient::send_ConnectToLocalServers()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("connect_to_local_servers", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("ConnectToLocalServers", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_connect_to_local_servers_pargs args;
+  SuccinctService_ConnectToLocalServers_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4922,7 +4922,7 @@ void SuccinctServiceClient::send_connect_to_local_servers()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_connect_to_local_servers()
+int32_t SuccinctServiceClient::recv_ConnectToLocalServers()
 {
 
   int32_t rseqid = 0;
@@ -4942,13 +4942,13 @@ int32_t SuccinctServiceClient::recv_connect_to_local_servers()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("connect_to_local_servers") != 0) {
+  if (fname.compare("ConnectToLocalServers") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_connect_to_local_servers_presult result;
+  SuccinctService_ConnectToLocalServers_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -4957,21 +4957,21 @@ int32_t SuccinctServiceClient::recv_connect_to_local_servers()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "connect_to_local_servers failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "ConnectToLocalServers failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::disconnect_from_local_servers()
+int32_t SuccinctServiceClient::DisconnectFromLocalServers()
 {
-  send_disconnect_from_local_servers();
-  return recv_disconnect_from_local_servers();
+  send_DisconnectFromLocalServers();
+  return recv_DisconnectFromLocalServers();
 }
 
-void SuccinctServiceClient::send_disconnect_from_local_servers()
+void SuccinctServiceClient::send_DisconnectFromLocalServers()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("disconnect_from_local_servers", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("DisconnectFromLocalServers", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_disconnect_from_local_servers_pargs args;
+  SuccinctService_DisconnectFromLocalServers_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4979,7 +4979,7 @@ void SuccinctServiceClient::send_disconnect_from_local_servers()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_disconnect_from_local_servers()
+int32_t SuccinctServiceClient::recv_DisconnectFromLocalServers()
 {
 
   int32_t rseqid = 0;
@@ -4999,13 +4999,13 @@ int32_t SuccinctServiceClient::recv_disconnect_from_local_servers()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("disconnect_from_local_servers") != 0) {
+  if (fname.compare("DisconnectFromLocalServers") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_disconnect_from_local_servers_presult result;
+  SuccinctService_DisconnectFromLocalServers_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5014,21 +5014,21 @@ int32_t SuccinctServiceClient::recv_disconnect_from_local_servers()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "disconnect_from_local_servers failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "DisconnectFromLocalServers failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::start_servers()
+int32_t SuccinctServiceClient::StartLocalServers()
 {
-  send_start_servers();
-  return recv_start_servers();
+  send_StartLocalServers();
+  return recv_StartLocalServers();
 }
 
-void SuccinctServiceClient::send_start_servers()
+void SuccinctServiceClient::send_StartLocalServers()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("start_servers", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("StartLocalServers", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_start_servers_pargs args;
+  SuccinctService_StartLocalServers_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5036,7 +5036,7 @@ void SuccinctServiceClient::send_start_servers()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_start_servers()
+int32_t SuccinctServiceClient::recv_StartLocalServers()
 {
 
   int32_t rseqid = 0;
@@ -5056,13 +5056,13 @@ int32_t SuccinctServiceClient::recv_start_servers()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("start_servers") != 0) {
+  if (fname.compare("StartLocalServers") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_start_servers_presult result;
+  SuccinctService_StartLocalServers_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5071,21 +5071,21 @@ int32_t SuccinctServiceClient::recv_start_servers()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "start_servers failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "StartLocalServers failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::initialize(const int32_t mode)
+int32_t SuccinctServiceClient::Initialize(const int32_t mode)
 {
-  send_initialize(mode);
-  return recv_initialize();
+  send_Initialize(mode);
+  return recv_Initialize();
 }
 
-void SuccinctServiceClient::send_initialize(const int32_t mode)
+void SuccinctServiceClient::send_Initialize(const int32_t mode)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("initialize", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Initialize", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_initialize_pargs args;
+  SuccinctService_Initialize_pargs args;
   args.mode = &mode;
   args.write(oprot_);
 
@@ -5094,7 +5094,7 @@ void SuccinctServiceClient::send_initialize(const int32_t mode)
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_initialize()
+int32_t SuccinctServiceClient::recv_Initialize()
 {
 
   int32_t rseqid = 0;
@@ -5114,13 +5114,13 @@ int32_t SuccinctServiceClient::recv_initialize()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("initialize") != 0) {
+  if (fname.compare("Initialize") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_initialize_presult result;
+  SuccinctService_Initialize_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5129,21 +5129,21 @@ int32_t SuccinctServiceClient::recv_initialize()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "initialize failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Initialize failed: unknown result");
 }
 
-void SuccinctServiceClient::get(std::string& _return, const int64_t key)
+void SuccinctServiceClient::Get(std::string& _return, const int64_t key)
 {
-  send_get(key);
-  recv_get(_return);
+  send_Get(key);
+  recv_Get(_return);
 }
 
-void SuccinctServiceClient::send_get(const int64_t key)
+void SuccinctServiceClient::send_Get(const int64_t key)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Get", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_pargs args;
+  SuccinctService_Get_pargs args;
   args.key = &key;
   args.write(oprot_);
 
@@ -5152,7 +5152,7 @@ void SuccinctServiceClient::send_get(const int64_t key)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_get(std::string& _return)
+void SuccinctServiceClient::recv_Get(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5172,12 +5172,12 @@ void SuccinctServiceClient::recv_get(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get") != 0) {
+  if (fname.compare("Get") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_get_presult result;
+  SuccinctService_Get_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5187,21 +5187,21 @@ void SuccinctServiceClient::recv_get(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Get failed: unknown result");
 }
 
-void SuccinctServiceClient::get_local(std::string& _return, const int32_t qserver_id, const int64_t key)
+void SuccinctServiceClient::GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key)
 {
-  send_get_local(qserver_id, key);
-  recv_get_local(_return);
+  send_GetLocal(qserver_id, key);
+  recv_GetLocal(_return);
 }
 
-void SuccinctServiceClient::send_get_local(const int32_t qserver_id, const int64_t key)
+void SuccinctServiceClient::send_GetLocal(const int32_t qserver_id, const int64_t key)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_local_pargs args;
+  SuccinctService_GetLocal_pargs args;
   args.qserver_id = &qserver_id;
   args.key = &key;
   args.write(oprot_);
@@ -5211,7 +5211,7 @@ void SuccinctServiceClient::send_get_local(const int32_t qserver_id, const int64
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_get_local(std::string& _return)
+void SuccinctServiceClient::recv_GetLocal(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5231,12 +5231,12 @@ void SuccinctServiceClient::recv_get_local(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_local") != 0) {
+  if (fname.compare("GetLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_get_local_presult result;
+  SuccinctService_GetLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5246,21 +5246,21 @@ void SuccinctServiceClient::recv_get_local(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len)
+void SuccinctServiceClient::Access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len)
 {
-  send_access(key, offset, len);
-  recv_access(_return);
+  send_Access(key, offset, len);
+  recv_Access(_return);
 }
 
-void SuccinctServiceClient::send_access(const int64_t key, const int32_t offset, const int32_t len)
+void SuccinctServiceClient::send_Access(const int64_t key, const int32_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("access", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Access", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_access_pargs args;
+  SuccinctService_Access_pargs args;
   args.key = &key;
   args.offset = &offset;
   args.len = &len;
@@ -5271,7 +5271,7 @@ void SuccinctServiceClient::send_access(const int64_t key, const int32_t offset,
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_access(std::string& _return)
+void SuccinctServiceClient::recv_Access(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5291,12 +5291,12 @@ void SuccinctServiceClient::recv_access(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("access") != 0) {
+  if (fname.compare("Access") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_access_presult result;
+  SuccinctService_Access_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5306,21 +5306,21 @@ void SuccinctServiceClient::recv_access(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "access failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Access failed: unknown result");
 }
 
-void SuccinctServiceClient::access_local(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
+void SuccinctServiceClient::AccessLocal(std::string& _return, const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
 {
-  send_access_local(qserver_id, key, offset, len);
-  recv_access_local(_return);
+  send_AccessLocal(qserver_id, key, offset, len);
+  recv_AccessLocal(_return);
 }
 
-void SuccinctServiceClient::send_access_local(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
+void SuccinctServiceClient::send_AccessLocal(const int32_t qserver_id, const int64_t key, const int32_t offset, const int32_t len)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("access_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("AccessLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_access_local_pargs args;
+  SuccinctService_AccessLocal_pargs args;
   args.qserver_id = &qserver_id;
   args.key = &key;
   args.offset = &offset;
@@ -5332,7 +5332,7 @@ void SuccinctServiceClient::send_access_local(const int32_t qserver_id, const in
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_access_local(std::string& _return)
+void SuccinctServiceClient::recv_AccessLocal(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5352,12 +5352,12 @@ void SuccinctServiceClient::recv_access_local(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("access_local") != 0) {
+  if (fname.compare("AccessLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_access_local_presult result;
+  SuccinctService_AccessLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5367,21 +5367,21 @@ void SuccinctServiceClient::recv_access_local(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "access_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "AccessLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::search(std::set<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::Search(std::set<int64_t> & _return, const std::string& query)
 {
-  send_search(query);
-  recv_search(_return);
+  send_Search(query);
+  recv_Search(_return);
 }
 
-void SuccinctServiceClient::send_search(const std::string& query)
+void SuccinctServiceClient::send_Search(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("search", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Search", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_search_pargs args;
+  SuccinctService_Search_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5390,7 +5390,7 @@ void SuccinctServiceClient::send_search(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_search(std::set<int64_t> & _return)
+void SuccinctServiceClient::recv_Search(std::set<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5410,12 +5410,12 @@ void SuccinctServiceClient::recv_search(std::set<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("search") != 0) {
+  if (fname.compare("Search") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_search_presult result;
+  SuccinctService_Search_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5425,21 +5425,21 @@ void SuccinctServiceClient::recv_search(std::set<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "search failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Search failed: unknown result");
 }
 
-void SuccinctServiceClient::search_local(std::set<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::SearchLocal(std::set<int64_t> & _return, const std::string& query)
 {
-  send_search_local(query);
-  recv_search_local(_return);
+  send_SearchLocal(query);
+  recv_SearchLocal(_return);
 }
 
-void SuccinctServiceClient::send_search_local(const std::string& query)
+void SuccinctServiceClient::send_SearchLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("search_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("SearchLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_search_local_pargs args;
+  SuccinctService_SearchLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5448,7 +5448,7 @@ void SuccinctServiceClient::send_search_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_search_local(std::set<int64_t> & _return)
+void SuccinctServiceClient::recv_SearchLocal(std::set<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5468,12 +5468,12 @@ void SuccinctServiceClient::recv_search_local(std::set<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("search_local") != 0) {
+  if (fname.compare("SearchLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_search_local_presult result;
+  SuccinctService_SearchLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5483,21 +5483,21 @@ void SuccinctServiceClient::recv_search_local(std::set<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "search_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "SearchLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::regex_search(std::set<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::RegexSearch(std::set<int64_t> & _return, const std::string& query)
 {
-  send_regex_search(query);
-  recv_regex_search(_return);
+  send_RegexSearch(query);
+  recv_RegexSearch(_return);
 }
 
-void SuccinctServiceClient::send_regex_search(const std::string& query)
+void SuccinctServiceClient::send_RegexSearch(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("regex_search", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("RegexSearch", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_regex_search_pargs args;
+  SuccinctService_RegexSearch_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5506,7 +5506,7 @@ void SuccinctServiceClient::send_regex_search(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_regex_search(std::set<int64_t> & _return)
+void SuccinctServiceClient::recv_RegexSearch(std::set<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5526,12 +5526,12 @@ void SuccinctServiceClient::recv_regex_search(std::set<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("regex_search") != 0) {
+  if (fname.compare("RegexSearch") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_regex_search_presult result;
+  SuccinctService_RegexSearch_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5541,21 +5541,21 @@ void SuccinctServiceClient::recv_regex_search(std::set<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_search failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "RegexSearch failed: unknown result");
 }
 
-void SuccinctServiceClient::regex_search_local(std::set<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::RegexSearchLocal(std::set<int64_t> & _return, const std::string& query)
 {
-  send_regex_search_local(query);
-  recv_regex_search_local(_return);
+  send_RegexSearchLocal(query);
+  recv_RegexSearchLocal(_return);
 }
 
-void SuccinctServiceClient::send_regex_search_local(const std::string& query)
+void SuccinctServiceClient::send_RegexSearchLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("regex_search_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("RegexSearchLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_regex_search_local_pargs args;
+  SuccinctService_RegexSearchLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5564,7 +5564,7 @@ void SuccinctServiceClient::send_regex_search_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_regex_search_local(std::set<int64_t> & _return)
+void SuccinctServiceClient::recv_RegexSearchLocal(std::set<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5584,12 +5584,12 @@ void SuccinctServiceClient::recv_regex_search_local(std::set<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("regex_search_local") != 0) {
+  if (fname.compare("RegexSearchLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_regex_search_local_presult result;
+  SuccinctService_RegexSearchLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5599,21 +5599,21 @@ void SuccinctServiceClient::recv_regex_search_local(std::set<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_search_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "RegexSearchLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::regex_count(std::vector<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::RegexCount(std::vector<int64_t> & _return, const std::string& query)
 {
-  send_regex_count(query);
-  recv_regex_count(_return);
+  send_RegexCount(query);
+  recv_RegexCount(_return);
 }
 
-void SuccinctServiceClient::send_regex_count(const std::string& query)
+void SuccinctServiceClient::send_RegexCount(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("RegexCount", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_regex_count_pargs args;
+  SuccinctService_RegexCount_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5622,7 +5622,7 @@ void SuccinctServiceClient::send_regex_count(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_regex_count(std::vector<int64_t> & _return)
+void SuccinctServiceClient::recv_RegexCount(std::vector<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5642,12 +5642,12 @@ void SuccinctServiceClient::recv_regex_count(std::vector<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("regex_count") != 0) {
+  if (fname.compare("RegexCount") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_regex_count_presult result;
+  SuccinctService_RegexCount_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5657,21 +5657,21 @@ void SuccinctServiceClient::recv_regex_count(std::vector<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_count failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "RegexCount failed: unknown result");
 }
 
-void SuccinctServiceClient::regex_count_local(std::vector<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::RegexCountLocal(std::vector<int64_t> & _return, const std::string& query)
 {
-  send_regex_count_local(query);
-  recv_regex_count_local(_return);
+  send_RegexCountLocal(query);
+  recv_RegexCountLocal(_return);
 }
 
-void SuccinctServiceClient::send_regex_count_local(const std::string& query)
+void SuccinctServiceClient::send_RegexCountLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("regex_count_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("RegexCountLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_regex_count_local_pargs args;
+  SuccinctService_RegexCountLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5680,7 +5680,7 @@ void SuccinctServiceClient::send_regex_count_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_regex_count_local(std::vector<int64_t> & _return)
+void SuccinctServiceClient::recv_RegexCountLocal(std::vector<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -5700,12 +5700,12 @@ void SuccinctServiceClient::recv_regex_count_local(std::vector<int64_t> & _retur
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("regex_count_local") != 0) {
+  if (fname.compare("RegexCountLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_regex_count_local_presult result;
+  SuccinctService_RegexCountLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5715,21 +5715,21 @@ void SuccinctServiceClient::recv_regex_count_local(std::vector<int64_t> & _retur
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "regex_count_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "RegexCountLocal failed: unknown result");
 }
 
-int64_t SuccinctServiceClient::count(const std::string& query)
+int64_t SuccinctServiceClient::Count(const std::string& query)
 {
-  send_count(query);
-  return recv_count();
+  send_Count(query);
+  return recv_Count();
 }
 
-void SuccinctServiceClient::send_count(const std::string& query)
+void SuccinctServiceClient::send_Count(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("count", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Count", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_count_pargs args;
+  SuccinctService_Count_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5738,7 +5738,7 @@ void SuccinctServiceClient::send_count(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-int64_t SuccinctServiceClient::recv_count()
+int64_t SuccinctServiceClient::recv_Count()
 {
 
   int32_t rseqid = 0;
@@ -5758,13 +5758,13 @@ int64_t SuccinctServiceClient::recv_count()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("count") != 0) {
+  if (fname.compare("Count") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int64_t _return;
-  SuccinctService_count_presult result;
+  SuccinctService_Count_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5773,21 +5773,21 @@ int64_t SuccinctServiceClient::recv_count()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "count failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Count failed: unknown result");
 }
 
-int64_t SuccinctServiceClient::count_local(const std::string& query)
+int64_t SuccinctServiceClient::CountLocal(const std::string& query)
 {
-  send_count_local(query);
-  return recv_count_local();
+  send_CountLocal(query);
+  return recv_CountLocal();
 }
 
-void SuccinctServiceClient::send_count_local(const std::string& query)
+void SuccinctServiceClient::send_CountLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("count_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("CountLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_count_local_pargs args;
+  SuccinctService_CountLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5796,7 +5796,7 @@ void SuccinctServiceClient::send_count_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-int64_t SuccinctServiceClient::recv_count_local()
+int64_t SuccinctServiceClient::recv_CountLocal()
 {
 
   int32_t rseqid = 0;
@@ -5816,13 +5816,13 @@ int64_t SuccinctServiceClient::recv_count_local()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("count_local") != 0) {
+  if (fname.compare("CountLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int64_t _return;
-  SuccinctService_count_local_presult result;
+  SuccinctService_CountLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5831,21 +5831,21 @@ int64_t SuccinctServiceClient::recv_count_local()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "count_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "CountLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::flat_extract(std::string& _return, const int64_t offset, const int64_t length)
+void SuccinctServiceClient::FlatExtract(std::string& _return, const int64_t offset, const int64_t length)
 {
-  send_flat_extract(offset, length);
-  recv_flat_extract(_return);
+  send_FlatExtract(offset, length);
+  recv_FlatExtract(_return);
 }
 
-void SuccinctServiceClient::send_flat_extract(const int64_t offset, const int64_t length)
+void SuccinctServiceClient::send_FlatExtract(const int64_t offset, const int64_t length)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_extract", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatExtract", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_extract_pargs args;
+  SuccinctService_FlatExtract_pargs args;
   args.offset = &offset;
   args.length = &length;
   args.write(oprot_);
@@ -5855,7 +5855,7 @@ void SuccinctServiceClient::send_flat_extract(const int64_t offset, const int64_
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_flat_extract(std::string& _return)
+void SuccinctServiceClient::recv_FlatExtract(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5875,12 +5875,12 @@ void SuccinctServiceClient::recv_flat_extract(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_extract") != 0) {
+  if (fname.compare("FlatExtract") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_flat_extract_presult result;
+  SuccinctService_FlatExtract_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5890,21 +5890,21 @@ void SuccinctServiceClient::recv_flat_extract(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_extract failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatExtract failed: unknown result");
 }
 
-void SuccinctServiceClient::flat_extract_local(std::string& _return, const int64_t offset, const int64_t length)
+void SuccinctServiceClient::FlatExtractLocal(std::string& _return, const int64_t offset, const int64_t length)
 {
-  send_flat_extract_local(offset, length);
-  recv_flat_extract_local(_return);
+  send_FlatExtractLocal(offset, length);
+  recv_FlatExtractLocal(_return);
 }
 
-void SuccinctServiceClient::send_flat_extract_local(const int64_t offset, const int64_t length)
+void SuccinctServiceClient::send_FlatExtractLocal(const int64_t offset, const int64_t length)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_extract_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatExtractLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_extract_local_pargs args;
+  SuccinctService_FlatExtractLocal_pargs args;
   args.offset = &offset;
   args.length = &length;
   args.write(oprot_);
@@ -5914,7 +5914,7 @@ void SuccinctServiceClient::send_flat_extract_local(const int64_t offset, const 
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_flat_extract_local(std::string& _return)
+void SuccinctServiceClient::recv_FlatExtractLocal(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5934,12 +5934,12 @@ void SuccinctServiceClient::recv_flat_extract_local(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_extract_local") != 0) {
+  if (fname.compare("FlatExtractLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_flat_extract_local_presult result;
+  SuccinctService_FlatExtractLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5949,21 +5949,21 @@ void SuccinctServiceClient::recv_flat_extract_local(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_extract_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatExtractLocal failed: unknown result");
 }
 
-int64_t SuccinctServiceClient::flat_count(const std::string& query)
+int64_t SuccinctServiceClient::FlatCount(const std::string& query)
 {
-  send_flat_count(query);
-  return recv_flat_count();
+  send_FlatCount(query);
+  return recv_FlatCount();
 }
 
-void SuccinctServiceClient::send_flat_count(const std::string& query)
+void SuccinctServiceClient::send_FlatCount(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_count", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatCount", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_count_pargs args;
+  SuccinctService_FlatCount_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -5972,7 +5972,7 @@ void SuccinctServiceClient::send_flat_count(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-int64_t SuccinctServiceClient::recv_flat_count()
+int64_t SuccinctServiceClient::recv_FlatCount()
 {
 
   int32_t rseqid = 0;
@@ -5992,13 +5992,13 @@ int64_t SuccinctServiceClient::recv_flat_count()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_count") != 0) {
+  if (fname.compare("FlatCount") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int64_t _return;
-  SuccinctService_flat_count_presult result;
+  SuccinctService_FlatCount_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6007,21 +6007,21 @@ int64_t SuccinctServiceClient::recv_flat_count()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_count failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatCount failed: unknown result");
 }
 
-int64_t SuccinctServiceClient::flat_count_local(const std::string& query)
+int64_t SuccinctServiceClient::FlatCountLocal(const std::string& query)
 {
-  send_flat_count_local(query);
-  return recv_flat_count_local();
+  send_FlatCountLocal(query);
+  return recv_FlatCountLocal();
 }
 
-void SuccinctServiceClient::send_flat_count_local(const std::string& query)
+void SuccinctServiceClient::send_FlatCountLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_count_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatCountLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_count_local_pargs args;
+  SuccinctService_FlatCountLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -6030,7 +6030,7 @@ void SuccinctServiceClient::send_flat_count_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-int64_t SuccinctServiceClient::recv_flat_count_local()
+int64_t SuccinctServiceClient::recv_FlatCountLocal()
 {
 
   int32_t rseqid = 0;
@@ -6050,13 +6050,13 @@ int64_t SuccinctServiceClient::recv_flat_count_local()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_count_local") != 0) {
+  if (fname.compare("FlatCountLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int64_t _return;
-  SuccinctService_flat_count_local_presult result;
+  SuccinctService_FlatCountLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6065,21 +6065,21 @@ int64_t SuccinctServiceClient::recv_flat_count_local()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_count_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatCountLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::flat_search(std::vector<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::FlatSearch(std::vector<int64_t> & _return, const std::string& query)
 {
-  send_flat_search(query);
-  recv_flat_search(_return);
+  send_FlatSearch(query);
+  recv_FlatSearch(_return);
 }
 
-void SuccinctServiceClient::send_flat_search(const std::string& query)
+void SuccinctServiceClient::send_FlatSearch(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_search", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatSearch", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_search_pargs args;
+  SuccinctService_FlatSearch_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -6088,7 +6088,7 @@ void SuccinctServiceClient::send_flat_search(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_flat_search(std::vector<int64_t> & _return)
+void SuccinctServiceClient::recv_FlatSearch(std::vector<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -6108,12 +6108,12 @@ void SuccinctServiceClient::recv_flat_search(std::vector<int64_t> & _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_search") != 0) {
+  if (fname.compare("FlatSearch") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_flat_search_presult result;
+  SuccinctService_FlatSearch_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6123,21 +6123,21 @@ void SuccinctServiceClient::recv_flat_search(std::vector<int64_t> & _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_search failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatSearch failed: unknown result");
 }
 
-void SuccinctServiceClient::flat_search_local(std::vector<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::FlatSearchLocal(std::vector<int64_t> & _return, const std::string& query)
 {
-  send_flat_search_local(query);
-  recv_flat_search_local(_return);
+  send_FlatSearchLocal(query);
+  recv_FlatSearchLocal(_return);
 }
 
-void SuccinctServiceClient::send_flat_search_local(const std::string& query)
+void SuccinctServiceClient::send_FlatSearchLocal(const std::string& query)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("flat_search_local", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("FlatSearchLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_flat_search_local_pargs args;
+  SuccinctService_FlatSearchLocal_pargs args;
   args.query = &query;
   args.write(oprot_);
 
@@ -6146,7 +6146,7 @@ void SuccinctServiceClient::send_flat_search_local(const std::string& query)
   oprot_->getTransport()->flush();
 }
 
-void SuccinctServiceClient::recv_flat_search_local(std::vector<int64_t> & _return)
+void SuccinctServiceClient::recv_FlatSearchLocal(std::vector<int64_t> & _return)
 {
 
   int32_t rseqid = 0;
@@ -6166,12 +6166,12 @@ void SuccinctServiceClient::recv_flat_search_local(std::vector<int64_t> & _retur
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("flat_search_local") != 0) {
+  if (fname.compare("FlatSearchLocal") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  SuccinctService_flat_search_local_presult result;
+  SuccinctService_FlatSearchLocal_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6181,21 +6181,21 @@ void SuccinctServiceClient::recv_flat_search_local(std::vector<int64_t> & _retur
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "flat_search_local failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FlatSearchLocal failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::get_num_hosts()
+int32_t SuccinctServiceClient::GetNumHosts()
 {
-  send_get_num_hosts();
-  return recv_get_num_hosts();
+  send_GetNumHosts();
+  return recv_GetNumHosts();
 }
 
-void SuccinctServiceClient::send_get_num_hosts()
+void SuccinctServiceClient::send_GetNumHosts()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetNumHosts", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_num_hosts_pargs args;
+  SuccinctService_GetNumHosts_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -6203,7 +6203,7 @@ void SuccinctServiceClient::send_get_num_hosts()
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_get_num_hosts()
+int32_t SuccinctServiceClient::recv_GetNumHosts()
 {
 
   int32_t rseqid = 0;
@@ -6223,13 +6223,13 @@ int32_t SuccinctServiceClient::recv_get_num_hosts()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_num_hosts") != 0) {
+  if (fname.compare("GetNumHosts") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_get_num_hosts_presult result;
+  SuccinctService_GetNumHosts_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6238,21 +6238,21 @@ int32_t SuccinctServiceClient::recv_get_num_hosts()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_hosts failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetNumHosts failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::get_num_shards(const int32_t host_id)
+int32_t SuccinctServiceClient::GetNumShards(const int32_t host_id)
 {
-  send_get_num_shards(host_id);
-  return recv_get_num_shards();
+  send_GetNumShards(host_id);
+  return recv_GetNumShards();
 }
 
-void SuccinctServiceClient::send_get_num_shards(const int32_t host_id)
+void SuccinctServiceClient::send_GetNumShards(const int32_t host_id)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_num_shards", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetNumShards", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_num_shards_pargs args;
+  SuccinctService_GetNumShards_pargs args;
   args.host_id = &host_id;
   args.write(oprot_);
 
@@ -6261,7 +6261,7 @@ void SuccinctServiceClient::send_get_num_shards(const int32_t host_id)
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_get_num_shards()
+int32_t SuccinctServiceClient::recv_GetNumShards()
 {
 
   int32_t rseqid = 0;
@@ -6281,13 +6281,13 @@ int32_t SuccinctServiceClient::recv_get_num_shards()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_num_shards") != 0) {
+  if (fname.compare("GetNumShards") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_get_num_shards_presult result;
+  SuccinctService_GetNumShards_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6296,21 +6296,21 @@ int32_t SuccinctServiceClient::recv_get_num_shards()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_shards failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetNumShards failed: unknown result");
 }
 
-int32_t SuccinctServiceClient::get_num_keys(const int32_t shard_id)
+int32_t SuccinctServiceClient::GetNumKeys(const int32_t shard_id)
 {
-  send_get_num_keys(shard_id);
-  return recv_get_num_keys();
+  send_GetNumKeys(shard_id);
+  return recv_GetNumKeys();
 }
 
-void SuccinctServiceClient::send_get_num_keys(const int32_t shard_id)
+void SuccinctServiceClient::send_GetNumKeys(const int32_t shard_id)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_num_keys", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetNumKeys", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_num_keys_pargs args;
+  SuccinctService_GetNumKeys_pargs args;
   args.shard_id = &shard_id;
   args.write(oprot_);
 
@@ -6319,7 +6319,7 @@ void SuccinctServiceClient::send_get_num_keys(const int32_t shard_id)
   oprot_->getTransport()->flush();
 }
 
-int32_t SuccinctServiceClient::recv_get_num_keys()
+int32_t SuccinctServiceClient::recv_GetNumKeys()
 {
 
   int32_t rseqid = 0;
@@ -6339,13 +6339,13 @@ int32_t SuccinctServiceClient::recv_get_num_keys()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_num_keys") != 0) {
+  if (fname.compare("GetNumKeys") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int32_t _return;
-  SuccinctService_get_num_keys_presult result;
+  SuccinctService_GetNumKeys_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6354,21 +6354,21 @@ int32_t SuccinctServiceClient::recv_get_num_keys()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_num_keys failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetNumKeys failed: unknown result");
 }
 
-int64_t SuccinctServiceClient::get_tot_size()
+int64_t SuccinctServiceClient::GetTotSize()
 {
-  send_get_tot_size();
-  return recv_get_tot_size();
+  send_GetTotSize();
+  return recv_GetTotSize();
 }
 
-void SuccinctServiceClient::send_get_tot_size()
+void SuccinctServiceClient::send_GetTotSize()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("get_tot_size", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetTotSize", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  SuccinctService_get_tot_size_pargs args;
+  SuccinctService_GetTotSize_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -6376,7 +6376,7 @@ void SuccinctServiceClient::send_get_tot_size()
   oprot_->getTransport()->flush();
 }
 
-int64_t SuccinctServiceClient::recv_get_tot_size()
+int64_t SuccinctServiceClient::recv_GetTotSize()
 {
 
   int32_t rseqid = 0;
@@ -6396,13 +6396,13 @@ int64_t SuccinctServiceClient::recv_get_tot_size()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("get_tot_size") != 0) {
+  if (fname.compare("GetTotSize") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
   int64_t _return;
-  SuccinctService_get_tot_size_presult result;
+  SuccinctService_GetTotSize_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -6411,7 +6411,7 @@ int64_t SuccinctServiceClient::recv_get_tot_size()
   if (result.__isset.success) {
     return _return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_tot_size failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetTotSize failed: unknown result");
 }
 
 bool SuccinctServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
@@ -6433,38 +6433,38 @@ bool SuccinctServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtoco
   return true;
 }
 
-void SuccinctServiceProcessor::process_connect_to_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_ConnectToHandlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.connect_to_handlers", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.ConnectToHandlers", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.connect_to_handlers");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.ConnectToHandlers");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.connect_to_handlers");
+    this->eventHandler_->preRead(ctx, "SuccinctService.ConnectToHandlers");
   }
 
-  SuccinctService_connect_to_handlers_args args;
+  SuccinctService_ConnectToHandlers_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.connect_to_handlers", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.ConnectToHandlers", bytes);
   }
 
-  SuccinctService_connect_to_handlers_result result;
+  SuccinctService_ConnectToHandlers_result result;
   try {
-    result.success = iface_->connect_to_handlers();
+    result.success = iface_->ConnectToHandlers();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.connect_to_handlers");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.ConnectToHandlers");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("ConnectToHandlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6473,52 +6473,52 @@ void SuccinctServiceProcessor::process_connect_to_handlers(int32_t seqid, ::apac
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.connect_to_handlers");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.ConnectToHandlers");
   }
 
-  oprot->writeMessageBegin("connect_to_handlers", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("ConnectToHandlers", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.connect_to_handlers", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.ConnectToHandlers", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_disconnect_from_handlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_DisconnectFromHandlers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.disconnect_from_handlers", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.DisconnectFromHandlers", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.disconnect_from_handlers");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.DisconnectFromHandlers");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.disconnect_from_handlers");
+    this->eventHandler_->preRead(ctx, "SuccinctService.DisconnectFromHandlers");
   }
 
-  SuccinctService_disconnect_from_handlers_args args;
+  SuccinctService_DisconnectFromHandlers_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.disconnect_from_handlers", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.DisconnectFromHandlers", bytes);
   }
 
-  SuccinctService_disconnect_from_handlers_result result;
+  SuccinctService_DisconnectFromHandlers_result result;
   try {
-    result.success = iface_->disconnect_from_handlers();
+    result.success = iface_->DisconnectFromHandlers();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.disconnect_from_handlers");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.DisconnectFromHandlers");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("DisconnectFromHandlers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6527,52 +6527,52 @@ void SuccinctServiceProcessor::process_disconnect_from_handlers(int32_t seqid, :
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.disconnect_from_handlers");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.DisconnectFromHandlers");
   }
 
-  oprot->writeMessageBegin("disconnect_from_handlers", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("DisconnectFromHandlers", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.disconnect_from_handlers", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.DisconnectFromHandlers", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_connect_to_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_ConnectToLocalServers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.connect_to_local_servers", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.ConnectToLocalServers", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.connect_to_local_servers");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.ConnectToLocalServers");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.connect_to_local_servers");
+    this->eventHandler_->preRead(ctx, "SuccinctService.ConnectToLocalServers");
   }
 
-  SuccinctService_connect_to_local_servers_args args;
+  SuccinctService_ConnectToLocalServers_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.connect_to_local_servers", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.ConnectToLocalServers", bytes);
   }
 
-  SuccinctService_connect_to_local_servers_result result;
+  SuccinctService_ConnectToLocalServers_result result;
   try {
-    result.success = iface_->connect_to_local_servers();
+    result.success = iface_->ConnectToLocalServers();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.connect_to_local_servers");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.ConnectToLocalServers");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("connect_to_local_servers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("ConnectToLocalServers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6581,52 +6581,52 @@ void SuccinctServiceProcessor::process_connect_to_local_servers(int32_t seqid, :
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.connect_to_local_servers");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.ConnectToLocalServers");
   }
 
-  oprot->writeMessageBegin("connect_to_local_servers", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("ConnectToLocalServers", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.connect_to_local_servers", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.ConnectToLocalServers", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_disconnect_from_local_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_DisconnectFromLocalServers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.disconnect_from_local_servers", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.DisconnectFromLocalServers", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.disconnect_from_local_servers");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.DisconnectFromLocalServers");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.disconnect_from_local_servers");
+    this->eventHandler_->preRead(ctx, "SuccinctService.DisconnectFromLocalServers");
   }
 
-  SuccinctService_disconnect_from_local_servers_args args;
+  SuccinctService_DisconnectFromLocalServers_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.disconnect_from_local_servers", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.DisconnectFromLocalServers", bytes);
   }
 
-  SuccinctService_disconnect_from_local_servers_result result;
+  SuccinctService_DisconnectFromLocalServers_result result;
   try {
-    result.success = iface_->disconnect_from_local_servers();
+    result.success = iface_->DisconnectFromLocalServers();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.disconnect_from_local_servers");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.DisconnectFromLocalServers");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("disconnect_from_local_servers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("DisconnectFromLocalServers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6635,52 +6635,52 @@ void SuccinctServiceProcessor::process_disconnect_from_local_servers(int32_t seq
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.disconnect_from_local_servers");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.DisconnectFromLocalServers");
   }
 
-  oprot->writeMessageBegin("disconnect_from_local_servers", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("DisconnectFromLocalServers", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.disconnect_from_local_servers", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.DisconnectFromLocalServers", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_start_servers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_StartLocalServers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.start_servers", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.StartLocalServers", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.start_servers");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.StartLocalServers");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.start_servers");
+    this->eventHandler_->preRead(ctx, "SuccinctService.StartLocalServers");
   }
 
-  SuccinctService_start_servers_args args;
+  SuccinctService_StartLocalServers_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.start_servers", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.StartLocalServers", bytes);
   }
 
-  SuccinctService_start_servers_result result;
+  SuccinctService_StartLocalServers_result result;
   try {
-    result.success = iface_->start_servers();
+    result.success = iface_->StartLocalServers();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.start_servers");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.StartLocalServers");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("start_servers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("StartLocalServers", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6689,52 +6689,52 @@ void SuccinctServiceProcessor::process_start_servers(int32_t seqid, ::apache::th
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.start_servers");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.StartLocalServers");
   }
 
-  oprot->writeMessageBegin("start_servers", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("StartLocalServers", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.start_servers", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.StartLocalServers", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_Initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.initialize", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.Initialize", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.initialize");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.Initialize");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.initialize");
+    this->eventHandler_->preRead(ctx, "SuccinctService.Initialize");
   }
 
-  SuccinctService_initialize_args args;
+  SuccinctService_Initialize_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.initialize", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.Initialize", bytes);
   }
 
-  SuccinctService_initialize_result result;
+  SuccinctService_Initialize_result result;
   try {
-    result.success = iface_->initialize(args.mode);
+    result.success = iface_->Initialize(args.mode);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.initialize");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.Initialize");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("initialize", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Initialize", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6743,52 +6743,52 @@ void SuccinctServiceProcessor::process_initialize(int32_t seqid, ::apache::thrif
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.initialize");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.Initialize");
   }
 
-  oprot->writeMessageBegin("initialize", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Initialize", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.initialize", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.Initialize", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.Get", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.Get");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get");
+    this->eventHandler_->preRead(ctx, "SuccinctService.Get");
   }
 
-  SuccinctService_get_args args;
+  SuccinctService_Get_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.Get", bytes);
   }
 
-  SuccinctService_get_result result;
+  SuccinctService_Get_result result;
   try {
-    iface_->get(result.success, args.key);
+    iface_->Get(result.success, args.key);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.Get");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Get", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6797,52 +6797,52 @@ void SuccinctServiceProcessor::process_get(int32_t seqid, ::apache::thrift::prot
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.Get");
   }
 
-  oprot->writeMessageBegin("get", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Get", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.Get", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_GetLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.GetLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.GetLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.GetLocal");
   }
 
-  SuccinctService_get_local_args args;
+  SuccinctService_GetLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.GetLocal", bytes);
   }
 
-  SuccinctService_get_local_result result;
+  SuccinctService_GetLocal_result result;
   try {
-    iface_->get_local(result.success, args.qserver_id, args.key);
+    iface_->GetLocal(result.success, args.qserver_id, args.key);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.GetLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6851,52 +6851,52 @@ void SuccinctServiceProcessor::process_get_local(int32_t seqid, ::apache::thrift
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.GetLocal");
   }
 
-  oprot->writeMessageBegin("get_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.GetLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_Access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.access", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.Access", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.access");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.Access");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.access");
+    this->eventHandler_->preRead(ctx, "SuccinctService.Access");
   }
 
-  SuccinctService_access_args args;
+  SuccinctService_Access_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.access", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.Access", bytes);
   }
 
-  SuccinctService_access_result result;
+  SuccinctService_Access_result result;
   try {
-    iface_->access(result.success, args.key, args.offset, args.len);
+    iface_->Access(result.success, args.key, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.access");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.Access");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("access", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Access", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6905,52 +6905,52 @@ void SuccinctServiceProcessor::process_access(int32_t seqid, ::apache::thrift::p
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.access");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.Access");
   }
 
-  oprot->writeMessageBegin("access", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Access", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.access", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.Access", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_access_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_AccessLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.access_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.AccessLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.access_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.AccessLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.access_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.AccessLocal");
   }
 
-  SuccinctService_access_local_args args;
+  SuccinctService_AccessLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.access_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.AccessLocal", bytes);
   }
 
-  SuccinctService_access_local_result result;
+  SuccinctService_AccessLocal_result result;
   try {
-    iface_->access_local(result.success, args.qserver_id, args.key, args.offset, args.len);
+    iface_->AccessLocal(result.success, args.qserver_id, args.key, args.offset, args.len);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.access_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.AccessLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("access_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("AccessLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6959,52 +6959,52 @@ void SuccinctServiceProcessor::process_access_local(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.access_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.AccessLocal");
   }
 
-  oprot->writeMessageBegin("access_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("AccessLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.access_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.AccessLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.search", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.Search", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.search");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.Search");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.search");
+    this->eventHandler_->preRead(ctx, "SuccinctService.Search");
   }
 
-  SuccinctService_search_args args;
+  SuccinctService_Search_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.search", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.Search", bytes);
   }
 
-  SuccinctService_search_result result;
+  SuccinctService_Search_result result;
   try {
-    iface_->search(result.success, args.query);
+    iface_->Search(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.search");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.Search");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("search", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Search", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7013,52 +7013,52 @@ void SuccinctServiceProcessor::process_search(int32_t seqid, ::apache::thrift::p
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.search");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.Search");
   }
 
-  oprot->writeMessageBegin("search", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Search", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.search", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.Search", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_SearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.search_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.SearchLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.search_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.SearchLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.search_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.SearchLocal");
   }
 
-  SuccinctService_search_local_args args;
+  SuccinctService_SearchLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.search_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.SearchLocal", bytes);
   }
 
-  SuccinctService_search_local_result result;
+  SuccinctService_SearchLocal_result result;
   try {
-    iface_->search_local(result.success, args.query);
+    iface_->SearchLocal(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.search_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.SearchLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("search_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("SearchLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7067,52 +7067,52 @@ void SuccinctServiceProcessor::process_search_local(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.search_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.SearchLocal");
   }
 
-  oprot->writeMessageBegin("search_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("SearchLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.search_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.SearchLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_regex_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_RegexSearch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.regex_search", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.RegexSearch", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.regex_search");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.RegexSearch");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.regex_search");
+    this->eventHandler_->preRead(ctx, "SuccinctService.RegexSearch");
   }
 
-  SuccinctService_regex_search_args args;
+  SuccinctService_RegexSearch_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.regex_search", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.RegexSearch", bytes);
   }
 
-  SuccinctService_regex_search_result result;
+  SuccinctService_RegexSearch_result result;
   try {
-    iface_->regex_search(result.success, args.query);
+    iface_->RegexSearch(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.regex_search");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.RegexSearch");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("regex_search", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("RegexSearch", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7121,52 +7121,52 @@ void SuccinctServiceProcessor::process_regex_search(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.regex_search");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.RegexSearch");
   }
 
-  oprot->writeMessageBegin("regex_search", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("RegexSearch", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.regex_search", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.RegexSearch", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_regex_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_RegexSearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.regex_search_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.RegexSearchLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.regex_search_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.RegexSearchLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.regex_search_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.RegexSearchLocal");
   }
 
-  SuccinctService_regex_search_local_args args;
+  SuccinctService_RegexSearchLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.regex_search_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.RegexSearchLocal", bytes);
   }
 
-  SuccinctService_regex_search_local_result result;
+  SuccinctService_RegexSearchLocal_result result;
   try {
-    iface_->regex_search_local(result.success, args.query);
+    iface_->RegexSearchLocal(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.regex_search_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.RegexSearchLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("regex_search_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("RegexSearchLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7175,52 +7175,52 @@ void SuccinctServiceProcessor::process_regex_search_local(int32_t seqid, ::apach
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.regex_search_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.RegexSearchLocal");
   }
 
-  oprot->writeMessageBegin("regex_search_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("RegexSearchLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.regex_search_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.RegexSearchLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_regex_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_RegexCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.regex_count", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.RegexCount", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.regex_count");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.RegexCount");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.regex_count");
+    this->eventHandler_->preRead(ctx, "SuccinctService.RegexCount");
   }
 
-  SuccinctService_regex_count_args args;
+  SuccinctService_RegexCount_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.regex_count", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.RegexCount", bytes);
   }
 
-  SuccinctService_regex_count_result result;
+  SuccinctService_RegexCount_result result;
   try {
-    iface_->regex_count(result.success, args.query);
+    iface_->RegexCount(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.regex_count");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.RegexCount");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("RegexCount", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7229,52 +7229,52 @@ void SuccinctServiceProcessor::process_regex_count(int32_t seqid, ::apache::thri
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.regex_count");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.RegexCount");
   }
 
-  oprot->writeMessageBegin("regex_count", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("RegexCount", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.regex_count", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.RegexCount", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_regex_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_RegexCountLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.regex_count_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.RegexCountLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.regex_count_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.RegexCountLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.regex_count_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.RegexCountLocal");
   }
 
-  SuccinctService_regex_count_local_args args;
+  SuccinctService_RegexCountLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.regex_count_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.RegexCountLocal", bytes);
   }
 
-  SuccinctService_regex_count_local_result result;
+  SuccinctService_RegexCountLocal_result result;
   try {
-    iface_->regex_count_local(result.success, args.query);
+    iface_->RegexCountLocal(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.regex_count_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.RegexCountLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("regex_count_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("RegexCountLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7283,52 +7283,52 @@ void SuccinctServiceProcessor::process_regex_count_local(int32_t seqid, ::apache
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.regex_count_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.RegexCountLocal");
   }
 
-  oprot->writeMessageBegin("regex_count_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("RegexCountLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.regex_count_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.RegexCountLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_Count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.count", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.Count", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.count");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.Count");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.count");
+    this->eventHandler_->preRead(ctx, "SuccinctService.Count");
   }
 
-  SuccinctService_count_args args;
+  SuccinctService_Count_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.count", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.Count", bytes);
   }
 
-  SuccinctService_count_result result;
+  SuccinctService_Count_result result;
   try {
-    result.success = iface_->count(args.query);
+    result.success = iface_->Count(args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.count");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.Count");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7337,52 +7337,52 @@ void SuccinctServiceProcessor::process_count(int32_t seqid, ::apache::thrift::pr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.count");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.Count");
   }
 
-  oprot->writeMessageBegin("count", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Count", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.count", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.Count", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_CountLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.count_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.CountLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.count_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.CountLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.count_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.CountLocal");
   }
 
-  SuccinctService_count_local_args args;
+  SuccinctService_CountLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.count_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.CountLocal", bytes);
   }
 
-  SuccinctService_count_local_result result;
+  SuccinctService_CountLocal_result result;
   try {
-    result.success = iface_->count_local(args.query);
+    result.success = iface_->CountLocal(args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.count_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.CountLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("count_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("CountLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7391,52 +7391,52 @@ void SuccinctServiceProcessor::process_count_local(int32_t seqid, ::apache::thri
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.count_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.CountLocal");
   }
 
-  oprot->writeMessageBegin("count_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("CountLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.count_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.CountLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_extract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatExtract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_extract", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatExtract", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_extract");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatExtract");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_extract");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatExtract");
   }
 
-  SuccinctService_flat_extract_args args;
+  SuccinctService_FlatExtract_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_extract", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatExtract", bytes);
   }
 
-  SuccinctService_flat_extract_result result;
+  SuccinctService_FlatExtract_result result;
   try {
-    iface_->flat_extract(result.success, args.offset, args.length);
+    iface_->FlatExtract(result.success, args.offset, args.length);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_extract");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatExtract");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_extract", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatExtract", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7445,52 +7445,52 @@ void SuccinctServiceProcessor::process_flat_extract(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_extract");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatExtract");
   }
 
-  oprot->writeMessageBegin("flat_extract", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatExtract", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_extract", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatExtract", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_extract_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatExtractLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_extract_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatExtractLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_extract_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatExtractLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_extract_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatExtractLocal");
   }
 
-  SuccinctService_flat_extract_local_args args;
+  SuccinctService_FlatExtractLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_extract_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatExtractLocal", bytes);
   }
 
-  SuccinctService_flat_extract_local_result result;
+  SuccinctService_FlatExtractLocal_result result;
   try {
-    iface_->flat_extract_local(result.success, args.offset, args.length);
+    iface_->FlatExtractLocal(result.success, args.offset, args.length);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_extract_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatExtractLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_extract_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatExtractLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7499,52 +7499,52 @@ void SuccinctServiceProcessor::process_flat_extract_local(int32_t seqid, ::apach
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_extract_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatExtractLocal");
   }
 
-  oprot->writeMessageBegin("flat_extract_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatExtractLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_extract_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatExtractLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_count", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatCount", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_count");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatCount");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_count");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatCount");
   }
 
-  SuccinctService_flat_count_args args;
+  SuccinctService_FlatCount_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_count", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatCount", bytes);
   }
 
-  SuccinctService_flat_count_result result;
+  SuccinctService_FlatCount_result result;
   try {
-    result.success = iface_->flat_count(args.query);
+    result.success = iface_->FlatCount(args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_count");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatCount");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_count", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatCount", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7553,52 +7553,52 @@ void SuccinctServiceProcessor::process_flat_count(int32_t seqid, ::apache::thrif
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_count");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatCount");
   }
 
-  oprot->writeMessageBegin("flat_count", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatCount", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_count", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatCount", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_count_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatCountLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_count_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatCountLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_count_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatCountLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_count_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatCountLocal");
   }
 
-  SuccinctService_flat_count_local_args args;
+  SuccinctService_FlatCountLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_count_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatCountLocal", bytes);
   }
 
-  SuccinctService_flat_count_local_result result;
+  SuccinctService_FlatCountLocal_result result;
   try {
-    result.success = iface_->flat_count_local(args.query);
+    result.success = iface_->FlatCountLocal(args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_count_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatCountLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_count_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatCountLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7607,52 +7607,52 @@ void SuccinctServiceProcessor::process_flat_count_local(int32_t seqid, ::apache:
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_count_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatCountLocal");
   }
 
-  oprot->writeMessageBegin("flat_count_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatCountLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_count_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatCountLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatSearch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_search", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatSearch", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_search");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatSearch");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_search");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatSearch");
   }
 
-  SuccinctService_flat_search_args args;
+  SuccinctService_FlatSearch_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_search", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatSearch", bytes);
   }
 
-  SuccinctService_flat_search_result result;
+  SuccinctService_FlatSearch_result result;
   try {
-    iface_->flat_search(result.success, args.query);
+    iface_->FlatSearch(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_search");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatSearch");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_search", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatSearch", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7661,52 +7661,52 @@ void SuccinctServiceProcessor::process_flat_search(int32_t seqid, ::apache::thri
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_search");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatSearch");
   }
 
-  oprot->writeMessageBegin("flat_search", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatSearch", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_search", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatSearch", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_flat_search_local(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_FlatSearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.flat_search_local", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.FlatSearchLocal", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.flat_search_local");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FlatSearchLocal");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.flat_search_local");
+    this->eventHandler_->preRead(ctx, "SuccinctService.FlatSearchLocal");
   }
 
-  SuccinctService_flat_search_local_args args;
+  SuccinctService_FlatSearchLocal_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.flat_search_local", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.FlatSearchLocal", bytes);
   }
 
-  SuccinctService_flat_search_local_result result;
+  SuccinctService_FlatSearchLocal_result result;
   try {
-    iface_->flat_search_local(result.success, args.query);
+    iface_->FlatSearchLocal(result.success, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.flat_search_local");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FlatSearchLocal");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("flat_search_local", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("FlatSearchLocal", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7715,52 +7715,52 @@ void SuccinctServiceProcessor::process_flat_search_local(int32_t seqid, ::apache
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.flat_search_local");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FlatSearchLocal");
   }
 
-  oprot->writeMessageBegin("flat_search_local", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("FlatSearchLocal", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.flat_search_local", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FlatSearchLocal", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get_num_hosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_GetNumHosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get_num_hosts", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.GetNumHosts", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get_num_hosts");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.GetNumHosts");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get_num_hosts");
+    this->eventHandler_->preRead(ctx, "SuccinctService.GetNumHosts");
   }
 
-  SuccinctService_get_num_hosts_args args;
+  SuccinctService_GetNumHosts_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get_num_hosts", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.GetNumHosts", bytes);
   }
 
-  SuccinctService_get_num_hosts_result result;
+  SuccinctService_GetNumHosts_result result;
   try {
-    result.success = iface_->get_num_hosts();
+    result.success = iface_->GetNumHosts();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get_num_hosts");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.GetNumHosts");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetNumHosts", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7769,52 +7769,52 @@ void SuccinctServiceProcessor::process_get_num_hosts(int32_t seqid, ::apache::th
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get_num_hosts");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.GetNumHosts");
   }
 
-  oprot->writeMessageBegin("get_num_hosts", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetNumHosts", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get_num_hosts", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.GetNumHosts", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get_num_shards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_GetNumShards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get_num_shards", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.GetNumShards", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get_num_shards");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.GetNumShards");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get_num_shards");
+    this->eventHandler_->preRead(ctx, "SuccinctService.GetNumShards");
   }
 
-  SuccinctService_get_num_shards_args args;
+  SuccinctService_GetNumShards_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get_num_shards", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.GetNumShards", bytes);
   }
 
-  SuccinctService_get_num_shards_result result;
+  SuccinctService_GetNumShards_result result;
   try {
-    result.success = iface_->get_num_shards(args.host_id);
+    result.success = iface_->GetNumShards(args.host_id);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get_num_shards");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.GetNumShards");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_num_shards", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetNumShards", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7823,52 +7823,52 @@ void SuccinctServiceProcessor::process_get_num_shards(int32_t seqid, ::apache::t
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get_num_shards");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.GetNumShards");
   }
 
-  oprot->writeMessageBegin("get_num_shards", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetNumShards", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get_num_shards", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.GetNumShards", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_GetNumKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get_num_keys", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.GetNumKeys", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get_num_keys");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.GetNumKeys");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get_num_keys");
+    this->eventHandler_->preRead(ctx, "SuccinctService.GetNumKeys");
   }
 
-  SuccinctService_get_num_keys_args args;
+  SuccinctService_GetNumKeys_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get_num_keys", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.GetNumKeys", bytes);
   }
 
-  SuccinctService_get_num_keys_result result;
+  SuccinctService_GetNumKeys_result result;
   try {
-    result.success = iface_->get_num_keys(args.shard_id);
+    result.success = iface_->GetNumKeys(args.shard_id);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get_num_keys");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.GetNumKeys");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_num_keys", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetNumKeys", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7877,52 +7877,52 @@ void SuccinctServiceProcessor::process_get_num_keys(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get_num_keys");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.GetNumKeys");
   }
 
-  oprot->writeMessageBegin("get_num_keys", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetNumKeys", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get_num_keys", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.GetNumKeys", bytes);
   }
 }
 
-void SuccinctServiceProcessor::process_get_tot_size(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void SuccinctServiceProcessor::process_GetTotSize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("SuccinctService.get_tot_size", callContext);
+    ctx = this->eventHandler_->getContext("SuccinctService.GetTotSize", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.get_tot_size");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.GetTotSize");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "SuccinctService.get_tot_size");
+    this->eventHandler_->preRead(ctx, "SuccinctService.GetTotSize");
   }
 
-  SuccinctService_get_tot_size_args args;
+  SuccinctService_GetTotSize_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "SuccinctService.get_tot_size", bytes);
+    this->eventHandler_->postRead(ctx, "SuccinctService.GetTotSize", bytes);
   }
 
-  SuccinctService_get_tot_size_result result;
+  SuccinctService_GetTotSize_result result;
   try {
-    result.success = iface_->get_tot_size();
+    result.success = iface_->GetTotSize();
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "SuccinctService.get_tot_size");
+      this->eventHandler_->handlerError(ctx, "SuccinctService.GetTotSize");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("get_tot_size", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetTotSize", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -7931,17 +7931,17 @@ void SuccinctServiceProcessor::process_get_tot_size(int32_t seqid, ::apache::thr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "SuccinctService.get_tot_size");
+    this->eventHandler_->preWrite(ctx, "SuccinctService.GetTotSize");
   }
 
-  oprot->writeMessageBegin("get_tot_size", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetTotSize", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "SuccinctService.get_tot_size", bytes);
+    this->eventHandler_->postWrite(ctx, "SuccinctService.GetTotSize", bytes);
   }
 }
 

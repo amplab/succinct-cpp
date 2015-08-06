@@ -13,8 +13,8 @@
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
 
-#include "../../core/include/succinct_shard.h"
-#include "../include/load_balancer.h"
+#include "succinct_shard.h"
+#include "load_balancer.h"
 #include "SuccinctService.h"
 #include "succinct_constants.h"
 #include "QueryService.h"
@@ -30,29 +30,28 @@ using boost::shared_ptr;
 class SuccinctServiceHandler : virtual public SuccinctServiceIf {
  public:
   SuccinctServiceHandler(std::string filename, uint32_t local_host_id,
-                         uint32_t num_shards, std::string qserver_exec,
+                         uint32_t num_shards,
                          std::vector<std::string> hostnames, bool construct,
                          std::vector<double> distribution,
                          std::vector<uint32_t> sampling_rates,
                          uint32_t num_failures) {
-    this->local_host_id = local_host_id;
-    this->num_shards = num_shards;
-    this->hostnames = hostnames;
-    this->filename = filename;
-    this->qserver_exec = qserver_exec;
-    this->construct = construct;
-    this->balancer = new LoadBalancer(distribution);
-    this->sampling_rates = sampling_rates;
-    this->num_failures = num_failures;
+    this->local_host_id_ = local_host_id;
+    this->num_shards_ = num_shards;
+    this->hostnames_ = hostnames;
+    this->filename_ = filename;
+    this->construct_ = construct;
+    this->balancer_ = new LoadBalancer(distribution);
+    this->sampling_rates_ = sampling_rates;
+    this->num_failures_ = num_failures;
   }
 
-  int32_t start_servers() {
-    return initialize(0);
+  int32_t StartLocalServers() {
+    return Initialize(0);
   }
 
-  int32_t initialize(const int32_t mode) {
+  int32_t Initialize(const int32_t mode) {
     // Connect to query servers and start initialization
-    for (uint32_t i = 0; i < num_shards; i++) {
+    for (uint32_t i = 0; i < num_shards_; i++) {
       int port = QUERY_SERVER_PORT + i;
       boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
       boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
@@ -60,14 +59,14 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
       QueryServiceClient client(protocol);
       transport->open();
       fprintf(stderr, "Connected to QueryServer %u!\n", i);
-      int32_t shard_id = i * hostnames.size() + local_host_id;
-      client.send_init(shard_id);
-      qservers.push_back(client);
-      qserver_transports.push_back(transport);
+      int32_t shard_id = i * hostnames_.size() + local_host_id_;
+      client.send_Initialize(shard_id);
+      qservers_.push_back(client);
+      qserver_transports_.push_back(transport);
     }
 
-    for (auto client : qservers) {
-      int32_t status = client.recv_init();
+    for (auto client : qservers_) {
+      int32_t status = client.recv_Initialize();
       if (status) {
         fprintf(stderr, "Initialization failed, status = %d!\n", status);
         return status;
@@ -75,12 +74,12 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     }
 
     size_t offset = 0, client_id = 0;
-    for (auto client : qservers) {
-      shard_map[offset] = client_id;
-      offset_map[client_id] = offset;
+    for (auto client : qservers_) {
+      shard_map_[offset] = client_id;
+      offset_map_[client_id] = offset;
       fprintf(stderr, "(%zu, %zu)\n", offset, client_id);
       client_id++;
-      offset += client.get_shard_size();
+      offset += client.GetShardSize();
     }
 
     fprintf(stderr, "All QueryServers successfully initialized!\n");
@@ -88,346 +87,354 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     return 0;
   }
 
-  void get(std::string& _return, const int64_t key) {
+  void Get(std::string& _return, const int64_t key) {
     uint32_t shard_id = (uint32_t) (key / SuccinctShard::MAX_KEYS)
-        * balancer->num_replicas() + balancer->get_replica();
-    uint32_t host_id = shard_id % hostnames.size();
+        * balancer_->num_replicas() + balancer_->get_replica();
+    uint32_t host_id = shard_id % hostnames_.size();
     // Currently only supports single failure emulation
-    if (host_id < num_failures) {
+    if (host_id < num_failures_) {
       // Get new replica#
-      uint32_t replica_num = (shard_id % balancer->num_replicas() == 0) ? 1 : 0;
+      uint32_t replica_num =
+          (shard_id % balancer_->num_replicas() == 0) ? 1 : 0;
       shard_id = (uint32_t) ((key / SuccinctShard::MAX_KEYS)
-          * balancer->num_replicas()) + replica_num;
-      assert(host_id != shard_id % hostnames.size());
-      host_id = shard_id % hostnames.size();
+          * balancer_->num_replicas()) + replica_num;
+      assert(host_id != shard_id % hostnames_.size());
+      host_id = shard_id % hostnames_.size();
     }
-    uint32_t qserver_id = shard_id / hostnames.size();
-    if (host_id == local_host_id) {
-      get_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
+    uint32_t qserver_id = shard_id / hostnames_.size();
+    if (host_id == local_host_id_) {
+      GetLocal(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
     } else {
-      qhandlers.at(host_id).get_local(_return, qserver_id,
-                                      key % SuccinctShard::MAX_KEYS);
+      qhandlers_.at(host_id).GetLocal(_return, qserver_id,
+                                       key % SuccinctShard::MAX_KEYS);
     }
   }
 
-  void get_local(std::string& _return, const int32_t qserver_id,
-                 const int64_t key) {
-    qservers.at(qserver_id).get(_return, key);
+  void GetLocal(std::string& _return, const int32_t qserver_id,
+                const int64_t key) {
+    qservers_.at(qserver_id).Get(_return, key);
   }
 
-  void access(std::string& _return, const int64_t key, const int32_t offset,
+  void Access(std::string& _return, const int64_t key, const int32_t offset,
               const int32_t len) {
     uint32_t shard_id = (uint32_t) (key / SuccinctShard::MAX_KEYS)
-        * balancer->num_replicas() + balancer->get_replica();
-    uint32_t host_id = shard_id % hostnames.size();
+        * balancer_->num_replicas() + balancer_->get_replica();
+    uint32_t host_id = shard_id % hostnames_.size();
     // Currently only supports single failure emulation
-    if (host_id < num_failures) {
+    if (host_id < num_failures_) {
       // Get new replica#
-      uint32_t replica_num = (shard_id % balancer->num_replicas() == 0) ? 1 : 0;
+      uint32_t replica_num =
+          (shard_id % balancer_->num_replicas() == 0) ? 1 : 0;
       shard_id = (uint32_t) ((key / SuccinctShard::MAX_KEYS)
-          * balancer->num_replicas()) + replica_num;
-      assert(host_id != shard_id % hostnames.size());
-      host_id = shard_id % hostnames.size();
+          * balancer_->num_replicas()) + replica_num;
+      assert(host_id != shard_id % hostnames_.size());
+      host_id = shard_id % hostnames_.size();
     }
-    uint32_t qserver_id = shard_id / hostnames.size();
-    if (host_id == local_host_id) {
-      access_local(_return, qserver_id, key % SuccinctShard::MAX_KEYS, offset,
-                   len);
+    uint32_t qserver_id = shard_id / hostnames_.size();
+    if (host_id == local_host_id_) {
+      AccessLocal(_return, qserver_id, key % SuccinctShard::MAX_KEYS, offset,
+                  len);
     } else {
-      qhandlers.at(host_id).access_local(_return, qserver_id,
-                                         key % SuccinctShard::MAX_KEYS, offset,
-                                         len);
+      qhandlers_.at(host_id).AccessLocal(_return, qserver_id,
+                                          key % SuccinctShard::MAX_KEYS, offset,
+                                          len);
     }
   }
 
-  void access_local(std::string& _return, const int32_t qserver_id,
-                    const int64_t key, const int32_t offset,
-                    const int32_t len) {
-    qservers.at(qserver_id).access(_return, key, offset, len);
+  void AccessLocal(std::string& _return, const int32_t qserver_id,
+                   const int64_t key, const int32_t offset, const int32_t len) {
+    qservers_.at(qserver_id).Access(_return, key, offset, len);
   }
 
-  void search_local(std::set<int64_t> & _return, const std::string& query) {
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_search(query);
+  void SearchLocal(std::set<int64_t> & _return, const std::string& query) {
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_Search(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
+    for (int j = 0; j < qservers_.size(); j++) {
       std::set<int64_t> keys;
-      qservers[j].recv_search(keys);
+      qservers_[j].recv_Search(keys);
       _return.insert(keys.begin(), keys.end());
     }
   }
 
-  void search(std::set<int64_t> & _return, const std::string& query) {
+  void Search(std::set<int64_t> & _return, const std::string& query) {
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
-          qservers[j].send_search(query);
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
+          qservers_[j].send_Search(query);
         }
       } else {
-        qhandlers.at(i).send_search_local(query);
+        qhandlers_.at(i).send_SearchLocal(query);
       }
     }
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
           std::set<int64_t> keys;
-          qservers[j].recv_search(keys);
+          qservers_[j].recv_Search(keys);
           _return.insert(keys.begin(), keys.end());
         }
       } else {
         std::set<int64_t> keys;
-        qhandlers.at(i).recv_search(keys);
+        qhandlers_.at(i).recv_Search(keys);
         _return.insert(keys.begin(), keys.end());
       }
     }
   }
 
-  void regex_search_local(std::set<int64_t> & _return,
-                          const std::string& query) {
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_regex_search(query);
+  void RegexSearchLocal(std::set<int64_t> & _return, const std::string& query) {
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_RegexSearch(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
+    for (int j = 0; j < qservers_.size(); j++) {
       std::set<int64_t> results;
-      qservers[j].recv_regex_search(results);
+      qservers_[j].recv_RegexSearch(results);
       _return.insert(results.begin(), results.end());
     }
   }
 
-  void regex_search(std::set<int64_t> & _return, const std::string& query) {
+  void RegexSearch(std::set<int64_t> & _return, const std::string& query) {
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
-          qservers[j].send_regex_search(query);
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
+          qservers_[j].send_RegexSearch(query);
         }
       } else {
-        qhandlers.at(i).send_regex_search_local(query);
+        qhandlers_.at(i).send_RegexSearchLocal(query);
       }
     }
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
           std::set<int64_t> results;
-          qservers[j].recv_regex_search(results);
+          qservers_[j].recv_RegexSearch(results);
           _return.insert(results.begin(), results.end());
         }
       } else {
         std::set<int64_t> results;
-        qhandlers.at(i).recv_regex_search(results);
+        qhandlers_.at(i).recv_RegexSearch(results);
         _return.insert(results.begin(), results.end());
       }
     }
   }
 
-  void regex_count_local(std::vector<int64_t> & _return,
-                         const std::string& query) {
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_regex_search(query);
+  void RegexCountLocal(std::vector<int64_t> & _return,
+                       const std::string& query) {
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_RegexCount(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
+    for (int j = 0; j < qservers_.size(); j++) {
       std::vector<int64_t> results;
-      qservers[j].recv_regex_count(results);
+      qservers_[j].recv_RegexCount(results);
       _return.insert(_return.begin(), results.begin(), results.end());
     }
   }
 
-  void regex_count(std::vector<int64_t> & _return, const std::string& query) {
+  void RegexCount(std::vector<int64_t> & _return, const std::string& query) {
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
-          qservers[j].send_regex_count(query);
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
+          qservers_[j].send_RegexCount(query);
         }
       } else {
-        qhandlers.at(i).send_regex_count_local(query);
+        qhandlers_.at(i).send_RegexCountLocal(query);
       }
     }
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
           std::vector<int64_t> results;
-          qservers[j].recv_regex_count(results);
+          qservers_[j].recv_RegexCount(results);
           _return.insert(_return.begin(), results.begin(), results.end());
         }
       } else {
         std::vector<int64_t> results;
-        qhandlers.at(i).recv_regex_count(results);
+        qhandlers_.at(i).recv_RegexCount(results);
         _return.insert(_return.begin(), results.begin(), results.end());
       }
     }
   }
 
-  void flat_extract(std::string& _return, const int64_t offset,
-                    const int64_t len) {
-    auto it = std::prev(shard_map.upper_bound(offset));
+  void FlatExtract(std::string& _return, const int64_t offset,
+                   const int64_t len) {
+    auto it = std::prev(shard_map_.upper_bound(offset));
     size_t shard_id = it->second;
     size_t shard_offset = it->first;
-    qservers.at(shard_id).flat_extract(_return, offset - shard_offset, len);
+    qservers_.at(shard_id).FlatExtract(_return, offset - shard_offset, len);
   }
 
-  void flat_extract_local(std::string& _return, const int64_t offset,
-                          const int64_t len) {
-    auto it = std::prev(shard_map.upper_bound(offset));
+  void FlatExtractLocal(std::string& _return, const int64_t offset,
+                        const int64_t len) {
+    auto it = std::prev(shard_map_.upper_bound(offset));
     size_t shard_id = it->second;
     size_t shard_offset = it->first;
-    qservers.at(shard_id).flat_extract(_return, offset - shard_offset, len);
+    qservers_.at(shard_id).FlatExtract(_return, offset - shard_offset, len);
   }
 
-  void flat_search_local(std::vector<int64_t> & _return,
-                         const std::string& query) {
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_flat_search(query);
+  void FlatSearchLocal(std::vector<int64_t> & _return,
+                       const std::string& query) {
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_FlatSearch(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].recv_flat_search(_return);
-    }
-  }
-
-  void flat_search(std::vector<int64_t> & _return, const std::string& query) {
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_flat_search(query);
-    }
-
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].recv_flat_search(_return);
+    for (int j = 0; j < qservers_.size(); j++) {
+      std::vector<int64_t> results;
+      qservers_[j].recv_FlatSearch(results);
+      for (auto offset : results) {
+        _return.push_back(offset_map_[j] + offset);
+      }
     }
   }
 
-  int64_t flat_count_local(const std::string& query) {
+  void FlatSearch(std::vector<int64_t> & _return, const std::string& query) {
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_FlatSearch(query);
+    }
+
+    for (int j = 0; j < qservers_.size(); j++) {
+      std::vector<int64_t> results;
+      qservers_[j].recv_FlatSearch(results);
+      for (auto offset : results) {
+        _return.push_back(offset_map_[j] + offset);
+      }
+    }
+  }
+
+  int64_t FlatCountLocal(const std::string& query) {
     int64_t ret = 0;
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_flat_count(query);
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_FlatCount(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
-      ret += qservers[j].recv_flat_count();
+    for (int j = 0; j < qservers_.size(); j++) {
+      ret += qservers_[j].recv_FlatCount();
     }
     return ret;
   }
 
-  int64_t flat_count(const std::string& query) {
+  int64_t FlatCount(const std::string& query) {
     int64_t ret = 0;
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_flat_count(query);
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_FlatCount(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
-      ret += qservers[j].recv_flat_count();
+    for (int j = 0; j < qservers_.size(); j++) {
+      ret += qservers_[j].recv_FlatCount();
     }
     return ret;
   }
 
-  int64_t count_local(const std::string& query) {
+  int64_t CountLocal(const std::string& query) {
     int64_t ret = 0;
-    for (int j = 0; j < qservers.size(); j++) {
-      qservers[j].send_count(query);
+    for (int j = 0; j < qservers_.size(); j++) {
+      qservers_[j].send_Count(query);
     }
 
-    for (int j = 0; j < qservers.size(); j++) {
-      ret += qservers[j].recv_count();
+    for (int j = 0; j < qservers_.size(); j++) {
+      ret += qservers_[j].recv_Count();
     }
     return ret;
   }
 
-  int64_t count(const std::string& query) {
+  int64_t Count(const std::string& query) {
     int64_t ret = 0;
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
-          qservers[j].send_count(query);
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
+          qservers_[j].send_Count(query);
         }
       } else {
-        qhandlers.at(i).send_count_local(query);
+        qhandlers_.at(i).send_CountLocal(query);
       }
     }
 
-    for (int i = 0; i < hostnames.size(); i++) {
-      if (i == local_host_id) {
-        for (int j = 0; j < qservers.size(); j++) {
-          ret += qservers[j].recv_count();
+    for (int i = 0; i < hostnames_.size(); i++) {
+      if (i == local_host_id_) {
+        for (int j = 0; j < qservers_.size(); j++) {
+          ret += qservers_[j].recv_Count();
         }
       } else {
-        ret += qhandlers.at(i).recv_count_local();
+        ret += qhandlers_.at(i).recv_CountLocal();
       }
     }
 
     return ret;
   }
 
-  int32_t get_num_hosts() {
-    return hostnames.size();
+  int32_t GetNumHosts() {
+    return hostnames_.size();
   }
 
-  int32_t get_num_shards(const int32_t host_id) {
+  int32_t GetNumShards(const int32_t host_id) {
     int32_t num;
-    if (host_id == local_host_id) {
-      return num_shards;
+    if (host_id == local_host_id_) {
+      return num_shards_;
     }
-    return qhandlers.at(host_id).get_num_shards(host_id);
+    return qhandlers_.at(host_id).GetNumShards(host_id);
   }
 
-  int32_t get_num_keys(const int32_t shard_id) {
-    int32_t host_id = shard_id % hostnames.size();
+  int32_t GetNumKeys(const int32_t shard_id) {
+    int32_t host_id = shard_id % hostnames_.size();
     int32_t num;
-    if (host_id == local_host_id) {
-      return qservers.at(shard_id / hostnames.size()).get_num_keys();
+    if (host_id == local_host_id_) {
+      return qservers_.at(shard_id / hostnames_.size()).GetNumKeys();
     }
-    return qhandlers.at(host_id).get_num_keys(shard_id);
+    return qhandlers_.at(host_id).GetNumKeys(shard_id);
   }
 
-  int64_t get_tot_size() {
+  int64_t GetTotSize() {
     int64_t tot_size = 0;
-    for (auto client : qservers) {
-      tot_size += client.get_shard_size();
+    for (auto client : qservers_) {
+      tot_size += client.GetShardSize();
     }
     return tot_size;
   }
 
-  int32_t connect_to_handlers() {
+  int32_t ConnectToHandlers() {
     // Create connections to all Succinct Clients
-    for (int i = 0; i < hostnames.size(); i++) {
-      fprintf(stderr, "Connecting to %s:%d...\n", hostnames[i].c_str(),
+    for (int i = 0; i < hostnames_.size(); i++) {
+      fprintf(stderr, "Connecting to %s:%d...\n", hostnames_[i].c_str(),
       QUERY_HANDLER_PORT);
       try {
-        if (i == local_host_id) {
+        if (i == local_host_id_) {
           fprintf(stderr, "Self setup:\n");
-          connect_to_local_servers();
+          ConnectToLocalServers();
         } else {
           boost::shared_ptr<TSocket> socket(
-              new TSocket(hostnames[i], QUERY_HANDLER_PORT));
+              new TSocket(hostnames_[i], QUERY_HANDLER_PORT));
           boost::shared_ptr<TTransport> transport(
               new TBufferedTransport(socket));
           boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
           SuccinctServiceClient client(protocol);
           transport->open();
           fprintf(stderr, "Connected!\n");
-          qhandler_transports.push_back(transport);
-          qhandlers.insert(std::pair<int, SuccinctServiceClient>(i, client));
+          qhandler_transports_.push_back(transport);
+          qhandlers_.insert(std::pair<int, SuccinctServiceClient>(i, client));
           fprintf(stderr, "Asking %s to connect to local servers...\n",
-                  hostnames[i].c_str());
-          client.connect_to_local_servers();
+                  hostnames_[i].c_str());
+          client.ConnectToLocalServers();
         }
       } catch (std::exception& e) {
         fprintf(stderr, "Client is not up...: %s\n ", e.what());
         return 1;
       }
     }
-    fprintf(stderr, "Currently have %zu connections.\n", qhandlers.size());
+    fprintf(stderr, "Currently have %zu connections.\n", qhandlers_.size());
     return 0;
   }
 
-  int32_t connect_to_local_servers() {
-    for (int i = 0; i < num_shards; i++) {
+  int32_t ConnectToLocalServers() {
+    for (int i = 0; i < num_shards_; i++) {
       fprintf(stderr, "Connecting to local server %d...", i);
       try {
         boost::shared_ptr<TSocket> socket(
@@ -437,8 +444,8 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
         QueryServiceClient qsclient(protocol);
         transport->open();
         fprintf(stderr, "Connected!\n");
-        qservers.push_back(qsclient);
-        qserver_transports.push_back(transport);
+        qservers_.push_back(qsclient);
+        qserver_transports_.push_back(transport);
         fprintf(stderr, "Pushed!\n");
       } catch (std::exception& e) {
         fprintf(stderr, "Could not connect to server...: %s\n", e.what());
@@ -446,25 +453,26 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
       }
     }
     fprintf(stderr, "Currently have %zu local server connections.\n",
-            qservers.size());
+            qservers_.size());
     return 0;
   }
 
-  int32_t disconnect_from_handlers() {
+  int32_t DisconnectFromHandlers() {
     // Destroy connections to all Succinct Handlers
-    for (int i = 0; i < hostnames.size(); i++) {
+    for (int i = 0; i < hostnames_.size(); i++) {
       try {
-        if (i == local_host_id) {
+        if (i == local_host_id_) {
           fprintf(stderr, "Killing local server connections...\n");
-          disconnect_from_local_servers();
+          DisconnectFromLocalServers();
         } else {
           fprintf(stderr,
                   "Asking client %s:%d to kill local server connections...\n",
-                  hostnames[i].c_str(), QUERY_HANDLER_PORT);
-          qhandlers.at(i).disconnect_from_local_servers();
+                  hostnames_[i].c_str(), QUERY_HANDLER_PORT);
+          qhandlers_.at(i).DisconnectFromLocalServers();
           fprintf(stderr, "Closing connection to %s:%d...",
-                  hostnames[i].c_str(), QUERY_HANDLER_PORT);
-          qhandler_transports[i]->close();
+                  hostnames_[i].c_str(),
+                  QUERY_HANDLER_PORT);
+          qhandler_transports_[i]->close();
           fprintf(stderr, "Closed!\n");
         }
       } catch (std::exception& e) {
@@ -472,110 +480,106 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
         return 1;
       }
     }
-    qhandler_transports.clear();
-    qhandlers.clear();
+    qhandler_transports_.clear();
+    qhandlers_.clear();
 
     return 0;
   }
 
-  int32_t disconnect_from_local_servers() {
-    for (int i = 0; i < qservers.size(); i++) {
+  int32_t DisconnectFromLocalServers() {
+    for (int i = 0; i < qservers_.size(); i++) {
       try {
         fprintf(stderr, "Disconnecting from local server %d\n", i);
-        qserver_transports[i]->close();
+        qserver_transports_[i]->close();
         fprintf(stderr, "Disconnected!\n");
       } catch (std::exception& e) {
         fprintf(stderr, "Could not close local connection: %s\n", e.what());
         return 1;
       }
     }
-    qserver_transports.clear();
-    qhandlers.clear();
+    qserver_transports_.clear();
+    qhandlers_.clear();
     return 0;
   }
 
  private:
-  std::string filename;
-  std::string qserver_exec;
-  bool construct;
-  std::vector<std::string> hostnames;
-  std::vector<QueryServiceClient> qservers;
-  std::vector<boost::shared_ptr<TTransport>> qserver_transports;
-  std::vector<boost::shared_ptr<TTransport>> qhandler_transports;
-  std::map<int, SuccinctServiceClient> qhandlers;
-  std::map<int64_t, size_t> shard_map;
-  std::map<size_t, int64_t> offset_map;
-  uint32_t num_shards;
-  uint32_t local_host_id;
-  uint32_t num_failures;
-  LoadBalancer *balancer;
-  std::vector<uint32_t> sampling_rates;
+  std::string filename_;
+  bool construct_;
+  std::vector<std::string> hostnames_;
+  std::vector<QueryServiceClient> qservers_;
+  std::vector<boost::shared_ptr<TTransport>> qserver_transports_;
+  std::vector<boost::shared_ptr<TTransport>> qhandler_transports_;
+  std::map<int, SuccinctServiceClient> qhandlers_;
+  std::map<int64_t, size_t> shard_map_;
+  std::map<size_t, int64_t> offset_map_;
+  uint32_t num_shards_;
+  uint32_t local_host_id_;
+  uint32_t num_failures_;
+  LoadBalancer *balancer_;
+  std::vector<uint32_t> sampling_rates_;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {
  public:
   HandlerProcessorFactory(std::string filename, uint32_t local_host_id,
-                          uint32_t num_shards, std::string qserver_exec,
+                          uint32_t num_shards,
                           std::vector<std::string> hostnames, bool construct,
                           std::vector<double> distribution,
                           std::vector<uint32_t> sampling_rates,
                           uint32_t num_failures) {
-    this->filename = filename;
-    this->local_host_id = local_host_id;
-    this->num_shards = num_shards;
-    this->qserver_exec = qserver_exec;
-    this->hostnames = hostnames;
-    this->construct = construct;
-    this->distribution = distribution;
-    this->sampling_rates = sampling_rates;
-    this->num_failures = num_failures;
+    this->filename_ = filename;
+    this->local_host_id_ = local_host_id;
+    this->num_shards_ = num_shards;
+    this->hostnames_ = hostnames;
+    this->construct_ = construct;
+    this->distribution_ = distribution;
+    this->sampling_rates_ = sampling_rates;
+    this->num_failures_ = num_failures;
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
     boost::shared_ptr<SuccinctServiceHandler> handler(
-        new SuccinctServiceHandler(filename, local_host_id, num_shards,
-                                   qserver_exec, hostnames, construct,
-                                   distribution, sampling_rates, num_failures));
+        new SuccinctServiceHandler(filename_, local_host_id_, num_shards_,
+                                   hostnames_, construct_, distribution_,
+                                   sampling_rates_, num_failures_));
     boost::shared_ptr<TProcessor> handlerProcessor(
         new SuccinctServiceProcessor(handler));
     return handlerProcessor;
   }
 
  private:
-  std::vector<std::string> hostnames;
-  std::string filename;
-  std::string qserver_exec;
-  uint32_t local_host_id;
-  uint32_t num_shards;
-  std::vector<double> distribution;
-  std::vector<uint32_t> sampling_rates;
-  bool construct;
-  uint32_t num_failures;
+  std::vector<std::string> hostnames_;
+  std::string filename_;
+  uint32_t local_host_id_;
+  uint32_t num_shards_;
+  std::vector<double> distribution_;
+  std::vector<uint32_t> sampling_rates_;
+  bool construct_;
+  uint32_t num_failures_;
 
 };
 
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-m mode] [-s num_shards] [-r replfile] [-q query_server_executible] [-h hostsfile] [-i hostid] [-f num_failures] file\n",
+      "Usage: %s [-m mode] [-s num_shards] [-r replfile] [-h hostsfile] [-i hostid] [-f num_failures] file\n",
       exec);
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2 || argc > 16) {
+  if (argc < 2 || argc > 14) {
     print_usage(argv[0]);
     return -1;
   }
 
   int c;
   uint32_t mode = 0, num_shards = 1;
-  std::string qserver_exec = "./bin/qserver";
   std::string hostsfile = "./conf/hosts";
   std::string replfile = "./conf/repl";
   uint32_t local_host_id = 0;
   uint32_t num_failures = 0;
 
-  while ((c = getopt(argc, argv, "m:s:r:q:h:i:f:")) != -1) {
+  while ((c = getopt(argc, argv, "m:s:r:h:i:f:")) != -1) {
     switch (c) {
       case 'm': {
         mode = atoi(optarg);
@@ -587,10 +591,6 @@ int main(int argc, char **argv) {
       }
       case 'r': {
         replfile = optarg;
-        break;
-      }
-      case 'q': {
-        qserver_exec = optarg;
         break;
       }
       case 'h': {
@@ -606,13 +606,8 @@ int main(int argc, char **argv) {
         break;
       }
       default: {
-        mode = 0;
-        num_shards = 1;
-        qserver_exec = "./bin/qserver";
-        hostsfile = "./conf/hosts";
-        replfile = "./conf/repl";
-        local_host_id = 0;
-        num_failures = 0;
+        fprintf(stderr, "Error parsing command line arguments\n");
+        return -1;
       }
     }
   }
@@ -649,9 +644,8 @@ int main(int argc, char **argv) {
   try {
     shared_ptr<HandlerProcessorFactory> handlerFactory(
         new HandlerProcessorFactory(filename, local_host_id, num_shards,
-                                    qserver_exec, hostnames, construct,
-                                    distribution, sampling_rates,
-                                    num_failures));
+                                    hostnames, construct, distribution,
+                                    sampling_rates, num_failures));
     shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());
