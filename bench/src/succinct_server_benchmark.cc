@@ -67,10 +67,8 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkCountLatency("latency_results_count");
   } else if (benchmark_type == "latency-search") {
     s_bench.BenchmarkSearchLatency("latency_results_search");
-  } else if (benchmark_type == "latency-regex-search") {
-    s_bench.BenchmarkRegexSearchLatency("latency_results_regex_search");
-  } else if (benchmark_type == "latency-regex-count") {
-    s_bench.BenchmarkRegexCountLatency("latency_results_regex_count");
+  } else if (benchmark_type == "latency-regex") {
+    s_bench.BenchmarkRegexLatency("latency_results_regex_search");
   } else if (benchmark_type == "latency-flat-extract") {
     s_bench.BenchmarkFlatExtractLatency("latency_results_flat_extract", len);
   } else if (benchmark_type == "latency-flat-count") {
