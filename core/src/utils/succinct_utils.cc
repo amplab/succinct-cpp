@@ -1,4 +1,6 @@
-#include "../../include/utils/succinct_utils.h"
+#include "utils/succinct_utils.h"
+
+#include <sys/stat.h>
 
 // Returns the number of set bits in a 64 bit integer
 uint64_t SuccinctUtils::PopCount(uint64_t n) {
@@ -35,6 +37,11 @@ int64_t SuccinctUtils::Max(int64_t first, int64_t second) {
 
 int64_t SuccinctUtils::Min(int64_t first, int64_t second) {
   return (first < second) ? first : second;
+}
+
+bool SuccinctUtils::ExistsFile(std::string& filename) {
+  struct stat buffer;
+  return (stat (filename.c_str(), &buffer) == 0);
 }
 
 // Memory map a file and return mapped buffer

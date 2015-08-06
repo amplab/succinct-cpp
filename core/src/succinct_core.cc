@@ -1,4 +1,4 @@
-#include "../include/succinct_core.h"
+#include "succinct_core.h"
 
 SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,
@@ -202,56 +202,190 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   input_size_ = fsize + 1;
   uint32_t bits = SuccinctUtils::IntegerLog2(input_size_ + 1);
 
-  // Construct Suffix Array
-  // TODO: Remove dependency from divsufsortxx library
-  int64_t *lSA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t), input_size_);
-  divsufsortxx::constructSA((uint8_t *) data, (uint8_t *) (data + input_size_),
-                            lSA, lSA + input_size_, 256);
+  // Compute compactSA if it doesn't already exist
+  BitMap *compactSA;
+  std::string sa_file = std::string(filename) + ".tmp.sa";
+  if (!SuccinctUtils::ExistsFile(sa_file)) {
+    fprintf(stderr, "Computing compactSA...\n");
+    // Construct Suffix Array
+    int64_t *lSA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t),
+                                                    input_size_);
+    divsufsortxx::constructSA((uint8_t *) data,
+                              (uint8_t *) (data + input_size_), lSA,
+                              lSA + input_size_, 256);
 
-  // Compact SA
-  BitMap *compactSA = new BitMap;
-  CreateBitmapArray(&compactSA, (uint64_t *) lSA, input_size_, bits,
-                    s_allocator);
-  s_allocator.s_free(lSA);
+    // Compact SA
+    compactSA = new BitMap;
+    CreateBitmapArray(&compactSA, (uint64_t *) lSA, input_size_, bits,
+                      s_allocator);
+    s_allocator.s_free(lSA);
 
-  ConstructAuxiliary(compactSA, data);
+    // Serialize compacted SA to disk
+    std::ofstream out(sa_file.c_str());
+    SerializeBitmap(compactSA, out);
+    out.close();
+  } else {
+    fprintf(stderr, "Reading compactSA from file...\n");
+    std::ifstream in(sa_file.c_str());
+    DeserializeBitmap(&compactSA, in);
+    in.close();
+  }
+
+  std::string aux_file = std::string(filename) + ".tmp.aux";
+  if (!SuccinctUtils::ExistsFile(aux_file)) {
+    fprintf(stderr, "Computing aux structures...\n");
+    ConstructAuxiliary(compactSA, data);
+
+    // Write aux to disk
+    typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
+    std::ofstream out(aux_file.c_str());
+    uint64_t cmap_size = alphabet_map_.size();
+    out.write(reinterpret_cast<const char *>(&(cmap_size)), sizeof(uint64_t));
+    for (iterator_t it = alphabet_map_.begin(); it != alphabet_map_.end();
+        ++it) {
+      out.write(reinterpret_cast<const char *>(&(it->first)), sizeof(char));
+      out.write(reinterpret_cast<const char *>(&(it->second.first)),
+                sizeof(uint64_t));
+      out.write(reinterpret_cast<const char *>(&(it->second.second)),
+                sizeof(uint32_t));
+    }
+
+    out.write(reinterpret_cast<const char *>(&alphabet_size_),
+              sizeof(uint32_t));
+    for (uint32_t i = 0; i < alphabet_size_ + 1; i++) {
+      out.write(reinterpret_cast<const char *>(&alphabet_[i]), sizeof(char));
+    }
+    out.close();
+  } else {
+    // Deserialize aux
+    fprintf(stderr, "Reading aux from file...\n");
+
+    std::ifstream in(aux_file.c_str());
+    // Read alphabet map size
+    uint64_t alphabet_map_size;
+    in.read(reinterpret_cast<char *>(&(alphabet_map_size)), sizeof(uint64_t));
+
+    // Deserialize alphabet map
+    for (uint64_t i = 0; i < alphabet_map_size; i++) {
+      char first;
+      uint64_t second_first;
+      uint32_t second_second;
+      in.read(reinterpret_cast<char *>(&(first)), sizeof(char));
+      in.read(reinterpret_cast<char *>(&(second_first)), sizeof(uint64_t));
+      in.read(reinterpret_cast<char *>(&(second_second)), sizeof(uint32_t));
+      alphabet_map_[first] = std::pair<uint64_t, uint32_t>(second_first,
+                                                           second_second);
+    }
+
+    // Read alphabet size
+    in.read(reinterpret_cast<char *>(&alphabet_size_), sizeof(uint32_t));
+
+    // Deserialize alphabet
+    alphabet_ = new char[alphabet_size_ + 1];
+    for (uint32_t i = 0; i < alphabet_size_ + 1; i++) {
+      in.read(reinterpret_cast<char *>(&alphabet_[i]), sizeof(char));
+    }
+    in.close();
+  }
 
   // Compact input data
-  BitMap *data_bitmap = new BitMap;
-  int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
-  InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
-  for (uint64_t i = 0; i < input_size_; i++) {
-    SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second, sigma_bits);
+  BitMap *data_bitmap;
+  std::string data_file = std::string(filename) + ".tmp.cdata";
+  if (!SuccinctUtils::ExistsFile(data_file)) {
+    fprintf(stderr, "Computing compacted input...\n");
+    data_bitmap = new BitMap;
+    int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
+    InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
+    for (uint64_t i = 0; i < input_size_; i++) {
+      SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second,
+                     sigma_bits);
+    }
+
+    std::ofstream out(data_file.c_str());
+    SerializeBitmap(data_bitmap, out);
+    out.close();
+  } else {
+    fprintf(stderr, "Reading compacted input from file...\n");
+    std::ifstream in(data_file.c_str());
+    DeserializeBitmap(&data_bitmap, in);
+    in.close();
   }
 
   s_allocator.s_free(data);
 
-  BitMap *compactISA = new BitMap;
-  InitBitmap(&compactISA, input_size_ * bits, s_allocator);
+  BitMap *compactISA;
+  std::string isa_file = std::string(filename) + ".tmp.isa";
+  if (!SuccinctUtils::ExistsFile(isa_file)) {
+    fprintf(stderr, "Computing compactISA...\n");
+    compactISA = new BitMap;
+    InitBitmap(&compactISA, input_size_ * bits, s_allocator);
 
-  for (uint64_t i = 0; i < input_size_; i++) {
-    uint64_t sa_val = LookupBitmapArray(compactSA, i, bits);
-    SetBitmapArray(&compactISA, sa_val, i, bits);
+    for (uint64_t i = 0; i < input_size_; i++) {
+      uint64_t sa_val = LookupBitmapArray(compactSA, i, bits);
+      SetBitmapArray(&compactISA, sa_val, i, bits);
+    }
+
+    // Serialize compacted ISA to disk
+    std::ofstream out(isa_file.c_str());
+    SerializeBitmap(compactISA, out);
+    out.close();
+  } else {
+    fprintf(stderr, "Reading compactISA from file...\n");
+    std::ifstream in(isa_file.c_str());
+    DeserializeBitmap(&compactISA, in);
+    in.close();
   }
 
-  switch (npa_encoding_scheme) {
-    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-      npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, data_bitmap, compactSA,
-                                      compactISA, s_allocator);
-      break;
-    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-      npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, data_bitmap, compactSA,
-                                      compactISA, s_allocator);
-      return;
-    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-      npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
-                                       npa_sampling_rate, data_bitmap,
-                                       compactSA, compactISA, s_allocator);
-      break;
-    default:
-      npa_ = NULL;
+  std::string npa_file = std::string(filename) + ".tmp.npa";
+  if (!SuccinctUtils::ExistsFile(npa_file)) {
+    fprintf(stderr, "Computing NPA...\n");
+    switch (npa_encoding_scheme) {
+      case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
+        npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_,
+                                        context_len, npa_sampling_rate,
+                                        data_bitmap, compactSA, compactISA,
+                                        s_allocator);
+        break;
+      case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
+        npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_,
+                                        context_len, npa_sampling_rate,
+                                        data_bitmap, compactSA, compactISA,
+                                        s_allocator);
+        return;
+      case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
+        npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_,
+                                         context_len, npa_sampling_rate,
+                                         data_bitmap, compactSA, compactISA,
+                                         s_allocator);
+        break;
+      default:
+        npa_ = NULL;
+    }
+
+    std::ofstream out(npa_file.c_str());
+    npa_->Serialize(out);
+    out.close();
+  } else {
+    fprintf(stderr, "Reading NPA from file...\n");
+    switch (npa_encoding_scheme) {
+      case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
+        npa_ = new EliasGammaEncodedNPA(context_len, npa_sampling_rate,
+                                        s_allocator);
+        break;
+      case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
+        npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
+                                        s_allocator);
+        return;
+      case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
+        npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
+                                         s_allocator);
+        break;
+      default:
+        npa_ = NULL;
+    }
+    std::ifstream in(npa_file.c_str());
+    npa_->Deserialize(in);
+    in.close();
   }
 
   assert(npa_ != NULL);

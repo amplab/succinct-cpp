@@ -36,6 +36,8 @@ class SuccinctUtils {
   static int64_t Max(int64_t first, int64_t second);
   static int64_t Min(int64_t first, int64_t second);
 
+  static bool ExistsFile(std::string& filename);
+
   static void* MemoryMap(std::string filename);
 };
 
