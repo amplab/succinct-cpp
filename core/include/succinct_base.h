@@ -29,7 +29,7 @@
 /* Rank Data structure constants */
 #define L1BLKSIZE   512
 #define L2BLKSIZE   2048
-#define L3BLKSIZE   two32
+#define L3BLKSIZE   kTwo32
 
 class SuccinctBase {
  public:
