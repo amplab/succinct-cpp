@@ -1,14 +1,25 @@
 #include "succinct_file.h"
 
-SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode)
-    : SuccinctCore(filename.c_str(), s_mode) {
+SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode,
+                           uint32_t sa_sampling_rate,
+                           uint32_t isa_sampling_rate,
+                           uint32_t npa_sampling_rate,
+                           SamplingScheme sa_sampling_scheme,
+                           SamplingScheme isa_sampling_scheme,
+                           NPA::NPAEncodingScheme npa_encoding_scheme,
+                           uint32_t context_len, uint32_t sampling_range)
+    : SuccinctCore(filename.c_str(), s_mode, sa_sampling_rate,
+                   isa_sampling_rate, npa_sampling_rate, context_len,
+                   sa_sampling_scheme, isa_sampling_scheme, npa_encoding_scheme,
+                   sampling_range) {
   this->input_filename_ = filename;
   this->succinct_filename_ = filename + ".succinct";
 }
 
 uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
   uint64_t val = 0;
-  uint64_t max = SuccinctUtils::Min((i + npa_->GetContextLength()), input_size_);
+  uint64_t max = SuccinctUtils::Min((i + npa_->GetContextLength()),
+                                    input_size_);
   for (uint64_t t = i; t < max; t++) {
     val = val * alphabet_size_ + alphabet_map_[p[t]].second;
   }
@@ -24,7 +35,7 @@ uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
 }
 
 std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
-                                                       uint64_t len) {
+                                                   uint64_t len) {
   std::pair<int64_t, int64_t> range(0, -1);
   uint64_t m = strlen(p);
   int64_t left, right, c1, c2;
@@ -60,101 +71,101 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
 }
 
 /*
-std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
-                                                   uint64_t len) {
-  uint64_t m = strlen(p);
+ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
+ uint64_t len) {
+ uint64_t m = strlen(p);
 
-  if (m <= npa_->GetContextLength()) {
-    return GetRangeSlow(p, len);
-  }
+ if (m <= npa_->GetContextLength()) {
+ return GetRangeSlow(p, len);
+ }
 
-  typedef std::pair<int64_t, int64_t> Range;
+ typedef std::pair<int64_t, int64_t> Range;
 
-  Range range(0, -1);
-  uint32_t sigma_id;
-  int64_t left, right, c1, c2;
-  uint64_t start_off;
-  uint64_t context_val, context_id;
+ Range range(0, -1);
+ uint32_t sigma_id;
+ int64_t left, right, c1, c2;
+ uint64_t start_off;
+ uint64_t context_val, context_id;
 
-  // Get the sigma_id and context_id corresponding to the last
-  // context and sigma
+ // Get the sigma_id and context_id corresponding to the last
+ // context and sigma
 
-  // Get sigma_id:
-  if (alphabet_map_.find(p[m - npa_->GetContextLength() - 1])
-      == alphabet_map_.end())
-    return range;
-  sigma_id = alphabet_map_[p[m - npa_->GetContextLength() - 1]].second;
+ // Get sigma_id:
+ if (alphabet_map_.find(p[m - npa_->GetContextLength() - 1])
+ == alphabet_map_.end())
+ return range;
+ sigma_id = alphabet_map_[p[m - npa_->GetContextLength() - 1]].second;
 
-  // Get context_id:
-  context_val = ComputeContextValue(p, m - npa_->GetContextLength());
-  if (npa_->contexts_.find(context_val) == npa_->contexts_.end())
-    return range;
-  context_id = npa_->contexts_[context_val];
+ // Get context_id:
+ context_val = ComputeContextValue(p, m - npa_->GetContextLength());
+ if (npa_->contexts_.find(context_val) == npa_->contexts_.end())
+ return range;
+ context_id = npa_->contexts_[context_val];
 
-  // Get start offset:
-  start_off = GetRank1(&(npa_->col_nec_[sigma_id]), context_id) - 1;
+ // Get start offset:
+ start_off = GetRank1(&(npa_->col_nec_[sigma_id]), context_id) - 1;
 
-  // Get left boundary:
-  left = npa_->col_offsets_[sigma_id]
-      + npa_->cell_offsets_[sigma_id][start_off];
+ // Get left boundary:
+ left = npa_->col_offsets_[sigma_id]
+ + npa_->cell_offsets_[sigma_id][start_off];
 
-  // Get right boundary:
-  if (start_off + 1 < npa_->cell_offsets_[sigma_id].size()) {
-    right = npa_->col_offsets_[sigma_id]
-        + npa_->cell_offsets_[sigma_id][start_off + 1] - 1;
-  } else if ((sigma_id + 1) < alphabet_size_) {
-    right = npa_->col_offsets_[sigma_id + 1] - 1;
-  } else {
-    right = input_size_ - 1;
-  }
+ // Get right boundary:
+ if (start_off + 1 < npa_->cell_offsets_[sigma_id].size()) {
+ right = npa_->col_offsets_[sigma_id]
+ + npa_->cell_offsets_[sigma_id][start_off + 1] - 1;
+ } else if ((sigma_id + 1) < alphabet_size_) {
+ right = npa_->col_offsets_[sigma_id + 1] - 1;
+ } else {
+ right = input_size_ - 1;
+ }
 
-  if (left > right)
-    return range;
+ if (left > right)
+ return range;
 
-  for (int64_t i = m - npa_->GetContextLength() - 2; i >= 0; i--) {
-    // Get sigma_id:
-    if (alphabet_map_.find(p[i]) == alphabet_map_.end())
-      return range;
-    sigma_id = alphabet_map_[p[i]].second;
+ for (int64_t i = m - npa_->GetContextLength() - 2; i >= 0; i--) {
+ // Get sigma_id:
+ if (alphabet_map_.find(p[i]) == alphabet_map_.end())
+ return range;
+ sigma_id = alphabet_map_[p[i]].second;
 
-    // Get context_id:
-    context_val = ComputeContextValue(p, i + 1);
-    if (npa_->contexts_.find(context_val) == npa_->contexts_.end())
-      return range;
-    context_id = npa_->contexts_[context_val];
+ // Get context_id:
+ context_val = ComputeContextValue(p, i + 1);
+ if (npa_->contexts_.find(context_val) == npa_->contexts_.end())
+ return range;
+ context_id = npa_->contexts_[context_val];
 
-    // Get start offset:
-    start_off = GetRank1(&(npa_->col_nec_[sigma_id]), context_id) - 1;
+ // Get start offset:
+ start_off = GetRank1(&(npa_->col_nec_[sigma_id]), context_id) - 1;
 
-    // Get left boundary:
-    c1 = npa_->col_offsets_[sigma_id]
-        + npa_->cell_offsets_[sigma_id][start_off];
+ // Get left boundary:
+ c1 = npa_->col_offsets_[sigma_id]
+ + npa_->cell_offsets_[sigma_id][start_off];
 
-    // Get right boundary:
-    if (start_off + 1 < npa_->cell_offsets_[sigma_id].size()) {
-      c2 = npa_->col_offsets_[sigma_id]
-          + npa_->cell_offsets_[sigma_id][start_off + 1] - 1;
-    } else if ((sigma_id + 1) < alphabet_size_) {
-      c2 = npa_->col_offsets_[sigma_id + 1] - 1;
-    } else {
-      c2 = input_size_ - 1;
-    }
-    if (c2 < c1)
-      return range;
+ // Get right boundary:
+ if (start_off + 1 < npa_->cell_offsets_[sigma_id].size()) {
+ c2 = npa_->col_offsets_[sigma_id]
+ + npa_->cell_offsets_[sigma_id][start_off + 1] - 1;
+ } else if ((sigma_id + 1) < alphabet_size_) {
+ c2 = npa_->col_offsets_[sigma_id + 1] - 1;
+ } else {
+ c2 = input_size_ - 1;
+ }
+ if (c2 < c1)
+ return range;
 
-    left = npa_->BinarySearch(left, c1, c2, false);
-    right = npa_->BinarySearch(right, left, c2, true);
+ left = npa_->BinarySearch(left, c1, c2, false);
+ right = npa_->BinarySearch(right, left, c2, true);
 
-    if (left > right)
-      return range;
-  }
+ if (left > right)
+ return range;
+ }
 
-  range.first = left;
-  range.second = right;
+ range.first = left;
+ range.second = right;
 
-  return range;
-}
-*/
+ return range;
+ }
+ */
 
 std::string SuccinctFile::Name() {
   return input_filename_;
