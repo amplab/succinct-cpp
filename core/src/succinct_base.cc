@@ -411,8 +411,6 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
 // Get the 1-rank of the dictionary at the specified index
 uint64_t SuccinctBase::GetRank1(SuccinctBase::Dictionary *D, uint64_t i) {
 
-  assert(i < D->size);
-
   uint64_t l3_idx = i / two32;
   uint64_t l2_idx = i / 2048;
   uint16_t l1_idx = i % 512;
