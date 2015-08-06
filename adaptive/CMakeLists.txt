@@ -24,27 +24,27 @@ set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 
-set(GENERAL_SOURCES ${SOURCES_DIR}/adaptive_constants.cpp
-    ${SOURCES_DIR}/adaptive_types.cpp)
+set(GENERAL_SOURCES ${SOURCES_DIR}/adaptive_constants.cc
+    ${SOURCES_DIR}/adaptive_types.cc)
 
 set(SERVER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/AdaptiveQueryService.cpp
-    ${SOURCES_DIR}/AdaptiveQueryServer.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cc
+    ${SOURCES_DIR}/adaptive_query_server.cc)
 
 set(HANDLER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/AdaptiveQueryService.cpp
-    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
-    ${SOURCES_DIR}/AdaptiveSuccinctServer.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cc
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cc
+    ${SOURCES_DIR}/adaptive_succinct_server.cc)
 
 set(MASTER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
-    ${SOURCES_DIR}/AdaptiveMasterService.cpp
-    ${SOURCES_DIR}/AdaptiveSuccinctMaster.cpp)
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cc
+    ${SOURCES_DIR}/AdaptiveMasterService.cc
+    ${SOURCES_DIR}/adaptive_succinct_master.cc)
 
 set(CLIENT_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/AdaptiveQueryService.cpp
-    ${SOURCES_DIR}/AdaptiveSuccinctService.cpp
-    ${SOURCES_DIR}/AdaptiveMasterService.cpp)
+    ${SOURCES_DIR}/AdaptiveQueryService.cc
+    ${SOURCES_DIR}/AdaptiveSuccinctService.cc
+    ${SOURCES_DIR}/AdaptiveMasterService.cc)
 
 include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
 

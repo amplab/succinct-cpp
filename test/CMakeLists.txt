@@ -27,6 +27,6 @@ include_directories(${gtest_SOURCE_DIR}/include
     ${THRIFT_INCLUDES}
     ${ADAPTIVE_INCLUDES})
 
-set(test_sources src/SuccinctCoreTest.cpp src/test_main.cpp)
-add_executable(core_tests ${test_sources})
-target_link_libraries(core_tests gtest_main succinct)
+set(test_sources src/succinct_core_test.cc src/test_main.cc)
+add_executable(core_test ${test_sources})
+target_link_libraries(core_test gtest_main succinct)

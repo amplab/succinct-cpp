@@ -1,0 +1,382 @@
+#include "../../include/npa/elias_gamma_encoded_npa.h"
+
+EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
+                                           uint64_t sigma_size,
+                                           uint32_t context_len,
+                                           uint32_t sampling_rate,
+                                           Bitmap *data_bitmap,
+                                           Bitmap *compactSA,
+                                           Bitmap *compactISA,
+                                           SuccinctAllocator &s_allocator)
+    : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
+                      NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
+  InitPrefixSum();
+  Encode(data_bitmap, compactSA, compactISA);
+}
+
+EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,
+                                           uint32_t sampling_rate,
+                                           SuccinctAllocator &s_allocator)
+    : DeltaEncodedNPA(0, 0, context_len, sampling_rate,
+                      NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
+  InitPrefixSum();
+}
+
+uint16_t EliasGammaEncodedNPA::AccessDataPos16(uint16_t data, uint32_t pos,
+                                                 uint32_t b) {
+  assert(b <= 16 && pos >= 0);
+  if (b == 0)
+    return 0;
+  uint16_t val = data << pos;
+  return val >> (16 - b);
+
+}
+
+void EliasGammaEncodedNPA::InitPrefixSum() {
+  for (uint64_t i = 0; i < 65536; i++) {
+    uint16_t val = (uint16_t) i;
+    uint16_t count = 0, offset = 0, sum = 0;
+    while (val && offset <= 16) {
+      int N = 0;
+      while (!GETBIT16(val, offset)) {
+        N++;
+        offset++;
+      }
+      if (offset + (N + 1) <= 16) {
+        sum += AccessDataPos16(val, offset, N + 1);
+        offset += (N + 1);
+        count++;
+      } else {
+        offset -= N;
+        break;
+      }
+    }
+    prefixsum_[i] = (offset << 24) | (count << 16) | sum;
+  }
+}
+
+// Compute the elias gamma encoding size in bits for a 64 bit integer
+uint32_t EliasGammaEncodedNPA::EliasGammaEncodingSize(uint64_t n) {
+  uint32_t N = LowerLog2(n);
+  return 2 * N + 1;
+}
+
+// Encode a sorted vector using elias gamma encoding
+void EliasGammaEncodedNPA::EliasGammaEncode(Bitmap **B,
+                                              std::vector<uint64_t> &deltas,
+                                              uint64_t size) {
+  if (size == 0) {
+    delete *B;
+    *B = NULL;
+    return;
+  }
+  uint64_t pos = 0;
+  SuccinctBase::InitBitmap(B, size, s_allocator_);
+  for (size_t i = 0; i < deltas.size(); i++) {
+    int bits = EliasGammaEncodingSize(deltas[i]);
+    SuccinctBase::SetBitmapAtPos(B, pos, deltas[i], bits);
+    pos += bits;
+  }
+}
+
+// Decode a particular elias-gamma encoded delta value at a provided offset
+// in the deltas bitmap
+uint64_t EliasGammaEncodedNPA::EliasGammaDecode(Bitmap *B,
+                                                  uint64_t *offset) {
+  uint32_t N = 0;
+#if USE_BSR
+  uint64_t data = B->bitmap[(*offset) / 64] << ((*offset) % 64);
+  N = __builtin_clz(data);
+  (*offset) += N;
+#else
+  while (!ACCESSBIT(B, (*offset))) {
+    N++;
+    (*offset)++;
+  }
+#endif
+  long val = SuccinctBase::LookupBitmapAtPos(B, *offset, N + 1);
+  *offset += (N + 1);
+  return val;
+}
+
+// Compute the prefix sum of the elias-gamma encoded deltas
+uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B,
+                                                      uint64_t offset,
+                                                      uint64_t i) {
+  uint64_t delta_sum = 0;
+
+#if USE_PREFIXSUM_TABLE
+  uint64_t delta_idx = 0;
+  uint64_t delta_off = offset;
+  while (delta_idx != i) {
+    uint16_t block = (uint16_t) SuccinctBase::LookupBitmapAtPos(B, delta_off,
+                                                                16);
+    uint16_t cnt = PREFIX_CNT(block);
+    if (cnt == 0) {
+      // If the prefixsum table for the block returns count == 0
+      // this must mean the value spans more than 16 bits
+      // read this manually
+      uint32_t N = 0;
+#if USE_BSR
+      uint64_t data = LookupBitmapAtPos(B, delta_off, 64);
+      N = __builtin_clzl(data);
+      delta_off += N;
+#else
+      while (!ACCESSBIT(B, delta_off)) {
+        N++;
+        delta_off++;
+      }
+#endif
+      delta_sum += SuccinctBase::LookupBitmapAtPos(B, delta_off, N + 1);
+      delta_off += (N + 1);
+      delta_idx += 1;
+    } else if (delta_idx + cnt <= i) {
+      // If sum can be computed from the prefixsum table
+      delta_sum += PREFIX_SUM(block);
+      delta_off += PREFIX_OFF(block);
+      delta_idx += cnt;
+    } else {
+      // Last few values, decode them without looking up table
+      while (delta_idx != i) {
+        uint32_t N = 0;
+#if USE_BSR
+        uint64_t data = LookupBitmapAtPos(B, delta_off, 64);
+        N = __builtin_clzl(data);
+        delta_off += N;
+#else
+        while (!ACCESSBIT(B, delta_off)) {
+          N++;
+          delta_off++;
+        }
+#endif
+        delta_sum += SuccinctBase::LookupBitmapAtPos(B, delta_off, N + 1);
+        delta_off += (N + 1);
+        delta_idx += 1;
+      }
+    }
+  }
+#else
+  for(uint64_t j = 0; j < i; j++) {
+    uint32_t N = 0;
+#if USE_BSR
+    uint64_t data = LookupBitmapAtPos(B, offset, 64);
+    N = __builtin_clzl(data);
+    offset += N;
+#else
+    while(!ACCESSBIT(B, offset)) {
+      N++;
+      offset++;
+    }
+#endif
+    delta_sum += LookupBitmapAtPos(B, offset, N + 1);
+    offset += (N + 1);
+  }
+#endif
+  return delta_sum;
+}
+
+void EliasGammaEncodedNPA::CreateDeltaEncodedVector(DeltaEncodedVector *dv,
+                                     std::vector<uint64_t> &data) {
+  if (data.size() == 0) {
+    return;
+  }
+  assert(dv != NULL);
+
+  uint64_t max_sample = 0;
+  std::vector<uint64_t> _samples, _deltas, _delta_offsets;
+  uint64_t tot_delta_count = 0, delta_count = 0;
+  uint64_t delta_enc_size = 0;
+  uint64_t cum_delta_size = 0, max_offset = 0;
+  uint64_t last_val = 0;
+
+  for (size_t i = 0; i < data.size(); i++) {
+    if (i % sampling_rate_ == 0) {
+      _samples.push_back(data[i]);
+      if (data[i] > max_sample) {
+        max_sample = data[i];
+      }
+      if (cum_delta_size > max_offset)
+        max_offset = cum_delta_size;
+      _delta_offsets.push_back(cum_delta_size);
+      if (i != 0) {
+        assert(delta_count == sampling_rate_ - 1);
+        tot_delta_count += delta_count;
+        delta_count = 0;
+      }
+    } else {
+      long delta = data[i] - last_val;
+      assert(delta > 0);
+      _deltas.push_back(delta);
+
+      delta_enc_size = EliasGammaEncodingSize(delta);
+      cum_delta_size += delta_enc_size;
+      delta_count++;
+    }
+    last_val = data[i];
+  }
+  tot_delta_count += delta_count;
+
+  assert(tot_delta_count == _deltas.size());
+  assert(_samples.size() + _deltas.size() == data.size());
+  assert(_delta_offsets.size() == _samples.size());
+
+  // Can occur at most once per context;
+  // only occurs if 0 is the only value in the cell
+  if (max_sample == 0)
+    dv->sample_bits = 1;
+  else
+    dv->sample_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_sample + 1);
+
+  if (max_offset == 0)
+    dv->delta_offset_bits = 1;
+  else
+    dv->delta_offset_bits = (uint8_t) SuccinctUtils::IntegerLog2(max_offset + 1);
+
+  dv->samples = new Bitmap;
+  dv->deltas = new Bitmap;
+  SuccinctBase::CreateBitmapArray(&(dv->samples),
+                                    (_samples.size() == 0) ?
+                                    NULL :
+                                                             &_samples[0],
+                                    _samples.size(), dv->sample_bits,
+                                    s_allocator_);
+
+  EliasGammaEncode(&(dv->deltas), _deltas, cum_delta_size);
+  dv->delta_offsets = new Bitmap;
+  SuccinctBase::CreateBitmapArray(
+      &(dv->delta_offsets),
+      (_delta_offsets.size() == 0) ? NULL : &_delta_offsets[0],
+      _delta_offsets.size(), dv->delta_offset_bits, s_allocator_);
+
+}
+
+uint64_t EliasGammaEncodedNPA::LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i) {
+  uint64_t sample_offset = i / sampling_rate_;
+  uint64_t delta_offset_idx = i % sampling_rate_;
+  uint64_t val = SuccinctBase::LookupBitmapArray(dv->samples, sample_offset,
+                                                   dv->sample_bits);
+  if (delta_offset_idx == 0)
+    return val;
+  uint64_t delta_offset = SuccinctBase::LookupBitmapArray(
+      dv->delta_offsets, sample_offset, dv->delta_offset_bits);
+  val += EliasGammaPrefixSum(dv->deltas, delta_offset, delta_offset_idx);
+  return val;
+}
+
+int64_t EliasGammaEncodedNPA::BinarySearchSamples(DeltaEncodedVector *dv,
+                                                    uint64_t val, uint64_t s,
+                                                    uint64_t e) {
+  int64_t sp = s;
+  int64_t ep = e;
+  uint64_t m, dv_val;
+
+  while (sp <= ep) {
+    m = (sp + ep) / 2;
+
+    dv_val = SuccinctBase::LookupBitmapArray(dv->samples, m, dv->sample_bits);
+    if (dv_val == val) {
+      sp = ep = m;
+      break;
+    } else if (val < dv_val)
+      ep = m - 1;
+    else
+      sp = m + 1;
+  }
+  ep = MAX(ep, 0);
+
+  return ep;
+}
+
+/*
+ int64_t EliasGammaEncodedNPA::binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
+ bool flag) {
+
+ uint64_t col_id = SuccinctBase::get_rank1(&col_offsets, s) - 1;
+ s -= col_offsets[col_id];
+ e -= col_offsets[col_id];
+ DeltaEncodedVector *dv = &del_npa[col_id];
+ uint64_t sample_offset = binary_search_samples(dv, val, s / sampling_rate, e / sampling_rate);
+ uint64_t delta_off = SuccinctBase::lookup_bitmap_array(dv->delta_offsets, sample_offset, dv->delta_offset_bits);
+ uint64_t delta_sum = SuccinctBase::lookup_bitmap_array(dv->samples, sample_offset, dv->sample_bits);
+ uint64_t delta_idx = 0;
+
+ bitmap_t *B = dv->deltas;
+
+ #if USE_PREFIXSUM_TABLE
+ while(delta_sum < val && delta_off < B->size) {
+ // cout << "delta_sum = " << delta_sum << endl;
+ uint16_t block = (uint16_t)SuccinctBase::lookup_bitmap_pos(B, delta_off, 16);
+ uint16_t block_cnt = PREFIX_CNT(block);
+ uint16_t block_sum = PREFIX_SUM(block);
+ uint16_t block_off = PREFIX_OFF(block);
+
+ // cout << "block_cnt = " << block_cnt << " block_sum = " << block_sum << " block_off = " << block_off << endl;
+
+ if(block_cnt == 0) {
+ // If the prefixsum table for the block returns count == 0
+ // this must mean the value spans more than 16 bits
+ // read this manually
+ int N = 0;
+ #if USE_BSR
+ uint64_t data = accessBMArrayPos(B, delta_off, 64);
+ N = __builtin_clzl(data);
+ delta_off += N;
+ #else
+ while(!ACCESSBIT(B, delta_off)) {
+ N++;
+ delta_off++;
+ }
+ #endif
+ delta_sum += SuccinctBase::lookup_bitmap_pos(B, delta_off, N + 1);
+ delta_off += (N + 1);
+ delta_idx += 1;
+ } else if(delta_sum + block_sum < val) {
+ // If sum can be computed from the prefixsum table
+ delta_sum += block_sum;
+ delta_off += block_off;
+ delta_idx += block_cnt;
+ } else {
+ // Last few values, decode them without looking up table
+ while(delta_sum < val && delta_off < B->size) {
+ int N = 0;
+ #if USE_BSR
+ uint64_t data = SuccinctBase::lookup_bitmap_pos(B, delta_off, 64);
+ N = __builtin_clzl(data);
+ delta_off += N;
+ #else
+ while(!ACCESSBIT(B, delta_off)) {
+ N++;
+ delta_off++;
+ }
+ #endif
+ delta_sum += SuccinctBase::lookup_bitmap_pos(B, delta_off, N + 1);
+ delta_off += (N + 1);
+ delta_idx += 1;
+ }
+ }
+ }
+ #else
+ while(delta_sum < val && delta_off < B->size) {
+ int N = 0;
+ #if USE_BSR
+ uint64_t data = SuccinctBase::lookup_bitmap_pos(B, delta_off, 64);
+ N = __builtin_clzl(data);
+ delta_off += N;
+ #else
+ while(!ACCESSBIT(B, delta_off)) {
+ N++;
+ delta_off++;
+ }
+ #endif
+ delta_sum += SuccinctBase::lookup_bitmap_pos(B, delta_off, N + 1);
+ delta_off += (N + 1);
+ delta_idx++;
+ }
+ #endif
+
+ uint64_t res = col_offsets[col_id] + sample_offset * sampling_rate + delta_idx;
+ if(val == delta_sum || delta_off == B->size) return res;
+
+ return flag ? res - 1 : res;
+ }
+ */

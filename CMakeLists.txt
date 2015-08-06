@@ -21,6 +21,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)
 add_subdirectory(core)
 add_subdirectory(thrift)
 add_subdirectory(adaptive)
+add_subdirectory(construct)
 add_subdirectory(bench)
 
 # Testing framework
@@ -31,4 +32,4 @@ add_subdirectory(external/gtest-1.7.0)
 add_subdirectory(test)
 
 enable_testing()
-add_test(CoreTest ${TESTS_PATH}/core_tests ${PROJECT_SOURCE_DIR}/test/data)
+add_test(CoreTest ${TESTS_PATH}/core_test ${PROJECT_SOURCE_DIR}/test/data)

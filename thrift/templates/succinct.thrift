@@ -1,47 +1,61 @@
 service SuccinctService {
-    i32 connect_to_handlers(),
-    i32 disconnect_from_handlers(),
+    i32 ConnectToHandlers(),
+    i32 DisconnectFromHandlers(),
 
-    i32 connect_to_local_servers(),
-    i32 disconnect_from_local_servers(),
+    i32 ConnectToLocalServers(),
+    i32 DisconnectFromLocalServers(),
 
-    i32 start_servers(),
-    i32 initialize(1:i32 mode),
+    i32 StartLocalServers(),
+    i32 Initialize(1:i32 mode),
 
-    string get(1:i64 key),
-    string get_local(1:i32 qserver_id, 2:i64 key),
+    string Get(1:i64 key),
+    string GetLocal(1:i32 qserver_id, 2:i64 key),
 
-    string access(1:i64 key, 2:i32 offset, 3:i32 len),
-    string access_local(1:i32 qserver_id, 2:i64 key, 3:i32 offset, 4:i32 len),
+    string Access(1:i64 key, 2:i32 offset, 3:i32 len),
+    string AccessLocal(1:i32 qserver_id, 2:i64 key, 3:i32 offset, 4:i32 len),
 
-    set<i64> search(1:string query),
-    set<i64> search_local(1:string query),
+    set<i64> Search(1:string query),
+    set<i64> SearchLocal(1:string query),
     
-    set<i64> regex_search(1:string query),
-    set<i64> regex_search_local(1:string query),
+    set<i64> RegexSearch(1:string query),
+    set<i64> RegexSearchLocal(1:string query),
     
-    list<i64> regex_count(1:string query),
-    list<i64> regex_count_local(1:string query),
+    list<i64> RegexCount(1:string query),
+    list<i64> RegexCountLocal(1:string query),
 
-    i64 count(1:string query),
-    i64 count_local(1:string query),
+    i64 Count(1:string query),
+    i64 CountLocal(1:string query),
+    
+    string FlatExtract(1:i64 offset, 2:i64 length),
+    string FlatExtractLocal(1:i64 offset, 2:i64 length),
+    
+    i64 FlatCount(1:string query),
+    i64 FlatCountLocal(1:string query),
+    
+    list<i64> FlatSearch(1:string query),
+    list<i64> FlatSearchLocal(1:string query),
 
-    i32 get_num_hosts(),
-    i32 get_num_shards(1:i32 host_id),
-    i32 get_num_keys(1:i32 shard_id),
+    i32 GetNumHosts(),
+    i32 GetNumShards(1:i32 host_id),
+    i32 GetNumKeys(1:i32 shard_id),
+    i64 GetTotSize(),
 }
 
 service QueryService {
-    i32 init(1:i32 id),
-    string get(1:i64 key),
-    string access(1:i64 key, 2:i32 offset, 3:i32 len),
-    set<i64> search(1:string query),
-    set<i64> regex_search(1:string query),
-    list<i64> regex_count(1:string query),
-    i64 count(1:string query),
-    i32 get_num_keys(),
+    i32 Initialize(1:i32 id),
+    string Get(1:i64 key),
+    string Access(1:i64 key, 2:i32 offset, 3:i32 len),
+    set<i64> Search(1:string query),
+    set<i64> RegexSearch(1:string query),
+    list<i64> RegexCount(1:string query),
+    i64 Count(1:string query),
+    string FlatExtract(1:i64 offset, 2:i64 length),
+    i64 FlatCount(1:string query),
+    list<i64> FlatSearch(1:string query), 
+    i32 GetNumKeys(),
+    i64 GetShardSize(),
 }
 
 service MasterService {
-    string get_client(),
+    string GetClient(),
 }
