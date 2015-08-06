@@ -6,7 +6,7 @@
 #include <thrift/transport/TBufferTransports.h>
 #include "succinct_shard.h"
 #include "benchmark.h"
-#include "SuccinctService.h"
+#include "AggregatorService.h"
 #include "ports.h"
 
 using namespace ::apache::thrift;
@@ -27,10 +27,10 @@ class SuccinctServerBenchmark : public Benchmark {
       boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
       boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
       boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-      client_ = new SuccinctServiceClient(protocol);
+      client_ = new AggregatorServiceClient(protocol);
       transport->open();
       fprintf(stderr, "Connected!\n");
-      client_->ConnectToHandlers();
+      client_->ConnectToServers();
     } else {
       client_ = NULL;
     }
@@ -205,38 +205,7 @@ class SuccinctServerBenchmark : public Benchmark {
     result_stream.close();
   }
 
-  void BenchmarkRegexCountLatency(std::string result_path) {
-    TimeStamp t0, t1, tdiff;
-    uint64_t sum;
-    std::ofstream result_stream(result_path);
-
-    // Measure
-    sum = 0;
-    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
-    for (uint32_t i = 0; i < queries_.size(); i++) {
-      for (uint32_t j = 0; j < 10; j++) {
-        fprintf(stderr, "Running iteration %u of query %u\n", j, i);
-        std::vector<int64_t> result;
-        t0 = GetTimestamp();
-        client_->RegexCount(result, queries_[i]);
-        t1 = GetTimestamp();
-        tdiff = t1 - t0;
-        result_stream << i << "\t" << j << "\t";
-        for (auto r : result) {
-          result_stream << r << "\t";
-        }
-        result_stream << tdiff << "\n";
-        result_stream.flush();
-        sum = (sum + result.size()) % kMaxSum;
-      }
-    }
-    fprintf(stderr, "Measure chksum = %llu\n", sum);
-    fprintf(stderr, "Measure complete.\n");
-
-    result_stream.close();
-  }
-
-  void BenchmarkRegexSearchLatency(std::string result_path) {
+  void BenchmarkRegexLatency(std::string result_path) {
     TimeStamp t0, t1, tdiff;
     uint64_t sum;
     std::ofstream result_stream(result_path);
@@ -249,7 +218,7 @@ class SuccinctServerBenchmark : public Benchmark {
         fprintf(stderr, "Running iteration %u of query %u\n", j, i);
         std::set<int64_t> result;
         t0 = GetTimestamp();
-        client_->RegexSearch(result, queries_[i]);
+        client_->Regex(result, queries_[i]);
         t1 = GetTimestamp();
         tdiff = t1 - t0;
         result_stream << i << "\t" << j << "\t" << result.size() << "\t"
@@ -379,7 +348,7 @@ class SuccinctServerBenchmark : public Benchmark {
     ThreadData data = *((ThreadData*) ptr);
     std::cout << "GET\n";
 
-    SuccinctServiceClient client = *(data.client);
+    AggregatorServiceClient client = *(data.client);
     std::string value;
 
     double thput = 0;
@@ -434,9 +403,9 @@ class SuccinctServerBenchmark : public Benchmark {
             new TSocket("localhost", QUERY_HANDLER_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        SuccinctServiceClient *client = new SuccinctServiceClient(protocol);
+        AggregatorServiceClient *client = new AggregatorServiceClient(protocol);
         transport->open();
-        client->ConnectToHandlers();
+        client->ConnectToServers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
@@ -478,7 +447,7 @@ class SuccinctServerBenchmark : public Benchmark {
     ThreadData data = *((ThreadData*) ptr);
     std::cout << "ACCESS\n";
 
-    SuccinctServiceClient client = *(data.client);
+    AggregatorServiceClient client = *(data.client);
     std::string value;
 
     double thput = 0;
@@ -537,9 +506,9 @@ class SuccinctServerBenchmark : public Benchmark {
             new TSocket("localhost", QUERY_HANDLER_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        SuccinctServiceClient *client = new SuccinctServiceClient(protocol);
+        AggregatorServiceClient *client = new AggregatorServiceClient(protocol);
         transport->open();
-        client->ConnectToHandlers();
+        client->ConnectToServers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
@@ -580,7 +549,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
  private:
   typedef struct {
-    SuccinctServiceClient *client;
+    AggregatorServiceClient *client;
     boost::shared_ptr<TTransport> transport;
     std::vector<int64_t> randoms;
     int32_t fetch_length;
@@ -634,7 +603,7 @@ class SuccinctServerBenchmark : public Benchmark {
   std::vector<int64_t> randoms_;
   std::vector<std::string> queries_;
   std::string benchmark_type_;
-  SuccinctServiceClient *client_;
+  AggregatorServiceClient *client_;
 };
 
 #endif

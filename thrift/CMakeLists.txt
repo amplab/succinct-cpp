@@ -33,27 +33,19 @@ set(SERVER_SOURCES ${GENERAL_SOURCES}
 
 set(HANDLER_SOURCES ${GENERAL_SOURCES}
     ${SOURCES_DIR}/QueryService.cc
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/succinct_server.cc)
-
-set(MASTER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/MasterService.cc
-    ${SOURCES_DIR}/succinct_master.cc)
+    ${SOURCES_DIR}/AggregatorService.cc
+    ${SOURCES_DIR}/aggregator.cc)
 
 set(CLIENT_SOURCES ${GENERAL_SOURCES}
     ${SOURCES_DIR}/QueryService.cc
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/MasterService.cc)
+    ${SOURCES_DIR}/AggregatorService.cc)
 
 include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
 
 add_executable(sserver ${SERVER_SOURCES})
-add_executable(shandler ${HANDLER_SOURCES})
-add_executable(smaster ${MASTER_SOURCES})
+add_executable(saggregator ${HANDLER_SOURCES})
 add_library(sclient ${CLIENT_SOURCES})
 
 target_link_libraries(sserver succinct)
 target_link_libraries(sserver ${THRIFT_LIBRARIES})
-target_link_libraries(shandler ${THRIFT_LIBRARIES})
-target_link_libraries(smaster ${THRIFT_LIBRARIES})
+target_link_libraries(saggregator ${THRIFT_LIBRARIES})

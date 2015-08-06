@@ -19,8 +19,7 @@ class QueryServiceIf {
   virtual void Get(std::string& _return, const int64_t key) = 0;
   virtual void Access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void RegexSearch(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void RegexCount(std::vector<int64_t> & _return, const std::string& query) = 0;
+  virtual void Regex(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual int64_t Count(const std::string& query) = 0;
   virtual void FlatExtract(std::string& _return, const int64_t offset, const int64_t length) = 0;
   virtual int64_t FlatCount(const std::string& query) = 0;
@@ -69,10 +68,7 @@ class QueryServiceNull : virtual public QueryServiceIf {
   void Search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  void RegexSearch(std::set<int64_t> & /* _return */, const std::string& /* query */) {
-    return;
-  }
-  void RegexCount(std::vector<int64_t> & /* _return */, const std::string& /* query */) {
+  void Regex(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
   int64_t Count(const std::string& /* query */) {
@@ -549,38 +545,38 @@ class QueryService_Search_presult {
 
 };
 
-typedef struct _QueryService_RegexSearch_args__isset {
-  _QueryService_RegexSearch_args__isset() : query(false) {}
+typedef struct _QueryService_Regex_args__isset {
+  _QueryService_Regex_args__isset() : query(false) {}
   bool query;
-} _QueryService_RegexSearch_args__isset;
+} _QueryService_Regex_args__isset;
 
-class QueryService_RegexSearch_args {
+class QueryService_Regex_args {
  public:
 
-  QueryService_RegexSearch_args() : query() {
+  QueryService_Regex_args() : query() {
   }
 
-  virtual ~QueryService_RegexSearch_args() throw() {}
+  virtual ~QueryService_Regex_args() throw() {}
 
   std::string query;
 
-  _QueryService_RegexSearch_args__isset __isset;
+  _QueryService_Regex_args__isset __isset;
 
   void __set_query(const std::string& val) {
     query = val;
   }
 
-  bool operator == (const QueryService_RegexSearch_args & rhs) const
+  bool operator == (const QueryService_Regex_args & rhs) const
   {
     if (!(query == rhs.query))
       return false;
     return true;
   }
-  bool operator != (const QueryService_RegexSearch_args &rhs) const {
+  bool operator != (const QueryService_Regex_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_RegexSearch_args & ) const;
+  bool operator < (const QueryService_Regex_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -588,11 +584,11 @@ class QueryService_RegexSearch_args {
 };
 
 
-class QueryService_RegexSearch_pargs {
+class QueryService_Regex_pargs {
  public:
 
 
-  virtual ~QueryService_RegexSearch_pargs() throw() {}
+  virtual ~QueryService_Regex_pargs() throw() {}
 
   const std::string* query;
 
@@ -600,166 +596,58 @@ class QueryService_RegexSearch_pargs {
 
 };
 
-typedef struct _QueryService_RegexSearch_result__isset {
-  _QueryService_RegexSearch_result__isset() : success(false) {}
+typedef struct _QueryService_Regex_result__isset {
+  _QueryService_Regex_result__isset() : success(false) {}
   bool success;
-} _QueryService_RegexSearch_result__isset;
+} _QueryService_Regex_result__isset;
 
-class QueryService_RegexSearch_result {
+class QueryService_Regex_result {
  public:
 
-  QueryService_RegexSearch_result() {
+  QueryService_Regex_result() {
   }
 
-  virtual ~QueryService_RegexSearch_result() throw() {}
+  virtual ~QueryService_Regex_result() throw() {}
 
   std::set<int64_t>  success;
 
-  _QueryService_RegexSearch_result__isset __isset;
+  _QueryService_Regex_result__isset __isset;
 
   void __set_success(const std::set<int64_t> & val) {
     success = val;
   }
 
-  bool operator == (const QueryService_RegexSearch_result & rhs) const
+  bool operator == (const QueryService_Regex_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const QueryService_RegexSearch_result &rhs) const {
+  bool operator != (const QueryService_Regex_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const QueryService_RegexSearch_result & ) const;
+  bool operator < (const QueryService_Regex_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _QueryService_RegexSearch_presult__isset {
-  _QueryService_RegexSearch_presult__isset() : success(false) {}
+typedef struct _QueryService_Regex_presult__isset {
+  _QueryService_Regex_presult__isset() : success(false) {}
   bool success;
-} _QueryService_RegexSearch_presult__isset;
+} _QueryService_Regex_presult__isset;
 
-class QueryService_RegexSearch_presult {
+class QueryService_Regex_presult {
  public:
 
 
-  virtual ~QueryService_RegexSearch_presult() throw() {}
+  virtual ~QueryService_Regex_presult() throw() {}
 
   std::set<int64_t> * success;
 
-  _QueryService_RegexSearch_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-typedef struct _QueryService_RegexCount_args__isset {
-  _QueryService_RegexCount_args__isset() : query(false) {}
-  bool query;
-} _QueryService_RegexCount_args__isset;
-
-class QueryService_RegexCount_args {
- public:
-
-  QueryService_RegexCount_args() : query() {
-  }
-
-  virtual ~QueryService_RegexCount_args() throw() {}
-
-  std::string query;
-
-  _QueryService_RegexCount_args__isset __isset;
-
-  void __set_query(const std::string& val) {
-    query = val;
-  }
-
-  bool operator == (const QueryService_RegexCount_args & rhs) const
-  {
-    if (!(query == rhs.query))
-      return false;
-    return true;
-  }
-  bool operator != (const QueryService_RegexCount_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const QueryService_RegexCount_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class QueryService_RegexCount_pargs {
- public:
-
-
-  virtual ~QueryService_RegexCount_pargs() throw() {}
-
-  const std::string* query;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _QueryService_RegexCount_result__isset {
-  _QueryService_RegexCount_result__isset() : success(false) {}
-  bool success;
-} _QueryService_RegexCount_result__isset;
-
-class QueryService_RegexCount_result {
- public:
-
-  QueryService_RegexCount_result() {
-  }
-
-  virtual ~QueryService_RegexCount_result() throw() {}
-
-  std::vector<int64_t>  success;
-
-  _QueryService_RegexCount_result__isset __isset;
-
-  void __set_success(const std::vector<int64_t> & val) {
-    success = val;
-  }
-
-  bool operator == (const QueryService_RegexCount_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const QueryService_RegexCount_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const QueryService_RegexCount_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _QueryService_RegexCount_presult__isset {
-  _QueryService_RegexCount_presult__isset() : success(false) {}
-  bool success;
-} _QueryService_RegexCount_presult__isset;
-
-class QueryService_RegexCount_presult {
- public:
-
-
-  virtual ~QueryService_RegexCount_presult() throw() {}
-
-  std::vector<int64_t> * success;
-
-  _QueryService_RegexCount_presult__isset __isset;
+  _QueryService_Regex_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1426,12 +1314,9 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void Search(std::set<int64_t> & _return, const std::string& query);
   void send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return);
-  void RegexSearch(std::set<int64_t> & _return, const std::string& query);
-  void send_RegexSearch(const std::string& query);
-  void recv_RegexSearch(std::set<int64_t> & _return);
-  void RegexCount(std::vector<int64_t> & _return, const std::string& query);
-  void send_RegexCount(const std::string& query);
-  void recv_RegexCount(std::vector<int64_t> & _return);
+  void Regex(std::set<int64_t> & _return, const std::string& query);
+  void send_Regex(const std::string& query);
+  void recv_Regex(std::set<int64_t> & _return);
   int64_t Count(const std::string& query);
   void send_Count(const std::string& query);
   int64_t recv_Count();
@@ -1469,8 +1354,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_RegexSearch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_RegexCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Regex(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_FlatExtract(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_FlatCount(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1484,8 +1368,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["Get"] = &QueryServiceProcessor::process_Get;
     processMap_["Access"] = &QueryServiceProcessor::process_Access;
     processMap_["Search"] = &QueryServiceProcessor::process_Search;
-    processMap_["RegexSearch"] = &QueryServiceProcessor::process_RegexSearch;
-    processMap_["RegexCount"] = &QueryServiceProcessor::process_RegexCount;
+    processMap_["Regex"] = &QueryServiceProcessor::process_Regex;
     processMap_["Count"] = &QueryServiceProcessor::process_Count;
     processMap_["FlatExtract"] = &QueryServiceProcessor::process_FlatExtract;
     processMap_["FlatCount"] = &QueryServiceProcessor::process_FlatCount;
@@ -1559,23 +1442,13 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
     return;
   }
 
-  void RegexSearch(std::set<int64_t> & _return, const std::string& query) {
+  void Regex(std::set<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->RegexSearch(_return, query);
+      ifaces_[i]->Regex(_return, query);
     }
-    ifaces_[i]->RegexSearch(_return, query);
-    return;
-  }
-
-  void RegexCount(std::vector<int64_t> & _return, const std::string& query) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->RegexCount(_return, query);
-    }
-    ifaces_[i]->RegexCount(_return, query);
+    ifaces_[i]->Regex(_return, query);
     return;
   }
 

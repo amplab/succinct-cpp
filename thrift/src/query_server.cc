@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "../../core/include/succinct_shard.h"
+#include "succinct_shard.h"
 #include "ports.h"
 
 using namespace ::apache::thrift;
@@ -80,19 +80,11 @@ class QueryServiceHandler : virtual public QueryServiceIf {
     succinct_shard_->Search(_return, query);
   }
 
-  void RegexSearch(std::set<int64_t> &_return, const std::string &query) {
+  void Regex(std::set<int64_t> &_return, const std::string &query) {
     std::set<std::pair<size_t, size_t>> results;
     succinct_shard_->RegexSearch(results, query, regex_opt_);
     for (auto res : results) {
       _return.insert((int64_t) res.first);
-    }
-  }
-
-  void RegexCount(std::vector<int64_t> & _return, const std::string& query) {
-    std::vector<size_t> results;
-    succinct_shard_->RegexCount(results, query);
-    for (auto res : results) {
-      _return.push_back((int64_t) res);
     }
   }
 
