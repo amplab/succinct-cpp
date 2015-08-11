@@ -74,7 +74,6 @@ class NPA {
   virtual size_t StorageSize() = 0;
 
   virtual int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag) {
-    fprintf(stderr, "BinarySearch: s = %llu, e = %llu, val = %llu\n", s, e, val);
     int64_t sp = s;
     int64_t ep = e;
     uint64_t m;
@@ -88,7 +87,6 @@ class NPA {
       else
         sp = m + 1;
     }
-    fprintf(stderr, "BinarySearch: result = %lld\n", flag ? ep : sp);
 
     return flag ? ep : sp;
   }

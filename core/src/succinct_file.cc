@@ -8,16 +8,9 @@ SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode)
 
 uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
   uint64_t val = 0;
-  uint64_t max = SuccinctUtils::Min((i + npa_->GetContextLength()), input_size_);
-  for (uint64_t t = i; t < max; t++) {
-    val = val * alphabet_size_ + alphabet_map_[p[t]].second;
-  }
 
-  if (max < i + npa_->GetContextLength()) {
-    for (uint64_t t = 0; t < (i + npa_->GetContextLength()) % input_size_;
-        t++) {
-      val = val * alphabet_size_ + alphabet_map_[p[t]].second;
-    }
+  for (uint64_t t = i; t < i + npa_->GetContextLength(); t++) {
+    val = val * alphabet_size_ + alphabet_map_[p[t]].second;
   }
 
   return val;
@@ -78,10 +71,9 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
   return range;
 }
 
-
 std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
                                                    uint64_t len) {
-  uint64_t m = strlen(p);
+  uint64_t m = len;
 
   if (m <= npa_->GetContextLength()) {
     return GetRangeSlow(p, len);
@@ -98,12 +90,14 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
   // Get the sigma_id and context_id corresponding to the last
   // context and sigma
 
-  fprintf(stderr, "\nLooking at sigma = %c\n", p[m - npa_->GetContextLength() - 1]);
+  fprintf(stderr, "\nLooking at sigma = %c\n",
+          p[m - npa_->GetContextLength() - 1]);
 
   // Get sigma_id:
   if (alphabet_map_.find(p[m - npa_->GetContextLength() - 1])
       == alphabet_map_.end()) {
-    fprintf(stderr, "Could not find %c in alphabet_map.\n", p[m - npa_->GetContextLength() - 1]);
+    fprintf(stderr, "Could not find %c in alphabet_map.\n",
+            p[m - npa_->GetContextLength() - 1]);
     return range;
   }
   sigma_id = alphabet_map_[p[m - npa_->GetContextLength() - 1]].second;
@@ -222,7 +216,8 @@ void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
   }
 }
 
-void SuccinctFile::Extract2(std::string& result, uint64_t offset, uint64_t len) {
+void SuccinctFile::Extract2(std::string& result, uint64_t offset,
+                            uint64_t len) {
   result.resize(len);
   uint64_t idx = LookupISA(offset);
   uint64_t *npa_vals = new uint64_t[len];
@@ -235,7 +230,8 @@ void SuccinctFile::Extract2(std::string& result, uint64_t offset, uint64_t len) 
   }
 }
 
-void SuccinctFile::Extract3(std::string& result, uint64_t offset, uint64_t len) {
+void SuccinctFile::Extract3(std::string& result, uint64_t offset,
+                            uint64_t len) {
   result.resize(len);
   uint64_t idx = LookupISA(offset);
   std::map<uint64_t, uint64_t> npa_vals;
@@ -243,7 +239,7 @@ void SuccinctFile::Extract3(std::string& result, uint64_t offset, uint64_t len) 
     npa_vals[idx] = k;
     idx = LookupNPA(idx);
   }
-  for(auto npa_entry : npa_vals) {
+  for (auto npa_entry : npa_vals) {
     result[npa_entry.second] = alphabet_[LookupC(npa_entry.first)];
   }
 }
