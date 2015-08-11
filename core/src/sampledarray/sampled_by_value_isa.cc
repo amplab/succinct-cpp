@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/sampled_by_value_isa.h"
+#include "sampledarray/sampled_by_value_isa.h"
 
 SampledByValueISA::SampledByValueISA(uint32_t sampling_rate, NPA *npa,
                                      bitmap_t *SA, uint64_t sa_n,
@@ -36,13 +36,14 @@ void SampledByValueISA::Sample(bitmap_t *SA, uint64_t n) {
   uint32_t orig_bits = SuccinctUtils::IntegerLog2(n + 1);
 
   data_ = new bitmap_t;
-  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_, succinct_allocator_);
+  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_,
+                           succinct_allocator_);
 
   for (uint64_t i = 0; i < n; i++) {
     sa_val = SuccinctBase::LookupBitmapArray(SA, i, orig_bits);
     if (sa_val % sampling_rate_ == 0) {
       SuccinctBase::SetBitmapArray(&data_, sa_val / sampling_rate_, pos++,
-                                     data_bits_);
+                                   data_bits_);
     }
   }
 
@@ -67,6 +68,7 @@ bool SampledByValueISA::IsSampled(uint64_t i) {
   return i % sampling_rate_ == 0;
 }
 
-void SampledByValueISA::SetSampledPositions(SampledByValueISA::Dictionary *d_bpos) {
+void SampledByValueISA::SetSampledPositions(
+    SampledByValueISA::Dictionary *d_bpos) {
   this->sampled_positions_ = d_bpos;
 }

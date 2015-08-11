@@ -1,4 +1,4 @@
-#include "../include/layered_succinct_shard.h"
+#include "layered_succinct_shard.h"
 
 LayeredSuccinctShard::LayeredSuccinctShard(
     uint32_t id, std::string datafile, SuccinctMode s_mode,

@@ -1,4 +1,4 @@
-#include "../../include/npa/elias_gamma_encoded_npa.h"
+#include "npa/elias_gamma_encoded_npa.h"
 
 EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,

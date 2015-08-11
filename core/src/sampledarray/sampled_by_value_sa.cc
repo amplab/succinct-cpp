@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/sampled_by_value_sa.h"
+#include "sampledarray/sampled_by_value_sa.h"
 
 SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
                                    bitmap_t *SA, uint64_t sa_n,

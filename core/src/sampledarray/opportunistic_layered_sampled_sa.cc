@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/opportunistic_layered_sampled_sa.h"
+#include "sampledarray/opportunistic_layered_sampled_sa.h"
 
 OpportunisticLayeredSampledSA::OpportunisticLayeredSampledSA(
     uint32_t target_sampling_rate, uint32_t base_sampling_rate, NPA *npa,

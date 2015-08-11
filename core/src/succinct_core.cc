@@ -1,4 +1,4 @@
-#include "../include/succinct_core.h"
+#include "succinct_core.h"
 
 SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,

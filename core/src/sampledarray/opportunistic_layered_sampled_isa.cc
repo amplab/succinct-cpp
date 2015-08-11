@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/opportunistic_layered_sampled_isa.h"
+#include "sampledarray/opportunistic_layered_sampled_isa.h"
 
 OpportunisticLayeredSampledISA::OpportunisticLayeredSampledISA(
     uint32_t target_sampling_rate, uint32_t base_sampling_rate, NPA *npa,
@@ -35,7 +35,7 @@ uint64_t OpportunisticLayeredSampledISA::operator[](uint64_t i) {
   Layer l;
   i = GetLayerLeq(&l, i);
   uint64_t pos = SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
-                                                   l.layer_idx, data_bits_);
+                                                 l.layer_idx, data_bits_);
 
   while (i--) {
     pos = (*npa_)[pos];

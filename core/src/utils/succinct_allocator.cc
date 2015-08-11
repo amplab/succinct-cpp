@@ -1,4 +1,4 @@
-#include "../../include/utils/succinct_allocator.h"
+#include "utils/succinct_allocator.h"
 
 /*
  * Constructor

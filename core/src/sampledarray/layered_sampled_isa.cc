@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/layered_sampled_isa.h"
+#include "sampledarray/layered_sampled_isa.h"
 
 LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
                                      uint32_t base_sampling_rate, NPA *npa,
@@ -35,7 +35,7 @@ uint64_t LayeredSampledISA::operator[](uint64_t i) {
   Layer l;
   i = GetLayerLeq(&l, i);
   uint64_t pos = SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
-                                                   l.layer_idx, data_bits_);
+                                                 l.layer_idx, data_bits_);
 
   while (i--) {
     pos = (*npa)[pos];
@@ -53,10 +53,11 @@ size_t LayeredSampledISA::ReconstructLayer(uint32_t layer_id) {
             layer_sampling_rate : layer_sampling_rate * 2;
     uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
     SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
-                              succinct_allocator_);
+                             succinct_allocator_);
     uint64_t idx, offset;
     std::vector<bool> is_computed(num_entries, false);
-    offset = (layer_id == this->num_layers_ - 1) ? 0 : (layer_sampling_rate / 2);
+    offset =
+        (layer_id == this->num_layers_ - 1) ? 0 : (layer_sampling_rate / 2);
     for (uint64_t i = 0; i < num_entries; i++) {
       idx = i * layer_sampling_rate + offset;
       if (idx > original_size_)
@@ -66,7 +67,7 @@ size_t LayeredSampledISA::ReconstructLayer(uint32_t layer_id) {
       Layer l;
       idx = GetLayerLeq(&l, idx);
       uint64_t pos = SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
-                                                       l.layer_idx, data_bits_);
+                                                     l.layer_idx, data_bits_);
       while (idx--) {
         pos = (*npa)[pos];
       }

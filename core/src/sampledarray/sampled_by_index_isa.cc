@@ -1,4 +1,4 @@
-#include "../../include/sampledarray/sampled_by_index_isa.h"
+#include "sampledarray/sampled_by_index_isa.h"
 
 SampledByIndexISA::SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
                                      bitmap_t *SA, uint64_t sa_n,
@@ -29,13 +29,14 @@ void SampledByIndexISA::Sample(bitmap_t *SA, uint64_t n) {
   data_size_ = (n / sampling_rate_) + 1;
 
   data_ = new bitmap_t;
-  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_, succinct_allocator_);
+  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_,
+                           succinct_allocator_);
 
   for (uint64_t i = 0; i < n; i++) {
     uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
     if (sa_val % sampling_rate_ == 0) {
       SuccinctBase::SetBitmapArray(&data_, (sa_val / sampling_rate_), i,
-                                     data_bits_);
+                                   data_bits_);
     }
   }
 }
@@ -45,7 +46,7 @@ uint64_t SampledByIndexISA::operator [](uint64_t i) {
   assert(i < original_size_);
   uint64_t sample_idx = i / sampling_rate_;
   uint64_t sample = SuccinctBase::LookupBitmapArray(data_, sample_idx,
-                                                      data_bits_);
+                                                    data_bits_);
   uint64_t pos = sample;
   i -= (sample_idx * sampling_rate_);
   while (i--) {

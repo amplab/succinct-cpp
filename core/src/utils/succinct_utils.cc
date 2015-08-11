@@ -1,4 +1,4 @@
-#include "../../include/utils/succinct_utils.h"
+#include "utils/succinct_utils.h"
 
 // Returns the number of set bits in a 64 bit integer
 uint64_t SuccinctUtils::PopCount(uint64_t n) {

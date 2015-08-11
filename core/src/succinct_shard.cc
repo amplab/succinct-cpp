@@ -70,27 +70,14 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
       // Read keys
       size_t keys_size = *((size_t *) data);
       data += sizeof(size_t);
-      //    keys.reserve(keys_size);
-      //    for(size_t i = 0; i < keys_size; i++) {
-      //        uint64_t key = *((int64_t *)data);
-      //        keys.push_back(key);
-      //        data += sizeof(int64_t);
-      //    }
       buf_allocator<int64_t> key_allocator((int64_t *) data);
       keys_ = std::vector<int64_t>((int64_t *) data,
-                                  (int64_t *) data + keys_size, key_allocator);
+                                   (int64_t *) data + keys_size, key_allocator);
       data += (sizeof(int64_t) * keys_size);
 
       // Read values
       size_t value_offsets_size = *((size_t *) data);
       data += sizeof(size_t);
-//        value_offsets.reserve(value_offsets_size);
-//        for(size_t i = 0; i < value_offsets_size; i++) {
-//            uint64_t value_offset = *((int64_t *)data);
-//            value_offsets.push_back(value_offset);
-//            data += sizeof(int64_t);
-//        }
-
       buf_allocator<int64_t> value_offsets_allocator((int64_t *) data);
       value_offsets_ = std::vector<int64_t>(
           (int64_t *) data, (int64_t *) data + value_offsets_size,
@@ -115,13 +102,14 @@ uint64_t SuccinctShard::ComputeContextValue(const char *p, uint64_t i) {
 }
 
 std::pair<int64_t, int64_t> SuccinctShard::GetRange(const char *p,
-                                                     uint64_t len) {
+                                                    uint64_t len) {
   std::pair<int64_t, int64_t> range(0, -1);
   int64_t sp, ep, c1, c2;
 
   if (alphabet_map_.find(p[len - 1]) != alphabet_map_.end()) {
     sp = (alphabet_map_[p[len - 1]]).first;
-    ep = alphabet_map_[alphabet_[alphabet_map_[p[len - 1]].second + 1]].first - 1;
+    ep = alphabet_map_[alphabet_[alphabet_map_[p[len - 1]].second + 1]].first
+        - 1;
   } else {
     return range;
   }
@@ -173,7 +161,8 @@ uint32_t SuccinctShard::GetNPASamplingRate() {
 }
 
 int64_t SuccinctShard::GetValueOffsetPos(const int64_t key) {
-  size_t pos = std::lower_bound(keys_.begin(), keys_.end(), key) - keys_.begin();
+  size_t pos = std::lower_bound(keys_.begin(), keys_.end(), key)
+      - keys_.begin();
   return
       (keys_[pos] != key || pos >= keys_.size()
           || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
@@ -266,7 +255,8 @@ int64_t SuccinctShard::Count(const std::string& str) {
   return result.size();
 }
 
-void SuccinctShard::FlatExtract(std::string& result, int64_t offset, int64_t len) {
+void SuccinctShard::FlatExtract(std::string& result, int64_t offset,
+                                int64_t len) {
   result = "";
   uint64_t idx = LookupISA(offset);
   for (uint64_t k = 0; k < len; k++) {
@@ -280,7 +270,8 @@ int64_t SuccinctShard::FlatCount(const std::string& str) {
   return range.second - range.first + 1;
 }
 
-void SuccinctShard::FlatSearch(std::vector<int64_t>& result, const std::string& str) {
+void SuccinctShard::FlatSearch(std::vector<int64_t>& result,
+                               const std::string& str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
@@ -370,7 +361,7 @@ size_t SuccinctShard::MemoryMap() {
   data += sizeof(size_t);
   buf_allocator<int64_t> key_allocator((int64_t *) data);
   keys_ = std::vector<int64_t>((int64_t *) data, (int64_t *) data + keys_size,
-                              key_allocator);
+                               key_allocator);
   data += (keys_size * sizeof(int64_t));
 
   // Read values
@@ -379,8 +370,8 @@ size_t SuccinctShard::MemoryMap() {
   data += sizeof(size_t);
   buf_allocator<int64_t> value_offsets_allocator((int64_t *) data);
   value_offsets_ = std::vector<int64_t>((int64_t *) data,
-                                       (int64_t *) data + value_offsets_size,
-                                       value_offsets_allocator);
+                                        (int64_t *) data + value_offsets_size,
+                                        value_offsets_allocator);
   data += (sizeof(int64_t) * value_offsets_size);
 
   // Read bitmap
