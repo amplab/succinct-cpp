@@ -163,14 +163,14 @@ class FileBenchmark : public Benchmark {
     uint64_t sum;
     std::ofstream result_stream(result_path);
 
-    // Warmup
-    fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
-      result = succinct_file_->Count(queries_[i]);
-      sum = (sum + result) % succinct_file_->GetOriginalSize();
-    }
-    fprintf(stderr, "Warmup chksum = %llu\n", sum);
-    fprintf(stderr, "Warmup complete.\n");
+//    // Warmup
+//    fprintf(stderr, "Warming up for %llu queries...\n", kMeasureCount);
+//    for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
+//      result = succinct_file_->Count(queries_[i]);
+//      sum = (sum + result) % succinct_file_->GetOriginalSize();
+//    }
+//    fprintf(stderr, "Warmup chksum = %llu\n", sum);
+//    fprintf(stderr, "Warmup complete.\n");
 
     // Measure
     sum = 0;
@@ -178,6 +178,10 @@ class FileBenchmark : public Benchmark {
     for (uint64_t i = 0; i < queries_.size(); i++) {
       t0 = GetTimestamp();
       result = succinct_file_->Count(queries_[i]);
+      t1 = GetTimestamp();
+      tdiff = t1 - t0;
+      result_stream << result << "\t" << tdiff << "\n";
+      result = succinct_file_->Count2(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
       result_stream << result << "\t" << tdiff << "\n";

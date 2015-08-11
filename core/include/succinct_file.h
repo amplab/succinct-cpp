@@ -33,7 +33,10 @@ class SuccinctFile : public SuccinctCore {
   /*
    * Get the count of a string in the Succinct file
    */
-  uint64_t Count(std::string str);
+  uint64_t Count(std::string& str);
+
+  // DEBUG
+  uint64_t Count2(std::string& str);
 
   /*
    * Get the offsets of all the occurrences
@@ -49,7 +52,7 @@ class SuccinctFile : public SuccinctCore {
                       uint64_t max_sep);
 
  private:
-  // std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
+  std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
   std::pair<int64_t, int64_t> GetRange(const char *str, uint64_t len);
 
   uint64_t ComputeContextValue(const char *str, uint64_t pos);
