@@ -28,10 +28,9 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // Compute the elias gamma encoding size in bits for a 64 bit integer
   static uint32_t EliasGammaEncodingSize(uint64_t n);
 
-  /*
-   virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
-   bool flag);
-   */
+
+  virtual int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag);
+
 
  protected:
   // Create elias-gamma delta encoded vector
