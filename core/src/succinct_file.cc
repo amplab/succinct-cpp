@@ -22,43 +22,43 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
   uint64_t m = strlen(p);
   int64_t left, right, c1, c2;
 
-  fprintf(stderr, "\nLooking at sigma = %c\n", p[m - 1]);
+  // fprintf(stderr, "\nLooking at sigma = %c\n", p[m - 1]);
   if (alphabet_map_.find(p[m - 1]) != alphabet_map_.end()) {
     left = (alphabet_map_[p[m - 1]]).first;
     right = alphabet_map_[alphabet_[alphabet_map_[p[m - 1]].second + 1]].first
         - 1;
-    fprintf(stderr, "Left end = %lld\n", left);
-    fprintf(stderr, "Right end = %lld\n", right);
+    // fprintf(stderr, "Left end = %lld\n", left);
+    // fprintf(stderr, "Right end = %lld\n", right);
   } else {
-    fprintf(stderr, "Could not find %c in alphabet_map.\n", p[m - 1]);
+    // fprintf(stderr, "Could not find %c in alphabet_map.\n", p[m - 1]);
     return range;
   }
 
   for (int64_t i = m - 2; i >= 0; i--) {
-    fprintf(stderr, "\nLooking at sigma = %c\n", p[i]);
+    // fprintf(stderr, "\nLooking at sigma = %c\n", p[i]);
     if (alphabet_map_.find(p[m - 1]) != alphabet_map_.end()) {
       c1 = alphabet_map_[p[i]].first;
       c2 = alphabet_map_[alphabet_[alphabet_map_[p[i]].second + 1]].first - 1;
-      fprintf(stderr, "Left end = %lld\n", c1);
-      fprintf(stderr, "Right end = %lld\n", c2);
+      // fprintf(stderr, "Left end = %lld\n", c1);
+      // fprintf(stderr, "Right end = %lld\n", c2);
     } else {
-      fprintf(stderr, "Could not find %c in alphabet_map.\n", p[i]);
+      // fprintf(stderr, "Could not find %c in alphabet_map.\n", p[i]);
       return range;
     }
 
     if (c2 < c1) {
-      fprintf(stderr, "Left end was greater than right end.\n");
+      // fprintf(stderr, "Left end was greater than right end.\n");
       return range;
     }
 
     left = npa_->BinarySearch(left, c1, c2, false);
     right = npa_->BinarySearch(right, left, c2, true);
 
-    fprintf(stderr, "Binary search left end = %lld\n", left);
-    fprintf(stderr, "Binary search right end = %lld\n", right);
+    // fprintf(stderr, "Binary search left end = %lld\n", left);
+    // fprintf(stderr, "Binary search right end = %lld\n", right);
 
     if (left > right) {
-      fprintf(stderr, "Left end was greater than right end.\n");
+      // fprintf(stderr, "Left end was greater than right end.\n");
       return range;
     }
   }
@@ -66,7 +66,7 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRangeSlow(const char *p,
   range.first = left;
   range.second = right;
 
-  fprintf(stderr, "\nFinal range: (%lld, %lld)", left, right);
+  // fprintf(stderr, "\nFinal range: (%lld, %lld)", left, right);
 
   return range;
 }

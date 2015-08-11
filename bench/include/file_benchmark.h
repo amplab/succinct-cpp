@@ -177,10 +177,10 @@ class FileBenchmark : public Benchmark {
     fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
     for (uint64_t i = 0; i < queries_.size(); i++) {
       t0 = GetTimestamp();
-      result = succinct_file_->Count(queries_[i]);
-      t1 = GetTimestamp();
-      tdiff = t1 - t0;
-      result_stream << result << "\t" << tdiff << "\n";
+//      result = succinct_file_->Count(queries_[i]);
+//      t1 = GetTimestamp();
+//      tdiff = t1 - t0;
+//      result_stream << result << "\t" << tdiff << "\n";
       result = succinct_file_->Count2(queries_[i]);
       t1 = GetTimestamp();
       tdiff = t1 - t0;
