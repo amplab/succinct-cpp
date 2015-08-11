@@ -44,24 +44,6 @@ benchmark/plot
 # Netbeans files
 nbproject
 
-# Thrift files
-/include/thrift/TApplicationException.h
-/include/thrift/TDispatchProcessor.h
-/include/thrift/TLogging.h
-/include/thrift/TProcessor.h
-/include/thrift/TReflectionLocal.h
-/include/thrift/Thrift.h
-/include/thrift/async
-/include/thrift/concurrency
-/include/thrift/config.h
-/include/thrift/cxxfunctional.h
-/include/thrift/processor
-/include/thrift/protocol
-/include/thrift/qt
-/include/thrift/server
-/include/thrift/thrift-config.h
-/include/thrift/transport
-
 # generic ignores
 *.deps
 *.dirstamp
@@ -82,6 +64,7 @@ nbproject
 *.swp
 *.hi
 *~
+*.tmp*
 
 .*project
 junit*.properties

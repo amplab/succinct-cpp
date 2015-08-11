@@ -169,6 +169,19 @@ void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
   }
 }
 
+void SuccinctFile::Extract2(std::string& result, uint64_t offset, uint64_t len) {
+  result.resize(len);
+  uint64_t idx = LookupISA(offset);
+  uint64_t *npa_vals = new uint64_t[len];
+  for (uint64_t k = 0; k < len; k++) {
+    npa_vals[k] = idx;
+    idx = LookupNPA(idx);
+  }
+  for (uint64_t k = 0; k < len; k++) {
+    result[k] = alphabet_[LookupC(npa_vals[k])];
+  }
+}
+
 uint64_t SuccinctFile::Count(std::string str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   return range.second - range.first + 1;

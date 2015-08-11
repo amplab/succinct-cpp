@@ -80,6 +80,8 @@ int main(int argc, char **argv) {
     file_bench->BenchmarkCount(inputpath + ".count");
   } else if (benchtype == "extract") {
     file_bench->BenchmarkExtract(inputpath + ".extract");
+  } else if (benchtype == "extract2") {
+    file_bench->BenchmarkExtract2(inputpath + ".extract2");
   } else {
     fprintf(stderr, "Unsupported benchmark type %s.\n", benchtype.c_str());
     return -1;

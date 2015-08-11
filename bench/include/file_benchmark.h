@@ -262,6 +262,43 @@ class FileBenchmark : public Benchmark {
 
   }
 
+  void BenchmarkExtract2(std::string result_path) {
+
+    TimeStamp t0, t1, tdiff;
+    uint64_t sum;
+    uint64_t extract_length = 1000;
+    std::ofstream result_stream(result_path);
+
+    // Warmup
+    sum = 0;
+    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
+    for (uint64_t i = 0; i < kWarmupCount; i++) {
+      std::string result;
+      succinct_file_->Extract2(result, randoms_[i], extract_length);
+      sum = (sum + result.length()) % succinct_file_->GetOriginalSize();
+    }
+    fprintf(stderr, "Warmup chksum = %llu\n", sum);
+    fprintf(stderr, "Warmup complete.\n");
+
+    // Measure
+    sum = 0;
+    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
+    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+      std::string result;
+      t0 = GetTimestamp();
+      succinct_file_->Extract2(result, randoms_[i], extract_length);
+      t1 = GetTimestamp();
+      tdiff = t1 - t0;
+      result_stream << result.length() << "\t" << tdiff << "\n";
+      sum = (sum + result.length()) % succinct_file_->GetOriginalSize();
+    }
+    fprintf(stderr, "Measure chksum = %llu\n", sum);
+    fprintf(stderr, "Measure complete.\n");
+
+    result_stream.close();
+
+  }
+
   void BenchmarkCore() {
     fprintf(stderr, "Benchmarking Core Functions...\n\n");
     fprintf(stderr, "Benchmarking lookupNPA...\n");
