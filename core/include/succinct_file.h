@@ -21,9 +21,14 @@ class SuccinctFile : public SuccinctCore {
   void Extract(std::string& result, uint64_t offset, uint64_t len);
 
   /*
-   * Perf test
+   * Perf test 1
    */
   void Extract2(std::string& result, uint64_t offset, uint64_t len);
+
+  /*
+    * Perf test 2
+    */
+   void Extract3(std::string& result, uint64_t offset, uint64_t len);
 
   /*
    * Get the count of a string in the Succinct file
