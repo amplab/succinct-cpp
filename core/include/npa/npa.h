@@ -73,7 +73,7 @@ class NPA {
 
   virtual size_t StorageSize() = 0;
 
-  int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag) {
+  virtual int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag) {
     int64_t sp = s;
     int64_t ep = e;
     uint64_t m;

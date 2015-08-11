@@ -28,14 +28,12 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // Compute the elias gamma encoding size in bits for a 64 bit integer
   static uint32_t EliasGammaEncodingSize(uint64_t n);
 
-  /*
-   virtual int64_t binary_search_npa(uint64_t val, uint64_t s, uint64_t e,
-   bool flag);
-   */
+  virtual int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag);
 
  protected:
   // Create elias-gamma delta encoded vector
-  virtual void CreateDeltaEncodedVector(DeltaEncodedVector *dv, std::vector<uint64_t> &data);
+  virtual void CreateDeltaEncodedVector(DeltaEncodedVector *dv,
+                                        std::vector<uint64_t> &data);
 
   // Lookup elias-gamma delta encoded vector at index i
   virtual uint64_t LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i);
@@ -45,15 +43,15 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // from a specified position and for a specified number of bits
   uint16_t AccessDataPos16(uint16_t data, uint32_t pos, uint32_t b);
 
-  int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val,
-                                uint64_t s, uint64_t e);
+  int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val, uint64_t s,
+                              uint64_t e);
 
   // Initialize pre-computed prefix sums
   void InitPrefixSum();
 
   // Encode a sorted vector using elias-gamma encoding
   void EliasGammaEncode(Bitmap **B, std::vector<uint64_t> &deltas,
-                          uint64_t size);
+                        uint64_t size);
 
   // Decode a particular elias-gamma encoded delta value at a provided offset
   // in the deltas bitmap
