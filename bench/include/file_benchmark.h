@@ -36,12 +36,12 @@ class FileBenchmark : public Benchmark {
     // Measure
     sum = 0;
     fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
-    for (uint64_t i = kWarmupCount; i < kWarmupCount + kMeasureCount; i++) {
+    for (uint64_t i = kWarmupCount; true; i++) {
       t0 = rdtsc();
-      result = (succinct_file_->*function)(randoms_[i]);
+      result = (succinct_file_->*function)(randoms_[(i % (kWarmupCount + kMeasureCount))]);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      result_stream << randoms_[i] << "\t" << result << "\t" << tdiff << "\n";
+      // result_stream << randoms_[(i % (kWarmupCount + kMeasureCount))] << "\t" << result << "\t" << tdiff << "\n";
       sum = (sum + result) % succinct_file_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);
