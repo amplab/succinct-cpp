@@ -191,7 +191,7 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
     }
 
     left = npa_->BinarySearch(left, c1, c2, false);
-    right = npa_->BinarySearch(right, left, c2, true);
+    right = npa_->BinarySearch(right, c1, c2, true);
     fprintf(stderr, "Binary search left end = %lld\n", left);
     fprintf(stderr, "Binary search right end = %lld\n", right);
 
