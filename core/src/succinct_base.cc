@@ -7,6 +7,7 @@ std::map<uint16_t, uint16_t> SuccinctBase::encode_table[17];
 uint16_t SuccinctBase::C16[17];
 uint8_t SuccinctBase::offbits[17];
 uint8_t SuccinctBase::smallrank[65536][16];
+uint64_t SuccinctBase::low_bits_set[65];
 
 /* Default constructor */
 SuccinctBase::SuccinctBase() {
@@ -54,6 +55,10 @@ void SuccinctBase::InitTables() {
     for (uint64_t j = 0; j < 16; j++) {
       smallrank[i][j] = (uint8_t) SuccinctUtils::PopCount(i >> (15 - j));
     }
+  }
+
+  for(uint64_t i = 0; i < 65; i++) {
+    low_bits_set[i] = (1 << i) - 1;
   }
 }
 

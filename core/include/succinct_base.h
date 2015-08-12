@@ -62,6 +62,7 @@ class SuccinctBase {
   static uint16_t C16[17];
   static uint8_t offbits[17];
   static uint8_t smallrank[65536][16];
+  static uint64_t low_bits_set[65];
 
   SuccinctBase();
 
@@ -102,8 +103,10 @@ class SuccinctBase {
   // Set a value in the bitmap, treating it as an array of fixed length
   static void SetBitmapArray(BitMap **B, uint64_t i, uint64_t val, uint32_t b);
 
+  static uint64_t ReadInteger(uint64_t *buf, uint64_t offset, uint64_t len);
+
   // Lookup a value in the bitmap, treating it as an array of fixed length
-  static uint64_t LookupBitmapArray(BitMap *B, uint64_t i, uint32_t b);
+  static uint64_t LookupBitmapArray(BitMap *B, uint64_t i, uint32_t bits);
 
   // Set a value in the bitmap at a specified offset
   static void SetBitmapAtPos(BitMap **B, uint64_t pos, uint64_t val,
@@ -167,51 +170,39 @@ class SuccinctBase {
 
 };
 
+inline uint64_t SuccinctBase::ReadInteger(uint64_t *buf, uint64_t offset,
+                                          uint64_t len) {
+
+  if (offset + len > 64) {
+    uint64_t val1 = (*buf) << offset;
+    uint64_t val2 = *(buf + 1) >> (63 - ((offset + len - 1) % 64));
+    val1 = val1 >> (offset - ((offset + len - 1) % 64 + 1));
+    return val1 | val2;
+  } else {
+    uint64_t val1 = (*buf) << offset;
+    return val1 >> (64 - len);
+  }
+}
+
 // Lookup a value in the bitmap, treating it as an array of fixed length
 inline uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::BitMap *B,
-                                                uint64_t i, uint32_t b) {
-  if (b == 0)
+                                                uint64_t i, uint32_t bits) {
+  if (bits == 0)
     return 0;
-  uint64_t val;
-  uint64_t *bitmap = B->bitmap;
-  assert(i >= 0);
-  uint64_t s = i * b, e = i * b + (b - 1);
-  uint64_t s_off = (s / 64);
-  uint64_t e_off = (e / 64);
-  if (s_off == e_off) {
-    val = bitmap[s_off] << (s % 64);
-    val = val >> (63 - e % 64 + s % 64);
-  } else {
-    uint64_t val1 = bitmap[s_off] << (s % 64);
-    uint64_t val2 = bitmap[e_off] >> (63 - e % 64);
-    val1 = val1 >> (s % 64 - (e % 64 + 1));
-    val = val1 | val2;
-  }
 
-  return val;
+  uint64_t *bitmap = B->bitmap;
+  uint64_t idx = i * bits;
+  return SuccinctBase::ReadInteger(bitmap + (idx >> 6), idx & 0x3F, bits);
 }
 
 // Lookup a value in the bitmap at a specified offset
-inline uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B, uint64_t pos,
-                                         uint32_t b) {
-  if (b == 0)
+inline uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B,
+                                                uint64_t pos, uint32_t bits) {
+  if (bits == 0)
     return 0;
-  assert(pos >= 0);
-  uint64_t val;
-  uint64_t s = pos, e = pos + (b - 1);
-  uint64_t s_off = (s / 64);
-  uint64_t e_off = (e / 64);
-  if (s_off == e_off) {
-    val = B->bitmap[s_off] << (s % 64);
-    val = val >> (63 - e % 64 + s % 64);
-  } else {
-    uint64_t val1 = B->bitmap[s_off] << (s % 64);
-    uint64_t val2 = B->bitmap[e_off] >> (63 - e % 64);
-    val1 = val1 >> (s % 64 - (e % 64 + 1));
-    val = val1 | val2;
-  }
 
-  return val;
+  uint64_t *bitmap = B->bitmap;
+  return SuccinctBase::ReadInteger(bitmap + (pos >> 6), pos & 0x3F, bits);
 }
 
 #endif
