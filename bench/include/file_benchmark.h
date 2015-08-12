@@ -41,7 +41,7 @@ class FileBenchmark : public Benchmark {
       result = (succinct_file_->*function)(randoms_[(i % (kWarmupCount + kMeasureCount))]);
       t1 = rdtsc();
       tdiff = t1 - t0;
-      // result_stream << randoms_[(i % (kWarmupCount + kMeasureCount))] << "\t" << result << "\t" << tdiff << "\n";
+      // fresult_stream << randoms_[(i % (kWarmupCount + kMeasureCount))] << "\t" << result << "\t" << tdiff << "\n";
       sum = (sum + result) % succinct_file_->GetOriginalSize();
     }
     fprintf(stderr, "Measure chksum = %llu\n", sum);

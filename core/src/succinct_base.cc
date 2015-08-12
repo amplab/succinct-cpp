@@ -188,28 +188,6 @@ void SuccinctBase::SetBitmapArray(SuccinctBase::BitMap **B, uint64_t i,
   }
 }
 
-// Lookup a value in the bitmap, treating it as an array of fixed length
-uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::BitMap *B, uint64_t i,
-                                         uint32_t b) {
-  if (b == 0)
-    return 0;
-  uint64_t val;
-  uint64_t *bitmap = B->bitmap;
-  assert(i >= 0);
-  uint64_t s = i * b, e = i * b + (b - 1);
-  if ((s / 64) == (e / 64)) {
-    val = bitmap[s / 64] << (s % 64);
-    val = val >> (63 - e % 64 + s % 64);
-  } else {
-    uint64_t val1 = bitmap[s / 64] << (s % 64);
-    uint64_t val2 = bitmap[e / 64] >> (63 - e % 64);
-    val1 = val1 >> (s % 64 - (e % 64 + 1));
-    val = val1 | val2;
-  }
-
-  return val;
-}
-
 // Set a value in the bitmap at a specified offset
 void SuccinctBase::SetBitmapAtPos(SuccinctBase::BitMap **B, uint64_t pos,
                                   uint64_t val, uint32_t b) {
@@ -220,27 +198,6 @@ void SuccinctBase::SetBitmapAtPos(SuccinctBase::BitMap **B, uint64_t pos,
     (*B)->bitmap[s / 64] |= (val >> (e % 64 + 1));
     (*B)->bitmap[e / 64] |= (val << (63 - e % 64));
   }
-}
-
-// Lookup a value in the bitmap at a specified offset
-uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B, uint64_t pos,
-                                         uint32_t b) {
-  if (b == 0)
-    return 0;
-  assert(pos >= 0);
-  uint64_t val;
-  uint64_t s = pos, e = pos + (b - 1);
-  if ((s / 64) == (e / 64)) {
-    val = B->bitmap[s / 64] << (s % 64);
-    val = val >> (63 - e % 64 + s % 64);
-  } else {
-    uint64_t val1 = B->bitmap[s / 64] << (s % 64);
-    uint64_t val2 = B->bitmap[e / 64] >> (63 - e % 64);
-    val1 = val1 >> (s % 64 - (e % 64 + 1));
-    val = val1 | val2;
-  }
-
-  return val;
 }
 
 size_t SuccinctBase::SerializeBitmap(SuccinctBase::BitMap *B,

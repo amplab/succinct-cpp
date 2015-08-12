@@ -123,7 +123,8 @@ class SuccinctBase {
 
   /* Dictionary access/modifier functions */
   // Create dictionary from a bitmap
-  static uint64_t CreateDictionary(BitMap *B, Dictionary *D, SuccinctAllocator& s_allocator);
+  static uint64_t CreateDictionary(BitMap *B, Dictionary *D,
+                                   SuccinctAllocator& s_allocator);
 
   // Get the 1-rank of the dictionary at the specified index
   static uint64_t GetRank1(Dictionary *D, uint64_t i);
@@ -165,5 +166,52 @@ class SuccinctBase {
   static void InitTables();
 
 };
+
+// Lookup a value in the bitmap, treating it as an array of fixed length
+inline uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::BitMap *B,
+                                                uint64_t i, uint32_t b) {
+  if (b == 0)
+    return 0;
+  uint64_t val;
+  uint64_t *bitmap = B->bitmap;
+  assert(i >= 0);
+  uint64_t s = i * b, e = i * b + (b - 1);
+  uint64_t s_off = (s / 64);
+  uint64_t e_off = (e / 64);
+  if (s_off == e_off) {
+    val = bitmap[s_off] << (s % 64);
+    val = val >> (63 - e % 64 + s % 64);
+  } else {
+    uint64_t val1 = bitmap[s_off] << (s % 64);
+    uint64_t val2 = bitmap[e_off] >> (63 - e % 64);
+    val1 = val1 >> (s % 64 - (e % 64 + 1));
+    val = val1 | val2;
+  }
+
+  return val;
+}
+
+// Lookup a value in the bitmap at a specified offset
+inline uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B, uint64_t pos,
+                                         uint32_t b) {
+  if (b == 0)
+    return 0;
+  assert(pos >= 0);
+  uint64_t val;
+  uint64_t s = pos, e = pos + (b - 1);
+  uint64_t s_off = (s / 64);
+  uint64_t e_off = (e / 64);
+  if (s_off == e_off) {
+    val = B->bitmap[s_off] << (s % 64);
+    val = val >> (63 - e % 64 + s % 64);
+  } else {
+    uint64_t val1 = B->bitmap[s_off] << (s % 64);
+    uint64_t val2 = B->bitmap[e_off] >> (63 - e % 64);
+    val1 = val1 >> (s % 64 - (e % 64 + 1));
+    val = val1 | val2;
+  }
+
+  return val;
+}
 
 #endif
