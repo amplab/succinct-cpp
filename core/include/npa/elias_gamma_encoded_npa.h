@@ -60,6 +60,9 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // Compute the prefix sum of elias-gamma encoded delta values
   uint64_t EliasGammaPrefixSum(Bitmap *B, uint64_t offset, uint64_t i);
 
+  // Test
+  uint64_t EliasGammaPrefixSum2(Bitmap *B, uint64_t offset, uint64_t i);
+
   // Pre-computed prefix sums for elias gamma encoded NPA
   uint32_t prefixsum_[65536];
 
