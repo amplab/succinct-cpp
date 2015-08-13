@@ -173,13 +173,11 @@ class SuccinctBase {
 inline uint64_t SuccinctBase::ReadInteger(uint64_t *buf, uint64_t offset,
                                           uint64_t len) {
 
+  uint64_t val1 = (*buf) << offset;
   if (offset + len > 64) {
-    uint64_t val1 = (*buf) << offset;
-    uint64_t val2 = *(buf + 1) >> (63 - ((offset + len - 1) % 64));
-    val1 = val1 >> (offset - ((offset + len - 1) % 64 + 1));
-    return val1 | val2;
+    return (val1 >> (offset - ((offset + len - 1) % 64 + 1)))
+        | (*(buf + 1) >> (63 - ((offset + len - 1) % 64)));
   } else {
-    uint64_t val1 = (*buf) << offset;
     return val1 >> (64 - len);
   }
 }
