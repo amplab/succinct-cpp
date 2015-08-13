@@ -11,9 +11,9 @@
 #define PREFIX_CNT16(i)   ((prefixsum16_[(i)] >> 16) & 0xFF)
 #define PREFIX_SUM16(i)   (prefixsum16_[(i)] & 0xFFFF)
 
-#define PREFIX_OFF8(i)   ((prefixsum16_[(i)] >> 12) & 0xF)
-#define PREFIX_CNT8(i)   ((prefixsum16_[(i)] >> 8) & 0xF)
-#define PREFIX_SUM8(i)   (prefixsum16_[(i)] & 0xFF)
+#define PREFIX_OFF8(i)   ((prefixsum8_[(i)] >> 12) & 0xF)
+#define PREFIX_CNT8(i)   ((prefixsum8_[(i)] >> 8) & 0xF)
+#define PREFIX_SUM8(i)   (prefixsum8_[(i)] & 0xFF)
 
 class EliasGammaEncodedNPA : public DeltaEncodedNPA {
  public:
@@ -49,7 +49,7 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
 
   // Accesses data from a 8 bit integer represented as a bit map
   // from a specified position and for a specified number of bits
-  uint16_t AccessDataPos8(uint8_t data, uint32_t pos, uint32_t b);
+  uint8_t AccessDataPos8(uint8_t data, uint32_t pos, uint32_t b);
 
   int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val, uint64_t s,
                               uint64_t e);
