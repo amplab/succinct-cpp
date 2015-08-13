@@ -5,49 +5,63 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
-# If the hosts file is specified in the command line,
-# then it takes precedence over the definition in
-# succinct-env.sh. Save it here.
-if [ -f "$SUCCINCT_HOSTS" ]; then
-  HOSTLIST=`cat "$SUCCINCT_HOSTS"`
-fi
+sbin="`dirname "$0"`"
+sbin="`cd "$sbin"; pwd`"
 
-if [ "$SHARDS_PER_SERVER" = "" ]; then
-  SHARDS_PER_SERVER="1"
-fi
+. "$sbin/succinct-config.sh"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-if [ "$HOSTLIST" = "" ]; then
-  if [ "$SUCCINCT_HOSTS" = "" ]; then
-    if [ -f "${SUCCINCT_CONF_DIR}/hosts" ]; then
-      HOSTLIST=`cat "${SUCCINCT_CONF_DIR}/hosts"`
-    else
-      HOSTLIST=localhost
-    fi
-  else
-    HOSTLIST=`cat "${SUCCINCT_HOSTS}"`
-  fi
+bin="$THRIFT_BIN_DIR"
+bin="`cd "$bin"; pwd`"
+
+export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
+
+if [ "$SUCCINCT_DATA_PATH" = "" ]; then
+  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
 fi
 
-# Launch the handlers
-# By default disable strict host key checking
-if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
-  SUCCINCT_SSH_OPTS="-o StrictHostKeyChecking=no"
+if [ "$SUCCINCT_LOG_PATH" = "" ]; then
+	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
 
-i=0
-num_hosts=$(echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"|wc -l)
-for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
-  if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $num_hosts $i \
-      2>&1 | sed "s/^/$host: /"
-  else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $num_hosts $i \
-      2>&1 | sed "s/^/$host: /" &
-  fi
-  if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
-    sleep $SUCCINCT_HOST_SLEEP
-  fi
-  i=$(( $i + 1 ))
+mkdir -p $SUCCINCT_LOG_PATH
+
+if [ "$QUERY_SERVER_PORT" = "" ]; then
+	QUERY_SERVER_PORT="11002"
+fi
+
+if [ "$NUM_SHARDS" = "" ]; then
+    NUM_SHARDS="1"
+fi
+
+if [ "$REGEX_OPT" = "" ]; then
+    REGEX_OPT="TRUE"
+fi
+
+if [ "$REGEX_OPT" = "TRUE" ]; then
+    OPT="-o"
+fi
+
+if [ "$SA_SAMPLING_RATE" = "" ]; then
+    SA_SAMPLING_RATE="32"
+fi
+
+if [ "$ISA_SAMPLING_RATE" = "" ]; then
+    ISA_SAMPLING_RATE="32"
+fi
+
+if [ "$SAMPLING_SCHEME" = "" ]; then
+    SAMPLING_SCHEME="0"
+fi
+
+if [ "$NPA_SCHEME" = "" ]; then
+    NPA_SCHEME="1"
+fi
+
+limit=$(($NUM_SHARDS - 1))
+for i in `seq 0 $limit`; do
+	PORT=$(($QUERY_SERVER_PORT + $i))
+	DATA_FILE="$SUCCINCT_DATA_PATH/data_$i"
+	nohup "$bin/sserver" -m 1 -p $PORT -s $SA_SAMPLING_RATE -i $ISA_SAMPLING_RATE -x $SAMPLING_SCHEME -r $NPA_SCHEME $OPT $DATA_FILE 2>"$SUCCINCT_LOG_PATH/server_${i}.log" > /dev/null &
 done

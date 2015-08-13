@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+# Stops all servers and the aggregator
+
 sbin=`dirname "$0"`
 sbin=`cd "$sbin"; pwd`
 
-# Stop master
-echo "Stopping master..."
-"$sbin/stop-master.sh"
+# Stop servers
+echo "Stopping servers..."
+"$sbin/stop-servers.sh"
 
-# Stop workers
-echo "Stopping workers..."
-"$sbin/stop-workers.sh"
+# Stop aggregator
+echo "Stopping aggregator..."
+"$sbin/stop-aggregator.sh"

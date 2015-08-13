@@ -1,5 +1,4 @@
-# Starts the master on this node.
-# Starts a handler on each node specified in conf/hosts
+# Starts an aggregator and $NUM_SHARDS servers
 
 sbin="`dirname "$0"`"
 sbin="`cd "$sbin"; pwd`"
@@ -13,13 +12,6 @@ echo "Starting servers..."
 # Wait for some time
 sleep 1
 
-# Start Handlers
-echo "Starting handlers..."
-"$sbin"/start-handlers.sh
-
-# Wait for some time
-sleep 1
-
-# Start Master
-echo "Starting master..."
-"$sbin"/start-master.sh
+# Start Aggregator
+echo "Starting aggregator..."
+"$sbin"/start-aggregator.sh
