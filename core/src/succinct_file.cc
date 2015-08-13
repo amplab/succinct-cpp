@@ -187,8 +187,3 @@ void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
     result[i - range.first] = ((int64_t) LookupSA(i));
   }
 }
-
-void SuccinctFile::WildCardSearch(std::vector<int64_t>& result,
-                                  std::string pattern, uint64_t max_sep) {
-  // TODO: Implement wild card search
-}

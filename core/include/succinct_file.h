@@ -23,6 +23,7 @@ class SuccinctFile : public SuccinctCore {
                uint32_t context_len = 3, uint32_t sampling_range = 1024);
 
   std::string Name();
+
   /*
    * Random access into the Succinct file with the specified offset
    * and length
@@ -39,13 +40,6 @@ class SuccinctFile : public SuccinctCore {
    * of a string in the Succinct file
    */
   void Search(std::vector<int64_t>& result, std::string str);
-
-  /*
-   * Get the offsets of all the occurrences of a
-   * wild-card string in the Succinct file
-   */
-  void WildCardSearch(std::vector<int64_t>& result, std::string pattern,
-                      uint64_t max_sep);
 
  private:
   // std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
