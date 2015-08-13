@@ -69,9 +69,6 @@ void EliasGammaEncodedNPA::InitPrefixSum() {
   for (uint64_t max = 1; max <= 8; max++) {
     for (uint64_t i = 0; i < 256; i++) {
       uint8_t val = (uint8_t) i;
-      // for(uint64_t ii = 0; ii < 8; ii++) {
-      //  fprintf(stderr, "%lu", GETBIT8(val, ii));
-      // }
       uint8_t count = 0, offset = 0, sum = 0;
       while (val && offset <= 8) {
         int N = 0;
@@ -81,7 +78,6 @@ void EliasGammaEncodedNPA::InitPrefixSum() {
         }
         if (offset + (N + 1) <= 8 && count < max) {
           sum += AccessDataPos8(val, offset, N + 1);
-          // fprintf(stderr, " acc = %llu", AccessDataPos8(val, offset, N + 1));
           offset += (N + 1);
           count++;
         } else {
@@ -90,7 +86,6 @@ void EliasGammaEncodedNPA::InitPrefixSum() {
         }
       }
 
-      // fprintf(stderr, " max = %llu, offset = %u, count = %u, sum = %u\n", max, offset, count, sum);
       prefixsum8_[(max << 8) | i] = (offset << 12) | (count << 8) | sum;
     }
   }
@@ -139,26 +134,25 @@ uint64_t EliasGammaEncodedNPA::EliasGammaDecode(Bitmap *B, uint64_t *offset) {
   return val;
 }
 
-uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
-                                                    uint64_t i) {
-  uint64_t delta_sum = 0;
-  uint64_t delta_idx = 0;
-  uint64_t delta_off = offset;
+uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t delta_offset,
+                                                    uint64_t end_idx) {
+  uint64_t decode_sum = 0;
+  uint64_t decode_idx = 0;
   uint64_t *data = B->bitmap;
 
-  uint64_t delta_off64 = (delta_off & 0x3F);
-  uint64_t delta_idx64 = (delta_off >> 6);
+  uint64_t delta_off64 = (delta_offset & 0x3F);
+  uint64_t delta_idx64 = (delta_offset >> 6);
   uint64_t block64_cur = data[delta_idx64];
 
 #ifndef UPDATE_BLOCK64
 #define UPDATE_BLOCK64  if(delta_off64 >= 64) {\
-  delta_off64 = (delta_off & 0x3F);\
-  delta_idx64 = (delta_off >> 6);\
+  delta_off64 = (delta_off64 & 0x3F);\
+  delta_idx64++;\
   block64_cur = data[delta_idx64];\
 }
 #endif
 
-  while (delta_idx != i) {
+  while (decode_idx != end_idx) {
     uint16_t block16 =
         (delta_off64 > 48) ?
             ((block64_cur << (delta_off64 - 48)) & 0xFFFF)
@@ -173,74 +167,68 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
       uint32_t N = 0;
       while (!GETBIT(block64_cur, delta_off64)) {
         N++;
-        delta_off++;
         delta_off64++;
         UPDATE_BLOCK64;
       }
       N++;
 
       if (delta_off64 + N > 64) {
-        delta_sum += (((block64_cur << delta_off64)
+        decode_sum += (((block64_cur << delta_off64)
             >> (delta_off64 - ((delta_off64 + N - 1) % 64 + 1)))
             | (data[delta_idx64 + 1] >> (63 - ((delta_off64 + N - 1) % 64))));
       } else {
-        delta_sum += ((block64_cur << delta_off64) >> (64 - N));
+        decode_sum += ((block64_cur << delta_off64) >> (64 - N));
       }
 
       delta_off64 += N;
-      delta_off += N;
       UPDATE_BLOCK64;
-      delta_idx += 1;
-    } else if (delta_idx + cnt <= i) {
+      decode_idx += 1;
+    } else if (decode_idx + cnt <= end_idx) {
       // If sum can be computed from the prefixsum table
-      delta_sum += PREFIX_SUM16(block16);
-      delta_off += PREFIX_OFF16(block16);
+      decode_sum += PREFIX_SUM16(block16);
+      decode_idx += cnt;
       delta_off64 += PREFIX_OFF16(block16);
       UPDATE_BLOCK64;
-      delta_idx += cnt;
     } else {
       // We decoded too many values from the last 16-bit block
-      if(i - delta_idx <= 8) {
+      if(end_idx - decode_idx <= 8) {
         // Decode 8-bits at a time
-        uint16_t block8 = (block16 >> 8) | ((i - delta_idx) << 8);
+        uint16_t block8 = (block16 >> 8) | ((end_idx - decode_idx) << 8);
         cnt = PREFIX_CNT8(block8);
         if(cnt > 0) {
-          delta_sum += PREFIX_SUM8(block8);
-          delta_idx += cnt;
-          delta_off += PREFIX_OFF8(block8);
+          decode_sum += PREFIX_SUM8(block8);
+          decode_idx += cnt;
           delta_off64 += PREFIX_OFF8(block8);
           UPDATE_BLOCK64;
         }
       }
-      while (delta_idx != i) {
+      while (decode_idx != end_idx) {
         uint32_t N = 0;
         while (!GETBIT(block64_cur, delta_off64)) {
           N++;
-          delta_off++;
           delta_off64++;
           UPDATE_BLOCK64;
         }
         N++;
 
         if (delta_off64 + N > 64) {
-          delta_sum += (((block64_cur << delta_off64)
+          decode_sum += (((block64_cur << delta_off64)
               >> (delta_off64 - ((delta_off64 + N - 1) % 64 + 1)))
               | (data[delta_idx64 + 1] >> (63 - ((delta_off64 + N - 1) % 64))));
         } else {
-          delta_sum += ((block64_cur << delta_off64) >> (64 - N));
+          decode_sum += ((block64_cur << delta_off64) >> (64 - N));
         }
 
         delta_off64 += N;
-        delta_off += N;
         UPDATE_BLOCK64;
-        delta_idx += 1;
+        decode_idx += 1;
       }
     }
   }
 
 #undef UPDATE_BLOCK64
 
-  return delta_sum;
+  return decode_sum;
 }
 
 // Compute the prefix sum of the elias-gamma encoded deltas
