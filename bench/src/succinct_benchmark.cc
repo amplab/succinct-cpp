@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "succinct_server_benchmark.h"
+#include "succinct_benchmark.h"
 
 void print_usage(char *exec) {
   fprintf(
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
   std::string benchmark_type = std::string(argv[optind]);
 
   // Benchmark core functions
-  SuccinctServerBenchmark s_bench(benchmark_type, num_shards, num_keys,
+  SuccinctBenchmark s_bench(benchmark_type, num_shards, num_keys,
                                   queryfile);
   if (benchmark_type == "latency-get") {
     s_bench.BenchmarkGetLatency("latency_results_get");

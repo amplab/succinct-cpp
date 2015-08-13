@@ -27,3 +27,11 @@ To clean-up build files, run:
 ```
 ./cleanup.sh
 ```
+
+# Constructing datasets
+
+TODO: Add description of how `construct` tool can be used.
+
+# Starting Succinct as a Service
+
+TODO: Add description of how `sbin/` scripts can be used.

@@ -1,4 +1,4 @@
-# Starts the master on the machine this script is executed on.
+#!/usr/bin/env bash
 
 sbin="`dirname "$0"`"
 sbin="`cd "$sbin"; pwd`"
@@ -16,6 +16,10 @@ if [ "$SUCCINCT_LOG_PATH" = "" ]; then
 	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
 
+if [ "$NUM_SHARDS" = "" ]; then
+	NUM_SHARDS="1"
+fi
+
 mkdir -p $SUCCINCT_LOG_PATH
 
-"$bin/smaster" -h "$SUCCINCT_CONF_DIR/hosts" 2>"$SUCCINCT_LOG_PATH/master.log" &
+nohup "$bin/saggregator" -s "$NUM_SHARDS" 2>"$SUCCINCT_LOG_PATH/aggregator.log" >/dev/null &

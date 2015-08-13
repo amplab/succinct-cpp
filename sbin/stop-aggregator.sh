@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep amaster`"
+pids="`pgrep saggregator`"
 
 for pid in $pids
 do

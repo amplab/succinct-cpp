@@ -14,7 +14,6 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "succinct_shard.h"
-#include "load_balancer.h"
 #include "AggregatorService.h"
 #include "succinct_constants.h"
 #include "QueryService.h"
@@ -30,6 +29,7 @@ using boost::shared_ptr;
 class AggregatorServiceHandler : virtual public AggregatorServiceIf {
  public:
   AggregatorServiceHandler(uint32_t num_shards) {
+    fprintf(stderr, "Num shards = %u\n", num_shards);
     num_shards_ = num_shards;
     Initialize();
   }
@@ -37,7 +37,7 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
   int32_t Initialize() {
     // Connect to query servers and start initialization
     for (uint32_t i = 0; i < num_shards_; i++) {
-      int port = QUERY_SERVER_PORT + i;
+      int port = SERVER_PORT + i;
       boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
       boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
       boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
@@ -178,7 +178,7 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
       fprintf(stderr, "Connecting to local server %d...", i);
       try {
         boost::shared_ptr<TSocket> socket(
-            new TSocket("localhost", QUERY_SERVER_PORT + i));
+            new TSocket("localhost", SERVER_PORT + i));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         QueryServiceClient qsclient(protocol);
@@ -224,29 +224,26 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
 class HandlerProcessorFactory : public TProcessorFactory {
  public:
   HandlerProcessorFactory(uint32_t num_shards) {
-    this->num_shards_ = num_shards;
+    handler_ = new AggregatorServiceHandler(num_shards);
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
-    boost::shared_ptr<AggregatorServiceHandler> handler(
-        new AggregatorServiceHandler(num_shards_));
+    boost::shared_ptr<AggregatorServiceHandler> handler(handler_);
     boost::shared_ptr<TProcessor> handlerProcessor(
         new AggregatorServiceProcessor(handler));
     return handlerProcessor;
   }
 
  private:
-  uint32_t num_shards_;
+  AggregatorServiceHandler *handler_;
 };
 
 void print_usage(char *exec) {
-  fprintf(
-  stderr,
-          "Usage: %s [-s num_shards]\n", exec);
+  fprintf(stderr, "Usage: %s [-s num_shards]\n", exec);
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2 || argc > 3) {
+  if (argc < 1 || argc > 3) {
     print_usage(argv[0]);
     return -1;
   }
@@ -261,18 +258,13 @@ int main(int argc, char **argv) {
         break;
       }
       default: {
-        fprintf(stderr, "Error parsing command line arguments\n");
+        fprintf(stderr, "Error parsing command line arguments.\n");
         return -1;
       }
     }
   }
 
-  if (optind == argc) {
-    print_usage(argv[0]);
-    return -1;
-  }
-
-  int port = QUERY_HANDLER_PORT;
+  int port = AGGREGATOR_PORT;
   try {
     shared_ptr<HandlerProcessorFactory> handlerFactory(
         new HandlerProcessorFactory(num_shards));

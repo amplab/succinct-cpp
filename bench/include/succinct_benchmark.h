@@ -13,14 +13,14 @@ using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
-class SuccinctServerBenchmark : public Benchmark {
+class SuccinctBenchmark : public Benchmark {
  public:
 
-  SuccinctServerBenchmark(std::string benchmark_type, uint32_t num_shards,
-                          uint32_t num_keys, std::string query_file = "")
+  SuccinctBenchmark(std::string benchmark_type, uint32_t num_shards,
+                    uint32_t num_keys, std::string query_file = "")
       : Benchmark() {
     benchmark_type_ = benchmark_type;
-    int port = QUERY_HANDLER_PORT;
+    int port = AGGREGATOR_PORT;
 
     if (!benchmark_type.compare(0, 7, "latency")) {
       fprintf(stderr, "Connecting to server...\n");
@@ -400,7 +400,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
         boost::shared_ptr<TSocket> socket(
-            new TSocket("localhost", QUERY_HANDLER_PORT));
+            new TSocket("localhost", AGGREGATOR_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         AggregatorServiceClient *client = new AggregatorServiceClient(protocol);
@@ -422,7 +422,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
       int result = 0;
       result = pthread_create(&thread[current_t], NULL,
-                              SuccinctServerBenchmark::GetThroughput,
+                              SuccinctBenchmark::GetThroughput,
                               static_cast<void*>(&(data[current_t])));
       if (result != 0) {
         fprintf(stderr, "Error creating thread %d; return code = %d\n",
@@ -503,7 +503,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
         boost::shared_ptr<TSocket> socket(
-            new TSocket("localhost", QUERY_HANDLER_PORT));
+            new TSocket("localhost", AGGREGATOR_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         AggregatorServiceClient *client = new AggregatorServiceClient(protocol);
@@ -526,7 +526,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
       int result = 0;
       result = pthread_create(&thread[current_t], NULL,
-                              SuccinctServerBenchmark::AccessThroughput,
+                              SuccinctBenchmark::AccessThroughput,
                               static_cast<void*>(&(data[current_t])));
       if (result != 0) {
         fprintf(stderr, "Error creating thread %d; return code = %d\n",

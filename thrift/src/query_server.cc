@@ -23,13 +23,13 @@ using boost::shared_ptr;
 
 class QueryServiceHandler : virtual public QueryServiceIf {
  public:
-  QueryServiceHandler(std::string filename, bool construct,
-                      uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+  QueryServiceHandler(std::string filename, int mode, uint32_t sa_sampling_rate,
+                      uint32_t isa_sampling_rate,
                       SamplingScheme sampling_scheme,
                       NPA::NPAEncodingScheme npa_scheme,
                       bool regex_opt = true) {
     succinct_shard_ = NULL;
-    construct_ = construct;
+    mode_ = mode;
     filename_ = filename;
     is_init_ = false;
     num_keys_ = 0;
@@ -42,29 +42,48 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
   int32_t Initialize(int32_t id) {
     fprintf(stderr, "Received INIT signal, initializing data structures...\n");
-    fprintf(stderr, "Construct is set to %d\n", construct_);
 
-    succinct_shard_ = new SuccinctShard(
-        id,
-        filename_,
-        construct_ ?
-            SuccinctMode::CONSTRUCT_IN_MEMORY : SuccinctMode::LOAD_IN_MEMORY,
-        sa_sampling_rate_, isa_sampling_rate_, 128, sampling_scheme_,
-        sampling_scheme_, npa_scheme_);
-    if (construct_) {
-      fprintf(stderr, "Serializing data structures for file %s\n",
-              filename_.c_str());
-      succinct_shard_->Serialize();
+    if (!is_init_) {
+      SuccinctMode mode;
+      switch (mode_) {
+        case 0: {
+          mode = SuccinctMode::CONSTRUCT_IN_MEMORY;
+          break;
+        }
+        case 1: {
+          mode = SuccinctMode::LOAD_IN_MEMORY;
+          break;
+        }
+        case 2: {
+          mode = SuccinctMode::LOAD_MEMORY_MAPPED;
+          break;
+        }
+      }
+
+      succinct_shard_ = new SuccinctShard(id, filename_, mode,
+                                          sa_sampling_rate_, isa_sampling_rate_,
+                                          128, sampling_scheme_,
+                                          sampling_scheme_, npa_scheme_);
+      if (mode_ == 0) {
+        fprintf(stderr, "Serializing data structures for file %s\n",
+                filename_.c_str());
+        succinct_shard_->Serialize();
+      } else {
+        fprintf(stderr, "Read data structures from file %s\n",
+                filename_.c_str());
+      }
+      fprintf(stderr, "Initialized shard with original size = %llu\n",
+              succinct_shard_->GetOriginalSize());
+      is_init_ = true;
+      num_keys_ = succinct_shard_->GetNumKeys();
+      fprintf(stderr, "Waiting for queries...\n");
+      return 0;
     } else {
-      fprintf(stderr, "Read data structures from file %s\n", filename_.c_str());
+      // Attempting to initialize already initialized shard.
+      fprintf(stderr,
+              "Failed to initialize shard: shard already initialized.\n");
+      return -1;
     }
-    fprintf(stderr, "Succinct data structures with original size = %llu\n",
-            succinct_shard_->GetOriginalSize());
-    fprintf(stderr, "Done initializing...\n");
-    fprintf(stderr, "Waiting for queries...\n");
-    is_init_ = true;
-    num_keys_ = succinct_shard_->GetNumKeys();
-    return 0;
   }
 
   void Get(std::string& _return, const int64_t key) {
@@ -89,7 +108,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
   }
 
   void FlatExtract(std::string& _return, const int64_t offset,
-                    const int64_t length) {
+                   const int64_t length) {
     succinct_shard_->FlatExtract(_return, offset, length);
   }
 
@@ -115,7 +134,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
  private:
   SuccinctShard *succinct_shard_;
-  bool construct_;
+  int mode_;
   std::string filename_;
   bool is_init_;
   uint32_t num_keys_;
@@ -175,8 +194,7 @@ int main(int argc, char **argv) {
   fprintf(stderr, "\n");
 
   int c;
-  uint32_t mode = 0, port = QUERY_SERVER_PORT, sa_sampling_rate = 32,
-      isa_sampling_rate = 32;
+  uint32_t mode = 0, port = SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32;
   bool regex_opt = false;
   SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
   NPA::NPAEncodingScheme npa_scheme =
@@ -206,9 +224,7 @@ int main(int argc, char **argv) {
         regex_opt = true;
         break;
       default:
-        mode = 0;
-        port = QUERY_SERVER_PORT;
-        isa_sampling_rate = 32;
+        fprintf(stderr, "Error parsing command line arguments.\n");
     }
   }
 
@@ -218,10 +234,9 @@ int main(int argc, char **argv) {
   }
 
   std::string filename = std::string(argv[optind]);
-  bool construct = (mode == 0) ? true : false;
 
   shared_ptr<QueryServiceHandler> handler(
-      new QueryServiceHandler(filename, construct, sa_sampling_rate,
+      new QueryServiceHandler(filename, mode, sa_sampling_rate,
                               isa_sampling_rate, scheme, npa_scheme,
                               regex_opt));
   shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
@@ -235,7 +250,7 @@ int main(int argc, char **argv) {
                            protocol_factory);
     server.serve();
   } catch (std::exception& e) {
-    fprintf(stderr, "Exception at SuccinctServer:main(): %s\n", e.what());
+    fprintf(stderr, "Exception at query_server.cc:main(): %s\n", e.what());
   }
   return 0;
 }
