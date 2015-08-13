@@ -5,7 +5,10 @@
 #include "succinct_server_benchmark.h"
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [-t num-threads] bench-type\n", exec);
+  fprintf(
+      stderr,
+      "Usage: %s [-q query-file] [-t num-threads] [-s num-shards] [-k num-keys] [-l fetch-length] bench-type\n",
+      exec);
 }
 
 int main(int argc, char **argv) {
@@ -68,9 +71,11 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkRegexSearchLatency("latency_results_regex_search");
   } else if (benchmark_type == "latency-regex-count") {
     s_bench.BenchmarkRegexCountLatency("latency_results_regex_count");
-  } else if (benchmark_type == "latency-flat") {
-    s_bench.BenchmarkFlatExtractLatency("latency_results_flat_extract", 1000);
+  } else if (benchmark_type == "latency-flat-extract") {
+    s_bench.BenchmarkFlatExtractLatency("latency_results_flat_extract", len);
+  } else if (benchmark_type == "latency-flat-count") {
     s_bench.BenchmarkFlatCountLatency("latency_results_flat_count");
+  } else if (benchmark_type == "latency-flat-search") {
     s_bench.BenchmarkFlatSearchLatency("latency_results_flat_search");
   } else if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
