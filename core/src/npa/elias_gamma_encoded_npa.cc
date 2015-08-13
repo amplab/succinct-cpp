@@ -108,14 +108,12 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
   uint64_t delta_off64 = (delta_off & 0x3F);
   uint64_t delta_idx64 = (delta_off >> 6);
   uint64_t block64_cur = data[delta_idx64];
-  uint64_t block64_nxt = data[delta_idx64 + 1];
 
 #ifndef UPDATE_BLOCK64
 #define UPDATE_BLOCK64  if(delta_off64 >= 64) {\
   delta_off64 = (delta_off & 0x3F);\
   delta_idx64 = (delta_off >> 6);\
-  block64_cur = block64_nxt;\
-  block64_nxt = data[delta_idx64 + 1];\
+  block64_cur = data[delta_idx64];\
 }
 #endif
 
@@ -123,7 +121,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
     uint16_t block16 =
         (delta_off64 > 48) ?
             ((block64_cur << (delta_off64 - 48)) & 0xFFFF)
-                | (block64_nxt >> (112 - delta_off64)) :
+                | (data[delta_idx64 + 1] >> (112 - delta_off64)) :
             (block64_cur >> (48 - delta_off64)) & 0xFFFF;
 
     uint16_t cnt = PREFIX_CNT(block16);
@@ -143,7 +141,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
       if (delta_off64 + N > 64) {
         delta_sum += (((block64_cur << delta_off64)
             >> (delta_off64 - ((delta_off64 + N - 1) % 64 + 1)))
-            | (block64_nxt >> (63 - ((delta_off64 + N - 1) % 64))));
+            | (data[delta_idx64 + 1] >> (63 - ((delta_off64 + N - 1) % 64))));
       } else {
         delta_sum += ((block64_cur << delta_off64) >> (64 - N));
       }
@@ -174,7 +172,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
         if (delta_off64 + N > 64) {
           delta_sum += (((block64_cur << delta_off64)
               >> (delta_off64 - ((delta_off64 + N - 1) % 64 + 1)))
-              | (block64_nxt >> (63 - ((delta_off64 + N - 1) % 64))));
+              | (data[delta_idx64 + 1] >> (63 - ((delta_off64 + N - 1) % 64))));
         } else {
           delta_sum += ((block64_cur << delta_off64) >> (64 - N));
         }
