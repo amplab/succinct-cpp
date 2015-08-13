@@ -7,9 +7,13 @@
 #define USE_PREFIXSUM_TABLE 1
 
 /* Gamma prefix sum table functions */
-#define PREFIX_OFF(i)   ((prefixsum_[(i)] >> 24) & 0xFF)
-#define PREFIX_CNT(i)   ((prefixsum_[i] >> 16) & 0xFF)
-#define PREFIX_SUM(i)   (prefixsum_[i] & 0xFFFF)
+#define PREFIX_OFF16(i)   ((prefixsum16_[(i)] >> 24) & 0xFF)
+#define PREFIX_CNT16(i)   ((prefixsum16_[(i)] >> 16) & 0xFF)
+#define PREFIX_SUM16(i)   (prefixsum16_[(i)] & 0xFFFF)
+
+#define PREFIX_OFF8(i)   ((prefixsum16_[(i)] >> 12) & 0xF)
+#define PREFIX_CNT8(i)   ((prefixsum16_[(i)] >> 8) & 0xF)
+#define PREFIX_SUM8(i)   (prefixsum16_[(i)] & 0xFF)
 
 class EliasGammaEncodedNPA : public DeltaEncodedNPA {
  public:
@@ -39,9 +43,13 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   virtual uint64_t LookupDeltaEncodedVector(DeltaEncodedVector *dv, uint64_t i);
 
  private:
-  // Accesses data from a 64 bit integer represented as a bit map
+  // Accesses data from a 16 bit integer represented as a bit map
   // from a specified position and for a specified number of bits
   uint16_t AccessDataPos16(uint16_t data, uint32_t pos, uint32_t b);
+
+  // Accesses data from a 8 bit integer represented as a bit map
+  // from a specified position and for a specified number of bits
+  uint16_t AccessDataPos8(uint8_t data, uint32_t pos, uint32_t b);
 
   int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val, uint64_t s,
                               uint64_t e);
@@ -63,8 +71,11 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // Test
   uint64_t EliasGammaPrefixSum2(Bitmap *B, uint64_t offset, uint64_t i);
 
-  // Pre-computed prefix sums for elias gamma encoded NPA
-  uint32_t prefixsum_[65536];
+  // Pre-computed 16-bit prefix sums for elias gamma encoded NPA
+  uint32_t prefixsum16_[65536];
+
+  // Pre-computed 8-bit prefix sums for elias gamma encoded NPA
+  uint16_t prefixsum8_[2048];
 
 };
 

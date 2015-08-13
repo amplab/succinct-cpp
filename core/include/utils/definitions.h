@@ -20,6 +20,9 @@
 #define GETBIT16(n, i)  ((n >> (15UL - i)) & 1UL)
 #define SETBIT16(n, i)  n = (n | (1UL << (15UL - i)))
 
+#define GETBIT8(n, i)  ((n >> (7UL - i)) & 1UL)
+#define SETBIT8(n, i)  n = (n | (1UL << (7UL - i)))
+
 #define BITS2BLOCKS(bits) \
     (((bits) % 64 == 0) ? ((bits) / 64) : (((bits) / 64) + 1))
 

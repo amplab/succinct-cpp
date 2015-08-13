@@ -32,6 +32,16 @@ uint16_t EliasGammaEncodedNPA::AccessDataPos16(uint16_t data, uint32_t pos,
 
 }
 
+uint16_t EliasGammaEncodedNPA::AccessDataPos8(uint8_t data, uint32_t pos,
+                                              uint32_t b) {
+  assert(b <= 8 && pos >= 0);
+  if (b == 0)
+    return 0;
+  uint16_t val = data << pos;
+  return val >> (8 - b);
+
+}
+
 void EliasGammaEncodedNPA::InitPrefixSum() {
   for (uint64_t i = 0; i < 65536; i++) {
     uint16_t val = (uint16_t) i;
@@ -51,7 +61,31 @@ void EliasGammaEncodedNPA::InitPrefixSum() {
         break;
       }
     }
-    prefixsum_[i] = (offset << 24) | (count << 16) | sum;
+    prefixsum16_[i] = (offset << 24) | (count << 16) | sum;
+  }
+
+  uint64_t idx8 = 0;
+  for (uint64_t shift = 0; shift < 8; shift++) {
+    for (uint64_t i = 0; i < 256; i++) {
+      uint8_t val = (uint8_t) i;
+      uint8_t count = 0, offset = 0, sum = 0;
+      while (val && offset <= 8) {
+        int N = 0;
+        while (!GETBIT8(val, offset)) {
+          N++;
+          offset++;
+        }
+        if (offset + (N + 1) <= 8 && count < shift) {
+          sum += AccessDataPos8(val, offset, N + 1);
+          offset += (N + 1);
+          count++;
+        } else {
+          offset -= N;
+          break;
+        }
+      }
+      prefixsum8_[idx8++] = (offset << 12) | (count << 8) | sum;
+    }
   }
 }
 
@@ -124,7 +158,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
                 | (data[delta_idx64 + 1] >> (112 - delta_off64)) :
             (block64_cur >> (48 - delta_off64)) & 0xFFFF;
 
-    uint16_t cnt = PREFIX_CNT(block16);
+    uint16_t cnt = PREFIX_CNT16(block16);
     if (cnt == 0) {
       // If the prefixsum table for the block returns count == 0
       // this must mean the value spans more than 16 bits
@@ -152,13 +186,22 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum2(Bitmap *B, uint64_t offset,
       delta_idx += 1;
     } else if (delta_idx + cnt <= i) {
       // If sum can be computed from the prefixsum table
-      delta_sum += PREFIX_SUM(block16);
-      delta_off += PREFIX_OFF(block16);
-      delta_off64 += PREFIX_OFF(block16);
+      delta_sum += PREFIX_SUM16(block16);
+      delta_off += PREFIX_OFF16(block16);
+      delta_off64 += PREFIX_OFF16(block16);
       UPDATE_BLOCK64;
       delta_idx += cnt;
     } else {
-      // Last few values, decode them without looking up table
+      // We decoded too many values from the last 16-bit block
+      if(delta_idx - i <= 8) {
+        // Decode 8-bits at a time
+        uint8_t block8 = block16 >> 8;
+        cnt = PREFIX_CNT8(block8 | (delta_idx - i - 1) << 8);
+        if(cnt > 0) {
+          delta_sum += PREFIX_SUM8(block8);
+          delta_idx += cnt;
+        }
+      }
       while (delta_idx != i) {
         uint32_t N = 0;
         while (!GETBIT(block64_cur, delta_off64)) {
@@ -201,7 +244,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B, uint64_t offset,
   while (delta_idx != i) {
     uint16_t block = (uint16_t) SuccinctBase::LookupBitmapAtPos(B, delta_off,
                                                                 16);
-    uint16_t cnt = PREFIX_CNT(block);
+    uint16_t cnt = PREFIX_CNT16(block);
     if (cnt == 0) {
       // If the prefixsum table for the block returns count == 0
       // this must mean the value spans more than 16 bits
@@ -222,8 +265,8 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B, uint64_t offset,
       delta_idx += 1;
     } else if (delta_idx + cnt <= i) {
       // If sum can be computed from the prefixsum table
-      delta_sum += PREFIX_SUM(block);
-      delta_off += PREFIX_OFF(block);
+      delta_sum += PREFIX_SUM16(block);
+      delta_off += PREFIX_OFF16(block);
       delta_idx += cnt;
     } else {
       // Last few values, decode them without looking up table
@@ -403,14 +446,11 @@ int64_t EliasGammaEncodedNPA::BinarySearch(uint64_t val, uint64_t s, uint64_t e,
 
 #if USE_PREFIXSUM_TABLE
   while (delta_sum < val && delta_off < B->size) {
-    // cout << "delta_sum = " << delta_sum << endl;
     uint16_t block = (uint16_t) SuccinctBase::LookupBitmapAtPos(B, delta_off,
                                                                 16);
-    uint16_t block_cnt = PREFIX_CNT(block);
-    uint16_t block_sum = PREFIX_SUM(block);
-    uint16_t block_off = PREFIX_OFF(block);
-
-    // cout << "block_cnt = " << block_cnt << " block_sum = " << block_sum << " block_off = " << block_off << endl;
+    uint16_t block_cnt = PREFIX_CNT16(block);
+    uint16_t block_sum = PREFIX_SUM16(block);
+    uint16_t block_off = PREFIX_OFF16(block);
 
     if (block_cnt == 0) {
       // If the prefixsum table for the block returns count == 0
