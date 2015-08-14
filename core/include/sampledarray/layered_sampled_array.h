@@ -28,7 +28,7 @@ class LayeredSampledArray : public SampledArray {
   } Layer;
 
   LayeredSampledArray(uint32_t target_sampling_rate,
-                      uint32_t base_sampling_rate, bitmap_t *sa, uint64_t n,
+                      uint32_t base_sampling_rate, uint64_t n,
                       SuccinctAllocator &succinct_allocator)
       : SampledArray(SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
 

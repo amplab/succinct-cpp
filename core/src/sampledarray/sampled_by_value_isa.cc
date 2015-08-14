@@ -1,7 +1,7 @@
 #include "sampledarray/sampled_by_value_isa.h"
 
 SampledByValueISA::SampledByValueISA(uint32_t sampling_rate, NPA *npa,
-                                     bitmap_t *SA, uint64_t sa_n,
+                                     ArrayStream& sa_stream, uint64_t sa_n,
                                      Dictionary *d_bpos,
                                      SuccinctAllocator &s_allocator)
     : FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_VALUE, npa,
@@ -11,7 +11,7 @@ SampledByValueISA::SampledByValueISA(uint32_t sampling_rate, NPA *npa,
 
   this->sampled_positions_ = d_bpos;
   this->original_size_ = sa_n;
-  Sample(SA, sa_n);
+  Sample(sa_stream, sa_n);
 }
 
 SampledByValueISA::SampledByValueISA(uint32_t sampling_rate, NPA *npa,
@@ -29,7 +29,7 @@ SampledByValueISA::SampledByValueISA(uint32_t sampling_rate, NPA *npa,
 
 }
 
-void SampledByValueISA::Sample(bitmap_t *SA, uint64_t n) {
+void SampledByValueISA::Sample(ArrayStream& sa_stream, uint64_t n) {
   data_size_ = (n / sampling_rate_) + 1;
   data_bits_ = SuccinctUtils::IntegerLog2(data_size_ + 1);
   uint64_t sa_val, pos = 0;
@@ -40,7 +40,7 @@ void SampledByValueISA::Sample(bitmap_t *SA, uint64_t n) {
                            succinct_allocator_);
 
   for (uint64_t i = 0; i < n; i++) {
-    sa_val = SuccinctBase::LookupBitmapArray(SA, i, orig_bits);
+    sa_val = sa_stream.Get();
     if (sa_val % sampling_rate_ == 0) {
       SuccinctBase::SetBitmapArray(&data_, sa_val / sampling_rate_, pos++,
                                    data_bits_);

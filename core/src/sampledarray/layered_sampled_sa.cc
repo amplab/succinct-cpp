@@ -2,12 +2,12 @@
 
 LayeredSampledSA::LayeredSampledSA(uint32_t target_sampling_rate,
                                    uint32_t base_sampling_rate, NPA *npa,
-                                   bitmap_t *SA, uint64_t sa_n,
+                                   ArrayStream& sa_stream, uint64_t sa_n,
                                    SuccinctAllocator &s_allocator)
-    : LayeredSampledArray(target_sampling_rate, base_sampling_rate, SA, sa_n,
+    : LayeredSampledArray(target_sampling_rate, base_sampling_rate, sa_n,
                           s_allocator) {
   this->npa = npa;
-  SampleLayered(SA, sa_n);
+  SampleLayered(sa_stream, sa_n);
 }
 
 LayeredSampledSA::LayeredSampledSA(uint32_t target_sampling_rate,
@@ -17,9 +17,9 @@ LayeredSampledSA::LayeredSampledSA(uint32_t target_sampling_rate,
   this->npa = npa;
 }
 
-void LayeredSampledSA::SampleLayered(bitmap_t *SA, uint64_t n) {
+void LayeredSampledSA::SampleLayered(ArrayStream& sa_stream, uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
-    uint64_t sa_val = SuccinctBase::LookupBitmapArray(SA, i, data_bits_);
+    uint64_t sa_val = sa_stream.Get();
     if (i % target_sampling_rate_ == 0) {
       Layer l;
       GetLayer(&l, i);

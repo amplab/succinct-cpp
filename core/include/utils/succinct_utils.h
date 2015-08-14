@@ -8,6 +8,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <iostream>
+#include <fstream>
 
 #include "assertions.h"
 #include "definitions.h"
@@ -31,12 +33,20 @@ class SuccinctUtils {
   // Returns a modulo n
   static uint64_t Modulo(int64_t a, uint64_t n);
 
-  static uint64_t NumBlocks(uint64_t val, uint64_t num_blocks);
+  // Computes the number of blocks of block_size in val
+  static uint64_t NumBlocks(uint64_t val, uint64_t block_size);
 
+  // Computes the max between two integers
   static int64_t Max(int64_t first, int64_t second);
+
+  // Computes the min between two integers
   static int64_t Min(int64_t first, int64_t second);
 
+  // Memory maps a file and returns a pointer to it
   static void* MemoryMap(std::string filename);
+
+  // Writes an integer array to file
+  static void WriteToFile(int64_t* data, size_t size, std::string outfile);
 };
 
 #endif

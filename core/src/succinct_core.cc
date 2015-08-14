@@ -185,161 +185,175 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
                              NPA::NPAEncodingScheme npa_encoding_scheme,
                              uint32_t sampling_range) {
 
-  // Read input from file
+  std::string sa_file = std::string(filename) + ".tmp.sa";
+  std::string isa_file = std::string(filename) + ".tmp.isa";
+  std::string npa_file = std::string(filename) + ".tmp.npa";
+
+  // Get input size
   FILE *f = fopen(filename, "r");
   fseek(f, 0, SEEK_END);
   uint64_t fsize = ftell(f);
   fseek(f, 0, SEEK_SET);
 
+  // Read input from file
   char *data = (char *) s_allocator.s_malloc(fsize + 1);
-  size_t felems = fread(data, fsize, 1, f);
+  fread(data, fsize, 1, f);
   fclose(f);
-
-  assert(felems == 1);
-
   data[fsize] = (char) 1;
 
+  // Save metadata
   input_size_ = fsize + 1;
   uint32_t bits = SuccinctUtils::IntegerLog2(input_size_ + 1);
 
   // Construct Suffix Array
-  // TODO: Remove dependency from divsufsortxx library
   int64_t *lSA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t), input_size_);
   divsufsortxx::constructSA((uint8_t *) data, (uint8_t *) (data + input_size_),
                             lSA, lSA + input_size_, 256);
 
-  // Compact SA
-  BitMap *compactSA = new BitMap;
-  CreateBitmapArray(&compactSA, (uint64_t *) lSA, input_size_, bits,
-                    s_allocator);
+  // Write Suffix Array to file
+  SuccinctUtils::WriteToFile(lSA, input_size_, sa_file);
+  ArrayStream sa_stream(sa_file);
   s_allocator.s_free(lSA);
 
-  ConstructAuxiliary(compactSA, data);
-
-  // Compact input data
-  BitMap *data_bitmap = new BitMap;
-  int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
-  InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
+  // Construct Inverse Suffix Array
+  int64_t *lISA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t),
+                                                   input_size_);
   for (uint64_t i = 0; i < input_size_; i++) {
-    SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second, sigma_bits);
+    lISA[sa_stream.Get()] = i;
   }
+  sa_stream.Reset();
 
+  // Write Inverse Suffix Array to file
+  SuccinctUtils::WriteToFile(lISA, input_size_, isa_file);
+  s_allocator.s_free(lISA);
+  ArrayStream isa_stream(isa_file);
+
+  // Construct Auxiliary data structures
+  ConstructAuxiliary(sa_stream, data);
+  sa_stream.Reset();
+
+  // Compact input data (if needed)
+  BitMap *data_bitmap;
+  if (npa_encoding_scheme == NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED) {
+    data_bitmap = new BitMap;
+    int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
+    InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
+    for (uint64_t i = 0; i < input_size_; i++) {
+      SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second,
+                     sigma_bits);
+    }
+  }
   s_allocator.s_free(data);
 
-  BitMap *compactISA = new BitMap;
-  InitBitmap(&compactISA, input_size_ * bits, s_allocator);
-
-  for (uint64_t i = 0; i < input_size_; i++) {
-    uint64_t sa_val = LookupBitmapArray(compactSA, i, bits);
-    SetBitmapArray(&compactISA, sa_val, i, bits);
-  }
-
   switch (npa_encoding_scheme) {
-    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
+    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
       npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, data_bitmap, compactSA,
-                                      compactISA, s_allocator);
+                                      npa_sampling_rate, isa_stream, Cinv_idx_,
+                                      npa_file, s_allocator);
       break;
-    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
+    }
+    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
       npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, data_bitmap, compactSA,
-                                      compactISA, s_allocator);
+                                      npa_sampling_rate, isa_stream, Cinv_idx_,
+                                      npa_file, s_allocator);
       return;
-    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
+    }
+    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
       npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
                                        npa_sampling_rate, data_bitmap,
-                                       compactSA, compactISA, s_allocator);
+                                       NULL,
+                                       NULL, s_allocator);
+      DestroyBitmap(&data_bitmap, s_allocator);
       break;
+    }
     default:
       npa_ = NULL;
   }
-
+  isa_stream.Reset();
   assert(npa_ != NULL);
-
-  DestroyBitmap(&compactISA, s_allocator);
-  DestroyBitmap(&data_bitmap, s_allocator);
 
   switch (sa_sampling_scheme) {
     case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-      sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, compactSA, input_size_,
+      sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, sa_stream, input_size_,
                                  s_allocator);
       break;
     case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-      sa_ = new SampledByValueSA(sa_sampling_rate, npa_, compactSA, input_size_,
+      sa_ = new SampledByValueSA(sa_sampling_rate, npa_, sa_stream, input_size_,
                                  s_allocator);
       break;
     case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
       sa_ = new LayeredSampledSA(sa_sampling_rate,
                                  sa_sampling_rate * sampling_range, npa_,
-                                 compactSA, input_size_, s_allocator);
+                                 sa_stream, input_size_, s_allocator);
       break;
     case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
       sa_ = new OpportunisticLayeredSampledSA(sa_sampling_rate,
                                               sa_sampling_rate * sampling_range,
-                                              npa_, compactSA, input_size_,
+                                              npa_, sa_stream, input_size_,
                                               s_allocator);
       break;
     default:
       sa_ = NULL;
   }
-
+  sa_stream.Reset();
   assert(sa_ != NULL);
 
   switch (isa_sampling_scheme) {
     case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-      isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, compactSA,
+      isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, sa_stream,
                                    input_size_, s_allocator);
       break;
     case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
       assert(sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
       isa_ = new SampledByValueISA(
-          sa_sampling_rate, npa_, compactSA, input_size_,
+          sa_sampling_rate, npa_, sa_stream, input_size_,
           ((SampledByValueSA *) sa_)->GetSampledPositions(), s_allocator);
       break;
     case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
       isa_ = new LayeredSampledISA(isa_sampling_rate,
                                    isa_sampling_rate * sampling_range, npa_,
-                                   compactSA, input_size_, s_allocator);
+                                   sa_stream, input_size_, s_allocator);
       break;
     case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
       isa_ = new OpportunisticLayeredSampledISA(
           isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
-          compactSA, input_size_, s_allocator);
+          sa_stream, input_size_, s_allocator);
       break;
     default:
       isa_ = NULL;
   }
-
+  sa_stream.Reset();
   assert(isa_ != NULL);
 
-  DestroyBitmap(&compactSA, s_allocator);
+  sa_stream.Close();
+  isa_stream.Close();
 }
 
-void SuccinctCore::ConstructAuxiliary(BitMap *compactSA, const char *data) {
-  uint32_t bits = SuccinctUtils::IntegerLog2(input_size_ + 1);
+void SuccinctCore::ConstructAuxiliary(ArrayStream& sa_stream,
+                                      const char *data) {
   alphabet_size_ = 1;
-
+  uint64_t prv_sa = sa_stream.Get();
+  alphabet_map_[data[prv_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
+  uint64_t cur_sa;
   for (uint64_t i = 1; i < input_size_; ++i) {
-    if (data[LookupBitmapArray(compactSA, i, bits)]
-        != data[LookupBitmapArray(compactSA, i - 1, bits)]) {
+    cur_sa = sa_stream.Get();
+    if (data[cur_sa] != data[prv_sa]) {
       Cinv_idx_.push_back(i);
+      alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
+          i, alphabet_size_);
       alphabet_size_++;
     }
+    prv_sa = cur_sa;
   }
+  alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
+                                                          alphabet_size_);
+  assert(sa_stream.GetCurrentIndex() == input_size_);
 
   alphabet_ = new char[alphabet_size_ + 1];
-
-  alphabet_[0] = data[LookupBitmapArray(compactSA, 0, bits)];
-  alphabet_map_[alphabet_[0]] = std::pair<uint64_t, uint32_t>(0, 0);
-  uint64_t i;
-
-  for (i = 1; i < alphabet_size_; i++) {
-    uint64_t sel = Cinv_idx_[i - 1];
-    alphabet_[i] = data[LookupBitmapArray(compactSA, sel, bits)];
-    alphabet_map_[alphabet_[i]] = std::pair<uint64_t, uint32_t>(sel, i);
+  uint64_t i = 0;
+  for (auto alphabet_entry : alphabet_map_) {
+    alphabet_[alphabet_entry.second.second] = alphabet_entry.first;
   }
-  alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_, i);
-  alphabet_[i] = (char) 0;
 }
 
 /* Lookup functions for each of the core data structures */

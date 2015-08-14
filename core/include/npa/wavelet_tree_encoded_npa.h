@@ -27,8 +27,8 @@ class WaveletTreeEncodedNPA : public NPA {
   ~WaveletTreeEncodedNPA() {
   }
 
-  // Encode EliasDeltaEncodedNPA
-  virtual void Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
+  // Encode WaveletTreeEncodedNPA
+  void Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
                       Bitmap *compact_isa);
 
   // Access element at index i

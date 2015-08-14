@@ -25,14 +25,17 @@ uint64_t SuccinctUtils::Modulo(int64_t a, uint64_t n) {
   return a % n;
 }
 
+// Returns number of blocks of size block_size in val
 uint64_t SuccinctUtils::NumBlocks(uint64_t val, uint64_t block_size) {
   return (val % block_size) == 0 ? (val / block_size) : (val / block_size) + 1;
 }
 
+// Returns the max of two integers
 int64_t SuccinctUtils::Max(int64_t first, int64_t second) {
   return (first > second) ? first : second;
 }
 
+// Returns the min of two integers
 int64_t SuccinctUtils::Min(int64_t first, int64_t second) {
   return (first < second) ? first : second;
 }
@@ -61,4 +64,11 @@ void* SuccinctUtils::MemoryMap(std::string filename) {
   assert(data != (void * )-1);
 
   return data;
+}
+
+// Write integer array to file
+void SuccinctUtils::WriteToFile(int64_t *data, size_t size, std::string outfile) {
+  std::ofstream out(outfile);
+  out.write(reinterpret_cast<const char *>(data), size * sizeof(int64_t));
+  out.close();
 }

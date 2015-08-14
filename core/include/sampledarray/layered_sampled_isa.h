@@ -6,7 +6,7 @@
 class LayeredSampledISA : public LayeredSampledArray {
  public:
   LayeredSampledISA(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
-                    NPA *npa, bitmap_t *SA, uint64_t sa_n,
+                    NPA *npa, ArrayStream& sa_stream, uint64_t sa_n,
                     SuccinctAllocator &s_allocator);
 
   LayeredSampledISA(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
@@ -18,7 +18,7 @@ class LayeredSampledISA : public LayeredSampledArray {
   size_t ReconstructLayer(uint32_t layer_id);
 
  protected:
-  void SampleLayered(bitmap_t *SA, uint64_t n);
+  void SampleLayered(ArrayStream& sa_stream, uint64_t n);
   NPA *npa;
 };
 

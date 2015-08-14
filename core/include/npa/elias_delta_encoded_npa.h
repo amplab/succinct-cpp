@@ -17,8 +17,9 @@ class EliasDeltaEncodedNPA : public DeltaEncodedNPA {
  public:
   EliasDeltaEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                        uint32_t context_len, uint32_t sampling_rate,
-                       Bitmap *data_bitmap, Bitmap *compact_sa,
-                       Bitmap *compact_isa, SuccinctAllocator &s_allocator);
+                       ArrayStream& isa_stream,
+                       std::vector<uint64_t>& col_offsets, std::string npa_file,
+                       SuccinctAllocator &s_allocator);
 
   EliasDeltaEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
                        SuccinctAllocator &s_allocator);

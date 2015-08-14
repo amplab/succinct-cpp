@@ -20,6 +20,7 @@
 #include "sampledarray/sampled_by_value_isa.h"
 #include "sampledarray/sampled_by_value_sa.h"
 #include "succinct_base.h"
+#include "utils/array_stream.h"
 #include "utils/divsufsortxx.h"
 #include "utils/divsufsortxx_utility.h"
 
@@ -125,7 +126,7 @@ class SuccinctCore : public SuccinctBase {
  private:
   /* Construct functions */
   // Create all auxiliary data structures
-  void ConstructAuxiliary(BitMap *compactSA, const char *data);
+  void ConstructAuxiliary(ArrayStream& sa_stream, const char *data);
 
   // Parent Construct function
   void Construct(const char* filename, uint32_t sa_sampling_rate,
