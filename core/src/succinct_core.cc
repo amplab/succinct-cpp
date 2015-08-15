@@ -234,8 +234,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   col_offsets.push_back(0);
   c_val = ComputeContextValue(data, (cur_sa + 1) % input_size_, context_len);
   contexts.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
-  cell_offsets.push_back(std::vector<uint64_t>(0));
-  cell_offsets[0].push_back(0);
+  // cell_offsets.push_back(std::vector<uint64_t>(0));
+  // cell_offsets[0].push_back(0);
   for (uint64_t i = 1; i < input_size_; i++) {
     cur_sa = sa_stream.Get();
     lISA[cur_sa] = i;
@@ -249,13 +249,15 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       alphabet_size_++;
       col_offsets.push_back(i);
       last_i = i;
-      cell_offsets.push_back(std::vector<uint64_t>(0));
-      cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
-    } else if (CompareContexts(data, cur_sa + 1, prv_sa + 1, context_len)) {
-      cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
-    }
+      // cell_offsets.push_back(std::vector<uint64_t>(0));
+      // cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
+    } // else if (CompareContexts(data, cur_sa + 1, prv_sa + 1, context_len)) {
+      // cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
+    // }
     prv_sa = cur_sa;
   }
+
+  // assert(cell_offsets.size() == alphabet_size_);
   alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
                                                           alphabet_size_);
   assert(sa_stream.GetCurrentIndex() == input_size_);

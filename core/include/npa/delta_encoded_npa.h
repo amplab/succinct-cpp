@@ -117,11 +117,12 @@ class DeltaEncodedNPA : public NPA {
 
     // Initialize Auxiliary NPA structures
     col_offsets_ = col_offsets;
-    cell_offsets_ = new std::vector<uint64_t>[cell_offsets.size()];
     contexts_ = contexts;
-    for(size_t i = 0; i < cell_offsets.size(); i++) {
-      cell_offsets_[i] = cell_offsets[i];
-    }
+//    cell_offsets_ = new std::vector<uint64_t>[cell_offsets.size()];
+
+//    for(size_t i = 0; i < cell_offsets.size(); i++) {
+//      cell_offsets_[i] = cell_offsets[i];
+//    }
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_];
