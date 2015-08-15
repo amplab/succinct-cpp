@@ -215,22 +215,67 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   ArrayStream sa_stream(sa_file);
   s_allocator.s_free(lSA);
 
-  // Construct Inverse Suffix Array
+  // Allocate space for Inverse Suffix Array
   int64_t *lISA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t),
                                                    input_size_);
-  for (uint64_t i = 0; i < input_size_; i++) {
-    lISA[sa_stream.Get()] = i;
+
+  // Auxiliary Data Structures for NPA
+  std::map<uint64_t, uint64_t> contexts;
+  std::vector<uint64_t> col_offsets;
+  std::vector<std::vector<uint64_t>> cell_offsets;
+  uint64_t last_i = 0;
+  uint64_t cur_sa, prv_sa;
+  uint64_t c_val;
+
+  prv_sa = cur_sa = sa_stream.Get();
+  lISA[cur_sa] = 0;
+  alphabet_size_ = 1;
+  alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
+  col_offsets.push_back(0);
+  c_val = ComputeContextValue(data, (cur_sa + 1) % input_size_, context_len);
+  contexts.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
+  cell_offsets.push_back(std::vector<uint64_t>(0));
+  cell_offsets[0].push_back(0);
+  for (uint64_t i = 1; i < input_size_; i++) {
+    cur_sa = sa_stream.Get();
+    lISA[cur_sa] = i;
+    c_val = ComputeContextValue(data, (cur_sa + 1) % input_size_, context_len);
+    if (contexts.find(c_val) == contexts.end()) {
+      contexts.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
+    }
+    if (data[cur_sa] != data[prv_sa]) {
+      alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
+          i, alphabet_size_);
+      alphabet_size_++;
+      col_offsets.push_back(i);
+      last_i = i;
+      cell_offsets.push_back(std::vector<uint64_t>(0));
+      cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
+    } else if (CompareContexts(data, cur_sa + 1, prv_sa + 1, context_len)) {
+      cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
+    }
+    prv_sa = cur_sa;
   }
+  alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
+                                                          alphabet_size_);
+  assert(sa_stream.GetCurrentIndex() == input_size_);
   sa_stream.Reset();
+
+  uint64_t num_contexts = 0;
+  typedef std::map<uint64_t, uint64_t>::iterator ContextIterator;
+  for (ContextIterator it = contexts.begin(); it != contexts.end(); it++) {
+    contexts[it->first] = num_contexts++;
+  }
+
+  alphabet_ = new char[alphabet_size_ + 1];
+  for (auto alphabet_entry : alphabet_map_) {
+    alphabet_[alphabet_entry.second.second] = alphabet_entry.first;
+  }
 
   // Write Inverse Suffix Array to file
   SuccinctUtils::WriteToFile(lISA, input_size_, isa_file);
   s_allocator.s_free(lISA);
   ArrayStream isa_stream(isa_file);
-
-  // Construct Auxiliary data structures
-  ConstructAuxiliary(sa_stream, data);
-  sa_stream.Reset();
 
   // Compact input data (if needed)
   BitMap *data_bitmap;
@@ -248,14 +293,16 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
       npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream, Cinv_idx_,
-                                      npa_file, s_allocator);
+                                      npa_sampling_rate, isa_stream, contexts,
+                                      col_offsets, cell_offsets, npa_file,
+                                      s_allocator);
       break;
     }
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
       npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream, Cinv_idx_,
-                                      npa_file, s_allocator);
+                                      npa_sampling_rate, isa_stream, contexts,
+                                      col_offsets, cell_offsets, npa_file,
+                                      s_allocator);
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
@@ -329,33 +376,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   isa_stream.Close();
 }
 
-void SuccinctCore::ConstructAuxiliary(ArrayStream& sa_stream,
-                                      const char *data) {
-  alphabet_size_ = 1;
-  uint64_t prv_sa = sa_stream.Get();
-  alphabet_map_[data[prv_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
-  uint64_t cur_sa;
-  for (uint64_t i = 1; i < input_size_; ++i) {
-    cur_sa = sa_stream.Get();
-    if (data[cur_sa] != data[prv_sa]) {
-      Cinv_idx_.push_back(i);
-      alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
-          i, alphabet_size_);
-      alphabet_size_++;
-    }
-    prv_sa = cur_sa;
-  }
-  alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
-                                                          alphabet_size_);
-  assert(sa_stream.GetCurrentIndex() == input_size_);
-
-  alphabet_ = new char[alphabet_size_ + 1];
-  uint64_t i = 0;
-  for (auto alphabet_entry : alphabet_map_) {
-    alphabet_[alphabet_entry.second.second] = alphabet_entry.first;
-  }
-}
-
 /* Lookup functions for each of the core data structures */
 // Lookup NPA at index i
 uint64_t SuccinctCore::LookupNPA(uint64_t i) {
@@ -374,7 +394,7 @@ uint64_t SuccinctCore::LookupISA(uint64_t i) {
 
 // Lookup C at index i
 uint64_t SuccinctCore::LookupC(uint64_t i) {
-  return GetRank1(&Cinv_idx_, i);
+  return GetRank1(&npa_->col_offsets_, i) - 1;
 }
 
 char SuccinctCore::CharAt(uint64_t i) {
@@ -391,10 +411,10 @@ size_t SuccinctCore::Serialize() {
         != 0) {
       fprintf(
           stderr,
-          "succinct dir '%s' does not exist, and failed to mkdir (no space or permission?)\n",
+          "Succinct path '%s' does not exist, and failed to create it (no space or permission?)\n",
           this->succinct_path_.c_str());
-      fprintf(stderr, "terminating the serialization process.\n");
-      return 1;
+      fprintf(stderr, "Terminating the serialization process.\n");
+      return 0;
     }
   }
   std::ofstream out(succinct_path_ + "/metadata");
@@ -521,10 +541,6 @@ size_t SuccinctCore::Deserialize() {
       assert(0);
   }
 
-  // TODO: Fix
-  Cinv_idx_.insert(Cinv_idx_.end(), npa_->col_offsets_.begin() + 1,
-                   npa_->col_offsets_.end());
-
   in.close();
   sa_in.close();
   isa_in.close();
@@ -602,10 +618,6 @@ size_t SuccinctCore::MemoryMap() {
     default:
       assert(0);
   }
-
-  // TODO: Fix
-  Cinv_idx_.insert(Cinv_idx_.end(), npa_->col_offsets_.begin() + 1,
-                   npa_->col_offsets_.end());
 
   return data - data_beg;
 }
@@ -718,7 +730,6 @@ int SuccinctCore::Compare(std::string p, int64_t i) {
 }
 
 int SuccinctCore::Compare(std::string p, int64_t i, size_t offset) {
-
   uint64_t j = 0;
 
   // Skip first offset chars

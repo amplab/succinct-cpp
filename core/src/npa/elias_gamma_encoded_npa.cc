@@ -5,13 +5,15 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
                                            ArrayStream& isa_stream,
+                                           std::map<uint64_t, uint64_t>& contexts,
                                            std::vector<uint64_t>& col_offsets,
+                                           std::vector<std::vector<uint64_t>>& cell_offsets,
                                            std::string npa_file,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
   InitPrefixSum();
-  Encode(isa_stream, col_offsets, npa_file);
+  Encode(isa_stream, contexts, col_offsets, cell_offsets, npa_file);
 }
 
 EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,

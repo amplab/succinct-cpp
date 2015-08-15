@@ -110,7 +110,18 @@ class DeltaEncodedNPA : public NPA {
   }
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
-  void Encode(ArrayStream& isa_stream, std::vector<uint64_t>& col_offsets, std::string npa_file) {
+  void Encode(ArrayStream& isa_stream, std::map<uint64_t, uint64_t>& contexts,
+              std::vector<uint64_t>& col_offsets,
+              std::vector<std::vector<uint64_t>>& cell_offsets,
+              std::string npa_file) {
+
+    // Initialize Auxiliary NPA structures
+    col_offsets_ = col_offsets;
+    cell_offsets_ = new std::vector<uint64_t>[cell_offsets.size()];
+    contexts_ = contexts;
+    for(size_t i = 0; i < cell_offsets.size(); i++) {
+      cell_offsets_[i] = cell_offsets[i];
+    }
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_];
@@ -125,12 +136,6 @@ class DeltaEncodedNPA : public NPA {
     SuccinctUtils::WriteToFile(lNPA, npa_size_, npa_file);
     delete[] lNPA;
     isa_stream.Reset();
-
-    // FIXME
-    col_offsets_.push_back(0);
-    for (auto col_offset : col_offsets) {
-      col_offsets_.push_back(col_offset);
-    }
 
     del_npa_ = new DeltaEncodedVector[sigma_size_];
     ArrayStream npa_stream(npa_file);
@@ -163,7 +168,7 @@ class DeltaEncodedNPA : public NPA {
     size_t tot_size = 3 * sizeof(uint64_t) + 2 * sizeof(uint32_t);
     tot_size += sizeof(contexts_.size())
         + contexts_.size() * (sizeof(uint64_t) * 2);
-        tot_size += SuccinctBase::VectorSize(col_offsets_);
+    tot_size += SuccinctBase::VectorSize(col_offsets_);
 
     for (uint64_t i = 0; i < sigma_size_; i++) {
       tot_size += DeltaEncodedVectorSize(&del_npa_[i]);

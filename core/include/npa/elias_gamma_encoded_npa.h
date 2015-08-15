@@ -16,8 +16,10 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   EliasGammaEncodedNPA(uint64_t npa_size, uint64_t sigma_size,
                        uint32_t context_len, uint32_t sampling_rate,
                        ArrayStream& isa_stream,
-                       std::vector<uint64_t>& col_offsets, std::string npa_file,
-                       SuccinctAllocator &s_allocator);
+                       std::map<uint64_t, uint64_t>& contexts,
+                       std::vector<uint64_t>& col_offsets,
+                       std::vector<std::vector<uint64_t>>& cell_offsets,
+                       std::string npa_file, SuccinctAllocator &s_allocator);
 
   EliasGammaEncodedNPA(uint32_t context_len, uint32_t sampling_rate,
                        SuccinctAllocator &s_allocator);
