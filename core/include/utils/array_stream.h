@@ -15,7 +15,7 @@ class ArrayStream {
     filename_ = filename;
 
     if (!memory_map_) {
-      in_ = std::ifstream(filename_);
+      in_.open(filename_);
       data_ = NULL;
     } else {
       data_ = (uint64_t *) SuccinctUtils::MemoryMap(filename_);
