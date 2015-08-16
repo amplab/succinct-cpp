@@ -237,7 +237,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     }
     prv_sa = cur_sa;
   }
-
   alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_, alphabet_size_);
   alphabet_ = new char[alphabet_size_ + 1];
   for (auto alphabet_entry : alphabet_map_) {
@@ -254,6 +253,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second, sigma_bits);
   }
   s_allocator.s_free(data);
+
+  fprintf(stderr, "Compacted input\n");
 
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:

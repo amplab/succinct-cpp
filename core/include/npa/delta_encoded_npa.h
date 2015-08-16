@@ -110,14 +110,10 @@ class DeltaEncodedNPA : public NPA {
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
   void Encode(Bitmap *data_bitmap, Bitmap *compact_sa, Bitmap *compact_isa) {
-    uint32_t logn, q;
-    uint64_t cur_sa, prv_sa, l_off = 0, npa_val, p = 0;
+    uint32_t logn;
+    uint64_t cur_sa, prv_sa, l_off = 0, npa_val;
 
-    std::map<uint64_t, uint64_t> context_size;
     std::vector<uint64_t> sigma_list;
-
-    bool flag;
-    uint64_t last_i = 0;
 
     logn = SuccinctUtils::IntegerLog2(npa_size_ + 1);
 
@@ -155,7 +151,6 @@ class DeltaEncodedNPA : public NPA {
         assert(sigma_list.size() > 0);
         sigma_list.clear();
 
-        last_i = i;
         // cell_offsets_[l_off / k].push_back(i - last_i);
       } // else if (!CompareDataBitmap(data_bitmap, (cur_sa + 1) % npa_size_,
         //                            (prv_sa + 1) % npa_size_, context_len_)) {
