@@ -111,7 +111,7 @@ class DeltaEncodedNPA : public NPA {
   // Encode DeltaEncodedNPA based on the delta encoding scheme
   void Encode(Bitmap *data_bitmap, Bitmap *compact_sa, Bitmap *compact_isa) {
     uint32_t logn, q;
-    uint64_t cur_sa, prv_sa, k = 0, l_off = 0, c_id, c_val, npa_val, p = 0;
+    uint64_t cur_sa, prv_sa, l_off = 0, npa_val, p = 0;
 
     std::map<uint64_t, uint64_t> context_size;
     std::vector<uint64_t> sigma_list;
@@ -121,23 +121,21 @@ class DeltaEncodedNPA : public NPA {
 
     logn = SuccinctUtils::IntegerLog2(npa_size_ + 1);
 
-    for (uint64_t i = 0; i < npa_size_; i++) {
-      uint64_t c_val = ComputeContextValue(data_bitmap, i);
-      contexts_.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
-    }
-    for (std::map<uint64_t, uint64_t>::iterator it = contexts_.begin();
-        it != contexts_.end(); it++) {
-      contexts_[it->first] = k++;
-    }
+//    for (uint64_t i = 0; i < npa_size_; i++) {
+//      uint64_t c_val = ComputeContextValue(data_bitmap, i);
+//      contexts_.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
+//    }
+//    for (std::map<uint64_t, uint64_t>::iterator it = contexts_.begin();
+//        it != contexts_.end(); it++) {
+//      contexts_[it->first] = k++;
+//    }
 
-    assert(k == contexts_.size());
+    // assert(k == contexts_.size());
 
-    cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
+    // cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
     del_npa_ = new DeltaEncodedVector[sigma_size_]();
 
     cur_sa = SuccinctBase::LookupBitmapArray(compact_sa, 0, logn);
-    c_id = ComputeContextValue(data_bitmap, (cur_sa + 1) % npa_size_);
-    c_val = contexts_[c_id];
     npa_val = SuccinctBase::LookupBitmapArray(
         compact_isa,
         (SuccinctBase::LookupBitmapArray(compact_sa, 0, logn) + 1) % npa_size_,
@@ -145,31 +143,25 @@ class DeltaEncodedNPA : public NPA {
 
     sigma_list.push_back(npa_val);
     col_offsets_.push_back(0);
-    cell_offsets_[0].push_back(0);
+    // cell_offsets_[0].push_back(0);
 
     for (uint64_t i = 1; i < npa_size_; i++) {
       cur_sa = SuccinctBase::LookupBitmapArray(compact_sa, i, logn);
       prv_sa = SuccinctBase::LookupBitmapArray(compact_sa, i - 1, logn);
 
-      c_id = ComputeContextValue(data_bitmap, (cur_sa + 1) % npa_size_);
-      c_val = contexts_[c_id];
-
-      assert(c_val < k);
-
       if (!CompareDataBitmap(data_bitmap, cur_sa, prv_sa, 1)) {
         col_offsets_.push_back(i);
-        CreateDeltaEncodedVector(&(del_npa_[l_off / k]), sigma_list);
+        CreateDeltaEncodedVector(&(del_npa_[l_off++]), sigma_list);
         assert(sigma_list.size() > 0);
         sigma_list.clear();
 
-        l_off += k;
         last_i = i;
-        cell_offsets_[l_off / k].push_back(i - last_i);
-      } else if (!CompareDataBitmap(data_bitmap, (cur_sa + 1) % npa_size_,
-                                    (prv_sa + 1) % npa_size_, context_len_)) {
+        // cell_offsets_[l_off / k].push_back(i - last_i);
+      } // else if (!CompareDataBitmap(data_bitmap, (cur_sa + 1) % npa_size_,
+        //                            (prv_sa + 1) % npa_size_, context_len_)) {
         // Context has changed; mark in L
-        cell_offsets_[l_off / k].push_back(i - last_i);
-      }
+        // cell_offsets_[l_off / k].push_back(i - last_i);
+      // }
 
       // Obtain actual npa value
       npa_val = SuccinctBase::LookupBitmapArray(
@@ -179,10 +171,10 @@ class DeltaEncodedNPA : public NPA {
           logn);
       sigma_list.push_back(npa_val);
 
-      assert(l_off / k < sigma_size_);
+      assert(l_off < sigma_size_);
     }
 
-    CreateDeltaEncodedVector(&(del_npa_[l_off / k]), sigma_list);
+    CreateDeltaEncodedVector(&(del_npa_[l_off]), sigma_list);
     assert(sigma_list.size() > 0);
     sigma_list.clear();
   }
@@ -212,9 +204,9 @@ class DeltaEncodedNPA : public NPA {
       tot_size += SuccinctBase::VectorSize(row_nec_[i]);
     }
 
-    for (uint64_t i = 0; i < sigma_size_; i++) {
-      tot_size += SuccinctBase::VectorSize(cell_offsets_[i]);
-    }
+//    for (uint64_t i = 0; i < sigma_size_; i++) {
+//      tot_size += SuccinctBase::VectorSize(cell_offsets_[i]);
+//    }
 
     for (uint64_t i = 0; i < sigma_size_; i++) {
       tot_size += DeltaEncodedVectorSize(&del_npa_[i]);
@@ -264,9 +256,9 @@ class DeltaEncodedNPA : public NPA {
     out_size += SuccinctBase::SerializeVector(col_offsets_, out);
 
     // Output cell offsets
-    for (uint64_t i = 0; i < sigma_size_; i++) {
-      out_size += SuccinctBase::SerializeVector(cell_offsets_[i], out);
-    }
+//    for (uint64_t i = 0; i < sigma_size_; i++) {
+//      out_size += SuccinctBase::SerializeVector(cell_offsets_[i], out);
+//    }
 
     // Output delta encoded vectors
     for (uint64_t i = 0; i < sigma_size_; i++) {
@@ -313,10 +305,10 @@ class DeltaEncodedNPA : public NPA {
     in_size += SuccinctBase::DeserializeVector(col_offsets_, in);
 
     // Read cell offsets
-    cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
-    for (uint64_t i = 0; i < sigma_size_; i++) {
-      in_size += SuccinctBase::DeserializeVector(cell_offsets_[i], in);
-    }
+//    cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
+//    for (uint64_t i = 0; i < sigma_size_; i++) {
+//      in_size += SuccinctBase::DeserializeVector(cell_offsets_[i], in);
+//    }
 
     // Read delta encoded vectors
     del_npa_ = new DeltaEncodedVector[sigma_size_];
@@ -357,10 +349,10 @@ class DeltaEncodedNPA : public NPA {
     data += SuccinctBase::MemoryMapVector(col_offsets_, data);
 
     // Read cell offsets
-    cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
-    for (uint64_t i = 0; i < sigma_size_; i++) {
-      data += SuccinctBase::MemoryMapVector(cell_offsets_[i], data);
-    }
+//    cell_offsets_ = new std::vector<uint64_t>[sigma_size_];
+//    for (uint64_t i = 0; i < sigma_size_; i++) {
+//      data += SuccinctBase::MemoryMapVector(cell_offsets_[i], data);
+//    }
 
     // Read delta encoded vectors
     del_npa_ = new DeltaEncodedVector[sigma_size_];
