@@ -194,6 +194,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   char *data = (char *) s_allocator.s_malloc(fsize + 1);
   size_t felems = fread(data, fsize, 1, f);
   fclose(f);
+  fprintf(stderr, "Read input from file\n");
 
   assert(felems == 1);
 
@@ -207,11 +208,15 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   divsufsortxx::constructSA((uint8_t *) data, (uint8_t *) (data + input_size_),
                             lSA, lSA + input_size_, 256);
 
+  fprintf(stderr, "Constructed SA\n");
+
   // Compact SA
   BitMap *compactSA = new BitMap;
   CreateBitmapArray(&compactSA, (uint64_t *) lSA, input_size_, bits,
                     s_allocator);
   s_allocator.s_free(lSA);
+
+  fprintf(stderr, "Compacted SA\n");
 
   BitMap *compactISA = new BitMap;
   InitBitmap(&compactISA, input_size_ * bits, s_allocator);
@@ -238,6 +243,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   for (auto alphabet_entry : alphabet_map_) {
     alphabet_[alphabet_entry.second.second] = alphabet_entry.first;
   }
+
+  fprintf(stderr, "Constructed ISA and aux\n");
 
   // Compact input data
   BitMap *data_bitmap = new BitMap;
@@ -268,6 +275,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       npa_ = NULL;
   }
 
+  fprintf(stderr, "Constructed NPA\n");
+
   assert(npa_ != NULL);
 
   DestroyBitmap(&compactISA, s_allocator);
@@ -297,6 +306,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       sa_ = NULL;
   }
 
+  fprintf(stderr, "Sampled SA\n");
+
   assert(sa_ != NULL);
 
   switch (isa_sampling_scheme) {
@@ -324,6 +335,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       isa_ = NULL;
   }
 
+  fprintf(stderr, "Sampled ISA\n");
   assert(isa_ != NULL);
 
   DestroyBitmap(&compactSA, s_allocator);
