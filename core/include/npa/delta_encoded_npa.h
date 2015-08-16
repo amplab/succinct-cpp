@@ -243,14 +243,14 @@ class DeltaEncodedNPA : public NPA {
     out_size += sizeof(uint32_t);
 
     // Output contexts
-    uint64_t context_size = contexts_.size();
-    out.write(reinterpret_cast<const char *>(&(context_size)),
-              sizeof(uint64_t));
-    for (iterator_t it = contexts_.begin(); it != contexts_.end(); ++it) {
-      out.write(reinterpret_cast<const char *>(&(it->first)), sizeof(uint64_t));
-      out.write(reinterpret_cast<const char *>(&(it->second)),
-                sizeof(uint64_t));
-    }
+//    uint64_t context_size = contexts_.size();
+//    out.write(reinterpret_cast<const char *>(&(context_size)),
+//              sizeof(uint64_t));
+//    for (iterator_t it = contexts_.begin(); it != contexts_.end(); ++it) {
+//      out.write(reinterpret_cast<const char *>(&(it->first)), sizeof(uint64_t));
+//      out.write(reinterpret_cast<const char *>(&(it->second)),
+//                sizeof(uint64_t));
+//    }
 
     // Output col_offsets
     out_size += SuccinctBase::SerializeVector(col_offsets_, out);
@@ -292,14 +292,14 @@ class DeltaEncodedNPA : public NPA {
     in_size += sizeof(uint32_t);
 
     // Read contexts
-    uint64_t context_size;
-    in.read(reinterpret_cast<char *>(&(context_size)), sizeof(uint64_t));
-    for (uint64_t i = 0; i < context_size; i++) {
-      uint64_t first, second;
-      in.read(reinterpret_cast<char *>(&(first)), sizeof(uint64_t));
-      in.read(reinterpret_cast<char *>(&(second)), sizeof(uint64_t));
-      contexts_[first] = second;
-    }
+//    uint64_t context_size;
+//    in.read(reinterpret_cast<char *>(&(context_size)), sizeof(uint64_t));
+//    for (uint64_t i = 0; i < context_size; i++) {
+//      uint64_t first, second;
+//      in.read(reinterpret_cast<char *>(&(first)), sizeof(uint64_t));
+//      in.read(reinterpret_cast<char *>(&(second)), sizeof(uint64_t));
+//      contexts_[first] = second;
+//    }
 
     // Read coloffsets
     in_size += SuccinctBase::DeserializeVector(col_offsets_, in);
@@ -335,15 +335,15 @@ class DeltaEncodedNPA : public NPA {
     data += sizeof(uint32_t);
 
     // Read contexts
-    uint64_t context_size = *((uint64_t *) data);
-    data += sizeof(uint64_t);
-    for (uint64_t i = 0; i < context_size; i++) {
-      uint64_t first = *((uint64_t *) data);
-      data += sizeof(uint64_t);
-      uint64_t second = *((uint64_t *) data);
-      data += sizeof(uint64_t);
-      contexts_[first] = second;
-    }
+//    uint64_t context_size = *((uint64_t *) data);
+//    data += sizeof(uint64_t);
+//    for (uint64_t i = 0; i < context_size; i++) {
+//      uint64_t first = *((uint64_t *) data);
+//      data += sizeof(uint64_t);
+//      uint64_t second = *((uint64_t *) data);
+//      data += sizeof(uint64_t);
+//      contexts_[first] = second;
+//    }
 
     // Read column offsets
     data += SuccinctBase::MemoryMapVector(col_offsets_, data);
