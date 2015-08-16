@@ -109,8 +109,7 @@ class DeltaEncodedNPA : public NPA {
   }
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
-  virtual void Encode(Bitmap *data_bitmap, Bitmap *compact_sa,
-                      Bitmap *compact_isa) {
+  void Encode(Bitmap *data_bitmap, Bitmap *compact_sa, Bitmap *compact_isa) {
     uint32_t logn, q;
     uint64_t cur_sa, prv_sa, k = 0, l_off = 0, c_id, c_val, npa_val, p = 0;
 

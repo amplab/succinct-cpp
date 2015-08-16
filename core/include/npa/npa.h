@@ -53,10 +53,6 @@ class NPA {
     return sampling_rate_;
   }
 
-  // Encode NPA based on the encoding scheme
-  virtual void Encode(Bitmap *data_bitmap, Bitmap *compactSA,
-                      Bitmap *compactISA) = 0;
-
   // Access element at index i
   virtual uint64_t operator[](uint64_t i) = 0;
 
