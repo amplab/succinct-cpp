@@ -1,8 +1,8 @@
 #ifndef SAMPLED_ARRAY_HPP
 #define SAMPLED_ARRAY_HPP
 
+#include "utils/data_input_stream.h"
 #include "sampling_scheme.h"
-#include "utils/array_stream.h"
 
 class SampledArray {
  public:

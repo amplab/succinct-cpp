@@ -212,7 +212,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
 
   // Write Suffix Array to file
   SuccinctUtils::WriteToFile(lSA, input_size_, sa_file);
-  ArrayStream sa_stream(sa_file);
+  DataInputStream<uint64_t> sa_stream(sa_file);
   s_allocator.s_free(lSA);
 
   // Allocate space for Inverse Suffix Array
@@ -229,8 +229,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   alphabet_size_ = 1;
   alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
   col_offsets.push_back(0);
-  // cell_offsets.push_back(std::vector<uint64_t>(0));
-  // cell_offsets[0].push_back(0);
   for (uint64_t i = 1; i < input_size_; i++) {
     cur_sa = sa_stream.Get();
     lISA[cur_sa] = i;
@@ -258,7 +256,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   // Write Inverse Suffix Array to file
   SuccinctUtils::WriteToFile(lISA, input_size_, isa_file);
   s_allocator.s_free(lISA);
-  ArrayStream isa_stream(isa_file);
+  DataInputStream<uint64_t> isa_stream(isa_file);
 
   // Compact input data (if needed)
   BitMap *data_bitmap;

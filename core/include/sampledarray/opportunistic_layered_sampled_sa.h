@@ -7,7 +7,7 @@ class OpportunisticLayeredSampledSA : public OpportunisticLayeredSampledArray {
  public:
   OpportunisticLayeredSampledSA(uint32_t target_sampling_rate,
                                 uint32_t base_sampling_rate, NPA *npa,
-                                ArrayStream& sa_stream, uint64_t sa_n,
+                                DataInputStream<uint64_t>& sa_stream, uint64_t sa_n,
                                 SuccinctAllocator &s_allocator);
 
   OpportunisticLayeredSampledSA(uint32_t target_sampling_rate,
@@ -20,7 +20,7 @@ class OpportunisticLayeredSampledSA : public OpportunisticLayeredSampledArray {
  protected:
   NPA *npa;
 
-  void SampleLayered(ArrayStream& sa_stream, uint64_t n);
+  void SampleLayered(DataInputStream<uint64_t>& sa_stream, uint64_t n);
 };
 
 #endif

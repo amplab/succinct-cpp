@@ -6,7 +6,7 @@
 class SampledByValueSA : public FlatSampledArray {
  public:
   // Constructor
-  SampledByValueSA(uint32_t sampling_rate, NPA *npa, ArrayStream& sa_stream,
+  SampledByValueSA(uint32_t sampling_rate, NPA *npa, DataInputStream<uint64_t>& sa_stream,
                    uint64_t sa_n, SuccinctAllocator &s_allocator);
 
   SampledByValueSA(uint32_t sampling_rate, NPA *npa,
@@ -23,7 +23,7 @@ class SampledByValueSA : public FlatSampledArray {
 
  protected:
   // Sample original SA by value
-  virtual void Sample(ArrayStream& original, uint64_t n);
+  virtual void Sample(DataInputStream<uint64_t>& original, uint64_t n);
 
   // Check if index is sampled
   bool IsSampled(uint64_t i);

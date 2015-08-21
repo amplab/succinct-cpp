@@ -1,9 +1,9 @@
 #ifndef DELTA_ENCODED_NPA_H
 #define DELTA_ENCODED_NPA_H
 
+#include "utils/data_input_stream.h"
 #include "utils/succinct_utils.h"
 #include "utils/definitions.h"
-#include "utils/array_stream.h"
 #include "npa.h"
 
 class DeltaEncodedNPA : public NPA {
@@ -110,7 +110,7 @@ class DeltaEncodedNPA : public NPA {
   }
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
-  void Encode(ArrayStream& isa_stream, std::vector<uint64_t>& col_offsets,
+  void Encode(DataInputStream<uint64_t>& isa_stream, std::vector<uint64_t>& col_offsets,
               std::string npa_file) {
 
     // Initialize Auxiliary NPA structures
@@ -131,7 +131,7 @@ class DeltaEncodedNPA : public NPA {
     isa_stream.Reset();
 
     del_npa_ = new DeltaEncodedVector[sigma_size_];
-    ArrayStream npa_stream(npa_file);
+    DataInputStream<uint64_t> npa_stream(npa_file);
     for (uint64_t i = 0; i < col_offsets_.size(); i++) {
       uint64_t start_offset = col_offsets_[i];
       uint64_t end_offset =

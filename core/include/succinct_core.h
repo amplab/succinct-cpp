@@ -20,7 +20,7 @@
 #include "sampledarray/sampled_by_value_isa.h"
 #include "sampledarray/sampled_by_value_sa.h"
 #include "succinct_base.h"
-#include "utils/array_stream.h"
+#include "utils/data_input_stream.h"
 #include "utils/divsufsortxx.h"
 #include "utils/divsufsortxx_utility.h"
 

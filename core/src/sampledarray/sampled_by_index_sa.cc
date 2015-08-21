@@ -1,7 +1,7 @@
 #include "sampledarray/sampled_by_index_sa.h"
 
 SampledByIndexSA::SampledByIndexSA(uint32_t sampling_rate, NPA *npa,
-                                   ArrayStream& sa_stream, uint64_t sa_n,
+                                   DataInputStream<uint64_t>& sa_stream, uint64_t sa_n,
                                    SuccinctAllocator &s_allocator)
     : FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_INDEX, npa,
                        s_allocator) {
@@ -23,7 +23,7 @@ SampledByIndexSA::SampledByIndexSA(uint32_t sampling_rate, NPA *npa,
 
 }
 
-void SampledByIndexSA::Sample(ArrayStream& sa_stream, uint64_t n) {
+void SampledByIndexSA::Sample(DataInputStream<uint64_t>& sa_stream, uint64_t n) {
 
   data_bits_ = SuccinctUtils::IntegerLog2(n + 1);
   data_size_ = (n / sampling_rate_) + 1;

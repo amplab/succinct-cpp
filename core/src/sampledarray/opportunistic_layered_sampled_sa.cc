@@ -2,7 +2,7 @@
 
 OpportunisticLayeredSampledSA::OpportunisticLayeredSampledSA(
     uint32_t target_sampling_rate, uint32_t base_sampling_rate, NPA *npa,
-    ArrayStream& sa_stream, uint64_t sa_n, SuccinctAllocator &s_allocator)
+    DataInputStream<uint64_t>& sa_stream, uint64_t sa_n, SuccinctAllocator &s_allocator)
     : OpportunisticLayeredSampledArray(target_sampling_rate, base_sampling_rate,
                                        sa_n, s_allocator) {
   this->npa = npa;
@@ -17,7 +17,7 @@ OpportunisticLayeredSampledSA::OpportunisticLayeredSampledSA(
   this->npa = npa;
 }
 
-void OpportunisticLayeredSampledSA::SampleLayered(ArrayStream& sa_stream,
+void OpportunisticLayeredSampledSA::SampleLayered(DataInputStream<uint64_t>& sa_stream,
                                                   uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
     uint64_t sa_val = sa_stream.Get();

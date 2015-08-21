@@ -1,7 +1,7 @@
 #include "sampledarray/sampled_by_value_sa.h"
 
 SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
-                                   ArrayStream& sa_stream, uint64_t sa_n,
+                                   DataInputStream<uint64_t>& sa_stream, uint64_t sa_n,
                                    SuccinctAllocator &s_allocator)
     : FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_VALUE, npa,
                        s_allocator) {
@@ -28,7 +28,7 @@ SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
 
 }
 
-void SampledByValueSA::Sample(ArrayStream& sa_stream, uint64_t n) {
+void SampledByValueSA::Sample(DataInputStream<uint64_t>& sa_stream, uint64_t n) {
   data_size_ = (n / sampling_rate_) + 1;
   data_bits_ = SuccinctUtils::IntegerLog2(data_size_ + 1);
   uint64_t sa_val, pos = 0;

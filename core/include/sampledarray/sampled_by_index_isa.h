@@ -6,7 +6,7 @@
 class SampledByIndexISA : public FlatSampledArray {
  public:
   // Constructor
-  SampledByIndexISA(uint32_t sampling_rate, NPA *npa, ArrayStream& sa_stream,
+  SampledByIndexISA(uint32_t sampling_rate, NPA *npa, DataInputStream<uint64_t>& sa_stream,
                     uint64_t sa_n, SuccinctAllocator &s_allocator);
 
   SampledByIndexISA(uint32_t sampling_rate, NPA *npa,
@@ -17,7 +17,7 @@ class SampledByIndexISA : public FlatSampledArray {
 
  protected:
   // Sample by index for ISA using original SA
-  virtual void Sample(ArrayStream& original, uint64_t n);
+  virtual void Sample(DataInputStream<uint64_t>& original, uint64_t n);
 };
 
 #endif

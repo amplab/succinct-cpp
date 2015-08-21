@@ -2,7 +2,7 @@
 
 LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
                                      uint32_t base_sampling_rate, NPA *npa,
-                                     ArrayStream& sa_stream, uint64_t sa_n,
+                                     DataInputStream<uint64_t>& sa_stream, uint64_t sa_n,
                                      SuccinctAllocator &s_allocator)
     : LayeredSampledArray(target_sampling_rate, base_sampling_rate, sa_n,
                           s_allocator) {
@@ -17,7 +17,7 @@ LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
   this->npa = npa;
 }
 
-void LayeredSampledISA::SampleLayered(ArrayStream& sa_stream, uint64_t n) {
+void LayeredSampledISA::SampleLayered(DataInputStream<uint64_t>& sa_stream, uint64_t n) {
   for (uint64_t i = 0; i < n; i++) {
     uint64_t sa_val = sa_stream.Get();
     if (sa_val % target_sampling_rate_ == 0) {

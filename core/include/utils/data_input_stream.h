@@ -7,9 +7,12 @@
 
 #include "utils/succinct_utils.h"
 
-class ArrayStream {
+template<typename T>
+class DataInputStream {
  public:
-  ArrayStream(std::string filename, bool memory_map = false) {
+  typedef size_t pos_type;
+
+  DataInputStream(std::string filename, bool memory_map = false) {
     current_idx_ = 0;
     memory_map_ = memory_map;
     filename_ = filename;
@@ -18,21 +21,21 @@ class ArrayStream {
       in_.open(filename_);
       data_ = NULL;
     } else {
-      data_ = (uint64_t *) SuccinctUtils::MemoryMap(filename_);
+      data_ = (T *) SuccinctUtils::MemoryMap(filename_);
     }
   }
 
-  uint64_t Get() {
+  T Get() {
     if (memory_map_) {
       return data_[current_idx_++];
     }
-    uint64_t val;
-    in_.read(reinterpret_cast<char *>(&(val)), sizeof(uint64_t));
+    T val;
+    in_.read(reinterpret_cast<char *>(&(val)), sizeof(T));
     current_idx_++;
     return val;
   }
 
-  uint64_t GetCurrentIndex() {
+  pos_type GetCurrentIndex() {
     return current_idx_;
   }
 
@@ -54,8 +57,8 @@ class ArrayStream {
  private:
   std::string filename_;
   std::ifstream in_;
-  uint64_t *data_;
-  uint64_t current_idx_;
+  T *data_;
+  pos_type current_idx_;
   bool memory_map_;
 
 };
