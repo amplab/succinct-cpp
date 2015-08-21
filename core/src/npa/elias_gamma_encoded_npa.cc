@@ -73,12 +73,12 @@ void EliasGammaEncodedNPA::EliasGammaEncode(Bitmap **B,
   uint64_t pos = 0;
   SuccinctBase::InitBitmap(B, size, s_allocator_);
   for (size_t i = 0; i < deltas.size(); i++) {
-    int N = LowerLog2(deltas[i]);
+    uint64_t N = LowerLog2(deltas[i]);
     pos += N;
-    assert((1 << N) <= deltas[i]);
+    assert((1ULL << N) <= deltas[i]);
     SETBITVAL(*B, pos);
     pos++;
-    SuccinctBase::SetBitmapAtPos(B, pos, deltas[i] - (1 << N), N);
+    SuccinctBase::SetBitmapAtPos(B, pos, deltas[i] - (1ULL << N), N);
     pos += N;
   }
 }
@@ -131,7 +131,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B, uint64_t offset,
       delta_off++;
 #endif
       delta_sum +=
-          (SuccinctBase::LookupBitmapAtPos(B, delta_off, N) + (1 << N));
+          (SuccinctBase::LookupBitmapAtPos(B, delta_off, N) + (1ULL << N));
       delta_off += N;
       delta_idx += 1;
     } else if (delta_idx + cnt <= i) {
@@ -155,7 +155,7 @@ uint64_t EliasGammaEncodedNPA::EliasGammaPrefixSum(Bitmap *B, uint64_t offset,
         delta_off++;
 #endif
         delta_sum += (SuccinctBase::LookupBitmapAtPos(B, delta_off, N)
-            + (1 << N));
+            + (1ULL << N));
         delta_off += N;
         delta_idx += 1;
       }
