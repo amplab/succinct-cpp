@@ -14,7 +14,7 @@ class NPA {
     ELIAS_GAMMA_ENCODED = 2
   } NPAEncodingScheme;
 
-  typedef SuccinctBase::BitMap Bitmap;
+  typedef SuccinctBase::Bitmap Bitmap;
 
   // Constructor
   NPA(uint64_t npa_size, uint64_t sigma_size, uint32_t context_len,

@@ -258,9 +258,9 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   ArrayStream isa_stream(isa_file);
 
   // Compact input data (if needed)
-  BitMap *data_bitmap;
+  Bitmap *data_bitmap;
   if (npa_encoding_scheme == NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED) {
-    data_bitmap = new BitMap;
+    data_bitmap = new Bitmap;
     int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
     InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
     for (uint64_t i = 0; i < input_size_; i++) {
@@ -284,8 +284,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
-      BitMap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
-      BitMap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator, isa_file);
+      Bitmap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
+      Bitmap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator, isa_file);
       npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
                                        npa_sampling_rate, data_bitmap,
                                        compactSA,

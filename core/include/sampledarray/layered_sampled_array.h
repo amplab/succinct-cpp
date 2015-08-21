@@ -20,7 +20,7 @@
 
 class LayeredSampledArray : public SampledArray {
  public:
-  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::Bitmap bitmap_t;
   typedef SuccinctBase::Dictionary dictionary_t;
   typedef struct {
     uint32_t layer_id;

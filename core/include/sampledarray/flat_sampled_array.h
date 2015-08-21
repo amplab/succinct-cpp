@@ -10,7 +10,7 @@
 
 class FlatSampledArray : public SampledArray {
  public:
-  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::Bitmap bitmap_t;
   typedef SuccinctBase::Dictionary Dictionary;
 
   // Constructor

@@ -43,11 +43,11 @@ class SuccinctBase {
   typedef struct _bitmap {
     uint64_t *bitmap;
     uint64_t size;
-  } BitMap;
+  } Bitmap;
 
   // Dictionary stored as a bitmap with rank data structures
   typedef struct _dict {
-    BitMap *B;
+    Bitmap *B;
     uint64_t size;
     uint64_t *rank_l12;
     uint64_t *rank_l3;
@@ -82,48 +82,48 @@ class SuccinctBase {
 
   /* BitMap access/modifier functions */
   // Initialize a bitmap with a specified size
-  static void InitBitmap(BitMap **B, uint64_t size_in_bits,
+  static void InitBitmap(Bitmap **B, uint64_t size_in_bits,
                          SuccinctAllocator& s_allocator);
 
   // Initialize a bitmap with a specified size, with all bits set
-  static void InitBitmapSet(BitMap **B, uint64_t size_in_bits,
+  static void InitBitmapSet(Bitmap **B, uint64_t size_in_bits,
                             SuccinctAllocator& s_allocator);
 
   // Clear the contents of the bitmap and unset all bits
-  static void ClearBitmap(BitMap **B, SuccinctAllocator& s_allocator);
+  static void ClearBitmap(Bitmap **B, SuccinctAllocator& s_allocator);
 
   // Destroy a bitmap
-  static void DestroyBitmap(BitMap **B, SuccinctAllocator& s_allocator);
+  static void DestroyBitmap(Bitmap **B, SuccinctAllocator& s_allocator);
 
   // Create bitmap from an array with specified bit-width
-  static void CreateBitmapArray(BitMap **B, uint64_t *A, uint64_t n, uint32_t b,
+  static void CreateBitmapArray(Bitmap **B, uint64_t *A, uint64_t n, uint32_t b,
                                 SuccinctAllocator s_allocator);
 
   // Set a value in the bitmap, treating it as an array of fixed length
-  static void SetBitmapArray(BitMap **B, uint64_t i, uint64_t val, uint32_t b);
+  static void SetBitmapArray(Bitmap **B, uint64_t i, uint64_t val, uint32_t b);
 
   // Lookup a value in the bitmap, treating it as an array of fixed length
-  static uint64_t LookupBitmapArray(BitMap *B, uint64_t i, uint32_t b);
+  static uint64_t LookupBitmapArray(Bitmap *B, uint64_t i, uint32_t b);
 
   // Set a value in the bitmap at a specified offset
-  static void SetBitmapAtPos(BitMap **B, uint64_t pos, uint64_t val,
+  static void SetBitmapAtPos(Bitmap **B, uint64_t pos, uint64_t val,
                              uint32_t b);
 
   // Lookup a value in the bitmap at a specified offset
-  static uint64_t LookupBitmapAtPos(BitMap *B, uint64_t pos, uint32_t b);
+  static uint64_t LookupBitmapAtPos(Bitmap *B, uint64_t pos, uint32_t b);
 
   // Serialize bitmap to output stream
-  static size_t SerializeBitmap(BitMap *B, std::ostream& out);
+  static size_t SerializeBitmap(Bitmap *B, std::ostream& out);
 
   // Deserialize bitmap from input stream
-  static size_t DeserializeBitmap(BitMap **B, std::istream& in);
+  static size_t DeserializeBitmap(Bitmap **B, std::istream& in);
 
   // Memory map dictionary from buf
-  static size_t MemoryMapBitmap(BitMap **B, uint8_t *buf);
+  static size_t MemoryMapBitmap(Bitmap **B, uint8_t *buf);
 
   /* Dictionary access/modifier functions */
   // Create dictionary from a bitmap
-  static uint64_t CreateDictionary(BitMap *B, Dictionary *D, SuccinctAllocator& s_allocator);
+  static uint64_t CreateDictionary(Bitmap *B, Dictionary *D, SuccinctAllocator& s_allocator);
 
   // Get the 1-rank of the dictionary at the specified index
   static uint64_t GetRank1(Dictionary *D, uint64_t i);
@@ -147,7 +147,7 @@ class SuccinctBase {
   static size_t MemoryMapDictionary(Dictionary **D, uint8_t *buf);
 
   // Get size of bitmap
-  static size_t BitmapSize(BitMap *B);
+  static size_t BitmapSize(Bitmap *B);
 
   // Get size of dictionary
   static size_t DictionarySize(Dictionary *D);
@@ -158,8 +158,8 @@ class SuccinctBase {
   // Get size of SuccinctBase
   virtual size_t StorageSize();
 
-  static BitMap* ReadAsBitmap(size_t size, uint8_t bits, SuccinctAllocator& s_allocator, std::string& infile) {
-    BitMap* B = new BitMap;
+  static Bitmap* ReadAsBitmap(size_t size, uint8_t bits, SuccinctAllocator& s_allocator, std::string& infile) {
+    Bitmap* B = new Bitmap;
     InitBitmap(&B, size * bits, s_allocator);
     std::ifstream in(infile);
     for(uint64_t i = 0; i < size; i++) {
