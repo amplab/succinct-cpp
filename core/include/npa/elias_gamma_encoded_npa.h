@@ -42,7 +42,7 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
  private:
   // Accesses data from a 64 bit integer represented as a bit map
   // from a specified position and for a specified number of bits
-  uint16_t AccessDataPos16(uint16_t data, uint32_t pos, uint32_t b);
+  uint16_t AccessDataPos(uint16_t data, uint32_t pos, uint32_t b);
 
   int64_t BinarySearchSamples(DeltaEncodedVector *dv, uint64_t val, uint64_t s,
                               uint64_t e);
