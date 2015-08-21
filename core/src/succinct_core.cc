@@ -229,8 +229,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   alphabet_size_ = 1;
   alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
   col_offsets.push_back(0);
-  // cell_offsets.push_back(std::vector<uint64_t>(0));
-  // cell_offsets[0].push_back(0);
   for (uint64_t i = 1; i < input_size_; i++) {
     cur_sa = sa_stream.Get();
     lISA[cur_sa] = i;
@@ -244,7 +242,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     prv_sa = cur_sa;
   }
 
-  // assert(cell_offsets.size() == alphabet_size_);
   alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
                                                           alphabet_size_);
   assert(sa_stream.GetCurrentIndex() == input_size_);
@@ -287,10 +284,12 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
+      BitMap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
+      BitMap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator, isa_file);
       npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
                                        npa_sampling_rate, data_bitmap,
-                                       NULL,
-                                       NULL, s_allocator);
+                                       compactSA,
+                                       compactISA, s_allocator);
       DestroyBitmap(&data_bitmap, s_allocator);
       break;
     }
