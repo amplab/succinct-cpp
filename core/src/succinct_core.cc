@@ -220,40 +220,27 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
                                                    input_size_);
 
   // Auxiliary Data Structures for NPA
-  std::map<uint64_t, uint64_t> contexts;
   std::vector<uint64_t> col_offsets;
-  std::vector<std::vector<uint64_t>> cell_offsets;
   uint64_t last_i = 0;
   uint64_t cur_sa, prv_sa;
-  uint64_t c_val;
 
   prv_sa = cur_sa = sa_stream.Get();
   lISA[cur_sa] = 0;
   alphabet_size_ = 1;
   alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
   col_offsets.push_back(0);
-  c_val = ComputeContextValue(data, (cur_sa + 1) % input_size_, context_len);
-  contexts.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
   // cell_offsets.push_back(std::vector<uint64_t>(0));
   // cell_offsets[0].push_back(0);
   for (uint64_t i = 1; i < input_size_; i++) {
     cur_sa = sa_stream.Get();
     lISA[cur_sa] = i;
-    c_val = ComputeContextValue(data, (cur_sa + 1) % input_size_, context_len);
-    if (contexts.find(c_val) == contexts.end()) {
-      contexts.insert(std::pair<uint64_t, uint64_t>(c_val, 0));
-    }
     if (data[cur_sa] != data[prv_sa]) {
       alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
           i, alphabet_size_);
       alphabet_size_++;
       col_offsets.push_back(i);
       last_i = i;
-      // cell_offsets.push_back(std::vector<uint64_t>(0));
-      // cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
-    } // else if (CompareContexts(data, cur_sa + 1, prv_sa + 1, context_len)) {
-      // cell_offsets[alphabet_size_ - 1].push_back(i - last_i);
-    // }
+    }
     prv_sa = cur_sa;
   }
 
@@ -262,12 +249,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
                                                           alphabet_size_);
   assert(sa_stream.GetCurrentIndex() == input_size_);
   sa_stream.Reset();
-
-  uint64_t num_contexts = 0;
-  typedef std::map<uint64_t, uint64_t>::iterator ContextIterator;
-  for (ContextIterator it = contexts.begin(); it != contexts.end(); it++) {
-    contexts[it->first] = num_contexts++;
-  }
 
   alphabet_ = new char[alphabet_size_ + 1];
   for (auto alphabet_entry : alphabet_map_) {
@@ -295,16 +276,14 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
       npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream, contexts,
-                                      col_offsets, cell_offsets, npa_file,
-                                      s_allocator);
+                                      npa_sampling_rate, isa_stream,
+                                      col_offsets, npa_file, s_allocator);
       break;
     }
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
       npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream, contexts,
-                                      col_offsets, cell_offsets, npa_file,
-                                      s_allocator);
+                                      npa_sampling_rate, isa_stream,
+                                      col_offsets, npa_file, s_allocator);
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {

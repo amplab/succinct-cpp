@@ -1,14 +1,16 @@
 #include "npa/elias_delta_encoded_npa.h"
 
-EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(
-    uint64_t npa_size, uint64_t sigma_size, uint32_t context_len,
-    uint32_t sampling_rate, ArrayStream& isa_stream,
-    std::map<uint64_t, uint64_t>& contexts, std::vector<uint64_t>& col_offsets,
-    std::vector<std::vector<uint64_t>>& cell_offsets, std::string npa_file,
-    SuccinctAllocator &s_allocator)
+EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint64_t npa_size,
+                                           uint64_t sigma_size,
+                                           uint32_t context_len,
+                                           uint32_t sampling_rate,
+                                           ArrayStream& isa_stream,
+                                           std::vector<uint64_t>& col_offsets,
+                                           std::string npa_file,
+                                           SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
-  Encode(isa_stream, contexts, col_offsets, cell_offsets, npa_file);
+  Encode(isa_stream, col_offsets, npa_file);
 }
 
 EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint32_t context_len,

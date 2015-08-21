@@ -110,19 +110,11 @@ class DeltaEncodedNPA : public NPA {
   }
 
   // Encode DeltaEncodedNPA based on the delta encoding scheme
-  void Encode(ArrayStream& isa_stream, std::map<uint64_t, uint64_t>& contexts,
-              std::vector<uint64_t>& col_offsets,
-              std::vector<std::vector<uint64_t>>& cell_offsets,
+  void Encode(ArrayStream& isa_stream, std::vector<uint64_t>& col_offsets,
               std::string npa_file) {
 
     // Initialize Auxiliary NPA structures
     col_offsets_ = col_offsets;
-    contexts_ = contexts;
-//    cell_offsets_ = new std::vector<uint64_t>[cell_offsets.size()];
-
-//    for(size_t i = 0; i < cell_offsets.size(); i++) {
-//      cell_offsets_[i] = cell_offsets[i];
-//    }
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_];
