@@ -24,15 +24,6 @@ class ArrayStream {
     }
   }
 
-  ArrayStream(const ArrayStream& stream) {
-    filename_ = stream.filename_;
-    data_ = stream.data_;
-    current_idx_ = stream.current_idx_;
-    memory_map_ = stream.memory_map_;
-    if(!memory_map_)
-      in_ = std::ifstream(filename_);
-  }
-
   uint64_t Get() {
     if (memory_map_) {
       return data_[current_idx_++];
