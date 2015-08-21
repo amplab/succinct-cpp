@@ -285,10 +285,12 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
+      BitMap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
+      BitMap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator, isa_file);
       npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
                                        npa_sampling_rate, data_bitmap,
-                                       NULL,
-                                       NULL, s_allocator);
+                                       compactSA,
+                                       compactISA, s_allocator);
       DestroyBitmap(&data_bitmap, s_allocator);
       break;
     }

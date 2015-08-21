@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "succinct_base.h"
 #include "assertions.h"
 #include "definitions.h"
 
@@ -90,11 +91,20 @@ class SuccinctUtils {
     return data;
   }
 
-  // Writes an integer array to file
-  static void WriteToFile(int64_t* data, size_t size, std::string outfile) {
+  // Writes an array to file
+  template<typename T>
+  static void WriteToFile(T* data, size_t size, std::string outfile) {
     std::ofstream out(outfile);
-    out.write(reinterpret_cast<const char *>(data), size * sizeof(int64_t));
+    out.write(reinterpret_cast<const char *>(data), size * sizeof(T));
     out.close();
+  }
+
+  // Reads an array from file (array must be pre-allocated)
+  template<typename T>
+  static void ReadFromFile(T* data, size_t size, std::string infile) {
+    std::ifstream in(infile);
+    in.read(reinterpret_cast<char *>(data), size * sizeof(T));
+    in.close();
   }
 };
 

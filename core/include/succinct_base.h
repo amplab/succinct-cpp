@@ -196,7 +196,8 @@ class SuccinctBase {
                                 SuccinctAllocator s_allocator);
 
   // Set a value in the bitmap, treating it as an array of fixed length
-  static void SetBitmapArray(BitMap **B, uint64_t i, uint64_t val, uint32_t bits) {
+  static void SetBitmapArray(BitMap **B, uint64_t i, uint64_t val,
+                             uint32_t bits) {
     SuccinctBase::SetBitmapAtPos(B, i * bits, val, bits);
   }
 
@@ -286,6 +287,21 @@ class SuccinctBase {
 
   // Get size of SuccinctBase
   virtual size_t StorageSize();
+
+  // Reads an array of 8-byte integers as a compact bitmap of specified bits
+  static BitMap* ReadAsBitmap(size_t size, uint8_t bits,
+                              SuccinctAllocator& s_allocator,
+                              std::string infile) {
+    BitMap* B = new BitMap;
+    InitBitmap(&B, size * bits, s_allocator);
+    std::ifstream in(infile);
+    for (uint64_t i = 0; i < size; i++) {
+      uint64_t val;
+      in.read(reinterpret_cast<char *>(&val), sizeof(uint64_t));
+      SetBitmapArray(&B, i, val, bits);
+    }
+    return B;
+  }
 
  protected:
   SuccinctAllocator s_allocator;
