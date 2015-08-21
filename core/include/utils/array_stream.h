@@ -9,17 +9,28 @@
 
 class ArrayStream {
  public:
-  ArrayStream(std::string filename, bool memory_map = false) {
-    current_idx_ = 0;
+  ArrayStream(std::string filename, uint64_t start_idx = 0, bool memory_map =
+                  false) {
+    current_idx_ = start_idx;
     memory_map_ = memory_map;
     filename_ = filename;
 
     if (!memory_map_) {
       in_.open(filename_);
+      in_.seekg(sizeof(uint64_t) * current_idx_);
       data_ = NULL;
     } else {
-      data_ = (uint64_t *) SuccinctUtils::MemoryMap(filename_);
+      data_ = ((uint64_t *) SuccinctUtils::MemoryMap(filename_)) + current_idx_;
     }
+  }
+
+  ArrayStream(const ArrayStream& stream) {
+    filename_ = stream.filename_;
+    data_ = stream.data_;
+    current_idx_ = stream.current_idx_;
+    memory_map_ = stream.memory_map_;
+    if(!memory_map_)
+      in_ = std::ifstream(filename_);
   }
 
   uint64_t Get() {
@@ -44,11 +55,17 @@ class ArrayStream {
     current_idx_ = 0;
   }
 
-  void Close() {
+  void CloseAndRemove() {
     if (!memory_map_) {
       in_.close();
     }
     remove(filename_.c_str());
+  }
+
+  void Close() {
+    if (!memory_map_) {
+      in_.close();
+    }
   }
 
  private:

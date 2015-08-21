@@ -4,13 +4,13 @@ EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
-                                           ArrayStream& isa_stream,
+                                           std::string& isa_file,
                                            std::vector<uint64_t>& col_offsets,
                                            std::string npa_file,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
-  Encode(isa_stream, col_offsets, npa_file);
+  Encode(isa_file, col_offsets, npa_file);
 }
 
 EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint32_t context_len,

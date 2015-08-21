@@ -148,13 +148,49 @@ class SuccinctCore : public SuccinctBase {
     return val;
   }
 
-  bool CompareContexts(char *data, uint64_t pos1, uint64_t pos2, uint32_t context_len) {
-    for(uint64_t t = pos1; t < pos1 + context_len; t++) {
-      if(data[t] != data[pos2++]) {
+  bool CompareContexts(char *data, uint64_t pos1, uint64_t pos2,
+                       uint32_t context_len) {
+    for (uint64_t t = pos1; t < pos1 + context_len; t++) {
+      if (data[t] != data[pos2++]) {
         return false;
       }
     }
     return true;
+  }
+
+//  bool IsSampled(SamplingScheme scheme, uint32_t sampling_rate, uint64_t i,
+//                 uint64_t val) {
+//    switch (scheme) {
+//      case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+//      case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+//      case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX: {
+//        if (i % sampling_rate == 0) {
+//          return true;
+//        }
+//        return false;
+//      }
+//      case SamplingScheme::FLAT_SAMPLE_BY_VALUE: {
+//        if (val % sampling_rate == 0) {
+//          return true;
+//        }
+//        return false;
+//      }
+//    }
+//    return false;
+//  }
+
+  static Bitmap* ReadAsBitmap(size_t size, uint8_t bits,
+                              SuccinctAllocator& s_allocator,
+                              std::string& infile) {
+    Bitmap* B = new Bitmap;
+    InitBitmap(&B, size * bits, s_allocator);
+    std::ifstream in(infile);
+    for (uint64_t i = 0; i < size; i++) {
+      uint64_t val;
+      in.read(reinterpret_cast<char *>(&val), size * sizeof(uint64_t));
+      SetBitmapArray(&B, i, val, bits);
+    }
+    return B;
   }
 };
 #endif

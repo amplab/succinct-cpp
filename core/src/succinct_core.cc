@@ -212,6 +212,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
 
   // Write Suffix Array to file
   SuccinctUtils::WriteToFile(lSA, input_size_, sa_file);
+
+
   ArrayStream sa_stream(sa_file);
   s_allocator.s_free(lSA);
 
@@ -273,13 +275,13 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
       npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream,
+                                      npa_sampling_rate, isa_file,
                                       col_offsets, npa_file, s_allocator);
       break;
     }
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
       npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_stream,
+                                      npa_sampling_rate, isa_file,
                                       col_offsets, npa_file, s_allocator);
       return;
     }
@@ -352,8 +354,8 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   sa_stream.Reset();
   assert(isa_ != NULL);
 
-  sa_stream.Close();
-  isa_stream.Close();
+  sa_stream.CloseAndRemove();
+  isa_stream.CloseAndRemove();
 }
 
 /* Lookup functions for each of the core data structures */

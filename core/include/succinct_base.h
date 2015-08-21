@@ -158,18 +158,6 @@ class SuccinctBase {
   // Get size of SuccinctBase
   virtual size_t StorageSize();
 
-  static Bitmap* ReadAsBitmap(size_t size, uint8_t bits, SuccinctAllocator& s_allocator, std::string& infile) {
-    Bitmap* B = new Bitmap;
-    InitBitmap(&B, size * bits, s_allocator);
-    std::ifstream in(infile);
-    for(uint64_t i = 0; i < size; i++) {
-      uint64_t val;
-      in.read(reinterpret_cast<char *>(&val), size * sizeof(uint64_t));
-      SetBitmapArray(&B, i, val, bits);
-    }
-    return B;
-  }
-
  protected:
   SuccinctAllocator s_allocator;
 
