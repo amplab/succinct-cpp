@@ -213,7 +213,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   // Write Suffix Array to file
   SuccinctUtils::WriteToFile(lSA, input_size_, sa_file);
 
-
   ArrayStream sa_stream(sa_file);
   s_allocator.s_free(lSA);
 
@@ -236,8 +235,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     lISA[cur_sa] = i;
     if (data[cur_sa] != data[prv_sa]) {
       alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
-          i, alphabet_size_);
-      alphabet_size_++;
+          i, alphabet_size_++);
       col_offsets.push_back(i);
       last_i = i;
     }
@@ -275,23 +273,23 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
       npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_file,
-                                      col_offsets, npa_file, s_allocator);
+                                      npa_sampling_rate, isa_file, col_offsets,
+                                      npa_file, s_allocator);
       break;
     }
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
       npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-                                      npa_sampling_rate, isa_file,
-                                      col_offsets, npa_file, s_allocator);
+                                      npa_sampling_rate, isa_file, col_offsets,
+                                      npa_file, s_allocator);
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
       Bitmap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
-      Bitmap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator, isa_file);
+      Bitmap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator,
+                                        isa_file);
       npa_ = new WaveletTreeEncodedNPA(input_size_, alphabet_size_, context_len,
                                        npa_sampling_rate, data_bitmap,
-                                       compactSA,
-                                       compactISA, s_allocator);
+                                       compactSA, compactISA, s_allocator);
       DestroyBitmap(&data_bitmap, s_allocator);
       break;
     }
