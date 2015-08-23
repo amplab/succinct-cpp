@@ -2,6 +2,7 @@
 #define SAMPLED_ARRAY_HPP
 
 #include "sampling_scheme.h"
+#include "utils/array_stream.h"
 
 class SampledArray {
  public:

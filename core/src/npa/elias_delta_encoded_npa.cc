@@ -4,13 +4,13 @@ EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
-                                           Bitmap *data_bitmap,
-                                           Bitmap *compactSA,
-                                           Bitmap *compactISA,
+                                           std::string& isa_file,
+                                           std::vector<uint64_t>& col_offsets,
+                                           std::string npa_file,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_DELTA_ENCODED, s_allocator) {
-  Encode(data_bitmap, compactSA, compactISA);
+  Encode(isa_file, col_offsets, npa_file);
 }
 
 EliasDeltaEncodedNPA::EliasDeltaEncodedNPA(uint32_t context_len,
@@ -29,7 +29,7 @@ uint32_t EliasDeltaEncodedNPA::EliasDeltaEncodingSize(uint64_t n) {
   return N + 2 * NN + 1;
 }
 
-void EliasDeltaEncodedNPA::EliasDeltaEncode(SuccinctBase::BitMap **B,
+void EliasDeltaEncodedNPA::EliasDeltaEncode(SuccinctBase::Bitmap **B,
                                             std::vector<uint64_t> &deltas,
                                             uint64_t size) {
   if (size == 0) {
@@ -54,7 +54,7 @@ void EliasDeltaEncodedNPA::EliasDeltaEncode(SuccinctBase::BitMap **B,
 
 // Decode a particular elias-delta encoded delta value at a provided offset
 // in the deltas bitmaps
-uint64_t EliasDeltaEncodedNPA::EliasDeltaDecode(SuccinctBase::BitMap *B,
+uint64_t EliasDeltaEncodedNPA::EliasDeltaDecode(SuccinctBase::Bitmap *B,
                                                 uint64_t *offset) {
   uint32_t L = 0;
   while (!ACCESSBIT(B, (*offset))) {
@@ -71,7 +71,7 @@ uint64_t EliasDeltaEncodedNPA::EliasDeltaDecode(SuccinctBase::BitMap *B,
 }
 
 // Compute the prefix sum for the elias delta encoded deltas
-uint64_t EliasDeltaEncodedNPA::EliasDeltaPrefixSum(SuccinctBase::BitMap *B,
+uint64_t EliasDeltaEncodedNPA::EliasDeltaPrefixSum(SuccinctBase::Bitmap *B,
                                                    uint64_t offset,
                                                    uint64_t i) {
   uint64_t sum = 0;

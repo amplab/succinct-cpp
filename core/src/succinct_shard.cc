@@ -29,7 +29,7 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
         value_offset += line.length() + 1;
       }
       input.close();
-      invalid_offsets_ = new BitMap;
+      invalid_offsets_ = new Bitmap;
       InitBitmap(&invalid_offsets_, keys_.size(), s_allocator);
       break;
     }

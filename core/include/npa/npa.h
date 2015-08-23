@@ -14,7 +14,7 @@ class NPA {
     ELIAS_GAMMA_ENCODED = 2
   } NPAEncodingScheme;
 
-  typedef SuccinctBase::BitMap Bitmap;
+  typedef SuccinctBase::Bitmap Bitmap;
 
   // Constructor
   NPA(uint64_t npa_size, uint64_t sigma_size, uint32_t context_len,
@@ -52,10 +52,6 @@ class NPA {
   uint32_t GetSamplingRate() {
     return sampling_rate_;
   }
-
-  // Encode NPA based on the encoding scheme
-  virtual void Encode(Bitmap *data_bitmap, Bitmap *compactSA,
-                      Bitmap *compactISA) = 0;
 
   // Access element at index i
   virtual uint64_t operator[](uint64_t i) = 0;

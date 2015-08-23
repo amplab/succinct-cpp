@@ -20,7 +20,7 @@
 
 class LayeredSampledArray : public SampledArray {
  public:
-  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::Bitmap bitmap_t;
   typedef SuccinctBase::Dictionary dictionary_t;
   typedef struct {
     uint32_t layer_id;
@@ -28,7 +28,7 @@ class LayeredSampledArray : public SampledArray {
   } Layer;
 
   LayeredSampledArray(uint32_t target_sampling_rate,
-                      uint32_t base_sampling_rate, bitmap_t *sa, uint64_t n,
+                      uint32_t base_sampling_rate, uint64_t n,
                       SuccinctAllocator &succinct_allocator)
       : SampledArray(SamplingScheme::LAYERED_SAMPLE_BY_INDEX) {
 

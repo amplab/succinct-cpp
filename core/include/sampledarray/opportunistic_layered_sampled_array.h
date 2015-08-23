@@ -12,11 +12,11 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
 
  public:
   OpportunisticLayeredSampledArray(uint32_t target_sampling_rate,
-                                   uint32_t base_sampling_rate, bitmap_t *sa,
+                                   uint32_t base_sampling_rate,
                                    uint64_t sa_size,
                                    SuccinctAllocator &succinct_allocator)
-      : LayeredSampledArray(target_sampling_rate, base_sampling_rate, sa,
-                            sa_size, succinct_allocator) {
+      : LayeredSampledArray(target_sampling_rate, base_sampling_rate, sa_size,
+                            succinct_allocator) {
     this->is_layer_value_sampled_ = new bitmap_t*[this->num_layers_];
     this->layer_to_create_ = 0;
     this->num_sampled_values_ = 0;
@@ -29,7 +29,7 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
       uint64_t num_entries = (sa_size / layer_sampling_rate) + 1;
       this->num_sampled_values_ += num_entries;
       SuccinctBase::InitBitmapSet(&is_layer_value_sampled_[i], num_entries,
-                                    succinct_allocator);
+                                  succinct_allocator);
     }
   }
 
@@ -81,8 +81,8 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
       GetLayer(&l, i);
       if (IS_MARKED_FOR_CREATION(l.layer_id) &&
       !IS_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx)) {
-        SuccinctBase::SetBitmapArray(&layer_data_[l.layer_id], l.layer_idx,
-                                       val, data_bits_);
+        SuccinctBase::SetBitmapArray(&layer_data_[l.layer_id], l.layer_idx, val,
+                                     data_bits_);
         SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
         this->num_sampled_values_++;
         return true;
@@ -104,7 +104,7 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
     Layer l;
     GetLayer(&l, i);
     SuccinctBase::SetBitmapArray(&layer_data_[l.layer_id], l.layer_idx, val,
-                                   data_bits_);
+                                 data_bits_);
     SET_LAYER_VAL_SAMPLED(l.layer_id, l.layer_idx);
     this->num_sampled_values_++;
   }
@@ -121,7 +121,7 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
         this->num_sampled_values_ -= IS_LAYER_VAL_SAMPLED(layer_id, i);
       }
       SuccinctBase::ClearBitmap(&is_layer_value_sampled_[layer_id],
-                                 succinct_allocator_);
+                                succinct_allocator_);
       for (uint64_t i = 0; i < is_layer_value_sampled_[layer_id]->size; i++) {
         assert(!IS_LAYER_VAL_SAMPLED(layer_id, i));
       }
@@ -141,8 +141,8 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
           (layer_id == (num_layers_ - 1)) ?
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
-      SuccinctBase::InitBitmap(&layer_data_[layer_id],
-                                num_entries * data_bits_, succinct_allocator_);
+      SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
+                               succinct_allocator_);
       add_size = layer_data_[layer_id]->size;
       CREATE_LAYER(layer_id);
       if (!IS_MARKED_FOR_CREATION(layer_id)) {
@@ -163,7 +163,7 @@ class OpportunisticLayeredSampledArray : public LayeredSampledArray {
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
       SuccinctBase::InitBitmapSet(&is_layer_value_sampled_[i], num_entries,
-                                    succinct_allocator_);
+                                  succinct_allocator_);
       this->num_sampled_values_ += num_entries;
     }
     return in_size;

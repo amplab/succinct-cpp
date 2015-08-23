@@ -125,7 +125,7 @@ size_t SuccinctBase::MemoryMapVector(std::vector<uint64_t> &v, uint8_t* buf) {
 
 /* Bitmap access/modifier functions */
 // Initialize the bitmap with the specified size in bits
-void SuccinctBase::InitBitmap(SuccinctBase::BitMap **B, uint64_t size_in_bits,
+void SuccinctBase::InitBitmap(SuccinctBase::Bitmap **B, uint64_t size_in_bits,
                               SuccinctAllocator& s_allocator) {
   assert(size_in_bits != 0);
   (*B)->bitmap = (uint64_t *) s_allocator.s_calloc(sizeof(uint64_t),
@@ -134,7 +134,7 @@ void SuccinctBase::InitBitmap(SuccinctBase::BitMap **B, uint64_t size_in_bits,
 }
 
 // Initialize the bitmap with the specified size in bits, with all bits set
-void SuccinctBase::InitBitmapSet(SuccinctBase::BitMap **B,
+void SuccinctBase::InitBitmapSet(SuccinctBase::Bitmap **B,
                                  uint64_t size_in_bits,
                                  SuccinctAllocator& s_allocator) {
   assert(size_in_bits != 0);
@@ -147,19 +147,19 @@ void SuccinctBase::InitBitmapSet(SuccinctBase::BitMap **B,
 }
 
 // Clear the contents of the bitmap and unset all bits
-void SuccinctBase::ClearBitmap(BitMap **B, SuccinctAllocator& s_allocator) {
+void SuccinctBase::ClearBitmap(Bitmap **B, SuccinctAllocator& s_allocator) {
   s_allocator.s_memset((*B)->bitmap, 0,
   BITS2BLOCKS((*B)->size) * sizeof(uint64_t));
 }
 
-void SuccinctBase::DestroyBitmap(SuccinctBase::BitMap **B,
+void SuccinctBase::DestroyBitmap(SuccinctBase::Bitmap **B,
                                  SuccinctAllocator& s_allocator) {
   s_allocator.s_free((*B)->bitmap);
   delete *B;
 }
 
 // Create a bitmap array from an array with specified bit-width per element
-void SuccinctBase::CreateBitmapArray(SuccinctBase::BitMap **B, uint64_t *A,
+void SuccinctBase::CreateBitmapArray(SuccinctBase::Bitmap **B, uint64_t *A,
                                      uint64_t n, uint32_t b,
                                      SuccinctAllocator s_allocator) {
   if (n == 0 || b == 0) {
@@ -176,7 +176,7 @@ void SuccinctBase::CreateBitmapArray(SuccinctBase::BitMap **B, uint64_t *A,
 }
 
 // Set a value in the bitmap, treating it as an array of fixed length
-void SuccinctBase::SetBitmapArray(SuccinctBase::BitMap **B, uint64_t i,
+void SuccinctBase::SetBitmapArray(SuccinctBase::Bitmap **B, uint64_t i,
                                   uint64_t val, uint32_t b) {
 
   uint64_t s = i * b, e = i * b + (b - 1);
@@ -189,7 +189,7 @@ void SuccinctBase::SetBitmapArray(SuccinctBase::BitMap **B, uint64_t i,
 }
 
 // Lookup a value in the bitmap, treating it as an array of fixed length
-uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::BitMap *B, uint64_t i,
+uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::Bitmap *B, uint64_t i,
                                          uint32_t b) {
   if (b == 0)
     return 0;
@@ -211,7 +211,7 @@ uint64_t SuccinctBase::LookupBitmapArray(SuccinctBase::BitMap *B, uint64_t i,
 }
 
 // Set a value in the bitmap at a specified offset
-void SuccinctBase::SetBitmapAtPos(SuccinctBase::BitMap **B, uint64_t pos,
+void SuccinctBase::SetBitmapAtPos(SuccinctBase::Bitmap **B, uint64_t pos,
                                   uint64_t val, uint32_t b) {
   uint64_t s = pos, e = pos + (b - 1);
   if ((s / 64) == (e / 64)) {
@@ -223,7 +223,7 @@ void SuccinctBase::SetBitmapAtPos(SuccinctBase::BitMap **B, uint64_t pos,
 }
 
 // Lookup a value in the bitmap at a specified offset
-uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B, uint64_t pos,
+uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::Bitmap *B, uint64_t pos,
                                          uint32_t b) {
   if (b == 0)
     return 0;
@@ -243,7 +243,7 @@ uint64_t SuccinctBase::LookupBitmapAtPos(SuccinctBase::BitMap *B, uint64_t pos,
   return val;
 }
 
-size_t SuccinctBase::SerializeBitmap(SuccinctBase::BitMap *B,
+size_t SuccinctBase::SerializeBitmap(SuccinctBase::Bitmap *B,
                                      std::ostream& out) {
   size_t out_size = 0;
 
@@ -263,7 +263,7 @@ size_t SuccinctBase::SerializeBitmap(SuccinctBase::BitMap *B,
   return out_size;
 }
 
-size_t SuccinctBase::DeserializeBitmap(SuccinctBase::BitMap **B,
+size_t SuccinctBase::DeserializeBitmap(SuccinctBase::Bitmap **B,
                                        std::istream& in) {
 
   size_t in_size = 0;
@@ -272,7 +272,7 @@ size_t SuccinctBase::DeserializeBitmap(SuccinctBase::BitMap **B,
   in.read(reinterpret_cast<char *>(&bitmap_size), sizeof(uint64_t));
   if (bitmap_size) {
     in_size += sizeof(uint64_t);
-    (*B) = new BitMap;
+    (*B) = new Bitmap;
     (*B)->size = bitmap_size;
     (*B)->bitmap = new uint64_t[BITS2BLOCKS(bitmap_size)];
     for (uint64_t i = 0; i < BITS2BLOCKS(bitmap_size); i++) {
@@ -284,14 +284,14 @@ size_t SuccinctBase::DeserializeBitmap(SuccinctBase::BitMap **B,
   return in_size;
 }
 
-size_t SuccinctBase::MemoryMapBitmap(SuccinctBase::BitMap **B, uint8_t* buf) {
+size_t SuccinctBase::MemoryMapBitmap(SuccinctBase::Bitmap **B, uint8_t* buf) {
   uint8_t *data, *data_beg;
   data = data_beg = buf;
 
   uint64_t bitmap_size = *((uint64_t *) data);
   data += sizeof(uint64_t);
   if (bitmap_size) {
-    (*B) = new BitMap;
+    (*B) = new Bitmap;
     (*B)->size = bitmap_size;
     (*B)->bitmap = (uint64_t*) data;
     uint64_t bitmap_size_bytes = (BITS2BLOCKS(bitmap_size) * sizeof(uint64_t));
@@ -303,7 +303,7 @@ size_t SuccinctBase::MemoryMapBitmap(SuccinctBase::BitMap **B, uint8_t* buf) {
 
 /* Dictionary access/modifier functions */
 // Create dictionary from a bitmap; returns the size of the dictionary in bits
-uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
+uint64_t SuccinctBase::CreateDictionary(SuccinctBase::Bitmap *B,
                                         SuccinctBase::Dictionary *D,
                                         SuccinctAllocator& s_allocator) {
   uint64_t l3_size = (B->size / kTwo32) + 1;
@@ -312,7 +312,7 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::BitMap *B,
   uint64_t count = 0;
 
   D->size = B->size;
-  D->B = new BitMap;
+  D->B = new Bitmap;
   D->rank_l3 = new uint64_t[l3_size];
   D->pos_l3 = new uint64_t[l3_size];
   uint64_t *rank_l2 = new uint64_t[l2_size];
@@ -421,7 +421,7 @@ uint64_t SuccinctBase::GetRank1(SuccinctBase::Dictionary *D, uint64_t i) {
 
   uint64_t *rank_l12 = D->rank_l12;
   uint64_t *pos_l12 = D->pos_l12;
-  BitMap *B = D->B;
+  Bitmap *B = D->B;
 
   uint64_t res = D->rank_l3[l3_idx] + GETRANKL2(rank_l12[l2_idx]);
   uint64_t pos = D->pos_l3[l3_idx] + GETPOSL2(pos_l12[l2_idx]);
@@ -482,7 +482,7 @@ uint64_t SuccinctBase::GetSelect1(SuccinctBase::Dictionary *D, uint64_t i) {
   uint64_t sel = 0;
   uint16_t lastblock;
 
-  BitMap *B = D->B;
+  Bitmap *B = D->B;
   uint64_t size = D->size;
   uint64_t *rank_l3 = D->rank_l3;
   uint64_t *rank_l12 = D->rank_l12;
@@ -586,7 +586,7 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
   uint64_t block_class, block_offset;
   uint64_t sel = 0;
   uint16_t lastblock;
-  BitMap *B = D->B;
+  Bitmap *B = D->B;
   uint64_t size = D->size;
   uint64_t *rank_l3 = D->rank_l3;
   uint64_t *rank_l12 = D->rank_l12;
@@ -788,7 +788,7 @@ size_t SuccinctBase::VectorSize(std::vector<uint64_t> &v) {
   return sizeof(v.size()) + v.size() * sizeof(uint64_t);
 }
 
-size_t SuccinctBase::BitmapSize(BitMap *B) {
+size_t SuccinctBase::BitmapSize(Bitmap *B) {
   if (B == NULL)
     return 0;
   return sizeof(B->size) + BITS2BLOCKS(B->size) * 8;

@@ -4,14 +4,14 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
                                            uint64_t sigma_size,
                                            uint32_t context_len,
                                            uint32_t sampling_rate,
-                                           Bitmap *data_bitmap,
-                                           Bitmap *compactSA,
-                                           Bitmap *compactISA,
+                                           std::string& isa_file,
+                                           std::vector<uint64_t>& col_offsets,
+                                           std::string npa_file,
                                            SuccinctAllocator &s_allocator)
     : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
                       NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
   InitPrefixSum();
-  Encode(data_bitmap, compactSA, compactISA);
+  Encode(isa_file, col_offsets, npa_file);
 }
 
 EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,

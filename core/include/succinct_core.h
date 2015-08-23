@@ -20,6 +20,7 @@
 #include "sampledarray/sampled_by_value_isa.h"
 #include "sampledarray/sampled_by_value_sa.h"
 #include "succinct_base.h"
+#include "utils/array_stream.h"
 #include "utils/divsufsortxx.h"
 #include "utils/divsufsortxx_utility.h"
 
@@ -64,6 +65,7 @@ class SuccinctCore : public SuccinctBase {
   // Get index of value v in C
   uint64_t LookupC(uint64_t val);
 
+  // Get the character at index i
   char CharAt(uint64_t i);
 
   // Serialize succinct data structures
@@ -115,7 +117,6 @@ class SuccinctCore : public SuccinctBase {
   SampledArray *sa_;                   // Suffix Array
   SampledArray *isa_;                  // Inverse Suffix Array
   NPA *npa_;                           // Next Pointer Array
-  std::vector<uint64_t> Cinv_idx_;     // Indexes into Cinv;
 
   /* Auxiliary data structures */
   char *alphabet_;
@@ -123,11 +124,7 @@ class SuccinctCore : public SuccinctBase {
   uint32_t alphabet_size_;             // Size of the input alphabet_
 
  private:
-  /* Construct functions */
-  // Create all auxiliary data structures
-  void ConstructAuxiliary(BitMap *compactSA, const char *data);
-
-  // Parent Construct function
+  // Constructs the core data structures
   void Construct(const char* filename, uint32_t sa_sampling_rate,
                  uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
                  uint32_t context_len, SamplingScheme sa_sampling_scheme,
@@ -135,10 +132,65 @@ class SuccinctCore : public SuccinctBase {
                  NPA::NPAEncodingScheme npa_encoding_scheme,
                  uint32_t sampling_range);
 
-  // Helper functions
-  bool CompareDataBitmap(BitMap *T, uint64_t i, uint64_t j, uint64_t k);
-  uint64_t GetContextValue(BitMap *T, uint32_t i);
+  uint64_t ComputeContextValue(char* data, uint32_t i, uint32_t context_len) {
+    uint64_t val = 0;
+    uint64_t max = SuccinctUtils::Min(i + context_len, input_size_);
+    for (uint64_t t = i; t < max; t++) {
+      val = val * 256 + data[t];
+    }
 
-  bool IsSampled(uint64_t i);
+    if (max < i + context_len) {
+      for (uint64_t t = 0; t < (i + context_len) % input_size_; t++) {
+        val = val * 256 + data[t];
+      }
+    }
+
+    return val;
+  }
+
+  bool CompareContexts(char *data, uint64_t pos1, uint64_t pos2,
+                       uint32_t context_len) {
+    for (uint64_t t = pos1; t < pos1 + context_len; t++) {
+      if (data[t] != data[pos2++]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+//  bool IsSampled(SamplingScheme scheme, uint32_t sampling_rate, uint64_t i,
+//                 uint64_t val) {
+//    switch (scheme) {
+//      case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+//      case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+//      case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX: {
+//        if (i % sampling_rate == 0) {
+//          return true;
+//        }
+//        return false;
+//      }
+//      case SamplingScheme::FLAT_SAMPLE_BY_VALUE: {
+//        if (val % sampling_rate == 0) {
+//          return true;
+//        }
+//        return false;
+//      }
+//    }
+//    return false;
+//  }
+
+  static Bitmap* ReadAsBitmap(size_t size, uint8_t bits,
+                              SuccinctAllocator& s_allocator,
+                              std::string& infile) {
+    Bitmap* B = new Bitmap;
+    InitBitmap(&B, size * bits, s_allocator);
+    std::ifstream in(infile);
+    for (uint64_t i = 0; i < size; i++) {
+      uint64_t val;
+      in.read(reinterpret_cast<char *>(&val), size * sizeof(uint64_t));
+      SetBitmapArray(&B, i, val, bits);
+    }
+    return B;
+  }
 };
 #endif

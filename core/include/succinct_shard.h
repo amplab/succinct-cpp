@@ -91,7 +91,7 @@ class SuccinctShard : public SuccinctCore {
 
   std::vector<int64_t> keys_;
   std::vector<int64_t> value_offsets_;
-  BitMap *invalid_offsets_;
+  Bitmap *invalid_offsets_;
   uint32_t id_;
 };
 

@@ -15,6 +15,8 @@ else()
 endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
 
+find_package(Threads)
+
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
@@ -22,4 +24,5 @@ set(INCLUDE include)
 file(GLOB_RECURSE SOURCE_FILES src/*.cc)
 include_directories(${INCLUDE})
 add_library(succinct STATIC ${SOURCE_FILES})
+target_link_libraries(succinct ${CMAKE_THREAD_LIBS_INIT})
 set_target_properties(succinct PROPERTIES LINKER_LANGUAGE CXX)

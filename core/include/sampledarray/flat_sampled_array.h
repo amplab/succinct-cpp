@@ -10,7 +10,7 @@
 
 class FlatSampledArray : public SampledArray {
  public:
-  typedef SuccinctBase::BitMap bitmap_t;
+  typedef SuccinctBase::Bitmap bitmap_t;
   typedef SuccinctBase::Dictionary Dictionary;
 
   // Constructor
@@ -116,7 +116,7 @@ class FlatSampledArray : public SampledArray {
 
  protected:
   // Sample original array using the sampling scheme
-  virtual void Sample(bitmap_t *original, uint64_t n) = 0;
+  virtual void Sample(ArrayStream& original, uint64_t n) = 0;
 
   bitmap_t *data_;
   uint8_t data_bits_;
