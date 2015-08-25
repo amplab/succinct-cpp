@@ -22,33 +22,33 @@ class SRegEx {
     this->exp = exp;
     this->s_core = s_core;
     this->opt = opt;
-    get_subexpressions();
+    GetSubexpressions();
   }
 
-  void execute() {
+  void Execute() {
     std::vector<RegExResults> subresults;
     for (auto subexp : subexps) {
       RegExResults subresult;
-      subquery(subresult, subexp);
+      Subquery(subresult, subexp);
       subresults.push_back(subresult);
     }
 
     while (subresults.size() != 1) {
-      wildcard(subresults[0], subresults[1]);
+      Wildcard(subresults[0], subresults[1]);
       subresults.erase(subresults.begin());
     }
 
     r_results = subresults[0];
   }
 
-  void count(std::vector<size_t> &counts) {
+  void Count(std::vector<size_t> &counts) {
     for (auto subexp : subexps) {
       RegExParser p((char *) subexp.c_str());
-      counts.push_back(subcount(p.Parse()));
+      counts.push_back(Subcount(p.Parse()));
     }
   }
 
-  void wildcard(RegExResults &left, RegExResults &right) {
+  void Wildcard(RegExResults &left, RegExResults &right) {
     RegExResults wildcard_res;
     RegExResultsIterator left_it, right_it;
     for (left_it = left.begin(); left_it != left.end(); left_it++) {
@@ -63,11 +63,11 @@ class SRegEx {
     right = wildcard_res;
   }
 
-  void subquery(RegExResults &result, std::string sub_expression) {
+  void Subquery(RegExResults &result, std::string sub_expression) {
     if (opt) {
       RegExParser p((char *) sub_expression.c_str());
       RegEx *r = p.Parse();
-      if (is_suffixed(r) || !is_prefixed(r)) {
+      if (IsSuffixed(r) || !IsPrefixed(r)) {
         RegExExecutorBwd executor(s_core, r);
         executor.Execute();
         executor.getResults(result);
@@ -285,8 +285,8 @@ class SRegEx {
     }
   }
 
-  size_t subcount(RegEx *r) {
-    if (is_suffixed(r) || !is_prefixed(r)) {
+  size_t Subcount(RegEx *r) {
+    if (IsSuffixed(r) || !IsPrefixed(r)) {
       RegExExecutorBwd executor(s_core, r);
       return executor.Count();
     } else {
@@ -295,16 +295,16 @@ class SRegEx {
     }
   }
 
-  void explain() {
+  void Explain() {
     fprintf(stderr, "***");
     for (auto subexp : subexps) {
       RegExParser p((char *) subexp.c_str());
-      explain_subexp(p.Parse());
+      ExplainSubexpression(p.Parse());
       fprintf(stderr, "***");
     }
   }
 
-  void show_results(size_t limit) {
+  void ShowResults(size_t limit) {
     if (limit <= 0)
       limit = r_results.size();
     limit = MIN(limit, r_results.size());
@@ -318,12 +318,12 @@ class SRegEx {
     fprintf(stderr, "...}\n");
   }
 
-  void get_results(RegExResults &results) {
+  void GetResults(RegExResults &results) {
     results = r_results;
   }
 
  private:
-  void explain_subexp(RegEx *re) {
+  void ExplainSubexpression(RegEx *re) {
     switch (re->GetType()) {
       case RegExType::BLANK: {
         fprintf(stderr, "<blank>");
@@ -336,30 +336,30 @@ class SRegEx {
       }
       case RegExType::REPEAT: {
         fprintf(stderr, "REPEAT(");
-        explain_subexp(((RegExRepeat *) re)->GetInternal());
+        ExplainSubexpression(((RegExRepeat *) re)->GetInternal());
         fprintf(stderr, ")");
         break;
       }
       case RegExType::CONCAT: {
         fprintf(stderr, "(");
-        explain_subexp(((RegExConcat *) re)->getLeft());
+        ExplainSubexpression(((RegExConcat *) re)->getLeft());
         fprintf(stderr, " CONCAT ");
-        explain_subexp(((RegExConcat *) re)->getRight());
+        ExplainSubexpression(((RegExConcat *) re)->getRight());
         fprintf(stderr, ")");
         break;
       }
       case RegExType::UNION: {
         fprintf(stderr, "(");
-        explain_subexp(((RegExUnion *) re)->GetFirst());
+        ExplainSubexpression(((RegExUnion *) re)->GetFirst());
         fprintf(stderr, " OR ");
-        explain_subexp(((RegExUnion *) re)->GetSecond());
+        ExplainSubexpression(((RegExUnion *) re)->GetSecond());
         fprintf(stderr, ")");
         break;
       }
     }
   }
 
-  bool is_prefixed(RegEx *re) {
+  bool IsPrefixed(RegEx *re) {
     switch (re->GetType()) {
       case RegExType::BLANK:
         return false;
@@ -367,16 +367,16 @@ class SRegEx {
         return (((RegExPrimitive *) re)->GetPrimitiveType()
             == RegExPrimitiveType::MGRAM);
       case RegExType::REPEAT:
-        return is_prefixed(((RegExRepeat *) re)->GetInternal());
+        return IsPrefixed(((RegExRepeat *) re)->GetInternal());
       case RegExType::CONCAT:
-        return is_prefixed(((RegExConcat *) re)->getLeft());
+        return IsPrefixed(((RegExConcat *) re)->getLeft());
       case RegExType::UNION:
-        return is_prefixed(((RegExUnion *) re)->GetFirst())
-            && is_prefixed(((RegExUnion *) re)->GetSecond());
+        return IsPrefixed(((RegExUnion *) re)->GetFirst())
+            && IsPrefixed(((RegExUnion *) re)->GetSecond());
     }
   }
 
-  bool is_suffixed(RegEx *re) {
+  bool IsSuffixed(RegEx *re) {
     switch (re->GetType()) {
       case RegExType::BLANK:
         return false;
@@ -384,16 +384,16 @@ class SRegEx {
         return (((RegExPrimitive *) re)->GetPrimitiveType()
             == RegExPrimitiveType::MGRAM);
       case RegExType::REPEAT:
-        return is_suffixed(((RegExRepeat *) re)->GetInternal());
+        return IsSuffixed(((RegExRepeat *) re)->GetInternal());
       case RegExType::CONCAT:
-        return is_suffixed(((RegExConcat *) re)->getRight());
+        return IsSuffixed(((RegExConcat *) re)->getRight());
       case RegExType::UNION:
-        return is_suffixed(((RegExUnion *) re)->GetFirst())
-            && is_prefixed(((RegExUnion *) re)->GetSecond());
+        return IsSuffixed(((RegExUnion *) re)->GetFirst())
+            && IsPrefixed(((RegExUnion *) re)->GetSecond());
     }
   }
 
-  void get_subexpressions() {
+  void GetSubexpressions() {
     // TODO: Right now this assumes we don't have nested ".*" operators
     // It would be nice to allow .* anywhere.
     std::string delimiter = ".*";

@@ -21,10 +21,8 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-set(INCLUDE include ../core/include)
-set(THRIFT_INCLUDE ../thrift/include)
-set(ADAPTIVE_INCLUDE ../adaptive/include)
-include_directories(${INCLUDE} ${THRIFT_INCLUDE} ${ADAPTIVE_INCLUDE})
+set(INCLUDE include ../core/include ../sharded/include)
+include_directories(${INCLUDE})
 add_executable(fbench src/file_benchmark.cc)
 add_executable(sbench src/shard_benchmark.cc)
 add_executable(surebench src/regex_benchmark.cc)

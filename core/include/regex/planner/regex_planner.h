@@ -14,7 +14,7 @@ class RegExPlanner {
     // Do nothing
   }
 
-  virtual RegEx* plan() = 0;
+  virtual RegEx* Plan() = 0;
 
  protected:
   SuccinctCore *succinct_core_;
@@ -28,7 +28,7 @@ class NaiveRegExPlanner : public RegExPlanner {
   }
 
   // Does no cost estimation
-  virtual RegEx* plan() {
+  virtual RegEx* Plan() override {
     return regex_;
   }
 };

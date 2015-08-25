@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "succinct_shard.h"
+#include "succinct_file.h"
 #include "ports.h"
 
 using namespace ::apache::thrift;
@@ -26,16 +26,13 @@ class QueryServiceHandler : virtual public QueryServiceIf {
   QueryServiceHandler(std::string filename, int mode, uint32_t sa_sampling_rate,
                       uint32_t isa_sampling_rate,
                       SamplingScheme sampling_scheme,
-                      NPA::NPAEncodingScheme npa_scheme,
-                      bool regex_opt = true) {
-    succinct_shard_ = NULL;
+                      NPA::NPAEncodingScheme npa_scheme) {
+    succinct_file_ = NULL;
     mode_ = mode;
     filename_ = filename;
     is_init_ = false;
-    num_keys_ = 0;
     sa_sampling_rate_ = sa_sampling_rate;
     isa_sampling_rate_ = isa_sampling_rate;
-    regex_opt_ = regex_opt;
     sampling_scheme_ = sampling_scheme;
     npa_scheme_ = npa_scheme;
   }
@@ -60,22 +57,21 @@ class QueryServiceHandler : virtual public QueryServiceIf {
         }
       }
 
-      succinct_shard_ = new SuccinctShard(id, filename_, mode,
-                                          sa_sampling_rate_, isa_sampling_rate_,
-                                          128, sampling_scheme_,
-                                          sampling_scheme_, npa_scheme_);
+      succinct_file_ = new SuccinctFile(filename_, mode, sa_sampling_rate_,
+                                        isa_sampling_rate_, 128,
+                                        sampling_scheme_, sampling_scheme_,
+                                        npa_scheme_);
       if (mode_ == 0) {
         fprintf(stderr, "Serializing data structures for file %s\n",
                 filename_.c_str());
-        succinct_shard_->Serialize();
+        succinct_file_->Serialize();
       } else {
         fprintf(stderr, "Read data structures from file %s\n",
                 filename_.c_str());
       }
       fprintf(stderr, "Initialized shard with original size = %llu\n",
-              succinct_shard_->GetOriginalSize());
+              succinct_file_->GetOriginalSize());
       is_init_ = true;
-      num_keys_ = succinct_shard_->GetNumKeys();
       fprintf(stderr, "Waiting for queries...\n");
       return 0;
     } else {
@@ -86,63 +82,40 @@ class QueryServiceHandler : virtual public QueryServiceIf {
     }
   }
 
-  void Get(std::string& _return, const int64_t key) {
-    succinct_shard_->Get(_return, key);
-  }
-
-  void Access(std::string& _return, const int64_t key, const int32_t offset,
-              const int32_t len) {
-    succinct_shard_->Access(_return, key, offset, len);
-  }
-
-  void Search(std::set<int64_t>& _return, const std::string& query) {
-    succinct_shard_->Search(_return, query);
-  }
-
   void Regex(std::set<int64_t> &_return, const std::string &query) {
     std::set<std::pair<size_t, size_t>> results;
-    succinct_shard_->RegexSearch(results, query, regex_opt_);
+    succinct_file_->RegexSearch(results, query);
     for (auto res : results) {
       _return.insert((int64_t) res.first);
     }
   }
 
-  void FlatExtract(std::string& _return, const int64_t offset,
-                   const int64_t length) {
-    succinct_shard_->FlatExtract(_return, offset, length);
-  }
-
-  int64_t FlatCount(const std::string& query) {
-    return succinct_shard_->FlatCount(query);
-  }
-
-  void FlatSearch(std::vector<int64_t>& _return, const std::string& query) {
-    succinct_shard_->FlatSearch(_return, query);
+  void Extract(std::string& _return, const int64_t offset,
+               const int64_t length) {
+    succinct_file_->Extract(_return, offset, length);
   }
 
   int64_t Count(const std::string& query) {
-    return succinct_shard_->Count(query);
+    return succinct_file_->Count(query);
   }
 
-  int32_t GetNumKeys() {
-    return succinct_shard_->GetNumKeys();
+  void Search(std::vector<int64_t>& _return, const std::string& query) {
+    succinct_file_->Search(_return, query);
   }
 
   int64_t GetShardSize() {
-    return succinct_shard_->GetOriginalSize();
+    return succinct_file_->GetOriginalSize();
   }
 
  private:
-  SuccinctShard *succinct_shard_;
+  SuccinctFile *succinct_file_;
   int mode_;
   std::string filename_;
   bool is_init_;
-  uint32_t num_keys_;
   uint32_t sa_sampling_rate_;
   uint32_t isa_sampling_rate_;
   SamplingScheme sampling_scheme_;
   NPA::NPAEncodingScheme npa_scheme_;
-  bool regex_opt_;
 };
 
 SamplingScheme SamplingSchemeFromOption(int opt) {
@@ -182,7 +155,7 @@ void print_usage(char *exec) {
 
 int main(int argc, char **argv) {
 
-  if (argc < 2 || argc > 15) {
+  if (argc < 2 || argc > 14) {
     print_usage(argv[0]);
     return -1;
   }
@@ -194,13 +167,13 @@ int main(int argc, char **argv) {
   fprintf(stderr, "\n");
 
   int c;
-  uint32_t mode = 0, port = SERVER_PORT, sa_sampling_rate = 32, isa_sampling_rate = 32;
-  bool regex_opt = false;
+  uint32_t mode = 0, port = SERVER_PORT, sa_sampling_rate = 32,
+      isa_sampling_rate = 32;
   SamplingScheme scheme = SamplingScheme::FLAT_SAMPLE_BY_INDEX;
   NPA::NPAEncodingScheme npa_scheme =
       NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
 
-  while ((c = getopt(argc, argv, "m:p:s:i:r:x:o")) != -1) {
+  while ((c = getopt(argc, argv, "m:p:s:i:r:x:")) != -1) {
     switch (c) {
       case 'm':
         mode = atoi(optarg);
@@ -220,9 +193,6 @@ int main(int argc, char **argv) {
       case 'r':
         npa_scheme = EncodingSchemeFromOption(atoi(optarg));
         break;
-      case 'o':
-        regex_opt = true;
-        break;
       default:
         fprintf(stderr, "Error parsing command line arguments.\n");
     }
@@ -237,8 +207,7 @@ int main(int argc, char **argv) {
 
   shared_ptr<QueryServiceHandler> handler(
       new QueryServiceHandler(filename, mode, sa_sampling_rate,
-                              isa_sampling_rate, scheme, npa_scheme,
-                              regex_opt));
+                              isa_sampling_rate, scheme, npa_scheme));
   shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
   try {
