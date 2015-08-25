@@ -173,12 +173,12 @@ void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
   }
 }
 
-uint64_t SuccinctFile::Count(std::string str) {
+uint64_t SuccinctFile::Count(const std::string& str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   return range.second - range.first + 1;
 }
 
-void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
+void SuccinctFile::Search(std::vector<int64_t>& result, const std::string& str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
@@ -186,4 +186,11 @@ void SuccinctFile::Search(std::vector<int64_t>& result, std::string str) {
   for (int64_t i = range.first; i <= range.second; i++) {
     result[i - range.first] = ((int64_t) LookupSA(i));
   }
+}
+
+void SuccinctFile::RegexSearch(std::set<std::pair<size_t, size_t>>& results,
+                               const std::string& query) {
+  SRegEx re(query, this, true);
+  re.Execute();
+  re.GetResults(results);
 }

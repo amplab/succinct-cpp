@@ -71,30 +71,6 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
     return 0;
   }
 
-  void Get(std::string& _return, const int64_t key) {
-    uint32_t qserver_id = key / SuccinctShard::MAX_KEYS;
-    qservers_.at(qserver_id).Get(_return, key % SuccinctShard::MAX_KEYS);
-  }
-
-  void Access(std::string& _return, const int64_t key, const int32_t offset,
-              const int32_t len) {
-    uint32_t qserver_id = key / SuccinctShard::MAX_KEYS;
-    qservers_.at(qserver_id).Access(_return, key % SuccinctShard::MAX_KEYS,
-                                    offset, len);
-  }
-
-  void Search(std::set<int64_t> & _return, const std::string& query) {
-    for (int j = 0; j < qservers_.size(); j++) {
-      qservers_[j].send_Search(query);
-    }
-
-    for (int j = 0; j < qservers_.size(); j++) {
-      std::set<int64_t> keys;
-      qservers_[j].recv_Search(keys);
-      _return.insert(keys.begin(), keys.end());
-    }
-  }
-
   void Regex(std::set<int64_t> & _return, const std::string& query) {
     for (int j = 0; j < qservers_.size(); j++) {
       qservers_[j].send_Regex(query);
@@ -119,34 +95,22 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
     return ret;
   }
 
-  void FlatExtract(std::string& _return, const int64_t offset,
+  void Extract(std::string& _return, const int64_t offset,
                    const int64_t len) {
     auto it = std::prev(shard_map_.upper_bound(offset));
     size_t shard_id = it->second;
     size_t shard_offset = it->first;
-    qservers_.at(shard_id).FlatExtract(_return, offset - shard_offset, len);
+    qservers_.at(shard_id).Extract(_return, offset - shard_offset, len);
   }
 
-  int64_t FlatCount(const std::string& query) {
-    int64_t ret = 0;
+  void Search(std::vector<int64_t> & _return, const std::string& query) {
     for (int j = 0; j < qservers_.size(); j++) {
-      qservers_[j].send_FlatCount(query);
-    }
-
-    for (int j = 0; j < qservers_.size(); j++) {
-      ret += qservers_[j].recv_FlatCount();
-    }
-    return ret;
-  }
-
-  void FlatSearch(std::vector<int64_t> & _return, const std::string& query) {
-    for (int j = 0; j < qservers_.size(); j++) {
-      qservers_[j].send_FlatSearch(query);
+      qservers_[j].send_Search(query);
     }
 
     for (int j = 0; j < qservers_.size(); j++) {
       std::vector<int64_t> results;
-      qservers_[j].recv_FlatSearch(results);
+      qservers_[j].recv_Search(results);
       for (auto offset : results) {
         _return.push_back(offset_map_[j] + offset);
       }
@@ -155,14 +119,6 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
 
   int32_t GetNumShards() {
     return num_shards_;
-  }
-
-  int32_t GetNumKeys(const int32_t shard_id) {
-    int32_t num_keys = 0;
-    for (auto client : qservers_) {
-      num_keys += client.GetNumKeys();
-    }
-    return num_keys;
   }
 
   int64_t GetTotSize() {

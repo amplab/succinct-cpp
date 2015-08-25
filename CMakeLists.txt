@@ -20,7 +20,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)
 
 # Builds all of Succinct's sub-modules
 add_subdirectory(core)
-add_subdirectory(thrift)
+add_subdirectory(sharded)
 add_subdirectory(construct)
 add_subdirectory(bench)
 

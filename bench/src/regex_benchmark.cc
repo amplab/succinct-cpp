@@ -131,14 +131,14 @@ int main(int argc, char **argv) {
     SRegEx re(query, s_file, opt);
 
     fprintf(stderr, "Regex: [%s]\nExplanation: [", exp);
-    re.explain();
+    re.Explain();
     fprintf(stderr, "]\n");
 
-    re.execute();
+    re.Execute();
 
     timestamp_t tot_time = get_timestamp() - start;
 
-    re.show_results(10);
+    re.ShowResults(10);
     std::cout << "Query took " << tot_time << " ms\n";
   }
 
