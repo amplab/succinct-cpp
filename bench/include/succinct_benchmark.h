@@ -1,40 +1,33 @@
 #ifndef SUCCINCT_SERVER_BENCHMARK_H
 #define SUCCINCT_SERVER_BENCHMARK_H
 
-#include <thrift/transport/TSocket.h>
-#include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/transport/TBufferTransports.h>
 #include "succinct_shard.h"
 #include "benchmark.h"
-#include "AggregatorService.h"
+#include "succinct_client.h"
 #include "ports.h"
-
-using namespace ::apache::thrift;
-using namespace ::apache::thrift::protocol;
-using namespace ::apache::thrift::transport;
 
 class SuccinctBenchmark : public Benchmark {
  public:
-
-  SuccinctBenchmark(std::string benchmark_type, std::string query_file = "")
+  SuccinctBenchmark(std::string query_file = "")
       : Benchmark() {
-    benchmark_type_ = benchmark_type;
-    int port = AGGREGATOR_PORT;
-
     fprintf(stderr, "Connecting to server...\n");
-    boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-    boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-    boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-    client_ = new AggregatorServiceClient(protocol);
-    transport->open();
+
+    try {
+      client_ = new SuccinctClient("localhost");
+    } catch (std::exception& e) {
+      fprintf(stderr, "Could not create SuccinctClient:%s\n", e.what());
+    }
     fprintf(stderr, "Connected!\n");
-    client_->ConnectToServers();
 
     uint64_t tot_size = client_->GetTotSize();
     GenerateRandoms(tot_size);
     if (query_file != "") {
       ReadQueries(query_file);
     }
+  }
+
+  ~SuccinctBenchmark() {
+    delete client_;
   }
 
   void BenchmarkRegexLatency(std::string result_path) {
@@ -113,7 +106,8 @@ class SuccinctBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", std::min(queries_.size(), 100UL));
+    fprintf(stderr, "Warming up for %lu queries...\n",
+            std::min(queries_.size(), 100UL));
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       uint64_t result;
       result = client_->Count(queries_[i]);
@@ -148,7 +142,8 @@ class SuccinctBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %lu queries...\n", std::min(queries_.size(), 100UL));
+    fprintf(stderr, "Warming up for %lu queries...\n",
+            std::min(queries_.size(), 100UL));
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::vector<int64_t> result;
       client_->Search(result, queries_[i]);
@@ -162,6 +157,7 @@ class SuccinctBenchmark : public Benchmark {
     fprintf(stderr, "Measuring for %lu queries...\n", queries_.size());
     for (uint64_t i = 0; i < queries_.size(); i++) {
       std::vector<int64_t> result;
+      fprintf(stderr, "Query: %s\n", queries_[i].c_str());
       t0 = GetTimestamp();
       client_->Search(result, queries_[i]);
       t1 = GetTimestamp();
@@ -221,8 +217,8 @@ class SuccinctBenchmark : public Benchmark {
 
   std::vector<int64_t> randoms_;
   std::vector<std::string> queries_;
-  std::string benchmark_type_;
-  AggregatorServiceClient *client_;
+
+  SuccinctClient *client_;
 };
 
 #endif

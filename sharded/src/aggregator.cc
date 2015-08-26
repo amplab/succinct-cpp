@@ -29,13 +29,12 @@ using boost::shared_ptr;
 class AggregatorServiceHandler : virtual public AggregatorServiceIf {
  public:
   AggregatorServiceHandler(uint32_t num_shards) {
-    fprintf(stderr, "Num shards = %u\n", num_shards);
     num_shards_ = num_shards;
-    Initialize();
   }
 
   int32_t Initialize() {
     // Connect to query servers and start initialization
+    fprintf(stderr, "Num shards = %u\n", num_shards_);
     for (uint32_t i = 0; i < num_shards_; i++) {
       int port = SERVER_PORT + i;
       boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
@@ -68,6 +67,12 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
 
     fprintf(stderr, "All QueryServers successfully initialized!\n");
 
+    for (auto transport : qserver_transports_) {
+      transport->close();
+    }
+    qserver_transports_.clear();
+    qservers_.clear();
+
     return 0;
   }
 
@@ -95,12 +100,17 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
     return ret;
   }
 
-  void Extract(std::string& _return, const int64_t offset,
-                   const int64_t len) {
-    auto it = std::prev(shard_map_.upper_bound(offset));
-    size_t shard_id = it->second;
-    size_t shard_offset = it->first;
-    qservers_.at(shard_id).Extract(_return, offset - shard_offset, len);
+  void Extract(std::string& _return, const int64_t offset, const int64_t len) {
+    auto it = greatest_less(shard_map_, offset);
+    if(it != shard_map_.end()) {
+      size_t shard_id = it->second;
+      size_t shard_offset = it->first;
+      qservers_.at(shard_id).Extract(_return, offset - shard_offset, len);
+    } else {
+      // TODO: Thrift does not support empty string/null string returns
+      // Find a better way to indicate invalid offset
+      _return = "**invalid offset**";
+    }
   }
 
   void Search(std::vector<int64_t> & _return, const std::string& query) {
@@ -170,6 +180,25 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
   }
 
  private:
+
+  template<typename Map> typename Map::const_iterator greatest_less(
+      Map const& m, typename Map::key_type const& k) {
+    typename Map::const_iterator it = m.lower_bound(k);
+    if (it != m.begin()) {
+      return --it;
+    }
+    return m.end();
+  }
+
+  template<typename Map> typename Map::iterator greatest_less(
+      Map & m, typename Map::key_type const& k) {
+    typename Map::iterator it = m.lower_bound(k);
+    if (it != m.begin()) {
+      return --it;
+    }
+    return m.end();
+  }
+
   std::vector<QueryServiceClient> qservers_;
   std::vector<boost::shared_ptr<TTransport>> qserver_transports_;
   std::map<int64_t, size_t> shard_map_;
@@ -180,18 +209,19 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
 class HandlerProcessorFactory : public TProcessorFactory {
  public:
   HandlerProcessorFactory(uint32_t num_shards) {
-    handler_ = new AggregatorServiceHandler(num_shards);
+    num_shards_ = num_shards;
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
-    boost::shared_ptr<AggregatorServiceHandler> handler(handler_);
+    boost::shared_ptr<AggregatorServiceHandler> handler(
+        new AggregatorServiceHandler(num_shards_));
     boost::shared_ptr<TProcessor> handlerProcessor(
         new AggregatorServiceProcessor(handler));
     return handlerProcessor;
   }
 
  private:
-  AggregatorServiceHandler *handler_;
+  uint32_t num_shards_;
 };
 
 void print_usage(char *exec) {
