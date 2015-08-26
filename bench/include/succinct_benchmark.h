@@ -1,10 +1,8 @@
-#ifndef SUCCINCT_SERVER_BENCHMARK_H
-#define SUCCINCT_SERVER_BENCHMARK_H
+#ifndef SUCCINCT_BENCHMARK_H_
+#define SUCCINCT_BENCHMARK_H_
 
-#include "succinct_shard.h"
 #include "benchmark.h"
 #include "succinct_client.h"
-#include "ports.h"
 
 class SuccinctBenchmark : public Benchmark {
  public:
