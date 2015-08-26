@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
   std::string benchmark_type = std::string(argv[optind]);
 
   // Benchmark core functions
-  SuccinctBenchmark s_bench(benchmark_type, queryfile);
+  SuccinctBenchmark s_bench(queryfile);
   if (benchmark_type == "latency-count") {
     s_bench.BenchmarkCountLatency("latency_results_count");
   } else if (benchmark_type == "latency-search") {
