@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep ${QUERY_SERVER_PROCESS}`"
+pids="`pgrep ${AGGREGATOR_PROCESS}`"
 
 for pid in $pids
 do

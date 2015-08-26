@@ -239,14 +239,14 @@ void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
 void SuccinctShard::RegexSearch(std::set<std::pair<size_t, size_t>> &result,
                                 const std::string& query, bool opt) {
   SRegEx re(query, this, opt);
-  re.execute();
-  re.get_results(result);
+  re.Execute();
+  re.GetResults(result);
 }
 
 void SuccinctShard::RegexCount(std::vector<size_t> &result,
                                const std::string& query) {
   SRegEx re(query, this);
-  re.count(result);
+  re.Count(result);
 }
 
 int64_t SuccinctShard::Count(const std::string& str) {

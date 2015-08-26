@@ -1,4 +1,4 @@
-#include "../../core/include/succinct_core.h"
+#include "succinct_core.h"
 
 #include "gtest/gtest.h"
 

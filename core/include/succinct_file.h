@@ -5,8 +5,10 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <set>
 
 #include "succinct_core.h"
+#include "regex/regex.h"
 
 class SuccinctFile : public SuccinctCore {
  public:
@@ -22,6 +24,9 @@ class SuccinctFile : public SuccinctCore {
                    NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
                uint32_t context_len = 3, uint32_t sampling_range = 1024);
 
+  /*
+   * Get the name of the SuccinctFile
+   */
   std::string Name();
 
   /*
@@ -33,18 +38,22 @@ class SuccinctFile : public SuccinctCore {
   /*
    * Get the count of a string in the Succinct file
    */
-  uint64_t Count(std::string str);
+  uint64_t Count(const std::string& str);
 
   /*
    * Get the offsets of all the occurrences
    * of a string in the Succinct file
    */
-  void Search(std::vector<int64_t>& result, std::string str);
+  void Search(std::vector<int64_t>& result, const std::string& str);
+
+  /*
+   * Get the offsets corresponding to matches of regex.
+   */
+  void RegexSearch(std::set<std::pair<size_t, size_t>>& results, const std::string& query);
 
  private:
   // std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
   std::pair<int64_t, int64_t> GetRange(const char *str, uint64_t len);
-
   uint64_t ComputeContextValue(const char *str, uint64_t pos);
 
   std::string input_filename_;
