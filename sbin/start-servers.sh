@@ -12,9 +12,6 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$SHARDED_BIN_DIR"
-bin="`cd "$bin"; pwd`"
-
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
 if [ "$SUCCINCT_DATA_PATH" = "" ]; then
@@ -55,5 +52,5 @@ limit=$(($NUM_SHARDS - 1))
 for i in `seq 0 $limit`; do
 	PORT=$(($QUERY_SERVER_PORT + $i))
 	DATA_FILE="$SUCCINCT_DATA_PATH/data_$i"
-	nohup "$bin/sserver" -m 1 -p $PORT -s $SA_SAMPLING_RATE -i $ISA_SAMPLING_RATE -x $SAMPLING_SCHEME -r $NPA_SCHEME $DATA_FILE 2>"$SUCCINCT_LOG_PATH/server_${i}.log" > /dev/null &
+	nohup "$QUERY_SERVER" -m 1 -p $PORT -s $SA_SAMPLING_RATE -i $ISA_SAMPLING_RATE -x $SAMPLING_SCHEME -r $NPA_SCHEME $DATA_FILE 2>"$SUCCINCT_LOG_PATH/server_${i}.log" > /dev/null &
 done

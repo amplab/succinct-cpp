@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep sserver`"
+pids="`pgrep ${QUERY_SERVER_PROCESS}`"
 
 for pid in $pids
 do

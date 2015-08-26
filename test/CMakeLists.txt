@@ -20,10 +20,12 @@ set(TESTS_PATH ${EXECUTABLE_OUTPUT_PATH} PARENT_SCOPE)
 
 set(CORE_INCLUDES ../core/include)
 set(SHARDED_INCLUDES ../sharded/include)
+set(SHARDED_KV_INCLUDES ../sharded-kv/include)
 
 include_directories(${gtest_SOURCE_DIR}/include
     ${CORE_INCLUDES}
-    ${SHARDED_INCLUDES})
+    ${SHARDED_INCLUDES}
+    ${SHARDED_KV_INCLUDES})
 
 set(test_sources src/succinct_core_test.cc src/test_main.cc)
 add_executable(core_test ${test_sources})

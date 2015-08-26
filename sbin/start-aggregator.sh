@@ -7,9 +7,6 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$SHARDED_BIN_DIR"
-bin="`cd "$bin"; pwd`"
-
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
 if [ "$SUCCINCT_LOG_PATH" = "" ]; then
@@ -22,4 +19,4 @@ fi
 
 mkdir -p $SUCCINCT_LOG_PATH
 
-nohup "$bin/saggregator" -s "$NUM_SHARDS" 2>"$SUCCINCT_LOG_PATH/aggregator.log" >/dev/null &
+nohup "$AGGREGATOR" -s "$NUM_SHARDS" 2>"$SUCCINCT_LOG_PATH/aggregator.log" >/dev/null &

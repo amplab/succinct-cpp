@@ -6,8 +6,8 @@ sbin=`dirname "$0"`
 sbin=`cd "$sbin"; pwd`
 
 # Set process names
-export QUERY_SERVER_PROCESS="sserver"
-export AGGREGATOR_PROCESS="saggregator"
+export QUERY_SERVER_PROCESS="skvserver"
+export AGGREGATOR_PROCESS="skvaggregator"
 
 # Stop servers
 echo "Stopping servers..."

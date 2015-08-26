@@ -14,3 +14,4 @@ export SUCCINCT_PREFIX="`dirname "$this"`"/..
 export SUCCINCT_HOME="${SUCCINCT_PREFIX}"
 export SUCCINCT_CONF_DIR="${SUCCINCT_CONF_DIR:-"$SUCCINCT_HOME/conf"}"
 export SHARDED_BIN_DIR="${SHARDED_BIN_DIR:-"$SUCCINCT_HOME/build/sharded/bin"}"
+export SHARDED_KV_BIN_DIR="${SHARDED_KV_BIN_DIR:-"$SUCCINCT_HOME/build/sharded-kv/bin"}"
