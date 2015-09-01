@@ -12,7 +12,7 @@ data without requiring any secondary indexes.
 
 * C++11 support
 * CMake build system
-* Thrift for its `thrift`, `adaptive`, `bench` and `test` modules.
+* Thrift for its `sharded`, `sharded-kv`, `bench` and `test` modules.
 
 # Building
 
