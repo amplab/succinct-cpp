@@ -285,7 +285,6 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
   // Adjust the value being searched for
   val -= SuccinctBase::LookupBitmapArray(dv->samples, sample_offset,
                                          dv->sample_bits);
-
   // Initialize the delta index and sum accumulated
   int64_t delta_idx = 0, delta_sum = 0;
 
@@ -345,5 +344,9 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
     return res;
 
   // Adjust the index based on whether we wanted lower bound or upper bound
-  return flag ? res - 1 : res;
+  if (flag) {
+    return (delta_sum < val) ? res : res - 1;
+  } else {
+    return res;
+  }
 }
