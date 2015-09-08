@@ -347,6 +347,6 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
   if (flag) {
     return (delta_sum < val) ? res : res - 1;
   } else {
-    return res;
+    return (delta_sum > val) ? res : res + 1;
   }
 }
