@@ -336,7 +336,7 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
         delta_idx += 1;
       }
 
-      if (delta_idx == delta_limit) {
+      if (delta_idx == sampling_rate_) {
         delta_idx--;
         delta_sum -= last_decoded_value;
         break;
