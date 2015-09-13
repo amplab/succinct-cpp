@@ -276,7 +276,7 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
                                                end_idx / sampling_rate_);
 
   // Set the limit on the number of delta values to decode
-  uint64_t delta_limit = end_idx - (sample_offset * sampling_rate_);
+  uint64_t delta_limit = SuccinctUtils::Min(end_idx - (sample_offset * sampling_rate_), sampling_rate_);
 
   // Get offset into delta bitmap where decoding should start
   uint64_t delta_off = SuccinctBase::LookupBitmapArray(dv->delta_offsets,
@@ -313,7 +313,7 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
                                                    N + 1);
       delta_off += (N + 1);
       delta_idx += 1;
-    } else if (delta_sum + block_sum < val) {
+    } else if (delta_sum + block_sum < val && delta_idx + block_cnt < delta_limit) {
       // If sum can be computed from the prefixsum table
       delta_sum += block_sum;
       delta_off += PREFIX_OFF(block);
@@ -334,6 +334,8 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
       }
     }
   }
+
+  if (delta_idx == sampling_rate_) delta_idx--;
 
   // Obtain the required index for the binary search
   uint64_t res = col_offsets_[col_id] + sample_offset * sampling_rate_
