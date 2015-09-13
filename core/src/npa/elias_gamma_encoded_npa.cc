@@ -310,10 +310,17 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
         N++;
         delta_off++;
       }
-      delta_sum += SuccinctBase::LookupBitmapAtPos(delta_values, delta_off,
-                                                   N + 1);
+      uint64_t decoded_value = SuccinctBase::LookupBitmapAtPos(delta_values,
+                                                           delta_off, N + 1);
+      delta_sum += decoded_value;
       delta_off += (N + 1);
       delta_idx += 1;
+      // Roll back
+      if (delta_idx == sampling_rate_) {
+        delta_idx--;
+        delta_sum -= decoded_value;
+        break;
+      }
     } else if (delta_sum + block_sum < val
         && delta_idx + block_cnt < delta_limit) {
       // If sum can be computed from the prefixsum table
@@ -336,6 +343,7 @@ int64_t EliasGammaEncodedNPA::BinarySearch(int64_t val, uint64_t start_idx,
         delta_idx += 1;
       }
 
+      // Roll back
       if (delta_idx == sampling_rate_) {
         delta_idx--;
         delta_sum -= last_decoded_value;
