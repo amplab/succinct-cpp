@@ -3,9 +3,6 @@
 
 #include "delta_encoded_npa.h"
 
-#define USE_BSR             0
-#define USE_PREFIXSUM_TABLE 1
-
 /* Gamma prefix sum table functions */
 #define PREFIX_OFF(i)   ((prefixsum_[(i)] >> 24) & 0xFF)
 #define PREFIX_CNT(i)   ((prefixsum_[i] >> 16) & 0xFF)
@@ -29,7 +26,7 @@ class EliasGammaEncodedNPA : public DeltaEncodedNPA {
   // Compute the elias gamma encoding size in bits for a 64 bit integer
   static uint32_t EliasGammaEncodingSize(uint64_t n);
 
-  virtual int64_t BinarySearch(uint64_t val, uint64_t s, uint64_t e, bool flag);
+  virtual int64_t BinarySearch(int64_t val, uint64_t s, uint64_t e, bool flag);
 
  protected:
   // Create elias-gamma delta encoded vector

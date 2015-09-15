@@ -115,7 +115,7 @@ std::pair<int64_t, int64_t> SuccinctShard::GetRange(const char *p,
   }
 
   for (int64_t i = len - 2; i >= 0; i--) {
-    if (alphabet_map_.find(p[len - 1]) != alphabet_map_.end()) {
+    if (alphabet_map_.find(p[i]) != alphabet_map_.end()) {
       c1 = alphabet_map_[p[i]].first;
       c2 = alphabet_map_[alphabet_[alphabet_map_[p[i]].second + 1]].first - 1;
     } else {
@@ -127,7 +127,7 @@ std::pair<int64_t, int64_t> SuccinctShard::GetRange(const char *p,
     }
 
     sp = npa_->BinarySearch(sp, c1, c2, false);
-    ep = npa_->BinarySearch(ep, c1, c2, true);
+    ep = npa_->BinarySearch(ep, sp, c2, true);
 
     if (sp > ep) {
       return range;
