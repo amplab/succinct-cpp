@@ -15,8 +15,8 @@ int main(int argc, char **argv) {
   }
 
   int c;
-  std::string configfile = "benchmark/conf/adashard-bench.conf";
-  std::string outpath = "benchmark/res";
+  std::string configfile = "bench/conf/adashard-bench.conf";
+  std::string outpath = "bench/res";
   double skew = 1.0;  // Pure uniform
   int32_t len = 100, batch_size = 10;
   std::string querypath = "";

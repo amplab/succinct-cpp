@@ -34,10 +34,16 @@ fi
 
 if [ "$OPPORTUNISTIC" = "TRUE" ]; then
     OPP="-o"
-elif
+else
     OPP=""
+fi
+
+if [ "$STANDALONE" = "TRUE" ]; then
+    BOOTSTRAP="-d"
+else
+    BOOTSTRAP="-d"
 fi
 
 port=$(( $QUERY_SERVER_PORT + $2 ))
 
-nohup "$bin/aserver" -m 1 $OPP -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &
+nohup "$bin/aserver" -m 1 $BOOTSTRAP $OPP -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" > /dev/null &

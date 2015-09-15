@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
                            protocol_factory);
     server.serve();
   } catch (std::exception& e) {
-    fprintf(stderr, "Exception at AdaptiveQueryServer:main(): %s\n", e.what());
+    fprintf(stderr, "Exception at adaptive_query_server.cc:main(): %s\n", e.what());
   }
   return 0;
 }
