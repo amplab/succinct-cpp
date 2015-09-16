@@ -322,6 +322,14 @@ class DynamicAdaptBenchmark : public Benchmark {
       ParseCsvEntry(l_del, del);
       std::sort(l_add.begin(), l_add.end(), std::greater<uint32_t>());
       std::sort(l_del.begin(), l_del.end());
+      for (auto a : l_add) {
+        fprintf(stderr, "%u,", a);
+      }
+      fprintf(stderr, "\n");
+      for (auto d : l_del) {
+        fprintf(stderr, "%u,", d);
+      }
+      fprintf(stderr, "\n");
       layers_to_create_.push_back(l_add);
       layers_to_delete_.push_back(l_del);
     }

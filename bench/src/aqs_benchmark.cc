@@ -2,7 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../include/adaptive_query_server_benchmark.h"
+#include "adaptive_query_server_benchmark.h"
 
 void print_usage(char *exec) {
   fprintf(stderr,
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   }
 
   int c;
-  std::string outpath = "benchmark/res";
+  std::string outpath = "bench/res";
   double skew = 1.0;  // Pure uniform
   int32_t len = 100;
   uint32_t batch_size = 10;
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         querypath = optarg;
         break;
       default:
-        outpath = "benchmark/res";
+        outpath = "bench/res";
         skew = 1.0;
         len = 100;
         batch_size = 10;
@@ -56,8 +56,6 @@ int main(int argc, char **argv) {
   for (int32_t i = -1; i < 10; i++) {
     aqs_bench.DeleteLayer(i);
     aqs_bench.MeasureSearchThroughput();
-    // aqs_bench.measure_throughput();
-    // aqs_bench.measure_throughput_batch(batch_size);
   }
 
   return 0;

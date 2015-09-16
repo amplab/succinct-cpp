@@ -78,7 +78,7 @@ class AdaptBenchmark : public Benchmark {
       uint64_t i = 0;
       fprintf(
           stderr,
-          "Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
+          "[REQTH] Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
           stage, request_rates[stage], duration);
       TimeStamp start_time = GetTimestamp();
       while ((cur_time = GetTimestamp()) - start_time <= duration) {
@@ -99,7 +99,7 @@ class AdaptBenchmark : public Benchmark {
           measure_start_time = GetTimestamp();
         }
       }
-      fprintf(stderr, "Finished stage %u, spent %llu us.\n", stage,
+      fprintf(stderr, "[REQTH] Finished stage %u, spent %llu us.\n", stage,
               (cur_time - start_time));
     }
     TimeStamp diff = cur_time - measure_start_time;
@@ -108,12 +108,13 @@ class AdaptBenchmark : public Benchmark {
     req_stream.close();
 
     // Sleep for some time and let other threads finish
-    fprintf(stderr, "Request thread sleeping for 10 seconds...\n");
+    fprintf(stderr, "[REQTH] Request thread sleeping for 10 seconds...\n");
     sleep(10);
-    fprintf(stderr,
-            "Finished sending queries, attempting to close query socket...\n");
+    fprintf(
+        stderr,
+        "[REQTH] Finished sending queries, attempting to close query socket...\n");
     query_transport->close();
-    fprintf(stderr, "Closed query socket.\n");
+    fprintf(stderr, "[REQTH] Closed query socket.\n");
   }
 
   static void MeasureResponses(AdaptiveQueryServiceClient *query_client,
@@ -173,9 +174,8 @@ class AdaptBenchmark : public Benchmark {
         try {
           size_t add_size = management_client->reconstruct_layer(
               layers_to_create[stage][i]);
-          fprintf(stderr, "Created layer with size = %zu\n", add_size);
-          add_stream << GetTimestamp() << "\t" << i << "\t" << add_size
-                     << "\n";
+          fprintf(stderr, "[MGMTH] Created layer with size = %zu\n", add_size);
+          add_stream << GetTimestamp() << "\t" << i << "\t" << add_size << "\n";
           add_stream.flush();
         } catch (std::exception& e) {
           break;
@@ -186,12 +186,11 @@ class AdaptBenchmark : public Benchmark {
         try {
           size_t del_size = management_client->remove_layer(
               layers_to_delete[stage][i]);
-          fprintf(stderr, "Deleted layer with size = %zu\n", del_size);
-          del_stream << GetTimestamp() << "\t" << i << "\t" << del_size
-                     << "\n";
+          fprintf(stderr, "[MGMTH] Deleted layer with size = %zu\n", del_size);
+          del_stream << GetTimestamp() << "\t" << i << "\t" << del_size << "\n";
           del_stream.flush();
         } catch (std::exception& e) {
-          fprintf(stderr, "Error: %s\n", e.what());
+          fprintf(stderr, "[MGMTH] Error: %s\n", e.what());
           break;
         }
       }
@@ -199,7 +198,7 @@ class AdaptBenchmark : public Benchmark {
       if ((cur_time = GetTimestamp()) - start_time < duration) {
         fprintf(
             stderr,
-            "Done with layer management for stage %u, took %llu us, sleeping for %llu us.\n",
+            "[MGMTH] Done with layer management for stage %u, took %llu us, sleeping for %llu us.\n",
             stage, (cur_time - start_time),
             (duration - (cur_time - start_time)));
         usleep(duration - (cur_time - start_time));

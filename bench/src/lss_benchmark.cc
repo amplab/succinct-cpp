@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
-#include "../include/layered_succinct_shard_benchmark.h"
+#include "layered_succinct_shard_benchmark.h"
 
 
 void print_usage(char *exec) {
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
   }
 
   int c;
-  std::string outpath = "benchmark/res";
+  std::string outpath = "bench/res";
   double skew = 1.0;  // Pure uniform
   uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32, len = 100;
   SuccinctMode s_mode = SuccinctMode::LOAD_IN_MEMORY;
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
         querypath = optarg;
         break;
       default:
-        outpath = "benchmark/res";
+        outpath = "bench/res";
         skew = 1.0;
         s_mode = SuccinctMode::LOAD_IN_MEMORY;
         isa_sampling_rate = 32;

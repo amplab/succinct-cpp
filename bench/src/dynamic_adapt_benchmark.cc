@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
   }
 
   int c;
-  std::string configfile = "benchmark/conf/adashard-bench.conf";
-  std::string outpath = "benchmark/res";
+  std::string configfile = "bench/conf/adashard-bench.conf";
+  std::string outpath = "bench/res";
   double skew = 1.0;  // Pure uniform
   uint32_t num_partitions = 1;
   while ((c = getopt(argc, argv, "c:o:z:p:")) != -1) {
@@ -37,8 +37,8 @@ int main(int argc, char **argv) {
         num_partitions = atoi(optarg);
         break;
       default:
-        configfile = "benchmark/conf/adashard-bench.conf";
-        outpath = "benchmark/res";
+        configfile = "bench/conf/adashard-bench.conf";
+        outpath = "bench/res";
         skew = 1.0;
         num_partitions = 1;
     }

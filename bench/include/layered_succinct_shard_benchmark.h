@@ -157,6 +157,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
       query = line.substr(split_index + 1);
       queries_.push_back(query);
     }
+    fprintf(stderr, "Read %zu queries.\n", queries_.size());
     inputfile.close();
   }
 
