@@ -90,7 +90,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
     uint64_t num_ops = 0;
 
     TimeStamp start_time = GetTimestamp();
-    while (num_ops <= randoms_.size()) {
+    while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
       layered_succinct_shard_->Search(res, queries_[num_ops % queries_.size()]);
       num_ops++;
     }
