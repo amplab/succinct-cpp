@@ -91,7 +91,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
-      layered_succinct_shard_->Search(res, queries_[num_ops % queries_.size()]);
+      layered_succinct_shard_->Search(res, queries_[query_ids_[num_ops % query_ids_.size()]]);
       num_ops++;
     }
     TimeStamp diff = GetTimestamp() - start_time;
