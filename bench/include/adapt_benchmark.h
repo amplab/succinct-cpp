@@ -89,9 +89,9 @@ class AdaptBenchmark : public Benchmark {
       while ((cur_time = GetTimestamp()) - start_time <= duration) {
         TimeStamp t0 = GetTimestamp();
         if (i % mod == 0) {
-            query_client->send_search(queries[query_ids[i % query_ids.size()]]);
+          query_client->send_search(queries[query_ids[i % query_ids.size()]]);
         } else {
-            query_client->send_get(randoms[i % randoms.size()]);
+          query_client->send_get(randoms[i % randoms.size()]);
         }
         i++;
         num_requests++;
@@ -134,6 +134,7 @@ class AdaptBenchmark : public Benchmark {
 
     const TimeStamp MEASURE_INTERVAL = 40000000;
     uint32_t num_responses = 0;
+    uint64_t i = 0;
     TimeStamp cur_time;
     std::ofstream res_stream(results_file);
     TimeStamp measure_start_time = GetTimestamp();
@@ -141,11 +142,12 @@ class AdaptBenchmark : public Benchmark {
       try {
         std::set<int64_t> res1;
         std::string res2;
-        if (num_responses % mod == 0) {
+        if (i % mod == 0) {
             query_client->recv_search(res1);
         } else {
             query_client->recv_get(res2);
         }
+        i++;
         num_responses++;
         queue_length--;
         if ((cur_time = GetTimestamp()) - measure_start_time
