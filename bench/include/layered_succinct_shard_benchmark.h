@@ -142,23 +142,30 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   }
 
   void ReadQueries(std::string filename) {
-    std::ifstream inputfile(filename);
-    if (!inputfile.is_open()) {
-      fprintf(stderr, "Error: Query file [%s] may be missing.\n",
-              filename.c_str());
-      return;
-    }
+      std::ifstream inputfile(filename);
+      if (!inputfile.is_open()) {
+        fprintf(stderr, "Error: Query file [%s] may be missing.\n",
+                filename.c_str());
+        return;
+      }
 
-    std::string line, bin, query;
-    while (getline(inputfile, line)) {
-      // Extract key and value
-      int split_index = line.find_first_of('\t');
-      bin = line.substr(0, split_index);
-      query = line.substr(split_index + 1);
-      queries_.push_back(query);
-    }
-    fprintf(stderr, "Read %zu queries.\n", queries_.size());
-    inputfile.close();
+      std::string line, bin, query;
+      while (getline(inputfile, line)) {
+        // Extract key and value
+        int split_index = line.find_first_of('\t');
+        bin = line.substr(0, split_index);
+        query = line.substr(split_index + 1);
+        queries_.push_back(query);
+      }
+      inputfile.close();
+      fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
+                  key_skew_, queries_.size());
+      ZipfGenerator z(key_skew_, queries_.size());
+      fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
+      for (uint64_t i = 0; i < queries_.size(); i++) {
+        query_ids_.push_back(z.Next());
+      }
+      fprintf(stderr, "Generated query ids.\n");
   }
 
   LayeredSuccinctShard *layered_succinct_shard_;
@@ -166,6 +173,8 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   std::string results_file_;
   double key_skew_;
   double length_skew_;
+
+  std::vector<int64_t> query_ids_;
 };
 
 #endif
