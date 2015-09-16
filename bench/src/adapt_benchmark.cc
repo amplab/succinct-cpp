@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
   std::string delpath = outpath + "/adashard-bench.del";
   AdaptBenchmark d_bench(configfile, reqpath, respath, addpath, delpath, skew,
                          len, batch_size, querypath);
-  d_bench.run_benchmark();
+  d_bench.RunBenchmark();
 
   return 0;
 }

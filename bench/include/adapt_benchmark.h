@@ -51,6 +51,8 @@ class AdaptBenchmark : public Benchmark {
       ReadQueries(query_file);
     }
 
+    GenerateRandoms();
+
     if (randoms_.empty() && queries_.empty()) {
       fprintf(stderr, "Warning: No search or get queries loaded.\n");
     }
@@ -61,6 +63,8 @@ class AdaptBenchmark : public Benchmark {
   static void SendRequests(AdaptiveQueryServiceClient *query_client,
                            boost::shared_ptr<TTransport> query_transport,
                            std::vector<std::string> queries,
+                           std::vector<int64_t> query_ids,
+                           std::vector<int64_t> randoms,
                            std::vector<uint32_t> request_rates,
                            std::vector<uint32_t> durations,
                            std::atomic<uint64_t> &queue_length,
@@ -83,7 +87,7 @@ class AdaptBenchmark : public Benchmark {
       TimeStamp start_time = GetTimestamp();
       while ((cur_time = GetTimestamp()) - start_time <= duration) {
         TimeStamp t0 = GetTimestamp();
-        query_client->send_search(queries[i % queries.size()]);
+        query_client->send_search(queries[query_ids[i % query_ids.size()]]);
         i++;
         num_requests++;
         queue_length++;
@@ -206,11 +210,11 @@ class AdaptBenchmark : public Benchmark {
     }
   }
 
-  void run_benchmark() {
+  void RunBenchmark() {
     std::thread request_thread(&AdaptBenchmark::SendRequests, query_client_,
-                               query_transport_, queries_, request_rates_,
-                               durations_, std::ref(queue_length_),
-                               requests_file_);
+                               query_transport_, queries_, query_ids_, randoms_,
+                               request_rates_, durations_,
+                               std::ref(queue_length_), requests_file_);
     std::thread response_thread(&AdaptBenchmark::MeasureResponses,
                                 query_client_, stats_client_,
                                 std::ref(queue_length_), responses_file_);
@@ -271,6 +275,14 @@ class AdaptBenchmark : public Benchmark {
       queries_.push_back(query);
     }
     inputfile.close();
+    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
+                skew_, queries_.size());
+    ZipfGenerator z(skew_, queries_.size());
+    fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
+    for (uint64_t i = 0; i < queries_.size(); i++) {
+      query_ids_.push_back(z.Next());
+    }
+    fprintf(stderr, "Generated query ids.\n");
   }
 
   void ParseCsvEntry(std::vector<uint32_t> &out, std::string csv_entry) {
@@ -347,6 +359,8 @@ class AdaptBenchmark : public Benchmark {
   double skew_;
   uint32_t batch_size_;
   uint32_t fetch_length_;
+
+  std::vector<int64_t> query_ids_;
 
 };
 
