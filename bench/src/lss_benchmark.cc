@@ -7,7 +7,7 @@
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-c] [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-l len] [-o output-path] file\n",
+      "Usage: %s [-m mode] [-z skew] [-i isa_sampling_rate] [-s sa_sampling_rate] [-l len] [-o output-path] file\n",
       exec);
 }
 
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
   std::string querypath = "";
   while ((c = getopt(argc, argv, "m:o:z:i:s:l:q:")) != -1) {
     switch (c) {
-      case 'c':
+      case 'm':
         s_mode = (SuccinctMode) atoi(optarg);
         break;
       case 'o':
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 
   // Benchmark core functions
   std::string respath = outpath + "/ls-bench";
-  LayeredSuccinctShardBenchmark ls_bench(inputpath, s_mode, isa_sampling_rate,
+  LayeredSuccinctShardBenchmark ls_bench(inputpath, s_mode == SuccinctMode::CONSTRUCT_IN_MEMORY, isa_sampling_rate,
                                          sa_sampling_rate, respath, skew,
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
