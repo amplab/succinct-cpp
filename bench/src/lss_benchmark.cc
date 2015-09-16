@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
     ls_bench.DeleteLayer(i);
-    ls_bench.MeasureSearchGetThroughput();
+    ls_bench.MeasureGetThroughput();
   }
 
   return 0;
