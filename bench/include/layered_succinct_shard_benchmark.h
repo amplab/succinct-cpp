@@ -101,6 +101,31 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
     fprintf(stderr, "Done.\n");
   }
 
+  void MeasureSearchGetThroughput() {
+    fprintf(stderr, "Starting search-get throughput measurement...");
+    size_t storage_size = layered_succinct_shard_->StorageSize();
+    std::set<int64_t> res1;
+    std::string res2;
+    std::ofstream res_stream(results_file_ + ".search",
+                               std::ofstream::out | std::ofstream::app);
+    uint64_t num_ops = 0;
+
+    TimeStamp start_time = GetTimestamp();
+    while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
+      if(num_ops % 2 == 0) {
+          layered_succinct_shard_->Search(res1, queries_[query_ids_[num_ops % query_ids_.size()]]);
+      } else {
+          layered_succinct_shard_->get(res2, randoms_[num_ops % randoms_.size()]);
+      }
+      num_ops++;
+    }
+    TimeStamp diff = GetTimestamp() - start_time;
+    double thput = ((double) num_ops * 1000 * 1000) / ((double) diff);
+    res_stream << storage_size << "\t" << thput << "\n";
+    res_stream.close();
+    fprintf(stderr, "Done.\n");
+  }
+
   void DeleteLayer(int32_t layer_id) {
     if (layer_id >= 0) {
       fprintf(stderr, "Deleting layer %d...\n", layer_id);
