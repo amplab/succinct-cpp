@@ -26,7 +26,7 @@ class AdaptBenchmark : public Benchmark {
   AdaptBenchmark(std::string config_file, std::string requests_file,
                  std::string responses_file, std::string additions_file,
                  std::string deletions_file, double skew, uint32_t fetch_length,
-                 uint32_t batch_size, std::string query_file)
+                 uint32_t mod, uint32_t batch_size, std::string query_file)
       : Benchmark() {
 
     this->query_client_ = this->GetClient(query_transport_);
@@ -45,6 +45,7 @@ class AdaptBenchmark : public Benchmark {
     this->skew_ = skew;
     this->batch_size_ = batch_size;
     this->fetch_length_ = fetch_length;
+    this->mod_ = mod;
 
     // generate_randoms();
     if (query_file != "") {
@@ -64,7 +65,7 @@ class AdaptBenchmark : public Benchmark {
                            boost::shared_ptr<TTransport> query_transport,
                            std::vector<std::string> queries,
                            std::vector<int64_t> query_ids,
-                           std::vector<int64_t> randoms,
+                           std::vector<int64_t> randoms, uint32_t mod,
                            std::vector<uint32_t> request_rates,
                            std::vector<uint32_t> durations,
                            std::atomic<uint64_t> &queue_length,
@@ -87,7 +88,11 @@ class AdaptBenchmark : public Benchmark {
       TimeStamp start_time = GetTimestamp();
       while ((cur_time = GetTimestamp()) - start_time <= duration) {
         TimeStamp t0 = GetTimestamp();
-        query_client->send_search(queries[query_ids[i % query_ids.size()]]);
+        if (i % mod == 0) {
+            query_client->send_search(queries[query_ids[i % query_ids.size()]]);
+        } else {
+            query_client->send_get(randoms[i % randoms.size()]);
+        }
         i++;
         num_requests++;
         queue_length++;
@@ -123,6 +128,7 @@ class AdaptBenchmark : public Benchmark {
 
   static void MeasureResponses(AdaptiveQueryServiceClient *query_client,
                                AdaptiveQueryServiceClient *stats_client,
+                               uint32_t mod,
                                std::atomic<uint64_t> &queue_length,
                                std::string results_file) {
 
@@ -133,8 +139,13 @@ class AdaptBenchmark : public Benchmark {
     TimeStamp measure_start_time = GetTimestamp();
     while (true) {
       try {
-        std::set<int64_t> res;
-        query_client->recv_search(res);
+        std::set<int64_t> res1;
+        std::string res2;
+        if (num_responses % mod == 0) {
+            query_client->recv_search(res1);
+        } else {
+            query_client->recv_get(res2);
+        }
         num_responses++;
         queue_length--;
         if ((cur_time = GetTimestamp()) - measure_start_time
@@ -213,10 +224,10 @@ class AdaptBenchmark : public Benchmark {
   void RunBenchmark() {
     std::thread request_thread(&AdaptBenchmark::SendRequests, query_client_,
                                query_transport_, queries_, query_ids_, randoms_,
-                               request_rates_, durations_,
+                               mod_, request_rates_, durations_,
                                std::ref(queue_length_), requests_file_);
     std::thread response_thread(&AdaptBenchmark::MeasureResponses,
-                                query_client_, stats_client_,
+                                query_client_, stats_client_, mod_,
                                 std::ref(queue_length_), responses_file_);
     std::thread layer_management_thread(&AdaptBenchmark::ManageLayers,
                                         management_client_, layers_to_create_,
@@ -359,6 +370,7 @@ class AdaptBenchmark : public Benchmark {
   double skew_;
   uint32_t batch_size_;
   uint32_t fetch_length_;
+  uint32_t mod_;
 
   std::vector<int64_t> query_ids_;
 

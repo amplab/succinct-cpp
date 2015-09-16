@@ -15,6 +15,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                                 uint32_t isa_sampling_rate,
                                 uint32_t sa_sampling_rate,
                                 std::string results_file, double skew,
+                                uint32_t mod,
                                 std::string query_file = "")
       : Benchmark() {
 
@@ -31,6 +32,8 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
       // Serialize and save to file
       layered_succinct_shard_->Serialize();
     }
+
+    mod_ = mod;
 
     GenerateRandoms();
     GenerateLengths();
@@ -112,7 +115,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
-      if(num_ops % 2 == 0) {
+      if(num_ops % mod_ == 0) {
           layered_succinct_shard_->Search(res1, queries_[query_ids_[num_ops % query_ids_.size()]]);
       } else {
           layered_succinct_shard_->get(res2, randoms_[num_ops % randoms_.size()]);
@@ -198,6 +201,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   std::string results_file_;
   double key_skew_;
   double length_skew_;
+  uint32_t mod_;
 
   std::vector<int64_t> query_ids_;
 };
