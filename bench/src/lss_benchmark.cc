@@ -71,8 +71,7 @@ int main(int argc, char **argv) {
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
     ls_bench.DeleteLayer(i);
-    ls_bench.MeasureGetThroughput();
-    // ls_bench.measure_access_throughput(len);
+    ls_bench.MeasureSearchThroughput();
   }
 
   return 0;

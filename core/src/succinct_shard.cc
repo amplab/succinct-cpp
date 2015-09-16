@@ -383,8 +383,8 @@ size_t SuccinctShard::MemoryMap() {
 size_t SuccinctShard::StorageSize() {
   size_t tot_size = SuccinctCore::StorageSize();
   tot_size += sizeof(sizeof(uint32_t));
-  tot_size += keys_.size() * sizeof(int64_t) + sizeof(size_t);
-  tot_size += value_offsets_.size() * sizeof(int64_t) + sizeof(size_t);
+  // tot_size += keys_.size() * sizeof(int64_t) + sizeof(size_t);
+  // tot_size += value_offsets_.size() * sizeof(int64_t) + sizeof(size_t);
   tot_size += SuccinctBase::BitmapSize(invalid_offsets_);
   return tot_size;
 }
