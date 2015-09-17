@@ -36,7 +36,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
     mod_ = mod;
 
     GenerateRandoms();
-    GenerateLengths();
+    // GenerateLengths();
 
     if (query_file != "") {
       ReadQueries(query_file);
@@ -190,7 +190,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                   key_skew_, queries_.size());
       ZipfGenerator z(key_skew_, queries_.size());
       fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
-      for (uint64_t i = 0; i < queries_.size(); i++) {
+      for (uint64_t i = 0; i < 100000; i++) {
         query_ids_.push_back(z.Next());
       }
       fprintf(stderr, "Generated query ids.\n");
