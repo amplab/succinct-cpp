@@ -53,7 +53,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (num_ops <= randoms_.size()) {
-      layered_succinct_shard_->access(res, randoms_[num_ops % randoms_.size()],
+      layered_succinct_shard_->Access(res, randoms_[num_ops % randoms_.size()],
                                       0, fetch_length);
       num_ops++;
     }
@@ -74,7 +74,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (num_ops <= randoms_.size()) {
-      layered_succinct_shard_->get(res, randoms_[num_ops % randoms_.size()]);
+      layered_succinct_shard_->Get(res, randoms_[num_ops % randoms_.size()]);
       num_ops++;
     }
     TimeStamp diff = GetTimestamp() - start_time;
@@ -118,7 +118,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
       if(num_ops % mod_ == 0) {
           layered_succinct_shard_->Search(res1, queries_[query_ids_[num_ops % query_ids_.size()]]);
       } else {
-          layered_succinct_shard_->get(res2, randoms_[num_ops % randoms_.size()]);
+          layered_succinct_shard_->Get(res2, randoms_[num_ops % randoms_.size()]);
       }
       num_ops++;
     }
@@ -132,7 +132,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   void DeleteLayer(int32_t layer_id) {
     if (layer_id >= 0) {
       fprintf(stderr, "Deleting layer %d...\n", layer_id);
-      layered_succinct_shard_->remove_layer(layer_id);
+      layered_succinct_shard_->RemoveLayer(layer_id);
       fprintf(stderr, "Done.\n");
     }
   }

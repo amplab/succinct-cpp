@@ -70,21 +70,21 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
   }
 
   void get(std::string& _return, const int64_t key) {
-    fd->get(_return, key);
+    fd->Get(_return, key);
   }
 
   void batch_get(std::vector<std::string>& _return,
                  const std::vector<int64_t>& keys) {
     for (auto key : keys) {
       std::string res;
-      fd->get(res, key);
+      fd->Get(res, key);
       _return.push_back(res);
     }
   }
 
   void access(std::string& _return, const int64_t key, const int32_t offset,
               const int32_t len) {
-    fd->access(_return, key, offset, len);
+    fd->Access(_return, key, offset, len);
   }
 
   void batch_access(std::vector<std::string>& _return,
@@ -92,7 +92,7 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
                     const int32_t len) {
     for (auto key : keys) {
       std::string res;
-      fd->access(res, key, offset, len);
+      fd->Access(res, key, offset, len);
       _return.push_back(res);
     }
   }
@@ -113,7 +113,7 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
     fprintf(stderr, "Received remove layer request for layer_id = %d\n",
             layer_id);
     time_t start_time = get_timestamp();
-    int64_t del_size = fd->remove_layer(layer_id);
+    int64_t del_size = fd->RemoveLayer(layer_id);
     time_t end_time = get_timestamp();
     fprintf(stderr,
             "Completed remove layer request for layer_id = %d, time = %llu\n",
@@ -125,7 +125,7 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
     fprintf(stderr, "Received create layer request for layer_id = %d\n",
             layer_id);
     time_t start_time = get_timestamp();
-    int64_t add_size = fd->reconstruct_layer(layer_id);
+    int64_t add_size = fd->ReconstructLayer(layer_id);
     time_t end_time = get_timestamp();
     fprintf(stderr,
             "Completed create layer request for layer_id = %d, time = %llu\n",
@@ -138,7 +138,7 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
   }
 
   int64_t num_sampled_values() {
-    return fd->num_sampled_values();
+    return fd->NumSampledValues();
   }
 
  private:

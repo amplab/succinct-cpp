@@ -49,4 +49,4 @@ max(x,y) = (x > y) ? x : y
 
 plot "../res/adashard-bench.req" using ($1/1000/1000):2 title "request-rate" w lp ls 1,\
 	"../res/adashard-bench.res" using ($1/1000/1000):2 title "response-rate" w lp ls 2,\
-	"../res/adashard-bench.res" using ($1/1000/1000):($3/1024/1024/1024) axes x1y2 title "memory-footprint" w lp ls 3
+	"../res/adashard-bench.res" using ($1/1000/1000):($3/2/1024/1024/1024) axes x1y2 title "memory-footprint" w lp ls 3

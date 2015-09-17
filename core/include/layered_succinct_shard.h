@@ -19,15 +19,15 @@ class LayeredSuccinctShard : public SuccinctShard {
   virtual ~LayeredSuccinctShard() {
   }
 
-  size_t remove_layer(uint32_t layer_id);
+  size_t RemoveLayer(uint32_t layer_id);
 
-  size_t reconstruct_layer(uint32_t layer_id);
+  size_t ReconstructLayer(uint32_t layer_id);
 
-  void get(std::string &result, int64_t key);
+  void Get(std::string &result, int64_t key);
 
-  void access(std::string& result, int64_t key, int32_t offset, int32_t len);
+  void Access(std::string& result, int64_t key, int32_t offset, int32_t len);
 
-  uint64_t num_sampled_values();
+  uint64_t NumSampledValues();
 
  private:
   bool opportunistic;
