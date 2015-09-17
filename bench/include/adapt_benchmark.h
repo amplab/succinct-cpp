@@ -75,11 +75,11 @@ class AdaptBenchmark : public Benchmark {
     TimeStamp measure_start_time = GetTimestamp();
     std::ofstream req_stream(reqfile);
     uint64_t num_requests = 0;
+    uint64_t i = 0, j = 0, k = 0;
 
     for (uint32_t stage = 0; stage < request_rates.size(); stage++) {
       TimeStamp duration = ((uint64_t) durations[stage]) * 1000L * 1000L;  // Seconds to microseconds
       TimeStamp sleep_time = (1000 * 1000) / request_rates[stage];
-      uint64_t i = 0;
       fprintf(
           stderr,
           "[REQTH] Starting stage %u: request-rate = %u Ops/sec, duration = %llu us\n",
@@ -88,9 +88,11 @@ class AdaptBenchmark : public Benchmark {
       while ((cur_time = GetTimestamp()) - start_time <= duration) {
         TimeStamp t0 = GetTimestamp();
         if (i % mod == 0) {
-          query_client->send_search(queries[query_ids[i % query_ids.size()]]);
+          query_client->send_search(queries[query_ids[j % query_ids.size()]]);
+          j++;
         } else {
-          query_client->send_get(randoms[i % randoms.size()]);
+          query_client->send_get(randoms[k % randoms.size()]);
+          k++;
         }
         i++;
         num_requests++;
