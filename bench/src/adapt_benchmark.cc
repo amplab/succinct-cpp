@@ -44,10 +44,8 @@ int main(int argc, char **argv) {
         querypath = std::string(optarg);
         break;
       default:
-        configfile = "benchmark/conf/adashard-bench.conf";
-        outpath = "benchmark/res";
-        skew = 1.0;
-        querypath = "";
+        fprintf(stderr, "Invalid option %c\n", c);
+        exit(-1);
     }
   }
 

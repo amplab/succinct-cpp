@@ -264,9 +264,9 @@ class AdaptBenchmark : public Benchmark {
     uint64_t query_count = query_client_->get_num_keys();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%llu...\n",
             skew_, query_count);
-    ZipfGenerator z(skew_, query_count);
+    ZipfGenerator z(skew_, 1000000);
     fprintf(stderr, "Generated zipf distribution, generating keys...\n");
-    for (uint64_t i = 0; i < 100000; i++) {
+    for (uint64_t i = 0; i < query_count; i++) {
       randoms_.push_back(z.Next());
     }
     fprintf(stderr, "Generated keys.\n");
@@ -290,10 +290,10 @@ class AdaptBenchmark : public Benchmark {
     }
     inputfile.close();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
-                skew_, queries_.size());
-    ZipfGenerator z(skew_, queries_.size());
+                skew_, 1000000);
+    ZipfGenerator z(skew_, 1000000);
     fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
-    for (uint64_t i = 0; i < 100000; i++) {
+    for (uint64_t i = 0; i < queries_.size(); i++) {
       query_ids_.push_back(z.Next());
     }
     fprintf(stderr, "Generated query ids.\n");
