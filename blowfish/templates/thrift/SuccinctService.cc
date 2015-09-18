@@ -1236,9 +1236,9 @@ uint32_t SuccinctService_Search_args::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->shard_id);
-          this->__isset.shard_id = true;
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->key);
+          this->__isset.key = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1267,8 +1267,8 @@ uint32_t SuccinctService_Search_args::write(::apache::thrift::protocol::TProtoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Search_args");
 
-  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->shard_id);
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
@@ -1284,8 +1284,8 @@ uint32_t SuccinctService_Search_pargs::write(::apache::thrift::protocol::TProtoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Search_pargs");
 
-  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((*(this->shard_id)));
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
@@ -1448,6 +1448,14 @@ uint32_t SuccinctService_SearchLocal_args::read(::apache::thrift::protocol::TPro
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->qserver_id);
+          this->__isset.qserver_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->query);
           this->__isset.query = true;
@@ -1471,7 +1479,11 @@ uint32_t SuccinctService_SearchLocal_args::write(::apache::thrift::protocol::TPr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_SearchLocal_args");
 
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->qserver_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->query);
   xfer += oprot->writeFieldEnd();
 
@@ -1484,7 +1496,11 @@ uint32_t SuccinctService_SearchLocal_pargs::write(::apache::thrift::protocol::TP
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_SearchLocal_pargs");
 
-  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("qserver_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->qserver_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->query)));
   xfer += oprot->writeFieldEnd();
 
@@ -2689,19 +2705,19 @@ void SuccinctServiceClient::recv_GetLocal(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query)
+void SuccinctServiceClient::Search(std::set<int64_t> & _return, const int64_t key, const std::string& query)
 {
-  send_Search(shard_id, query);
+  send_Search(key, query);
   recv_Search(_return);
 }
 
-void SuccinctServiceClient::send_Search(const int32_t shard_id, const std::string& query)
+void SuccinctServiceClient::send_Search(const int64_t key, const std::string& query)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("Search", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_Search_pargs args;
-  args.shard_id = &shard_id;
+  args.key = &key;
   args.query = &query;
   args.write(oprot_);
 
@@ -2748,18 +2764,19 @@ void SuccinctServiceClient::recv_Search(std::set<int64_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Search failed: unknown result");
 }
 
-void SuccinctServiceClient::SearchLocal(std::set<int64_t> & _return, const std::string& query)
+void SuccinctServiceClient::SearchLocal(std::set<int64_t> & _return, const int32_t qserver_id, const std::string& query)
 {
-  send_SearchLocal(query);
+  send_SearchLocal(qserver_id, query);
   recv_SearchLocal(_return);
 }
 
-void SuccinctServiceClient::send_SearchLocal(const std::string& query)
+void SuccinctServiceClient::send_SearchLocal(const int32_t qserver_id, const std::string& query)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("SearchLocal", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_SearchLocal_pargs args;
+  args.qserver_id = &qserver_id;
   args.query = &query;
   args.write(oprot_);
 
@@ -3510,7 +3527,7 @@ void SuccinctServiceProcessor::process_Search(int32_t seqid, ::apache::thrift::p
 
   SuccinctService_Search_result result;
   try {
-    iface_->Search(result.success, args.shard_id, args.query);
+    iface_->Search(result.success, args.key, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -3564,7 +3581,7 @@ void SuccinctServiceProcessor::process_SearchLocal(int32_t seqid, ::apache::thri
 
   SuccinctService_SearchLocal_result result;
   try {
-    iface_->SearchLocal(result.success, args.query);
+    iface_->SearchLocal(result.success, args.qserver_id, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

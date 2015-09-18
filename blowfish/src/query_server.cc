@@ -11,7 +11,7 @@
 #include <fstream>
 #include <cstdint>
 
-#include "include/layered_succinct_shard.h"
+#include "layered_succinct_shard.h"
 #include "ports.h"
 
 using namespace ::apache::thrift;
@@ -40,13 +40,20 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
       fprintf(stderr, "Memory mapped data from file %s; size = %llu.\n",
               filename_.c_str(), succinct_shard_->GetOriginalSize());
-      fprintf(stderr, "Ready!\n");
+
 
       num_keys_ = succinct_shard_->GetNumKeys();
 
       // Drop layers as required
+      uint32_t n_layers_to_remove = SuccinctUtils::IntegerLog2(sampling_rate_) - 1;
+      fprintf(stderr, "Dropping %u layers...\n", n_layers_to_remove);
+      for (uint32_t i = 0; i < n_layers_to_remove; i++) {
+        fprintf(stderr, "Dropping layer %u\n", i);
+        succinct_shard_->RemoveLayer(i);
+      }
 
       is_init_ = true;
+      fprintf(stderr, "Ready!\n");
       return 0;
     }
 

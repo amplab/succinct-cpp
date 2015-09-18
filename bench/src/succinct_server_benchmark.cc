@@ -59,28 +59,12 @@ int main(int argc, char **argv) {
   // Benchmark core functions
   SuccinctServerBenchmark s_bench(benchmark_type, num_shards, num_keys,
                                   queryfile);
-  if (benchmark_type == "latency-get") {
-    s_bench.BenchmarkGetLatency("latency_results_get");
-  } else if (benchmark_type == "latency-access") {
-    s_bench.BenchmarkAccessLatency("latency_results_access", len);
-  } else if (benchmark_type == "latency-count") {
-    s_bench.BenchmarkCountLatency("latency_results_count");
-  } else if (benchmark_type == "latency-search") {
-    s_bench.BenchmarkSearchLatency("latency_results_search");
-  } else if (benchmark_type == "latency-regex-search") {
-    s_bench.BenchmarkRegexSearchLatency("latency_results_regex_search");
-  } else if (benchmark_type == "latency-regex-count") {
-    s_bench.BenchmarkRegexCountLatency("latency_results_regex_count");
-  } else if (benchmark_type == "latency-flat-extract") {
-    s_bench.BenchmarkFlatExtractLatency("latency_results_flat_extract", len);
-  } else if (benchmark_type == "latency-flat-count") {
-    s_bench.BenchmarkFlatCountLatency("latency_results_flat_count");
-  } else if (benchmark_type == "latency-flat-search") {
-    s_bench.BenchmarkFlatSearchLatency("latency_results_flat_search");
-  } else if (benchmark_type == "throughput-get") {
+  if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
-  } else if (benchmark_type == "throughput-access") {
-    s_bench.BenchmarkAccessThroughput(num_threads, len);
+  } else if (benchmark_type == "throughput-search") {
+    s_bench.BenchmarkSearchThroughput(num_threads);
+  } else if (benchmark_type == "throughput-search-get") {
+    s_bench.BenchmarkSearchThroughput(num_threads);
   } else {
     // Not supported
     assert(0);
