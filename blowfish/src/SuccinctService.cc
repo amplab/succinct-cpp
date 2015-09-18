@@ -896,6 +896,14 @@ uint32_t SuccinctService_Get_args::read(::apache::thrift::protocol::TProtocol* i
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->shard_id);
+          this->__isset.shard_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->key);
           this->__isset.key = true;
@@ -919,7 +927,11 @@ uint32_t SuccinctService_Get_args::write(::apache::thrift::protocol::TProtocol* 
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Get_args");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->shard_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
   xfer += oprot->writeI64(this->key);
   xfer += oprot->writeFieldEnd();
 
@@ -932,7 +944,11 @@ uint32_t SuccinctService_Get_pargs::write(::apache::thrift::protocol::TProtocol*
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Get_pargs");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->shard_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 2);
   xfer += oprot->writeI64((*(this->key)));
   xfer += oprot->writeFieldEnd();
 
@@ -1236,9 +1252,9 @@ uint32_t SuccinctService_Search_args::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->key);
-          this->__isset.key = true;
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->shard_id);
+          this->__isset.shard_id = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1267,8 +1283,8 @@ uint32_t SuccinctService_Search_args::write(::apache::thrift::protocol::TProtoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Search_args");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64(this->key);
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->shard_id);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
@@ -1284,8 +1300,8 @@ uint32_t SuccinctService_Search_pargs::write(::apache::thrift::protocol::TProtoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("SuccinctService_Search_pargs");
 
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_I64, 1);
-  xfer += oprot->writeI64((*(this->key)));
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->shard_id)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("query", ::apache::thrift::protocol::T_STRING, 2);
@@ -2588,18 +2604,19 @@ int32_t SuccinctServiceClient::recv_Initialize()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "Initialize failed: unknown result");
 }
 
-void SuccinctServiceClient::Get(std::string& _return, const int64_t key)
+void SuccinctServiceClient::Get(std::string& _return, const int32_t shard_id, const int64_t key)
 {
-  send_Get(key);
+  send_Get(shard_id, key);
   recv_Get(_return);
 }
 
-void SuccinctServiceClient::send_Get(const int64_t key)
+void SuccinctServiceClient::send_Get(const int32_t shard_id, const int64_t key)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("Get", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_Get_pargs args;
+  args.shard_id = &shard_id;
   args.key = &key;
   args.write(oprot_);
 
@@ -2705,19 +2722,19 @@ void SuccinctServiceClient::recv_GetLocal(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetLocal failed: unknown result");
 }
 
-void SuccinctServiceClient::Search(std::set<int64_t> & _return, const int64_t key, const std::string& query)
+void SuccinctServiceClient::Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query)
 {
-  send_Search(key, query);
+  send_Search(shard_id, query);
   recv_Search(_return);
 }
 
-void SuccinctServiceClient::send_Search(const int64_t key, const std::string& query)
+void SuccinctServiceClient::send_Search(const int32_t shard_id, const std::string& query)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("Search", ::apache::thrift::protocol::T_CALL, cseqid);
 
   SuccinctService_Search_pargs args;
-  args.key = &key;
+  args.shard_id = &shard_id;
   args.query = &query;
   args.write(oprot_);
 
@@ -3419,7 +3436,7 @@ void SuccinctServiceProcessor::process_Get(int32_t seqid, ::apache::thrift::prot
 
   SuccinctService_Get_result result;
   try {
-    iface_->Get(result.success, args.key);
+    iface_->Get(result.success, args.shard_id, args.key);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -3527,7 +3544,7 @@ void SuccinctServiceProcessor::process_Search(int32_t seqid, ::apache::thrift::p
 
   SuccinctService_Search_result result;
   try {
-    iface_->Search(result.success, args.key, args.query);
+    iface_->Search(result.success, args.shard_id, args.query);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

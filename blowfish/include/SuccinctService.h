@@ -21,9 +21,9 @@ class SuccinctServiceIf {
   virtual int32_t DisconnectFromLocalServers() = 0;
   virtual int32_t StartLocalServers() = 0;
   virtual int32_t Initialize(const int32_t mode) = 0;
-  virtual void Get(std::string& _return, const int64_t key) = 0;
+  virtual void Get(std::string& _return, const int32_t shard_id, const int64_t key) = 0;
   virtual void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
-  virtual void Search(std::set<int64_t> & _return, const int64_t key, const std::string& query) = 0;
+  virtual void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query) = 0;
   virtual void SearchLocal(std::set<int64_t> & _return, const int32_t qserver_id, const std::string& query) = 0;
   virtual int32_t GetNumHosts() = 0;
   virtual int32_t GetNumShards(const int32_t host_id) = 0;
@@ -82,13 +82,13 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     int32_t _return = 0;
     return _return;
   }
-  void Get(std::string& /* _return */, const int64_t /* key */) {
+  void Get(std::string& /* _return */, const int32_t /* shard_id */, const int64_t /* key */) {
     return;
   }
   void GetLocal(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
     return;
   }
-  void Search(std::set<int64_t> & /* _return */, const int64_t /* key */, const std::string& /* query */) {
+  void Search(std::set<int64_t> & /* _return */, const int32_t /* shard_id */, const std::string& /* query */) {
     return;
   }
   void SearchLocal(std::set<int64_t> & /* _return */, const int32_t /* qserver_id */, const std::string& /* query */) {
@@ -691,21 +691,27 @@ class SuccinctService_Initialize_presult {
 };
 
 typedef struct _SuccinctService_Get_args__isset {
-  _SuccinctService_Get_args__isset() : key(false) {}
+  _SuccinctService_Get_args__isset() : shard_id(false), key(false) {}
+  bool shard_id;
   bool key;
 } _SuccinctService_Get_args__isset;
 
 class SuccinctService_Get_args {
  public:
 
-  SuccinctService_Get_args() : key(0) {
+  SuccinctService_Get_args() : shard_id(0), key(0) {
   }
 
   virtual ~SuccinctService_Get_args() throw() {}
 
+  int32_t shard_id;
   int64_t key;
 
   _SuccinctService_Get_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
 
   void __set_key(const int64_t val) {
     key = val;
@@ -713,6 +719,8 @@ class SuccinctService_Get_args {
 
   bool operator == (const SuccinctService_Get_args & rhs) const
   {
+    if (!(shard_id == rhs.shard_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     return true;
@@ -735,6 +743,7 @@ class SuccinctService_Get_pargs {
 
   virtual ~SuccinctService_Get_pargs() throw() {}
 
+  const int32_t* shard_id;
   const int64_t* key;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -916,26 +925,26 @@ class SuccinctService_GetLocal_presult {
 };
 
 typedef struct _SuccinctService_Search_args__isset {
-  _SuccinctService_Search_args__isset() : key(false), query(false) {}
-  bool key;
+  _SuccinctService_Search_args__isset() : shard_id(false), query(false) {}
+  bool shard_id;
   bool query;
 } _SuccinctService_Search_args__isset;
 
 class SuccinctService_Search_args {
  public:
 
-  SuccinctService_Search_args() : key(0), query() {
+  SuccinctService_Search_args() : shard_id(0), query() {
   }
 
   virtual ~SuccinctService_Search_args() throw() {}
 
-  int64_t key;
+  int32_t shard_id;
   std::string query;
 
   _SuccinctService_Search_args__isset __isset;
 
-  void __set_key(const int64_t val) {
-    key = val;
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
   }
 
   void __set_query(const std::string& val) {
@@ -944,7 +953,7 @@ class SuccinctService_Search_args {
 
   bool operator == (const SuccinctService_Search_args & rhs) const
   {
-    if (!(key == rhs.key))
+    if (!(shard_id == rhs.shard_id))
       return false;
     if (!(query == rhs.query))
       return false;
@@ -968,7 +977,7 @@ class SuccinctService_Search_pargs {
 
   virtual ~SuccinctService_Search_pargs() throw() {}
 
-  const int64_t* key;
+  const int32_t* shard_id;
   const std::string* query;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1591,14 +1600,14 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   int32_t Initialize(const int32_t mode);
   void send_Initialize(const int32_t mode);
   int32_t recv_Initialize();
-  void Get(std::string& _return, const int64_t key);
-  void send_Get(const int64_t key);
+  void Get(std::string& _return, const int32_t shard_id, const int64_t key);
+  void send_Get(const int32_t shard_id, const int64_t key);
   void recv_Get(std::string& _return);
   void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key);
   void send_GetLocal(const int32_t qserver_id, const int64_t key);
   void recv_GetLocal(std::string& _return);
-  void Search(std::set<int64_t> & _return, const int64_t key, const std::string& query);
-  void send_Search(const int64_t key, const std::string& query);
+  void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query);
+  void send_Search(const int32_t shard_id, const std::string& query);
   void recv_Search(std::set<int64_t> & _return);
   void SearchLocal(std::set<int64_t> & _return, const int32_t qserver_id, const std::string& query);
   void send_SearchLocal(const int32_t qserver_id, const std::string& query);
@@ -1743,13 +1752,13 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return ifaces_[i]->Initialize(mode);
   }
 
-  void Get(std::string& _return, const int64_t key) {
+  void Get(std::string& _return, const int32_t shard_id, const int64_t key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Get(_return, key);
+      ifaces_[i]->Get(_return, shard_id, key);
     }
-    ifaces_[i]->Get(_return, key);
+    ifaces_[i]->Get(_return, shard_id, key);
     return;
   }
 
@@ -1763,13 +1772,13 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
     return;
   }
 
-  void Search(std::set<int64_t> & _return, const int64_t key, const std::string& query) {
+  void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Search(_return, key, query);
+      ifaces_[i]->Search(_return, shard_id, query);
     }
-    ifaces_[i]->Search(_return, key, query);
+    ifaces_[i]->Search(_return, shard_id, query);
     return;
   }
 

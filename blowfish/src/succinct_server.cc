@@ -35,9 +35,6 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     this->local_host_id_ = local_host_id;
     this->num_shards_ = num_shards;
     this->hostnames_ = hostnames;
-    // this->balancer_ = new LoadBalancer(distribution);
-    // this->sampling_rates_ = sampling_rates;
-    // this->num_failures_ = num_failures;
   }
 
   int32_t StartLocalServers() {
@@ -73,55 +70,22 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     return 0;
   }
 
-  void Get(std::string& _return, const int64_t key) {
-    uint32_t shard_id = (uint32_t) (key / SuccinctShard::MAX_KEYS);
-        // * balancer_->num_replicas() + balancer_->get_replica();
+  void Get(std::string& _return, const int32_t shard_id, const int64_t key) {
     uint32_t host_id = shard_id % hostnames_.size();
-
-    /*
-    // Currently only supports single failure emulation
-    if (host_id < num_failures_) {
-      // Get new replica#
-      uint32_t replica_num =
-          (shard_id % balancer_->num_replicas() == 0) ? 1 : 0;
-      shard_id = (uint32_t) ((key / SuccinctShard::MAX_KEYS)
-          * balancer_->num_replicas()) + replica_num;
-      assert(host_id != shard_id % hostnames_.size());
-      host_id = shard_id % hostnames_.size();
-    }
-    */
-
     uint32_t qserver_id = shard_id / hostnames_.size();
     if (host_id == local_host_id_) {
-      GetLocal(_return, qserver_id, key % SuccinctShard::MAX_KEYS);
+      GetLocal(_return, qserver_id, key);
     } else {
-      qhandlers_.at(host_id).GetLocal(_return, qserver_id,
-                                       key % SuccinctShard::MAX_KEYS);
+      qhandlers_.at(host_id).GetLocal(_return, qserver_id, key);
     }
   }
 
-  void GetLocal(std::string& _return, const int32_t qserver_id,
-                const int64_t key) {
+  void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) {
     qservers_.at(qserver_id).Get(_return, key);
   }
 
-  void Search(std::set<int64_t> & _return, const int64_t key, const std::string& query) {
-
-    uint32_t shard_id = (uint32_t) (key / SuccinctShard::MAX_KEYS);
-            // * balancer_->num_replicas() + balancer_->get_replica();
+  void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query) {
     uint32_t host_id = shard_id % hostnames_.size();
-
-    /*
-    // Currently only supports single failure emulation
-    if (host_id < num_failures_) {
-      // Get new replica#
-      uint32_t replica_num = (shard_id % balancer_->num_replicas() == 0) ? 1 : 0;
-      shard_id = (uint32_t) ((key / SuccinctShard::MAX_KEYS) * balancer_->num_replicas()) + replica_num;
-      assert(host_id != shard_id % hostnames_.size());
-      host_id = shard_id % hostnames_.size();
-    }
-    */
-
     uint32_t qserver_id = shard_id / hostnames_.size();
     if (host_id == local_host_id_) {
       SearchLocal(_return, qserver_id, query);
@@ -274,9 +238,6 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
   std::map<int, SuccinctServiceClient> qhandlers_;
   uint32_t num_shards_;
   uint32_t local_host_id_;
-  // uint32_t num_failures_;
-  // LoadBalancer *balancer_;
-  // std::vector<uint32_t> sampling_rates_;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {

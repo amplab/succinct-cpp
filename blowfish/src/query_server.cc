@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <fstream>
 #include <cstdint>
+#include <sstream>
 
 #include "layered_succinct_shard.h"
 #include "ports.h"
@@ -21,14 +22,16 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
+typedef std::map<uint32_t, uint32_t> ConfigMap;
+
 class QueryServiceHandler : virtual public QueryServiceIf {
  public:
-  QueryServiceHandler(std::string filename, uint32_t sampling_rate) {
+  QueryServiceHandler(std::string filename, ConfigMap& sr_map) {
     succinct_shard_ = NULL;
     filename_ = filename;
     is_init_ = false;
     num_keys_ = 0;
-    sampling_rate_ = sampling_rate;
+    sr_map_ = sr_map;
   }
 
   int32_t Initialize(int32_t id) {
@@ -41,11 +44,10 @@ class QueryServiceHandler : virtual public QueryServiceIf {
       fprintf(stderr, "Memory mapped data from file %s; size = %llu.\n",
               filename_.c_str(), succinct_shard_->GetOriginalSize());
 
-
       num_keys_ = succinct_shard_->GetNumKeys();
 
       // Drop layers as required
-      uint32_t n_layers_to_remove = SuccinctUtils::IntegerLog2(sampling_rate_) - 1;
+      uint32_t n_layers_to_remove = SuccinctUtils::IntegerLog2(sr_map_[id]) - 1;
       fprintf(stderr, "Dropping %u layers...\n", n_layers_to_remove);
       for (uint32_t i = 0; i < n_layers_to_remove; i++) {
         fprintf(stderr, "Dropping layer %u\n", i);
@@ -81,7 +83,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
   std::string filename_;
   bool is_init_;
   uint32_t num_keys_;
-  uint32_t sampling_rate_;
+  ConfigMap sr_map_;
 };
 
 
@@ -103,16 +105,16 @@ int main(int argc, char **argv) {
   fprintf(stderr, "\n");
 
   int c;
-  uint32_t port = QUERY_SERVER_PORT, sampling_rate = 2;
+  uint32_t port = QUERY_SERVER_PORT;
+  std::string conf_file = "conf/succinct.conf";
 
-  while ((c = getopt(argc, argv, "p:s:")) != -1) {
+  while ((c = getopt(argc, argv, "p:c:")) != -1) {
     switch (c) {
       case 'p':
         port = atoi(optarg);
         break;
-      case 's':
-        sampling_rate = atoi(optarg);
-        assert(sampling_rate >= 2);
+      case 'c':
+        conf_file = optarg;
         break;
       default:
         fprintf(stderr, "Unrecognized argument %c\n", c);
@@ -126,8 +128,22 @@ int main(int argc, char **argv) {
 
   std::string filename = std::string(argv[optind]);
 
+  // Parse config file
+  std::ifstream conf(conf_file);
+  std::string line;
+  ConfigMap sr_map;
+  while (std::getline(conf, line)) {
+    std::istringstream iss(line);
+    uint32_t id, sr;
+    if (!(iss >> id >> sr)) {
+      fprintf(stderr, "Malformed config file\n");
+      return -1;
+    }
+    sr_map[id] = sr;
+  }
+
   shared_ptr<QueryServiceHandler> handler(
-      new QueryServiceHandler(filename, sampling_rate));
+      new QueryServiceHandler(filename, sr_map));
   shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
   try {

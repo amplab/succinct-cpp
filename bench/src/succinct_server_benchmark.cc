@@ -7,7 +7,7 @@
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-q query-file] [-t num-threads] [-s num-shards] [-k num-keys] [-l fetch-length] bench-type\n",
+      "Usage: %s [-q query-file] [-t num-threads] [-s num-shards] [-k num-keys] bench-type\n",
       exec);
 }
 
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   uint32_t num_keys = 10000;
   int32_t len = 100;
   std::string queryfile = "";
-  while ((c = getopt(argc, argv, "q:t:s:k:l:")) != -1) {
+  while ((c = getopt(argc, argv, "q:t:s:k:")) != -1) {
     switch (c) {
       case 't':
         num_threads = atoi(optarg);
@@ -34,18 +34,12 @@ int main(int argc, char **argv) {
       case 'k':
         num_keys = atoi(optarg);
         break;
-      case 'l':
-        len = atoi(optarg);
-        break;
       case 'q':
         queryfile = std::string(optarg);
         break;
       default:
-        num_threads = 1;
-        num_shards = 1;
-        num_keys = 10000;
-        len = 100;
-        queryfile = "";
+        fprintf(stderr, "Invalid parameter %c\n", c);
+        return -1;
     }
   }
 

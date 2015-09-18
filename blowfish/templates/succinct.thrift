@@ -8,10 +8,10 @@ service SuccinctService {
     i32 StartLocalServers(),
     i32 Initialize(1:i32 mode),
 
-    string Get(1:i64 key),
+    string Get(1:i32 shard_id, 2:i64 key),
     string GetLocal(1:i32 qserver_id, 2:i64 key),
 
-    set<i64> Search(1:i64 key, 2:string query),
+    set<i64> Search(1:i32 shard_id, 2:string query),
     set<i64> SearchLocal(1:i32 qserver_id, 2:string query),
     
     i32 GetNumHosts(),
