@@ -38,21 +38,14 @@ class QueryServiceHandler : virtual public QueryServiceIf {
     if(!is_init_) {
       fprintf(stderr, "Memory mapping data structures...\n");
 
-      succinct_shard_ = new LayeredSuccinctShard(id, filename_,
-          SuccinctMode::LOAD_MEMORY_MAPPED, 2, 2);
+      assert(ISPOWOF2(sr_map_[id]));
+      succinct_shard_ = new SuccinctShard(id, filename_,
+          SuccinctMode::LOAD_MEMORY_MAPPED, sr_map_[id], sr_map_[id]);
 
       fprintf(stderr, "Memory mapped data from file %s; size = %llu.\n",
               filename_.c_str(), succinct_shard_->GetOriginalSize());
 
       num_keys_ = succinct_shard_->GetNumKeys();
-
-      // Drop layers as required
-      uint32_t n_layers_to_remove = SuccinctUtils::IntegerLog2(sr_map_[id]) - 1;
-      fprintf(stderr, "Dropping %u layers...\n", n_layers_to_remove);
-      for (uint32_t i = 0; i < n_layers_to_remove; i++) {
-        fprintf(stderr, "Dropping layer %u\n", i);
-        succinct_shard_->RemoveLayer(i);
-      }
 
       is_init_ = true;
       fprintf(stderr, "Ready!\n");
@@ -79,7 +72,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
   }
 
  private:
-  LayeredSuccinctShard *succinct_shard_;
+  SuccinctShard *succinct_shard_;
   std::string filename_;
   bool is_init_;
   uint32_t num_keys_;
@@ -88,12 +81,12 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [-p port] [-s sampling-rate] [file]\n", exec);
+  fprintf(stderr, "Usage: %s [-p port] [-c conf-file] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
 
-  if (argc < 2 || argc > 4) {
+  if (argc < 2 || argc > 6) {
     print_usage(argv[0]);
     return -1;
   }
@@ -106,7 +99,7 @@ int main(int argc, char **argv) {
 
   int c;
   uint32_t port = QUERY_SERVER_PORT;
-  std::string conf_file = "conf/succinct.conf";
+  std::string conf_file = "conf/blowfish.conf";
 
   while ((c = getopt(argc, argv, "p:c:")) != -1) {
     switch (c) {

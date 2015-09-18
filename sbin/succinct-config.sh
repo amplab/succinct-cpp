@@ -13,5 +13,5 @@ this="$config_bin/$script"
 export SUCCINCT_PREFIX="`dirname "$this"`"/..
 export SUCCINCT_HOME="${SUCCINCT_PREFIX}"
 export SUCCINCT_CONF_DIR="${SUCCINCT_CONF_DIR:-"$SUCCINCT_HOME/conf"}"
-export THRIFT_BIN_DIR="${THRIFT_BIN_DIR:-"$SUCCINCT_HOME/build/thrift/bin"}"
+export THRIFT_BIN_DIR="${THRIFT_BIN_DIR:-"$SUCCINCT_HOME/build/blowfish/bin"}"
 export ADAPTIVE_BIN_DIR="${ADAPTIVE_BIN_DIR:-"$SUCCINCT_HOME/build/adaptive/bin"}"

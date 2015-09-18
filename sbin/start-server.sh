@@ -1,5 +1,5 @@
-# Usage: start-server.sh <datafile> <server#>
-usage="Usage: start-server.sh <datafile> <server#>"
+# Usage: start-server.sh <datafile>
+usage="Usage: start-server.sh <datafile>"
 
 if [ $# -le 1 ]; then
   echo $usage
@@ -18,10 +18,6 @@ bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-if [ "$SUCCINCT_DATA_PATH" = "" ]; then
-  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
-fi
-
 if [ "$SUCCINCT_LOG_PATH" = "" ]; then
 	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
@@ -29,9 +25,13 @@ fi
 mkdir -p $SUCCINCT_LOG_PATH
 
 if [ "$QUERY_SERVER_PORT" = "" ]; then
-	QUERY_SERVER_PORT=11002
+	QUERY_SERVER_PORT=12002
+fi
+
+if [ "$CONF_FILE" = "" ]; then
+    CONF_FILE="$SUCCINCT_PREFIX/conf/blowfish.conf"
 fi
 
 port=$(( $QUERY_SERVER_PORT + $2 ))
 
-nohup "$bin/sserver" -m 1 -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &
+nohup "$bin/sserver" -p "$port" -c "$CONF_FILE" "${1}" 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &

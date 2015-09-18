@@ -26,10 +26,6 @@ if [ "$SUCCINCT_LOG_PATH" = "" ]; then
 	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
 
-if [ "$NUM_FAILURES" = "" ]; then
-	NUM_FAILURES=0
-fi
-
 mkdir -p $SUCCINCT_LOG_PATH
 
-nohup "$bin/shandler" -m 1 -s "$1" -h "$SUCCINCT_CONF_DIR/hosts" -r "$SUCCINCT_CONF_DIR/repl" -i "$2" "$SUCCINCT_DATA_PATH/data" -f "$NUM_FAILURES" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
+nohup "$bin/shandler" -s "${1}" -h "$SUCCINCT_CONF_DIR/hosts" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &

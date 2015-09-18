@@ -29,6 +29,8 @@ class LayeredSuccinctShard : public SuccinctShard {
 
   uint64_t NumSampledValues();
 
+  void SerializeStatic(std::string& path, uint32_t sampling_rate);
+
  private:
   bool opportunistic;
 };

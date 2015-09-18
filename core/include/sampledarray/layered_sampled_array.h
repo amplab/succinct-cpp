@@ -64,8 +64,8 @@ class LayeredSampledArray : public SampledArray {
       SuccinctBase::InitBitmap(&layer_data_[i], num_entries * data_bits_,
                                 succinct_allocator);
     }
-
     this->succinct_allocator_ = succinct_allocator;
+    memory_map_ = false;
   }
 
   LayeredSampledArray(uint32_t target_sampling_rate,
@@ -93,6 +93,7 @@ class LayeredSampledArray : public SampledArray {
     original_size_ = 0;
     data_bits_ = 0;
     succinct_allocator_ = succinct_allocator;
+    memory_map_ = false;
   }
 
   inline void GetLayer(Layer *l, uint64_t i) {
@@ -165,7 +166,12 @@ class LayeredSampledArray : public SampledArray {
       DELETE_LAYER(layer_id);
       size = layer_data_[layer_id]->size;
       usleep(10000);                      // TODO: This is very hacky
-      SuccinctBase::DestroyBitmap(&layer_data_[layer_id], succinct_allocator_);
+      if (!memory_map_) {
+        SuccinctBase::DestroyBitmap(&layer_data_[layer_id], succinct_allocator_);
+      } else {
+        munmap(layer_data_[layer_id]->bitmap, SuccinctUtils::NumBlocks(layer_data_[layer_id]->size, 64));
+        delete layer_data_[layer_id];
+      }
       layer_data_[layer_id] = NULL;
     }
     return size;
@@ -260,6 +266,8 @@ class LayeredSampledArray : public SampledArray {
       data += SuccinctBase::MemoryMapBitmap(&layer_data_[i], data);
     }
 
+    memory_map_ = true;
+
     return data - data_beg;
   }
 
@@ -289,6 +297,8 @@ class LayeredSampledArray : public SampledArray {
   uint8_t data_bits_;                     // Width of each data entry in bits
   uint64_t original_size_;               // Number of elements in original array
   SuccinctAllocator succinct_allocator_;  // Allocator for allocating memory
+
+  bool memory_map_;
 
  private:
   uint32_t GCD(uint32_t first, uint32_t second) {

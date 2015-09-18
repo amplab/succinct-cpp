@@ -98,6 +98,16 @@ class SuccinctUtils {
     out.write(reinterpret_cast<const char *>(data), size * sizeof(T));
     out.close();
   }
+
+  static void CopyFile(std::string from, std::string to) {
+    std::ifstream src(from, std::ios::binary);
+    std::ofstream dst(to, std::ios::binary);
+
+    dst << src.rdbuf();
+
+    src.close();
+    dst.close();
+  }
 };
 
 #endif

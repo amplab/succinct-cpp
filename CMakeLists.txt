@@ -23,6 +23,7 @@ add_subdirectory(core)
 add_subdirectory(blowfish)
 add_subdirectory(adaptive)
 add_subdirectory(construct)
+add_subdirectory(shard-gen)
 add_subdirectory(bench)
 
 # Testing framework
