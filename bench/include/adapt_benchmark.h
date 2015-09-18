@@ -290,8 +290,8 @@ class AdaptBenchmark : public Benchmark {
     }
     inputfile.close();
     fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
-                skew_, 200000);
-    ZipfGenerator z(skew_, 200000);
+                skew_, 150000);
+    ZipfGenerator z(skew_, 150000);
     fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
     for (uint64_t i = 0; i < queries_.size(); i++) {
       query_ids_.push_back(z.Next());
