@@ -1,6 +1,8 @@
 #ifndef SUCCINCT_SERVER_BENCHMARK_H
 #define SUCCINCT_SERVER_BENCHMARK_H
 
+#include <sstream>
+
 #include <thrift/transport/TSocket.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TBufferTransports.h>
@@ -17,15 +19,16 @@ using namespace ::apache::thrift::transport;
 class SuccinctServerBenchmark : public Benchmark {
  public:
 
-  SuccinctServerBenchmark(std::string benchmark_type, uint32_t num_shards,
-                          uint32_t num_keys, std::string query_file)
+  SuccinctServerBenchmark(std::string benchmark_type, double skew,
+                          uint32_t num_keys, std::string query_file,
+                          std::vector<int32_t>& primary_ids)
       : Benchmark() {
     benchmark_type_ = benchmark_type;
-    int port = QUERY_HANDLER_PORT;
     client_ = NULL;
-    num_shards_ = num_shards;
     num_keys_ = num_keys;
     query_file_ = query_file;
+    skew_ = skew;
+    primary_ids_ = primary_ids;
   }
 
   static void *GetThroughput(void *ptr) {
@@ -42,7 +45,7 @@ class SuccinctServerBenchmark : public Benchmark {
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                   data.keys[i % data.keys.size()]);
+                   data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -51,7 +54,7 @@ class SuccinctServerBenchmark : public Benchmark {
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                   data.keys[i % data.keys.size()]);
+                   data.randoms[i % data.randoms.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
@@ -62,7 +65,7 @@ class SuccinctServerBenchmark : public Benchmark {
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                   data.keys[i % data.keys.size()]);
+                   data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -82,7 +85,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
   static void *SearchThroughput(void *ptr) {
     ThreadData data = *((ThreadData*) ptr);
-    std::cout << "GET\n";
+    std::cout << "SEARCH\n";
 
     SuccinctServiceClient client = *(data.client);
     std::set<int64_t> res;
@@ -93,7 +96,7 @@ class SuccinctServerBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        client.Search(res, data.keys[i % data.keys.size()],
+        client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
       }
@@ -102,7 +105,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        client.Search(res, data.keys[i % data.keys.size()],
+        client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
       }
@@ -113,7 +116,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        client.Search(res, data.keys[i % data.keys.size()],
+        client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
       }
@@ -135,7 +138,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
   static void *SearchGetThroughput(void *ptr) {
     ThreadData data = *((ThreadData*) ptr);
-    std::cout << "GET\n";
+    std::cout << "SEARCH_GET\n";
 
     SuccinctServiceClient client = *(data.client);
     std::set<int64_t> res;
@@ -145,30 +148,34 @@ class SuccinctServerBenchmark : public Benchmark {
     try {
       // Warmup phase
       uint64_t num_q = 0;
-      long i = 0;
+      uint64_t i = 0, j = 0, k = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
         if (num_q % 2 == 0) {
-          client.Search(res, data.keys[i % data.keys.size()],
-                        data.queries[i % data.queries.size()]);
+          client.Search(res, data.shard_ids[k % data.shard_ids.size()],
+                        data.queries[j % data.queries.size()]);
+          j++;
         } else {
-          client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                     data.keys[i % data.keys.size()]);
+          client.Get(value, data.shard_ids[k % data.shard_ids.size()],
+                     data.randoms[k % data.randoms.size()]);
+          k++;
         }
         i++;
         num_q++;
       }
 
       // Measure phase
-      i = 0;
+      i = 0, j = 0, k = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
         if (num_q % 2 == 0) {
-          client.Search(res, data.keys[i % data.keys.size()],
-                        data.queries[i % data.queries.size()]);
+          client.Search(res, data.shard_ids[k % data.shard_ids.size()],
+                        data.queries[j % data.queries.size()]);
+          j++;
         } else {
-          client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                     data.keys[i % data.keys.size()]);
+          client.Get(value, data.shard_ids[k % data.shard_ids.size()],
+                     data.randoms[k % data.randoms.size()]);
+          k++;
         }
         i++;
         num_q++;
@@ -177,15 +184,17 @@ class SuccinctServerBenchmark : public Benchmark {
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
-      i = 0;
+      i = 0, j = 0, k = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
         if (num_q % 2 == 0) {
-          client.Search(res, data.keys[i % data.keys.size()],
-                        data.queries[i % data.queries.size()]);
+          client.Search(res, data.shard_ids[k % data.shard_ids.size()],
+                        data.queries[j % data.queries.size()]);
+          j++;
         } else {
-          client.Get(value, data.shard_ids[i % data.shard_ids.size()],
-                     data.keys[i % data.keys.size()]);
+          client.Get(value, data.shard_ids[k % data.shard_ids.size()],
+                     data.randoms[k % data.randoms.size()]);
+          k++;
         }
         i++;
         num_q++;
@@ -195,10 +204,10 @@ class SuccinctServerBenchmark : public Benchmark {
       fprintf(stderr, "Throughput test ends...\n");
     }
 
-    printf("Search throughput: %lf\n", thput);
+    printf("Search+Get throughput: %lf\n", thput);
 
     std::ofstream ofs;
-    ofs.open("throughput_results_search",
+    ofs.open("throughput_results_search_get",
              std::ofstream::out | std::ofstream::app);
     ofs << thput << "\n";
     ofs.close();
@@ -222,7 +231,7 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_shards_, num_keys_, th_data.shard_ids, th_data.keys);
+        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
         data.push_back(th_data);
       } catch (std::exception& e) {
         fprintf(stderr, "Could not connect to handler on localhost : %s\n",
@@ -272,7 +281,7 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_shards_, num_keys_, th_data.shard_ids, th_data.keys);
+        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
         ReadQueries(query_file_, th_data.queries);
         data.push_back(th_data);
       } catch (std::exception& e) {
@@ -323,7 +332,7 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_shards_, num_keys_, th_data.shard_ids, th_data.keys);
+        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
         ReadQueries(query_file_, th_data.queries);
         data.push_back(th_data);
       } catch (std::exception& e) {
@@ -337,7 +346,7 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
       int result = 0;
       result = pthread_create(&thread[current_t], NULL,
-                              SuccinctServerBenchmark::SearchThroughput,
+                              SuccinctServerBenchmark::SearchGetThroughput,
                               static_cast<void*>(&(data[current_t])));
       if (result != 0) {
         fprintf(stderr, "Error creating thread %d; return code = %d\n",
@@ -363,7 +372,7 @@ class SuccinctServerBenchmark : public Benchmark {
     SuccinctServiceClient *client;
     boost::shared_ptr<TTransport> transport;
     std::vector<int32_t> shard_ids;
-    std::vector<int64_t> keys;
+    std::vector<int64_t> randoms;
     std::vector<std::string> queries;
   } ThreadData;
 
@@ -379,44 +388,56 @@ class SuccinctServerBenchmark : public Benchmark {
     return r & 0xFFFFFFFFFFFFFFFFULL;
   }
 
-  void GenerateRandoms(uint32_t num_shards, uint32_t num_keys,
-                       std::vector<int32_t> &shard_ids,
-                       std::vector<int64_t> &keys) {
-    uint64_t query_count = 100000;
+  void GenerateRandoms(uint32_t num_keys, std::vector<int32_t> &shard_ids,
+                       std::vector<int64_t> &randoms) {
+    uint64_t query_count = 1000000;
 
     fprintf(stderr, "Generating random keys, shard ids...\n");
-    ZipfGenerator z_s(0.01, num_shards);
-    ZipfGenerator z_k(0.01, num_keys);
+    fprintf(stderr, "Num Primaries = %zu, Skew = %lf\n", primary_ids_.size(), skew_);
+    ZipfGenerator z_s(skew_, primary_ids_.size());
+    fprintf(stderr, "Num Keys = %u, Skew = %lf\n", num_keys, skew_);
+    ZipfGenerator z_k(skew_, num_keys);
 
     for (uint64_t i = 0; i < query_count; i++) {
-      // Pick a host
-      shard_ids.push_back(z_s.Next());
-      keys.push_back(z_k.Next());
+      shard_ids.push_back(primary_ids_.at(z_s.Next()));
+      randoms.push_back(z_k.Next());
     }
-    fprintf(stderr, "Generated %llu random keys\n", query_count);
+    fprintf(stderr, "Loaded %llu get queries!\n", query_count);
   }
 
-  void ReadQueries(std::string filename, std::vector<std::string>& queries) {
-    std::ifstream inputfile(filename);
-    if (!inputfile.is_open()) {
+  void ReadQueries(std::string query_file, std::vector<std::string>& queries) {
+    uint64_t query_count = 1000000;
+
+    std::ifstream query_stream(query_file);
+    if (!query_stream.is_open()) {
       fprintf(stderr, "Error: Query file [%s] may be missing.\n",
-              filename.c_str());
+              query_file.c_str());
       return;
     }
 
-    std::string line, query, query_count;
-    while (getline(inputfile, line)) {
+    std::string line, query, expected_count;
+    std::vector<std::string> queries_temp;
+    while (getline(query_stream, line)) {
       // Extract key and value
       int split_index = line.find_first_of('\t');
-      query_count = line.substr(0, split_index);
+      expected_count = line.substr(0, split_index);
       query = line.substr(split_index + 1);
-      queries.push_back(query);
+      queries_temp.push_back(query);
     }
-    inputfile.close();
+    query_stream.close();
+
+    ZipfGenerator z_q(skew_, queries_temp.size());
+
+    for (uint64_t i = 0; i < query_count; i++) {
+      queries.push_back(queries_temp.at(z_q.Next()));
+    }
+    queries_temp.clear();
+    fprintf(stderr, "Loaded %llu search queries!\n", query_count);
   }
 
-  uint32_t num_shards_;
+  double skew_;
   uint32_t num_keys_;
+  std::vector<int32_t> primary_ids_;
   std::string query_file_;
   std::string benchmark_type_;
   SuccinctServiceClient *client_;

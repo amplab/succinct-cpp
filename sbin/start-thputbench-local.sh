@@ -7,9 +7,13 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$THRIFT_BIN_DIR"
+bin="$BENCH_BIN_DIR"
 bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-"$bin/ssbench" "$@" 2>&1 &
+if [ "$CONF_FILE" = "" ]; then
+	CONF_FILE="${SUCCINCT_CONF_DIR}/blowfish.conf"
+fi
+
+"$bin/ssbench" -c "$CONF_FILE" "$@" throughput-search-get 2>&1 &
