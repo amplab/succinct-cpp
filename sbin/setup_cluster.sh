@@ -33,7 +33,13 @@ if [ "$SUCCINCT_DATA_PATH" = "" ]; then
 	SUCCINCT_DATA_PATH="$SUCCINCT_PREFIX/dat"
 fi
 
+echo "Creating download script based on configuration..."
 python "$sbin/setup_cluster.py" -H "$SUCCINCT_HOSTS"  -c "$BLOWFISH_CONF" -S "$S3CMD_EXEC" -d "$SUCCINCT_DATA_PATH" > download.sh
+echo "Done. The script to be executed looks as follows:"
+cat download.sh
 chmod a+x download.sh
+echo "Running script..."
 ./download.sh
+echo "Script execution complete; Removing script..."
 rm download.sh
+echo "Done. Cluster setup complete."
