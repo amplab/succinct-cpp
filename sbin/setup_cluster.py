@@ -16,11 +16,11 @@ conf_file = options.conf_file
 data_path = options.data_path
 s3cmd_exec = options.s3cmd_exec
 data_sr_map =   {
-                8 : "s3://succinct-datasets/nsdi16/distributed/data_8.succinct",
-                16 : "s3://succinct-datasets/nsdi16/distributed/data_16.succinct",
-                32 : "s3://succinct-datasets/nsdi16/distributed/data_32.succinct",
-                64 : "s3://succinct-datasets/nsdi16/distributed/data_64.succinct",
-                128 : "s3://succinct-datasets/nsdi16/distributed/data_128.succinct",
+                8 : "s3://succinct-datasets/nsdi16/distributed/data_8.succinct/*",
+                16 : "s3://succinct-datasets/nsdi16/distributed/data_16.succinct/*",
+                32 : "s3://succinct-datasets/nsdi16/distributed/data_32.succinct/*",
+                64 : "s3://succinct-datasets/nsdi16/distributed/data_64.succinct/*",
+                128 : "s3://succinct-datasets/nsdi16/distributed/data_128.succinct/*",
                 }
 
 # Read hosts
