@@ -22,28 +22,29 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-typedef std::map<uint32_t, uint32_t> ConfigMap;
-
 class QueryServiceHandler : virtual public QueryServiceIf {
  public:
-  QueryServiceHandler(std::string filename, ConfigMap& sr_map) {
+  QueryServiceHandler(std::string data_path) {
     succinct_shard_ = NULL;
-    filename_ = filename;
+    data_path_ = data_path;
     is_init_ = false;
     num_keys_ = 0;
-    sr_map_ = sr_map;
   }
 
-  int32_t Initialize(int32_t id) {
-    if(!is_init_) {
-      fprintf(stderr, "Memory mapping data structures...\n");
+  int32_t Initialize(int32_t id, int32_t sampling_rate) {
+    if (!is_init_) {
+      fprintf(stderr,
+              "Memory mapping shard with id = %d, sampling-rate = %d...\n", id,
+              sampling_rate);
 
-      assert(ISPOWOF2(sr_map_[id]));
-      succinct_shard_ = new SuccinctShard(id, filename_,
-          SuccinctMode::LOAD_MEMORY_MAPPED, sr_map_[id], sr_map_[id]);
+      assert(ISPOWOF2(sampling_rate));
+      std::string filename = data_path_ + "/data_" + std::to_string(id);
+      succinct_shard_ = new SuccinctShard(id, filename,
+                                          SuccinctMode::LOAD_MEMORY_MAPPED,
+                                          sampling_rate, sampling_rate);
 
       fprintf(stderr, "Memory mapped data from file %s; size = %llu.\n",
-              filename_.c_str(), succinct_shard_->GetOriginalSize());
+              filename.c_str(), succinct_shard_->GetOriginalSize());
 
       num_keys_ = succinct_shard_->GetNumKeys();
 
@@ -73,12 +74,10 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
  private:
   SuccinctShard *succinct_shard_;
-  std::string filename_;
+  std::string data_path_;
   bool is_init_;
   uint32_t num_keys_;
-  ConfigMap sr_map_;
 };
-
 
 void print_usage(char *exec) {
   fprintf(stderr, "Usage: %s [-p port] [-c conf-file] [file]\n", exec);
@@ -99,15 +98,11 @@ int main(int argc, char **argv) {
 
   int c;
   uint32_t port = QUERY_SERVER_PORT;
-  std::string conf_file = "conf/blowfish.conf";
 
-  while ((c = getopt(argc, argv, "p:c:")) != -1) {
+  while ((c = getopt(argc, argv, "p:")) != -1) {
     switch (c) {
       case 'p':
         port = atoi(optarg);
-        break;
-      case 'c':
-        conf_file = optarg;
         break;
       default:
         fprintf(stderr, "Unrecognized argument %c\n", c);
@@ -119,24 +114,9 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  std::string filename = std::string(argv[optind]);
+  std::string data_path = std::string(argv[optind]);
 
-  // Parse config file
-  std::ifstream conf(conf_file);
-  std::string line;
-  ConfigMap sr_map;
-  while (std::getline(conf, line)) {
-    std::istringstream iss(line);
-    uint32_t id, sr;
-    if (!(iss >> id >> sr)) {
-      fprintf(stderr, "Malformed config file\n");
-      return -1;
-    }
-    sr_map[id] = sr;
-  }
-
-  shared_ptr<QueryServiceHandler> handler(
-      new QueryServiceHandler(filename, sr_map));
+  shared_ptr<QueryServiceHandler> handler(new QueryServiceHandler(data_path));
   shared_ptr<TProcessor> processor(new QueryServiceProcessor(handler));
 
   try {

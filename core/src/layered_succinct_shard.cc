@@ -155,7 +155,6 @@ void LayeredSuccinctShard::Access(std::string& result, int64_t key,
 
 void LayeredSuccinctShard::SerializeStatic(std::string& path,
                                            uint32_t sampling_rate) {
-
   struct stat st;
   if (stat(path.c_str(), &st) != 0) {
     mode_t mode = (mode_t) (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);

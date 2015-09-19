@@ -5,35 +5,35 @@
 #include <cstdlib>
 #include <assert.h>
 
+#include "shard_config.h"
+
 class LoadBalancer {
  public:
-  LoadBalancer(std::vector<double> distribution) {
-    std::sort(distribution.begin(), distribution.end());
-
-    double sum = 0;
-    for (size_t i = 0; i < distribution.size(); i++) {
-      sum += distribution.at(i);
-      cum_dist.push_back(sum);
-    }
-    assert(sum == 1.0);
+  LoadBalancer(ConfigMap &conf) {
+    conf_ = conf;
   }
 
-  uint32_t get_replica() {
+  uint32_t GetReplica(IdType primary_id) {
+    ShardMetadata sdata = conf_.at(primary_id);
     double r = ((double) rand() / (RAND_MAX));
-    for (size_t i = 0; i < cum_dist.size(); i++) {
-      if (r < cum_dist.at(i)) {
-        return i;
+    for (size_t i = 0; i < sdata.cum_dist.size(); i++) {
+      if (r < sdata.cum_dist.at(i)) {
+        return sdata.replicas.at(i);
       }
     }
-    return 0;
+    return primary_id;
   }
 
-  uint32_t num_replicas() {
-    return cum_dist.size();
+  uint32_t NumReplicas(IdType primary_id) {
+    return conf_.at(primary_id).replicas.size();
+  }
+
+  ConfigMap GetConf() {
+    return conf_;
   }
 
  private:
-  std::vector<double> cum_dist;
+  ConfigMap conf_;
 
 };
 

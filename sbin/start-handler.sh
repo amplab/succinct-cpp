@@ -28,4 +28,4 @@ fi
 
 mkdir -p $SUCCINCT_LOG_PATH
 
-nohup "$bin/shandler" -s "${1}" -h "$SUCCINCT_CONF_DIR/hosts" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
+nohup "$bin/shandler" -s "${1}" -h "$SUCCINCT_CONF_DIR/hosts" -c "$SUCCINCT_CONF_DIR/blowfish.conf" -i "${2}" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &

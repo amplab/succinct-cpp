@@ -21,7 +21,7 @@ service SuccinctService {
 }
 
 service QueryService {
-    i32 Initialize(1:i32 id),
+    i32 Initialize(1:i32 id, 2:i32 sampling_rate),
     string Get(1:i64 key),
     set<i64> Search(1:string query),
     i32 GetNumKeys(),

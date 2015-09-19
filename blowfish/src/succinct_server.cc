@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TThreadedServer.h>
@@ -19,6 +20,7 @@
 #include "succinct_constants.h"
 #include "QueryService.h"
 #include "ports.h"
+#include "shard_config.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -29,12 +31,13 @@ using boost::shared_ptr;
 
 class SuccinctServiceHandler : virtual public SuccinctServiceIf {
  public:
-  SuccinctServiceHandler(uint32_t local_host_id,
-                         uint32_t num_shards,
-                         std::vector<std::string> hostnames) {
+  SuccinctServiceHandler(uint32_t local_host_id, uint32_t num_shards,
+                         std::vector<std::string> hostnames, ConfigMap& conf) {
     this->local_host_id_ = local_host_id;
     this->num_shards_ = num_shards;
     this->hostnames_ = hostnames;
+    this->conf_ = conf;
+    this->load_balancer_ = new LoadBalancer(conf);
   }
 
   int32_t StartLocalServers() {
@@ -51,8 +54,10 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
       QueryServiceClient client(protocol);
       transport->open();
       fprintf(stderr, "Connected to QueryServer %u!\n", i);
-      int32_t shard_id = i * hostnames_.size() + local_host_id_;
-      client.send_Initialize(shard_id);
+      IdType shard_id = i * hostnames_.size() + local_host_id_;
+      fprintf(stderr, "Initializing shard %d with sampling rate = %d\n",
+              shard_id, conf_.at(shard_id).sampling_rate);
+      client.send_Initialize(shard_id, conf_.at(shard_id).sampling_rate);
       qservers_.push_back(client);
       qserver_transports_.push_back(transport);
     }
@@ -71,8 +76,9 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
   }
 
   void Get(std::string& _return, const int32_t shard_id, const int64_t key) {
-    uint32_t host_id = shard_id % hostnames_.size();
-    uint32_t qserver_id = shard_id / hostnames_.size();
+    IdType replica_id = load_balancer_->GetReplica(shard_id);
+    IdType host_id = replica_id % hostnames_.size();
+    IdType qserver_id = replica_id / hostnames_.size();
     if (host_id == local_host_id_) {
       GetLocal(_return, qserver_id, key);
     } else {
@@ -80,13 +86,16 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     }
   }
 
-  void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) {
+  void GetLocal(std::string& _return, const int32_t qserver_id,
+                const int64_t key) {
     qservers_.at(qserver_id).Get(_return, key);
   }
 
-  void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query) {
-    uint32_t host_id = shard_id % hostnames_.size();
-    uint32_t qserver_id = shard_id / hostnames_.size();
+  void Search(std::set<int64_t> & _return, const int32_t shard_id,
+              const std::string& query) {
+    IdType replica_id = load_balancer_->GetReplica(shard_id);
+    IdType host_id = replica_id % hostnames_.size();
+    IdType qserver_id = replica_id / hostnames_.size();
     if (host_id == local_host_id_) {
       SearchLocal(_return, qserver_id, query);
     } else {
@@ -238,21 +247,24 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
   std::map<int, SuccinctServiceClient> qhandlers_;
   uint32_t num_shards_;
   uint32_t local_host_id_;
+  ConfigMap conf_;
+  LoadBalancer *load_balancer_;
 };
 
 class HandlerProcessorFactory : public TProcessorFactory {
  public:
-  HandlerProcessorFactory(uint32_t local_host_id,
-                          uint32_t num_shards,
-                          std::vector<std::string> hostnames) {
+  HandlerProcessorFactory(uint32_t local_host_id, uint32_t num_shards,
+                          std::vector<std::string> hostnames, ConfigMap& conf) {
     this->local_host_id_ = local_host_id;
     this->num_shards_ = num_shards;
     this->hostnames_ = hostnames;
+    this->conf_ = conf;
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
     boost::shared_ptr<SuccinctServiceHandler> handler(
-        new SuccinctServiceHandler(local_host_id_, num_shards_, hostnames_));
+        new SuccinctServiceHandler(local_host_id_, num_shards_, hostnames_,
+                                   conf_));
     boost::shared_ptr<TProcessor> handlerProcessor(
         new SuccinctServiceProcessor(handler));
     return handlerProcessor;
@@ -262,12 +274,92 @@ class HandlerProcessorFactory : public TProcessorFactory {
   std::vector<std::string> hostnames_;
   uint32_t local_host_id_;
   uint32_t num_shards_;
+  ConfigMap conf_;
 };
+
+template<typename T>
+void ParseCsvEntry(std::vector<T> &out, std::string csv_entry) {
+  std::string delimiter = ",";
+  size_t pos = 0;
+  std::string elem;
+  while ((pos = csv_entry.find(delimiter)) != std::string::npos) {
+    elem = csv_entry.substr(0, pos);
+    out.push_back((T) atof(elem.c_str()));
+    csv_entry.erase(0, pos + delimiter.length());
+  }
+
+  if (csv_entry != "-") {
+    out.push_back(atof(csv_entry.c_str()));
+  } else {
+    assert(out.empty());
+  }
+}
+
+void ParseConfig(ConfigMap& conf, std::string& conf_file) {
+  std::ifstream conf_stream(conf_file);
+
+  std::string line;
+  while (std::getline(conf_stream, line)) {
+    IdType id;
+    ShardMetadata sdata;
+    std::istringstream iss(line);
+
+    // Get ID and sampling rate
+    iss >> id >> sdata.sampling_rate;
+
+    // Get get whether it is primary or not
+    iss >> sdata.is_primary;
+
+    // Get and parse ids
+    std::string ids;
+    iss >> ids;
+    ParseCsvEntry<int32_t>(sdata.replicas, ids);
+
+    // Get and parse distributions
+    std::string distributions;
+    iss >> distributions;
+    ParseCsvEntry<double>(sdata.distribution, distributions);
+
+    sdata.ComputeCumulativeDistribution();
+
+    conf[id] = sdata;
+
+    fprintf(stderr,
+            "Shard ID = %d, Sampling Rate = %d, Is Primary? = %d, Replicas: ",
+            id, sdata.sampling_rate, sdata.is_primary);
+
+    for (auto replica : sdata.replicas) {
+      fprintf(stderr, "%d;", replica);
+    }
+
+    fprintf(stderr, ", Distribution: ");
+    for (auto prob : sdata.distribution) {
+      fprintf(stderr, "%f;", prob);
+    }
+
+    fprintf(stderr, ", Cumulative Distribution: ");
+    for (auto cum_prob : sdata.cum_dist) {
+      fprintf(stderr, "%f;", cum_prob);
+    }
+
+    fprintf(stderr, "\n");
+  }
+
+  fprintf(stderr, "Read %zu configurations\n", conf.size());
+}
+
+void ParseHosts(std::vector<std::string>& hostnames, std::string& hosts_file) {
+  std::ifstream hosts(hosts_file);
+  std::string host;
+  while (std::getline(hosts, host)) {
+    hostnames.push_back(host);
+  }
+}
 
 void print_usage(char *exec) {
   fprintf(
       stderr,
-      "Usage: %s [-s num-shards] [-h hosts-file] [-i host-id]\n",
+      "Usage: %s [-s num-shards] [-h hosts-file] [-c conf-file] [-i host-id]\n",
       exec);
 }
 
@@ -277,12 +369,21 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  fprintf(stderr, "Command line: ");
+  for (int i = 0; i < argc; i++) {
+    fprintf(stderr, "%s ", argv[i]);
+  }
+  fprintf(stderr, "\n");
+
   int c;
   std::string hosts_file = "./conf/hosts";
+  std::string conf_file = "./conf/blowfish.conf";
   uint32_t num_shards = 1;
   uint32_t local_host_id = 0;
+  ConfigMap conf;
+  std::vector<std::string> hostnames;
 
-  while ((c = getopt(argc, argv, "s:h:i:f:")) != -1) {
+  while ((c = getopt(argc, argv, "s:h:c:i:")) != -1) {
     switch (c) {
       case 's': {
         num_shards = atoi(optarg);
@@ -290,6 +391,10 @@ int main(int argc, char **argv) {
       }
       case 'h': {
         hosts_file = optarg;
+        break;
+      }
+      case 'c': {
+        conf_file = optarg;
         break;
       }
       case 'i': {
@@ -303,18 +408,14 @@ int main(int argc, char **argv) {
     }
   }
 
-  std::ifstream hosts(hosts_file);
-  std::string host;
-  std::vector<std::string> hostnames;
-  while (std::getline(hosts, host, '\n')) {
-    hostnames.push_back(host);
-  }
+  ParseConfig(conf, conf_file);
+  ParseHosts(hostnames, hosts_file);
 
   int port = QUERY_HANDLER_PORT;
   try {
     shared_ptr<HandlerProcessorFactory> handlerFactory(
-        new HandlerProcessorFactory(local_host_id, num_shards,
-                                    hostnames));
+        new HandlerProcessorFactory(local_host_id, num_shards, hostnames,
+                                    conf));
     shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());
@@ -328,4 +429,3 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-

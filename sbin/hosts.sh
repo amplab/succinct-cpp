@@ -60,8 +60,6 @@ if [ "$HOSTLIST" = "" ]; then
   fi
 fi
 
-
-
 # By default disable strict host key checking
 if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
   SUCCINCT_SSH_OPTS="-o StrictHostKeyChecking=no"
@@ -74,6 +72,7 @@ for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   else
     ssh $SUCCINCT_SSH_OPTS "$host" $"${@// /\\ }" \
       2>&1 | sed "s/^/$host: /" &
+	echo $cmd
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
     sleep $SUCCINCT_HOST_SLEEP

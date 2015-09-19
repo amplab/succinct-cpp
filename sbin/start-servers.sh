@@ -37,13 +37,14 @@ if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
 fi
 
 i=0
-num_hosts=$(echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"|wc -l)
+NUM_SHARDS=$(cat "${SUCCINCT_CONF_DIR}/blowfish.conf"|wc -l)
+NUM_HOSTS=$(echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"|wc -l)
 for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $num_hosts $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $NUM_SERVER_SHARDS \
       2>&1 | sed "s/^/$host: /"
   else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $num_hosts $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $NUM_SERVER_SHARDS \
       2>&1 | sed "s/^/$host: /" &
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then

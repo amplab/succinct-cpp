@@ -31,13 +31,8 @@ if [ "$QUERY_SERVER_PORT" = "" ]; then
 	QUERY_SERVER_PORT=12002
 fi
 
-if [ "$CONF_FILE" = "" ]; then
-    CONF_FILE="$SUCCINCT_PREFIX/conf/blowfish.conf"
-fi
-
 limit=$(($1 - 1))
 for i in `seq 0 $limit`; do
 	PORT=$(($QUERY_SERVER_PORT + $i))
-	DATA_FILE="$SUCCINCT_DATA_PATH/data_$i"
-	nohup "$bin/sserver" -p "$PORT" -c "$CONF_FILE" "$DATA_FILE" 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
+	nohup "$bin/sserver" -p "$PORT" "$SUCCINCT_DATA_PATH" 2>"$SUCCINCT_LOG_PATH/server_${i}.log" &
 done
