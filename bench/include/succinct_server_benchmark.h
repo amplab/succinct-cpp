@@ -398,10 +398,18 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Num Keys = %u, Skew = %lf\n", num_keys, skew_);
     ZipfGenerator z_k(skew_, num_keys);
 
+    std::map<int32_t, uint64_t> shard_skew;
     for (uint64_t i = 0; i < query_count; i++) {
       shard_ids.push_back(primary_ids_.at(z_s.Next()));
+      shard_skew[primary_ids_.at(z_s.Next())]++;
       randoms.push_back(z_k.Next());
     }
+
+    fprintf(stderr, "Shard skew:");
+    for (auto s_skew : shard_skew) {
+      fprintf(stderr, "%d => %llu\n", s_skew.first, s_skew.second);
+    }
+
     fprintf(stderr, "Loaded %llu get queries!\n", query_count);
   }
 
