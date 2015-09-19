@@ -36,7 +36,7 @@ for i in range(0, num_shards):
     data_source = data_sr_map[sr_map[i]]
     host = hosts[i % len(hosts)]
     dst = data_path + "/data_" + str(i) + ".succinct"
-    cmd = "mkdir -p " + dst + "&& " + s3cmd_exec + " get --recursive " + data_source + " " + dst
+    cmd = "mkdir -p " + dst + "&& " + s3cmd_exec + " get " + data_source + " " + dst
     ssh_cmd = "ssh -o StrictHostKeyChecking=no " + host + " \'" + cmd + "\' 2>&1 | sed \"s/^/" + host + ": /\" &"
     print ssh_cmd
 print "wait"
