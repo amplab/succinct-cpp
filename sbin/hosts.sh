@@ -72,7 +72,6 @@ for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   else
     ssh $SUCCINCT_SSH_OPTS "$host" $"${@// /\\ }" \
       2>&1 | sed "s/^/$host: /" &
-	echo $cmd
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
     sleep $SUCCINCT_HOST_SLEEP
