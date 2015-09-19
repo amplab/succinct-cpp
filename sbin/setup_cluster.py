@@ -31,6 +31,8 @@ sr_map = dict((int(sdata.split()[0]), int(sdata.split()[1])) for sdata in open(c
 num_shards = len(sr_map)
 
 for i in range(0, num_shards):
+    if i > 0 and i % len(hosts) == 0:
+        print "wait"
     data_source = data_sr_map[sr_map[i]]
     host = hosts[i % len(hosts)]
     dst = data_path + "/data_" + str(i) + ".succinct"
