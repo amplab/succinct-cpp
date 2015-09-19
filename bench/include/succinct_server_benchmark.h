@@ -36,7 +36,6 @@ class SuccinctServerBenchmark : public Benchmark {
     std::cout << "GET\n";
 
     SuccinctServiceClient client = *(data.client);
-    std::string value;
 
     double thput = 0;
     try {
@@ -44,6 +43,7 @@ class SuccinctServerBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
+        std::string value;
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
                    data.randoms[i % data.randoms.size()]);
         i++;
@@ -53,6 +53,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
+        std::string value;
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
                    data.randoms[i % data.randoms.size()]);
         i++;
@@ -64,6 +65,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
+        std::string value;
         client.Get(value, data.shard_ids[i % data.shard_ids.size()],
                    data.randoms[i % data.randoms.size()]);
         i++;
@@ -88,7 +90,6 @@ class SuccinctServerBenchmark : public Benchmark {
     std::cout << "SEARCH\n";
 
     SuccinctServiceClient client = *(data.client);
-    std::set<int64_t> res;
 
     double thput = 0;
     try {
@@ -96,6 +97,7 @@ class SuccinctServerBenchmark : public Benchmark {
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
+        std::set<int64_t> res;
         client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
@@ -105,6 +107,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
+        std::set<int64_t> res;
         client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
@@ -116,6 +119,7 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
+        std::set<int64_t> res;
         client.Search(res, data.shard_ids[i % data.shard_ids.size()],
                       data.queries[i % data.queries.size()]);
         i++;
@@ -141,8 +145,6 @@ class SuccinctServerBenchmark : public Benchmark {
     std::cout << "SEARCH_GET\n";
 
     SuccinctServiceClient client = *(data.client);
-    std::set<int64_t> res;
-    std::string value;
 
     double thput = 0;
     try {
@@ -151,6 +153,8 @@ class SuccinctServerBenchmark : public Benchmark {
       uint64_t i = 0, j = 0, k = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
+        std::set<int64_t> res;
+        std::string value;
         if (num_q % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
@@ -168,6 +172,8 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0, j = 0, k = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
+        std::set<int64_t> res;
+        std::string value;
         if (num_q % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
@@ -187,6 +193,8 @@ class SuccinctServerBenchmark : public Benchmark {
       i = 0, j = 0, k = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
+        std::set<int64_t> res;
+        std::string value;
         if (num_q % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
@@ -393,7 +401,8 @@ class SuccinctServerBenchmark : public Benchmark {
     uint64_t query_count = 1000000;
 
     fprintf(stderr, "Generating random keys, shard ids...\n");
-    fprintf(stderr, "Num Primaries = %zu, Skew = %lf\n", primary_ids_.size(), skew_);
+    fprintf(stderr, "Num Primaries = %zu, Skew = %lf\n", primary_ids_.size(),
+            skew_);
     ZipfGenerator z_s(skew_, primary_ids_.size());
     fprintf(stderr, "Num Keys = %u, Skew = %lf\n", num_keys, skew_);
     ZipfGenerator z_k(skew_, num_keys);
@@ -405,7 +414,7 @@ class SuccinctServerBenchmark : public Benchmark {
       randoms.push_back(z_k.Next());
     }
 
-    fprintf(stderr, "Shard skew:");
+    fprintf(stderr, "Shard skew:\n");
     for (auto s_skew : shard_skew) {
       fprintf(stderr, "%d => %llu\n", s_skew.first, s_skew.second);
     }
