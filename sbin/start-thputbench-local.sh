@@ -16,4 +16,4 @@ if [ "$CONF_FILE" = "" ]; then
 	CONF_FILE="${SUCCINCT_CONF_DIR}/blowfish.conf"
 fi
 
-"$bin/ssbench" -c "$CONF_FILE" "$@" throughput-search-get 2>&1 &
+"$bin/ssbench" -c "$CONF_FILE" "$@" 2>&1 &
