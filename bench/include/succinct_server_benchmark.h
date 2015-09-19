@@ -29,6 +29,9 @@ class SuccinctServerBenchmark : public Benchmark {
     query_file_ = query_file;
     skew_ = skew;
     primary_ids_ = primary_ids;
+
+    GenerateRandoms(num_keys_, shard_ids_, randoms_);
+    ReadQueries(query_file, queries_);
   }
 
   static void *GetThroughput(void *ptr) {
@@ -239,7 +242,8 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
+        th_data.randoms = randoms_;
+        th_data.shard_ids = shard_ids_;
         data.push_back(th_data);
       } catch (std::exception& e) {
         fprintf(stderr, "Could not connect to handler on localhost : %s\n",
@@ -289,8 +293,8 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
-        ReadQueries(query_file_, th_data.queries);
+        th_data.queries = queries_;
+        th_data.shard_ids = shard_ids_;
         data.push_back(th_data);
       } catch (std::exception& e) {
         fprintf(stderr, "Could not connect to handler on localhost : %s\n",
@@ -340,8 +344,9 @@ class SuccinctServerBenchmark : public Benchmark {
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
-        GenerateRandoms(num_keys_, th_data.shard_ids, th_data.randoms);
-        ReadQueries(query_file_, th_data.queries);
+        th_data.randoms = randoms_;
+        th_data.queries = queries_;
+        th_data.shard_ids = shard_ids_;
         data.push_back(th_data);
       } catch (std::exception& e) {
         fprintf(stderr, "Could not connect to handler on localhost : %s\n",
@@ -458,6 +463,8 @@ class SuccinctServerBenchmark : public Benchmark {
   std::string query_file_;
   std::string benchmark_type_;
   SuccinctServiceClient *client_;
+
+  std::vector<int32_t> shard_ids_;
 };
 
 #endif
