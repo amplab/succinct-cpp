@@ -37,7 +37,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
       std::string filename = data_path_ + "/data_" + std::to_string(id);
       fprintf(stderr,
               "Memory mapping shard with id = %d, sampling-rate = %d, path = %s...\n", id,
-              sampling_rate, filename);
+              sampling_rate, filename.c_str());
 
       succinct_shard_ = new SuccinctShard(id, filename,
                                           SuccinctMode::LOAD_MEMORY_MAPPED,
