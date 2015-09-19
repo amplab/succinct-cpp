@@ -152,13 +152,12 @@ class SuccinctServerBenchmark : public Benchmark {
     double thput = 0;
     try {
       // Warmup phase
-      uint64_t num_q = 0;
       uint64_t i = 0, j = 0, k = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
         std::set<int64_t> res;
         std::string value;
-        if (num_q % 2 == 0) {
+        if (i % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
           j++;
@@ -168,7 +167,6 @@ class SuccinctServerBenchmark : public Benchmark {
           k++;
         }
         i++;
-        num_q++;
       }
 
       // Measure phase
@@ -177,7 +175,7 @@ class SuccinctServerBenchmark : public Benchmark {
       while (GetTimestamp() - start < kMeasureTime) {
         std::set<int64_t> res;
         std::string value;
-        if (num_q % 2 == 0) {
+        if (i % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
           j++;
@@ -187,7 +185,6 @@ class SuccinctServerBenchmark : public Benchmark {
           k++;
         }
         i++;
-        num_q++;
       }
       TimeStamp end = GetTimestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
@@ -198,7 +195,7 @@ class SuccinctServerBenchmark : public Benchmark {
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
         std::set<int64_t> res;
         std::string value;
-        if (num_q % 2 == 0) {
+        if (i % 2 == 0) {
           client.Search(res, data.shard_ids[k % data.shard_ids.size()],
                         data.queries[j % data.queries.size()]);
           j++;
@@ -208,7 +205,6 @@ class SuccinctServerBenchmark : public Benchmark {
           k++;
         }
         i++;
-        num_q++;
       }
 
     } catch (std::exception &e) {
