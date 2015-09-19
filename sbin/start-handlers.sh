@@ -37,12 +37,24 @@ if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
 fi
 
 i=0
+NUM_SHARDS=$(cat "${SUCCINCT_CONF_DIR}/blowfish.conf"|wc -l)
+NUM_HOSTS=$(echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"|wc -l)
+NUM_SERVER_SHARDS_MIN=$((NUM_SHARDS/NUM_HOSTS))
 for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
+
+  # Compute number of shards on this server
+  LAST_SHARD_ID=$((NUM_HOSTS*NUM_SERVER_SHARDS_MIN+i))
+  if [ "$LAST_SHARD_ID" -lt "$NUM_SHARDS" ]; then
+    NUM_SERVER_SHARDS=$((NUM_SERVER_SHARDS_MIN+1))
+  else
+    NUM_SERVER_SHARDS=$((NUM_SERVER_SHARDS_MIN))
+  fi
+
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $SHARDS_PER_SERVER $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $NUM_SERVER_SHARDS $i \
       2>&1 | sed "s/^/$host: /"
   else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $SHARDS_PER_SERVER $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $NUM_SERVER_SHARDS $i \
       2>&1 | sed "s/^/$host: /" &
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
