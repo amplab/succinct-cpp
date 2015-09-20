@@ -91,6 +91,21 @@ class SuccinctUtils {
     return data;
   }
 
+  static void* MemoryMapUnpopulated(std::string filename) {
+    struct stat st;
+    stat(filename.c_str(), &st);
+
+    int fd = open(filename.c_str(), O_RDONLY, 0);
+    assert(fd != -1);
+
+    // Try mapping with huge-pages support
+    void *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    madvise(data, st.st_size, POSIX_MADV_RANDOM);
+    assert(data != (void * )-1);
+
+    return data;
+  }
+
   // Writes an integer array to file
   template<typename T>
   static void WriteToFile(T* data, size_t size, std::string outfile) {

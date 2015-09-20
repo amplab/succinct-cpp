@@ -51,14 +51,14 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
     }
     case SuccinctMode::LOAD_MEMORY_MAPPED: {
       uint8_t *data, *data_beg;
-      data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
+      data = data_beg = (uint8_t *) SuccinctUtils::MemoryMapUnpopulated(
           succinct_path_ + "/keyval");
 
       // Read values
-      size_t value_offsets_size = *((size_t *) data);
+      num_keys_ = *((int64_t *) data);
       data += sizeof(size_t);
       value_offsets_ = (int64_t *) data;
-      data += (sizeof(int64_t) * value_offsets_size);
+      data += (sizeof(int64_t) * num_keys_);
 
       break;
     }
@@ -280,12 +280,12 @@ size_t SuccinctShard::MemoryMap() {
   size_t core_size = SuccinctCore::MemoryMap();
 
   uint8_t *data, *data_beg;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMapUnpopulated(
       succinct_path_ + "/keyval");
 
   // Read values
   num_keys_ = *((int64_t *) data);
-  data += sizeof(int64_t);
+  data += sizeof(size_t);
   value_offsets_ = (int64_t *) data;
   data += (sizeof(int64_t) * num_keys_);
 
