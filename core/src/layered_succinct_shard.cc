@@ -52,12 +52,12 @@ void LayeredSuccinctShard::Get(std::string& result, int64_t key) {
   if (!opportunistic) {
     LayeredSampledISA *ISA_lay = (LayeredSampledISA *) isa_;
     result = "";
-    int64_t pos = GetValueOffsetPos(key);
+    int64_t pos = key;
     if (pos < 0)
       return;
     int64_t start = value_offsets_[pos];
     int64_t end =
-        ((size_t) (pos + 1) < value_offsets_.size()) ?
+        ((size_t) (pos + 1) < num_keys_) ?
             value_offsets_[pos + 1] : input_size_;
     int64_t len = end - start - 1;
     result.resize(len);
@@ -78,13 +78,12 @@ void LayeredSuccinctShard::Get(std::string& result, int64_t key) {
       (OpportunisticLayeredSampledISA *) isa_;
 
   result = "";
-  int64_t pos = GetValueOffsetPos(key);
+  int64_t pos = key;
   if (pos < 0)
     return;
   int64_t start = value_offsets_[pos];
   int64_t end =
-      ((size_t) (pos + 1) < value_offsets_.size()) ?
-          value_offsets_[pos + 1] : input_size_;
+      ((size_t) (pos + 1) < num_keys_) ? value_offsets_[pos + 1] : input_size_;
   int64_t len = end - start - 1;
   result.resize(len);
   uint64_t idx = LookupISA(start);
@@ -113,7 +112,7 @@ void LayeredSuccinctShard::Access(std::string& result, int64_t key,
   if (!opportunistic) {
     LayeredSampledISA *ISA_lay = (LayeredSampledISA *) isa_;
     result = "";
-    int64_t pos = GetValueOffsetPos(key);
+    int64_t pos = key;
     if (pos < 0)
       return;
     int64_t start = value_offsets_[pos] + offset;
@@ -134,7 +133,7 @@ void LayeredSuccinctShard::Access(std::string& result, int64_t key,
   OpportunisticLayeredSampledISA *ISA_opp =
       (OpportunisticLayeredSampledISA *) isa_;
   result = "";
-  int64_t pos = GetValueOffsetPos(key);
+  int64_t pos = key;
   if (pos < 0)
     return;
   int64_t start = value_offsets_[pos] + offset;
