@@ -30,4 +30,5 @@ service QueryService {
 
 service MasterService {
     string GetClient(),
+	i64 RepairData(1:i32 host_id, 2:i32 mode),
 }
