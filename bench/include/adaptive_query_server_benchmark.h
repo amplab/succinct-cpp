@@ -98,7 +98,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     uint64_t num_requests = 0, i = 0, j = 0;
 
     TimeStamp start_time = GetTimestamp();
-    while (num_requests <= 200000) {
+    while (num_requests <= 10 * (queries.size() + keys.size())) {
       if (num_requests % 2 == 0) {
         query_client->send_search(queries[i % queries.size()]);
         i++;
@@ -123,7 +123,7 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
                              std::ofstream::out | std::ofstream::app);
     uint64_t num_responses = 0;
     TimeStamp start_time = GetTimestamp();
-    while (num_responses <= queries.size()) {
+    while (num_responses <= 10 * (queries.size() + keys.size())) {
       try {
         if (num_responses % 2 == 0) {
           std::set<int64_t> res;
