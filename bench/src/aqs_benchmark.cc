@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
   int c;
   std::string outpath = "bench/res";
-  double skew = 1.0;  // Pure uniform
+  double skew = 0.01;  // Very skewed
   int32_t len = 100;
   uint32_t batch_size = 10;
   std::string querypath = "";
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
     aqs_bench.DeleteLayer(i);
-    aqs_bench.MeasureSearchThroughput();
+    aqs_bench.MeasureSearchGetThroughput();
   }
 
   return 0;
