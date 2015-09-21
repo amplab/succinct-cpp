@@ -93,6 +93,17 @@ class SuccinctMaster : virtual public MasterServiceIf {
     _return = hostnames_[rand() % hostnames_.size()];
   }
 
+  int64_t RepairNode(int32_t host_id, int32_t mode) {
+    if (mode == 0) {
+
+    } else if(mode == 1) {
+
+    } else {
+      return -1;
+    }
+    return 0;
+  }
+
  private:
   std::vector<std::string> hostnames_;
 };
