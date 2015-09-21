@@ -195,6 +195,50 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     res_stream.close();
   }
 
+  static void SendGetRequests(AdaptiveQueryServiceClient *query_client,
+                              int64_t storage_size,
+                              std::vector<int64_t> randoms,
+                              std::string requests_file) {
+
+    std::ofstream req_stream(requests_file,
+                             std::ofstream::out | std::ofstream::app);
+    uint64_t num_requests = 0;
+
+    TimeStamp start_time = GetTimestamp();
+    while (num_requests <= randoms.size()) {
+      query_client->send_get(randoms[num_requests % randoms.size()]);
+      num_requests++;
+    }
+    TimeStamp diff = GetTimestamp() - start_time;
+    double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
+    req_stream << storage_size << "\t" << rr << "\n";
+    req_stream.close();
+  }
+
+  static void MeasureGetResponses(AdaptiveQueryServiceClient *query_client,
+                                  int64_t storage_size,
+                                  std::vector<int64_t> randoms,
+                                  std::string responses_file) {
+
+    std::string res;
+    std::ofstream res_stream(responses_file,
+                             std::ofstream::out | std::ofstream::app);
+    uint64_t num_responses = 0;
+    TimeStamp start_time = GetTimestamp();
+    while (num_responses <= randoms.size()) {
+      try {
+        query_client->recv_get(res);
+        num_responses++;
+      } catch (std::exception& e) {
+        break;
+      }
+    }
+    TimeStamp diff = GetTimestamp() - start_time;
+    double rr = ((double) num_responses * 1000 * 1000) / ((double) diff);
+    res_stream << storage_size << "\t" << rr << "\n";
+    res_stream.close();
+  }
+
   static void SendAccessRequests(AdaptiveQueryServiceClient *query_client,
                                  int64_t storage_size,
                                  std::vector<int64_t> randoms,
@@ -379,9 +423,39 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
                     requests_file_);
 
     fprintf(stderr, "Starting response thread...\n");
-    std::thread res(&AdaptiveQueryServerBenchmark::MeasureBatchedSearchGetResponses,
-                    query_client, storage_size, queries_, randoms_, batch_size,
-                    responses_file_);
+    std::thread res(
+        &AdaptiveQueryServerBenchmark::MeasureBatchedSearchGetResponses,
+        query_client, storage_size, queries_, randoms_, batch_size,
+        responses_file_);
+
+    if (req.joinable()) {
+      req.join();
+      fprintf(stderr, "Request thread terminated.\n");
+    }
+
+    if (res.joinable()) {
+      res.join();
+      fprintf(stderr, "Response thread terminated.\n");
+    }
+
+    query_transport->close();
+    delete query_client;
+  }
+
+  void MeasureGetThroughput() {
+
+    boost::shared_ptr<TTransport> query_transport;
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
+
+    int64_t storage_size = query_client->storage_size();
+
+    fprintf(stderr, "Starting request thread...\n");
+    std::thread req(&AdaptiveQueryServerBenchmark::SendGetRequests,
+                    query_client, storage_size, randoms_, requests_file_);
+
+    fprintf(stderr, "Starting response thread...\n");
+    std::thread res(&AdaptiveQueryServerBenchmark::MeasureGetResponses,
+                    query_client, storage_size, randoms_, responses_file_);
 
     if (req.joinable()) {
       req.join();
