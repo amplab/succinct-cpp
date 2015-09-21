@@ -143,6 +143,58 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     res_stream.close();
   }
 
+  static void SendBatchedSearchGetRequests(
+      AdaptiveQueryServiceClient *query_client, int64_t storage_size,
+      std::vector<std::string> queries, std::vector<int64_t> keys,
+      uint32_t batch_size, std::string requests_file) {
+
+    std::ofstream req_stream(requests_file,
+                             std::ofstream::out | std::ofstream::app);
+    uint64_t num_requests = 0;
+
+    TimeStamp start_time = GetTimestamp();
+    while (num_requests <= (queries.size())) {
+      // Prepare batch
+      std::vector<sg_req> requests;
+      for (uint32_t i = 0; i < batch_size; i++) {
+        sg_req req;
+        req.query = queries[(num_requests + i) % queries.size()];
+        req.key = keys[(num_requests + i) % keys.size()];
+        requests.push_back(req);
+      }
+      query_client->send_batch_search_get(requests);
+      num_requests += batch_size;
+    }
+    TimeStamp diff = GetTimestamp() - start_time;
+    double rr = ((double) num_requests * 1000 * 1000) / ((double) diff);
+    req_stream << storage_size << "\t" << rr << "\n";
+    req_stream.close();
+  }
+
+  static void MeasureBatchedSearchGetResponses(
+      AdaptiveQueryServiceClient *query_client, int64_t storage_size,
+      std::vector<std::string> queries, std::vector<int64_t> keys,
+      uint32_t batch_size, std::string responses_file) {
+
+    std::ofstream res_stream(responses_file,
+                             std::ofstream::out | std::ofstream::app);
+    uint64_t num_responses = 0;
+    TimeStamp start_time = GetTimestamp();
+    while (num_responses <= (queries.size())) {
+      try {
+        std::vector<sg_res> responses;
+        query_client->recv_batch_search_get(responses);
+        num_responses += responses.size();
+      } catch (std::exception& e) {
+        break;
+      }
+    }
+    TimeStamp diff = GetTimestamp() - start_time;
+    double rr = ((double) num_responses * 2 * 1000 * 1000) / ((double) diff);
+    res_stream << storage_size << "\t" << rr << "\n";
+    res_stream.close();
+  }
+
   static void SendAccessRequests(AdaptiveQueryServiceClient *query_client,
                                  int64_t storage_size,
                                  std::vector<int64_t> randoms,
@@ -298,6 +350,37 @@ class AdaptiveQueryServerBenchmark : public Benchmark {
     fprintf(stderr, "Starting response thread...\n");
     std::thread res(&AdaptiveQueryServerBenchmark::MeasureSearchGetResponses,
                     query_client, storage_size, queries_, randoms_,
+                    responses_file_);
+
+    if (req.joinable()) {
+      req.join();
+      fprintf(stderr, "Request thread terminated.\n");
+    }
+
+    if (res.joinable()) {
+      res.join();
+      fprintf(stderr, "Response thread terminated.\n");
+    }
+
+    query_transport->close();
+    delete query_client;
+  }
+
+  void MeasureBatchedSearchGetThroughput(uint32_t batch_size) {
+
+    boost::shared_ptr<TTransport> query_transport;
+    AdaptiveQueryServiceClient *query_client = GetClient(query_transport);
+
+    int64_t storage_size = query_client->storage_size();
+
+    fprintf(stderr, "Starting request thread...\n");
+    std::thread req(&AdaptiveQueryServerBenchmark::SendBatchedSearchGetRequests,
+                    query_client, storage_size, queries_, randoms_, batch_size,
+                    requests_file_);
+
+    fprintf(stderr, "Starting response thread...\n");
+    std::thread res(&AdaptiveQueryServerBenchmark::MeasureBatchedSearchGetResponses,
+                    query_client, storage_size, queries_, randoms_, batch_size,
                     responses_file_);
 
     if (req.joinable()) {

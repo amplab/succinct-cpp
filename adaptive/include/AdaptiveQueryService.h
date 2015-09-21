@@ -21,6 +21,7 @@ class AdaptiveQueryServiceIf {
   virtual void access(std::string& _return, const int64_t key, const int32_t offset, const int32_t len) = 0;
   virtual void batch_access(std::vector<std::string> & _return, const std::vector<int64_t> & keys, const int32_t offset, const int32_t len) = 0;
   virtual void search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void batch_search_get(std::vector<sg_res> & _return, const std::vector<sg_req> & query) = 0;
   virtual int64_t count(const std::string& query) = 0;
   virtual int32_t get_num_keys() = 0;
   virtual int64_t remove_layer(const int32_t layer_id) = 0;
@@ -73,6 +74,9 @@ class AdaptiveQueryServiceNull : virtual public AdaptiveQueryServiceIf {
     return;
   }
   void search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void batch_search_get(std::vector<sg_res> & /* _return */, const std::vector<sg_req> & /* query */) {
     return;
   }
   int64_t count(const std::string& /* query */) {
@@ -785,6 +789,114 @@ class AdaptiveQueryService_search_presult {
 
 };
 
+typedef struct _AdaptiveQueryService_batch_search_get_args__isset {
+  _AdaptiveQueryService_batch_search_get_args__isset() : query(false) {}
+  bool query;
+} _AdaptiveQueryService_batch_search_get_args__isset;
+
+class AdaptiveQueryService_batch_search_get_args {
+ public:
+
+  AdaptiveQueryService_batch_search_get_args() {
+  }
+
+  virtual ~AdaptiveQueryService_batch_search_get_args() throw() {}
+
+  std::vector<sg_req>  query;
+
+  _AdaptiveQueryService_batch_search_get_args__isset __isset;
+
+  void __set_query(const std::vector<sg_req> & val) {
+    query = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_search_get_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_search_get_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_search_get_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class AdaptiveQueryService_batch_search_get_pargs {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_search_get_pargs() throw() {}
+
+  const std::vector<sg_req> * query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_search_get_result__isset {
+  _AdaptiveQueryService_batch_search_get_result__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_search_get_result__isset;
+
+class AdaptiveQueryService_batch_search_get_result {
+ public:
+
+  AdaptiveQueryService_batch_search_get_result() {
+  }
+
+  virtual ~AdaptiveQueryService_batch_search_get_result() throw() {}
+
+  std::vector<sg_res>  success;
+
+  _AdaptiveQueryService_batch_search_get_result__isset __isset;
+
+  void __set_success(const std::vector<sg_res> & val) {
+    success = val;
+  }
+
+  bool operator == (const AdaptiveQueryService_batch_search_get_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const AdaptiveQueryService_batch_search_get_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const AdaptiveQueryService_batch_search_get_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _AdaptiveQueryService_batch_search_get_presult__isset {
+  _AdaptiveQueryService_batch_search_get_presult__isset() : success(false) {}
+  bool success;
+} _AdaptiveQueryService_batch_search_get_presult__isset;
+
+class AdaptiveQueryService_batch_search_get_presult {
+ public:
+
+
+  virtual ~AdaptiveQueryService_batch_search_get_presult() throw() {}
+
+  std::vector<sg_res> * success;
+
+  _AdaptiveQueryService_batch_search_get_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _AdaptiveQueryService_count_args__isset {
   _AdaptiveQueryService_count_args__isset() : query(false) {}
   bool query;
@@ -1429,6 +1541,9 @@ class AdaptiveQueryServiceClient : virtual public AdaptiveQueryServiceIf {
   void search(std::set<int64_t> & _return, const std::string& query);
   void send_search(const std::string& query);
   void recv_search(std::set<int64_t> & _return);
+  void batch_search_get(std::vector<sg_res> & _return, const std::vector<sg_req> & query);
+  void send_batch_search_get(const std::vector<sg_req> & query);
+  void recv_batch_search_get(std::vector<sg_res> & _return);
   int64_t count(const std::string& query);
   void send_count(const std::string& query);
   int64_t recv_count();
@@ -1468,6 +1583,7 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
   void process_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_batch_access(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_batch_search_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_count(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num_keys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_remove_layer(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1483,6 +1599,7 @@ class AdaptiveQueryServiceProcessor : public ::apache::thrift::TDispatchProcesso
     processMap_["access"] = &AdaptiveQueryServiceProcessor::process_access;
     processMap_["batch_access"] = &AdaptiveQueryServiceProcessor::process_batch_access;
     processMap_["search"] = &AdaptiveQueryServiceProcessor::process_search;
+    processMap_["batch_search_get"] = &AdaptiveQueryServiceProcessor::process_batch_search_get;
     processMap_["count"] = &AdaptiveQueryServiceProcessor::process_count;
     processMap_["get_num_keys"] = &AdaptiveQueryServiceProcessor::process_get_num_keys;
     processMap_["remove_layer"] = &AdaptiveQueryServiceProcessor::process_remove_layer;
@@ -1573,6 +1690,16 @@ class AdaptiveQueryServiceMultiface : virtual public AdaptiveQueryServiceIf {
       ifaces_[i]->search(_return, query);
     }
     ifaces_[i]->search(_return, query);
+    return;
+  }
+
+  void batch_search_get(std::vector<sg_res> & _return, const std::vector<sg_req> & query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->batch_search_get(_return, query);
+    }
+    ifaces_[i]->batch_search_get(_return, query);
     return;
   }
 

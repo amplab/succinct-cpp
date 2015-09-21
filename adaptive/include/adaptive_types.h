@@ -18,5 +18,93 @@
 
 
 
+class sg_req {
+ public:
+
+  static const char* ascii_fingerprint; // = "1CCCF6FC31CFD1D61BBBB1BAF3590620";
+  static const uint8_t binary_fingerprint[16]; // = {0x1C,0xCC,0xF6,0xFC,0x31,0xCF,0xD1,0xD6,0x1B,0xBB,0xB1,0xBA,0xF3,0x59,0x06,0x20};
+
+  sg_req() : query(), key(0) {
+  }
+
+  virtual ~sg_req() throw() {}
+
+  std::string query;
+  int64_t key;
+
+  void __set_query(const std::string& val) {
+    query = val;
+  }
+
+  void __set_key(const int64_t val) {
+    key = val;
+  }
+
+  bool operator == (const sg_req & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const sg_req &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const sg_req & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(sg_req &a, sg_req &b);
+
+
+class sg_res {
+ public:
+
+  static const char* ascii_fingerprint; // = "91F26013834C155F8672D912A2EEE79C";
+  static const uint8_t binary_fingerprint[16]; // = {0x91,0xF2,0x60,0x13,0x83,0x4C,0x15,0x5F,0x86,0x72,0xD9,0x12,0xA2,0xEE,0xE7,0x9C};
+
+  sg_res() : g_res() {
+  }
+
+  virtual ~sg_res() throw() {}
+
+  std::set<int64_t>  s_res;
+  std::string g_res;
+
+  void __set_s_res(const std::set<int64_t> & val) {
+    s_res = val;
+  }
+
+  void __set_g_res(const std::string& val) {
+    g_res = val;
+  }
+
+  bool operator == (const sg_res & rhs) const
+  {
+    if (!(s_res == rhs.s_res))
+      return false;
+    if (!(g_res == rhs.g_res))
+      return false;
+    return true;
+  }
+  bool operator != (const sg_res &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const sg_res & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(sg_res &a, sg_res &b);
+
+
 
 #endif

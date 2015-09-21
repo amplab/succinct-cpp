@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
                                          querypath);
   for (int32_t i = -1; i < 10; i++) {
     aqs_bench.DeleteLayer(i);
-    aqs_bench.MeasureSearchGetThroughput();
+    aqs_bench.MeasureBatchedSearchGetThroughput(batch_size);
   }
 
   return 0;

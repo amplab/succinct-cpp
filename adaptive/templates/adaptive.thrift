@@ -1,3 +1,13 @@
+struct sg_req {
+    1: required string query;
+    2: required i64 key;
+}
+
+struct sg_res {
+    1: required set<i64> s_res;
+    2: required string g_res;
+}
+
 service AdaptiveSuccinctService {
 	i32 connect_to_handlers(1:i32 client_id),
     i32 disconnect_from_handlers(1:i32 client_id),
@@ -29,6 +39,7 @@ service AdaptiveQueryService {
     string access(1:i64 key, 2:i32 offset, 3:i32 len),
     list<string> batch_access(1:list<i64> keys, 2:i32 offset, 3:i32 len),
     set<i64> search(1:string query),
+    list<sg_res> batch_search_get(1:list<sg_req> query),
     i64 count(1:string query),
     i32 get_num_keys(),
     i64 remove_layer(1:i32 layer_id),

@@ -101,6 +101,16 @@ class AdaptiveQueryServiceHandler : virtual public AdaptiveQueryServiceIf {
     fd->Search(_return, query);
   }
 
+  void batch_search_get(std::vector<sg_res> & _return,
+                        const std::vector<sg_req> & queries) {
+    for (auto query : queries) {
+      sg_res res;
+      fd->Search(res.s_res, query.query);
+      fd->Get(res.g_res, query.key);
+      _return.push_back(res);
+    }
+  }
+
   int64_t count(const std::string& query) {
     return fd->Count(query);
   }
@@ -241,7 +251,8 @@ int main(int argc, char **argv) {
                            protocol_factory);
     server.serve();
   } catch (std::exception& e) {
-    fprintf(stderr, "Exception at adaptive_query_server.cc:main(): %s\n", e.what());
+    fprintf(stderr, "Exception at adaptive_query_server.cc:main(): %s\n",
+            e.what());
   }
   return 0;
 }
