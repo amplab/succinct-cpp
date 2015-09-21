@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
 
   int c;
   std::string outpath = "bench/res";
-  double skew = 1.0;  // Pure uniform
-  uint32_t isa_sampling_rate = 32, sa_sampling_rate = 32, len = 100, mod = 1;
+  double skew = 0.01;  // Pure uniform
+  uint32_t isa_sampling_rate = 8, sa_sampling_rate = 8, len = 100, mod = 1;
   SuccinctMode s_mode = SuccinctMode::LOAD_IN_MEMORY;
   std::string querypath = "";
   while ((c = getopt(argc, argv, "m:o:z:i:s:l:q:f:")) != -1) {
