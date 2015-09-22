@@ -259,7 +259,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     int32_t len = 1024 * 1024 * 1024;  // 1GB at a time
     std::string res;
 
-    fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename, clients.size());
+    fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename.c_str(), clients.size());
     do {
       fprintf(stderr, "Sending out requests...\n");
       // Loop through the clients
