@@ -201,7 +201,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
                                       ShardMetadata& sdata) {
     // Note: only works for 3-replication or more
     int32_t smallest_replica, max_sampling_rate;
-    if (failed_shard == 0) {
+    if (failed_shard == sdata.replicas.at(0)) {
       smallest_replica = sdata.replicas.at(1);
     } else {
       smallest_replica = sdata.replicas.at(0);
