@@ -23,7 +23,7 @@ void ParseConfig(std::vector<int32_t>& primary_ids, std::string& conf_file) {
     shard_type = (ShardType) type;
 
     if (shard_type == ShardType::kPrimary
-        || shard_type == ShardType::kReplica) {
+        || shard_type == ShardType::kData) {
       fprintf(stderr, "Primary: %d\n", id);
       primary_ids.push_back(id);
     }
