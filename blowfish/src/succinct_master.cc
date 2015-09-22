@@ -225,7 +225,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     for (auto recovery_shard : recovery_shards) {
       uint32_t host_id = recovery_shard % hostnames_.size();
       try {
-        fprintf(stderr, "Connecting to %s...\n", hostnames_[host_id]);
+        fprintf(stderr, "Connecting to %s...\n", hostnames_[host_id].c_str());
         boost::shared_ptr<TSocket> socket(
             new TSocket(hostnames_[host_id], QUERY_HANDLER_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
