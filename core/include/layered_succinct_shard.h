@@ -23,6 +23,8 @@ class LayeredSuccinctShard : public SuccinctShard {
 
   size_t ReconstructLayer(uint32_t layer_id);
 
+  size_t ReconstructLayerParallel(uint32_t layer_id, uint32_t num_threads);
+
   void Get(std::string &result, int64_t key);
 
   void Access(std::string& result, int64_t key, int32_t offset, int32_t len);

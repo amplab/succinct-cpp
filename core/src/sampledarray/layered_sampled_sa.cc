@@ -95,3 +95,4 @@ size_t LayeredSampledSA::ReconstructLayer(uint32_t layer_id) {
   }
   return size;
 }
+

@@ -47,6 +47,19 @@ size_t LayeredSuccinctShard::ReconstructLayer(uint32_t layer_id) {
   return size;
 }
 
+size_t LayeredSuccinctShard::ReconstructLayerParallel(uint32_t layer_id,
+                                                      uint32_t num_threads) {
+  if (opportunistic)
+    return 0;
+
+  size_t size = 0;
+
+  size += ((LayeredSampledSA *) sa_)->ReconstructLayerParallel(layer_id, num_threads);
+  size += ((LayeredSampledISA *) isa_)->ReconstructLayerParallel(layer_id, num_threads);
+
+  return size;
+}
+
 void LayeredSuccinctShard::Get(std::string& result, int64_t key) {
 
   if (!opportunistic) {

@@ -15,8 +15,7 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
                                 uint32_t isa_sampling_rate,
                                 uint32_t sa_sampling_rate,
                                 std::string results_file, double skew,
-                                uint32_t mod,
-                                std::string query_file = "")
+                                uint32_t mod, std::string query_file = "")
       : Benchmark() {
 
     results_file_ = results_file;
@@ -94,7 +93,8 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
     TimeStamp start_time = GetTimestamp();
     while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
-      layered_succinct_shard_->Search(res, queries_[query_ids_[num_ops % query_ids_.size()]]);
+      layered_succinct_shard_->Search(
+          res, queries_[query_ids_[num_ops % query_ids_.size()]]);
       num_ops++;
     }
     TimeStamp diff = GetTimestamp() - start_time;
@@ -110,15 +110,16 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
     std::set<int64_t> res1;
     std::string res2;
     std::ofstream res_stream(results_file_ + ".search",
-                               std::ofstream::out | std::ofstream::app);
+                             std::ofstream::out | std::ofstream::app);
     uint64_t num_ops = 0;
 
     TimeStamp start_time = GetTimestamp();
     while (GetTimestamp() - start_time < Benchmark::kMeasureTime) {
-      if(num_ops % mod_ == 0) {
-          layered_succinct_shard_->Search(res1, queries_[query_ids_[num_ops % query_ids_.size()]]);
+      if (num_ops % mod_ == 0) {
+        layered_succinct_shard_->Search(
+            res1, queries_[query_ids_[num_ops % query_ids_.size()]]);
       } else {
-          layered_succinct_shard_->Get(res2, randoms_[num_ops % randoms_.size()]);
+        layered_succinct_shard_->Get(res2, randoms_[num_ops % randoms_.size()]);
       }
       num_ops++;
     }
@@ -131,10 +132,14 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
 
   void DeleteLayer(int32_t layer_id) {
     if (layer_id >= 0) {
-      fprintf(stderr, "Deleting layer %d...\n", layer_id);
+      // fprintf(stderr, "Deleting layer %d...\n", layer_id);
       layered_succinct_shard_->RemoveLayer(layer_id);
-      fprintf(stderr, "Done.\n");
+      // fprintf(stderr, "Done.\n");
     }
+  }
+
+  void ReconstructLayer(uint32_t layer_id, uint32_t num_threads) {
+    layered_succinct_shard_->ReconstructLayerParallel(layer_id, num_threads);
   }
 
  private:
@@ -170,30 +175,30 @@ class LayeredSuccinctShardBenchmark : public Benchmark {
   }
 
   void ReadQueries(std::string filename) {
-      std::ifstream inputfile(filename);
-      if (!inputfile.is_open()) {
-        fprintf(stderr, "Error: Query file [%s] may be missing.\n",
-                filename.c_str());
-        return;
-      }
+    std::ifstream inputfile(filename);
+    if (!inputfile.is_open()) {
+      fprintf(stderr, "Error: Query file [%s] may be missing.\n",
+              filename.c_str());
+      return;
+    }
 
-      std::string line, bin, query;
-      while (getline(inputfile, line)) {
-        // Extract key and value
-        int split_index = line.find_first_of('\t');
-        bin = line.substr(0, split_index);
-        query = line.substr(split_index + 1);
-        queries_.push_back(query);
-      }
-      inputfile.close();
-      fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
-                  key_skew_, queries_.size());
-      ZipfGenerator z(key_skew_, queries_.size());
-      fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
-      for (uint64_t i = 0; i < 100000; i++) {
-        query_ids_.push_back(z.Next());
-      }
-      fprintf(stderr, "Generated query ids.\n");
+    std::string line, bin, query;
+    while (getline(inputfile, line)) {
+      // Extract key and value
+      int split_index = line.find_first_of('\t');
+      bin = line.substr(0, split_index);
+      query = line.substr(split_index + 1);
+      queries_.push_back(query);
+    }
+    inputfile.close();
+    fprintf(stderr, "Generating zipf distribution with theta=%f, N=%zu...\n",
+            key_skew_, queries_.size());
+    ZipfGenerator z(key_skew_, queries_.size());
+    fprintf(stderr, "Generated zipf distribution, generating query ids...\n");
+    for (uint64_t i = 0; i < 100000; i++) {
+      query_ids_.push_back(z.Next());
+    }
+    fprintf(stderr, "Generated query ids.\n");
   }
 
   LayeredSuccinctShard *layered_succinct_shard_;

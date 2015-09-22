@@ -5,6 +5,7 @@
 #include <map>
 #include <unistd.h>
 #include <atomic>
+#include <thread>
 
 #include "npa/npa.h"
 #include "succinct_base.h"
@@ -62,7 +63,7 @@ class LayeredSampledArray : public SampledArray {
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (n / layer_sampling_rate) + 1;
       SuccinctBase::InitBitmap(&layer_data_[i], num_entries * data_bits_,
-                                succinct_allocator);
+                               succinct_allocator);
     }
     this->succinct_allocator_ = succinct_allocator;
     memory_map_ = false;
@@ -156,8 +157,8 @@ class LayeredSampledArray : public SampledArray {
 
     Layer l;
     GetLayer(&l, i);
-    return SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id],
-                                             l.layer_idx, data_bits_);
+    return SuccinctBase::LookupBitmapArray(layer_data_[l.layer_id], l.layer_idx,
+                                           data_bits_);
   }
 
   virtual size_t DestroyLayer(uint32_t layer_id) {
@@ -167,9 +168,11 @@ class LayeredSampledArray : public SampledArray {
       size = layer_data_[layer_id]->size;
       usleep(10000);                      // TODO: This is very hacky
       if (!memory_map_) {
-        SuccinctBase::DestroyBitmap(&layer_data_[layer_id], succinct_allocator_);
+        SuccinctBase::DestroyBitmap(&layer_data_[layer_id],
+                                    succinct_allocator_);
       } else {
-        munmap(layer_data_[layer_id]->bitmap, SuccinctUtils::NumBlocks(layer_data_[layer_id]->size, 64));
+        munmap(layer_data_[layer_id]->bitmap,
+               SuccinctUtils::NumBlocks(layer_data_[layer_id]->size, 64));
         delete layer_data_[layer_id];
       }
       layer_data_[layer_id] = NULL;
@@ -186,8 +189,8 @@ class LayeredSampledArray : public SampledArray {
           (layer_id == (num_layers_ - 1)) ?
               layer_sampling_rate : layer_sampling_rate * 2;
       uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
-      SuccinctBase::InitBitmap(&layer_data_[layer_id],
-                                num_entries * data_bits_, succinct_allocator_);
+      SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
+                               succinct_allocator_);
       uint64_t idx;
       if (layer_id == this->num_layers_ - 1) {
         for (uint64_t i = 0; i < num_entries; i++) {
@@ -195,7 +198,7 @@ class LayeredSampledArray : public SampledArray {
           if (idx > original_size_)
             break;
           SuccinctBase::SetBitmapArray(&layer_data_[layer_id], i, at(idx),
-                                         data_bits_);
+                                       data_bits_);
         }
       } else {
         for (uint64_t i = 0; i < num_entries; i++) {
@@ -203,13 +206,70 @@ class LayeredSampledArray : public SampledArray {
           if (idx > original_size_)
             break;
           SuccinctBase::SetBitmapArray(&layer_data_[layer_id], i, at(idx),
-                                         data_bits_);
+                                       data_bits_);
         }
       }
       size = layer_data_[layer_id]->size;
       CREATE_LAYER(layer_id);
     }
     return size;
+  }
+
+  size_t ReconstructLayerParallel(uint32_t layer_id, uint32_t num_threads) {
+    size_t size = 0;
+    if (!EXISTS_LAYER(layer_id)) {
+      layer_data_[layer_id] = new bitmap_t;
+      uint32_t layer_sampling_rate = (1 << layer_id) * target_sampling_rate_;
+      layer_sampling_rate =
+          (layer_id == (num_layers_ - 1)) ?
+              layer_sampling_rate : layer_sampling_rate * 2;
+      uint64_t num_entries = (original_size_ / layer_sampling_rate) + 1;
+      SuccinctBase::InitBitmap(&layer_data_[layer_id], num_entries * data_bits_,
+                               succinct_allocator_);
+      uint64_t idx;
+      uint64_t idx_off =
+          (layer_id == this->num_layers_ - 1) ? 0 : (layer_sampling_rate / 2);
+
+      // Parallelization
+      uint64_t num_elements_per_chunk = SuccinctUtils::NumBlocks(num_entries,
+                                                                 num_threads);
+      std::vector<std::thread> reconstructor_threads;
+      for (uint32_t i = 0; i < num_threads; i++) {
+        uint64_t remaining_elements =
+            (i * num_elements_per_chunk >= num_entries) ?
+                0 : num_entries - i * num_elements_per_chunk;
+        uint64_t num_elements = SuccinctUtils::Min(remaining_elements,
+                                                   num_elements_per_chunk);
+        reconstructor_threads.push_back(
+            std::thread(&LayeredSampledArray::ReconstructLayerChunk, this,
+                        &layer_data_[layer_id], i * num_elements_per_chunk,
+                        num_elements, idx_off, original_size_,
+                        layer_sampling_rate, data_bits_));
+      }
+
+      for (uint32_t i = 0; i < num_threads; i++) {
+        reconstructor_threads[i].join();
+      }
+
+      size = layer_data_[layer_id]->size;
+      CREATE_LAYER(layer_id);
+    }
+    return size;
+  }
+
+  static void ReconstructLayerChunk(LayeredSampledArray *arr,
+                                    bitmap_t** layer_data, uint64_t start_idx,
+                                    uint64_t num_elements, uint64_t idx_off,
+                                    uint64_t idx_max,
+                                    uint32_t layer_sampling_rate,
+                                    uint8_t data_bits) {
+    uint64_t idx;
+    for (uint64_t i = start_idx; i < start_idx + num_elements; i++) {
+      idx = i * layer_sampling_rate + idx_off;
+      if (idx > idx_max)
+        break;
+      SuccinctBase::SetBitmapArray(layer_data, i, arr->at(idx), data_bits);
+    }
   }
 
   virtual uint64_t operator[](uint64_t i) = 0;
