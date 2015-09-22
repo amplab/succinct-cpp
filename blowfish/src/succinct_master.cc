@@ -261,7 +261,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     // Fetch all blocks
     int64_t sum = 0;
     int64_t offset = 0;
-    int32_t len = 1024 * 1024 * 1024;  // 1GB at a time
+    int32_t len = 1024 * 1024 * 16;  // 16MB at a time
     std::string res;
 
     fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename.c_str(), clients.size());
