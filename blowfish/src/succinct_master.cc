@@ -106,6 +106,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     int32_t num_shards = conf_.size();
     for (int32_t i = 0; i < num_shards; i++) {
       if (i % hostnames_.size() == host_id) {
+        fprintf(stderr, "Failed shard: %d\n", i);
         failed_shards.push_back(i);
       }
     }
@@ -114,14 +115,21 @@ class SuccinctMaster : virtual public MasterServiceIf {
     std::map<int32_t, std::vector<int32_t>> recovery_shard_map;
     for (auto failed_shard : failed_shards) {
       std::vector<int32_t> recovery_shards;
+      fprintf(stderr, "Recovery Shards:\n");
       switch (mode) {
         case 0: {
           GetRecoveryReplica(recovery_shards, failed_shard);
+          for (auto recovery_shard : recovery_shards) {
+            fprintf(stderr, "Recovery Replica: %u\n");
+          }
           assert(recovery_shards.size() == 1);
           break;
         }
         case 1: {
           GetRecoveryBlocks(recovery_shards, failed_shard);
+          for (auto recovery_shard : recovery_shards) {
+            fprintf(stderr, "Recovery Replica: %u\n");
+          }
           assert(recovery_shards.size() == 10);
           break;
         }
@@ -146,7 +154,13 @@ class SuccinctMaster : virtual public MasterServiceIf {
     // Determine the blocks to recover from
     for (auto stripe : s_list_) {
       if (stripe.ContainsBlock(failed_shard)) {
+        fprintf(
+            stderr,
+            "Found stripe that contains block! Computing recovery blocks...\n");
         stripe.GetRecoveryBlocks(recovery_blocks, failed_shard);
+        break;
+      } else {
+        fprintf(stderr, "Stripe does not contain block!");
       }
     }
   }
@@ -156,13 +170,18 @@ class SuccinctMaster : virtual public MasterServiceIf {
     if (conf_.at(failed_shard).shard_type == ShardType::kPrimary) {
       // If failed shard is primary, just get
       // the replica with the minimum sampling rate
+      fprintf(
+          stderr,
+          "Failed shard is primary: searching for replica with lowest storage...\n");
       recovery_replicas.push_back(
           GetSmallestAvailableReplica(failed_shard, conf_.at(failed_shard)));
     } else if (conf_.at(failed_shard).shard_type == ShardType::kReplica) {
       // If failed shard is not a primary, then search
       // for the primary whose replica this is
       ShardMetadata sdata;
+      fprintf(stderr, "Failed shard is a replica, finding primary...\n");
       FindPrimary(sdata, failed_shard);
+      fprintf(stderr, "Finding replica with lowest sampling rate...\n");
       recovery_replicas.push_back(
           GetSmallestAvailableReplica(failed_shard, sdata));
     } else {
@@ -174,6 +193,8 @@ class SuccinctMaster : virtual public MasterServiceIf {
     for (auto conf_entry : conf_) {
       if (conf_entry.second.ContainsReplica(replica_id)) {
         sdata = conf_entry.second;
+        fprintf(stderr, "Found primary: %d\n", conf_entry.first);
+        break;
       }
     }
   }
@@ -191,6 +212,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
         smallest_replica = replica;
       }
     }
+    fprintf(stderr, "Smallest replica is %d\n", smallest_replica);
     return smallest_replica;
   }
 
@@ -203,6 +225,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     for (auto recovery_shard : recovery_shards) {
       uint32_t host_id = recovery_shard % hostnames_.size();
       try {
+        fprintf(stderr, "Connecting to %s...\n", hostnames_[host_id]);
         boost::shared_ptr<TSocket> socket(
             new TSocket(hostnames_[host_id], QUERY_HANDLER_PORT));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
@@ -221,6 +244,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
     }
 
     for (auto filename : filenames) {
+      fprintf(stderr, "Repairing %s\n", filename.c_str());
       RepairShardFile(filename, clients);
     }
 
