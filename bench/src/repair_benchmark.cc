@@ -55,11 +55,16 @@ int main(int argc, char **argv) {
     transport->open();
     fprintf(stderr, "Connected!\n");
 
-    fprintf(stderr, "Starting repair...\n");
-    Benchmark::TimeStamp start = Benchmark::GetTimestamp();
-    master->RepairHost(host_id, mode);
-    Benchmark::TimeStamp end = Benchmark::GetTimestamp();
-    fprintf(stderr, "Complete! Time taken = %llu seconds\n", (end - start) / (1000 * 1000));
+    do {
+      fprintf(stderr, "Starting repair...\n");
+      Benchmark::TimeStamp start = Benchmark::GetTimestamp();
+      master->RepairHost(host_id, mode);
+      Benchmark::TimeStamp end = Benchmark::GetTimestamp();
+      fprintf(stderr, "Complete! Time taken = %llu seconds\n",
+              (end - start) / (1000 * 1000));
+
+    } while(indefinite);
+
   } catch (std::exception& e) {
     fprintf(stderr, "Error: %s\n", e.what());
   }
