@@ -115,7 +115,6 @@ class SuccinctMaster : virtual public MasterServiceIf {
     std::map<int32_t, std::vector<int32_t>> recovery_shard_map;
     for (auto failed_shard : failed_shards) {
       std::vector<int32_t> recovery_shards;
-      fprintf(stderr, "Recovery Shards:\n");
       switch (mode) {
         case 0: {
           GetRecoveryReplica(recovery_shards, failed_shard);
@@ -200,15 +199,13 @@ class SuccinctMaster : virtual public MasterServiceIf {
 
   int32_t GetSmallestAvailableReplica(int32_t failed_shard,
                                       ShardMetadata& sdata) {
-    // If failed shard is primary, just get
-    // the replica with the minimum sampling rate
-    uint32_t min_sampling_rate = conf_.at(sdata.replicas.at(0)).sampling_rate;
-    int32_t smallest_replica = 0;
+    int32_t smallest_replica = sdata.replicas.at(0);
+    uint32_t max_sampling_rate = conf_.at(smallest_replica).sampling_rate;
     for (auto replica : sdata.replicas) {
-      if (conf_.at(replica).sampling_rate < min_sampling_rate
+      if (conf_.at(replica).sampling_rate > max_sampling_rate
           && replica != failed_shard) {
-        min_sampling_rate = conf_.at(replica).sampling_rate;
         smallest_replica = replica;
+        max_sampling_rate = conf_.at(smallest_replica).sampling_rate;
       }
     }
     fprintf(stderr, "Smallest replica is %d\n", smallest_replica);
@@ -265,7 +262,8 @@ class SuccinctMaster : virtual public MasterServiceIf {
     int32_t len = 1024 * 1024 * 16;  // 16MB at a time
     std::string res;
 
-    fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename.c_str(), clients.size());
+    fprintf(stderr, "Repairing file %s, reading from %zu clients\n",
+            filename.c_str(), clients.size());
     do {
       // Loop through the clients
       for (auto client_entry : clients) {
