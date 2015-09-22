@@ -231,6 +231,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         SuccinctServiceClient client(protocol);
         transport->open();
+        client.ConnectToHandlers();
         fprintf(stderr, "Connected!\n");
         clients.insert(
             std::pair<int32_t, SuccinctServiceClient>(recovery_shard, client));
@@ -245,6 +246,10 @@ class SuccinctMaster : virtual public MasterServiceIf {
     for (auto filename : filenames) {
       fprintf(stderr, "Repairing %s\n", filename.c_str());
       RepairShardFile(filename, clients);
+    }
+
+    for (auto transport : transports) {
+      transport->close();
     }
 
     return 0;
