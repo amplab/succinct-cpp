@@ -244,13 +244,14 @@ class SuccinctMaster : virtual public MasterServiceIf {
     }
 
     for (auto filename : filenames) {
-      fprintf(stderr, "Repairing %s\n", filename.c_str());
       RepairShardFile(filename, clients);
     }
 
     for (auto transport : transports) {
       transport->close();
     }
+
+    fprintf(stderr, "Repaired shard %d\n", shard_id);
 
     return 0;
   }
@@ -266,25 +267,19 @@ class SuccinctMaster : virtual public MasterServiceIf {
 
     fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename.c_str(), clients.size());
     do {
-      fprintf(stderr, "Sending out requests...\n");
       // Loop through the clients
       for (auto client_entry : clients) {
         client_entry.second.send_FetchShardData(client_entry.first, filename,
                                                 offset, len);
       }
 
-      fprintf(stderr, "Wating for responses...\n");
-
       for (auto client_entry : clients) {
         client_entry.second.recv_FetchShardData(res);
       }
-
-      fprintf(stderr, "Received responses!\n");
-
       sum += res.length();
       offset += res.length();
-      fprintf(stderr, "Reconstructed chunk of size = %lu\n", res.length());
     } while (res.length() == len);
+    fprintf(stderr, "Done!\n");
 
     return 0;
   }
