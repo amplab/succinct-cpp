@@ -128,7 +128,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
         case 1: {
           GetRecoveryBlocks(recovery_shards, failed_shard);
           for (auto recovery_shard : recovery_shards) {
-            fprintf(stderr, "Recovery Replica: %u\n", recovery_shard);
+            fprintf(stderr, "Recovery Block: %u\n", recovery_shard);
           }
           assert(recovery_shards.size() == 10);
           break;
@@ -141,7 +141,6 @@ class SuccinctMaster : virtual public MasterServiceIf {
     uint64_t data_size = 0;
     for (auto recovery_entry : recovery_shard_map) {
       data_size += RepairShard(recovery_entry.first, recovery_entry.second);
-      // data_size += RepairShard(failed_shard, mode, clients);
     }
 
     return data_size;
@@ -259,16 +258,23 @@ class SuccinctMaster : virtual public MasterServiceIf {
     int64_t offset = 0;
     int32_t len = 1024 * 1024 * 1024;  // 1GB at a time
     std::string res;
+
+    fprintf(stderr, "Repairing file %s, reading from %zu clients\n", filename, clients.size());
     do {
+      fprintf(stderr, "Sending out requests...\n");
       // Loop through the clients
       for (auto client_entry : clients) {
         client_entry.second.send_FetchShardData(client_entry.first, filename,
                                                 offset, len);
       }
 
+      fprintf(stderr, "Wating for responses...\n");
+
       for (auto client_entry : clients) {
         client_entry.second.recv_FetchShardData(res);
       }
+
+      fprintf(stderr, "Received responses!\n");
 
       sum += res.length();
       offset += res.length();
