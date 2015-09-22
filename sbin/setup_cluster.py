@@ -28,10 +28,7 @@ hosts = [host.rstrip('\n') for host in open(hosts_file)]
 
 # Read sampling rates
 sr_map = dict((int(sdata.split()[0]), int(sdata.split()[1])) for sdata in open(conf_file))
-print sr_map
 num_shards = len(sr_map)
-
-print "There are %d shards." % num_shards
 
 for i in range(0, num_shards):
     if i > 0 and i % len(hosts) == 0:
