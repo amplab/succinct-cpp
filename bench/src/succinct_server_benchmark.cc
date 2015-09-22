@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "succinct_server_benchmark.h"
+#include "shard_config.h"
 
 void ParseConfig(std::vector<int32_t>& primary_ids, std::string& conf_file) {
   std::ifstream conf_stream(conf_file);
@@ -10,22 +11,25 @@ void ParseConfig(std::vector<int32_t>& primary_ids, std::string& conf_file) {
   std::string line;
   while (std::getline(conf_stream, line)) {
     int32_t id, sampling_rate;
-    bool is_primary;
+    ShardType shard_type;
     std::istringstream iss(line);
 
     // Get ID and sampling rate
     iss >> id >> sampling_rate;
 
     // Get get whether it is primary or not
-    iss >> is_primary;
+    int type;
+    iss >> type;
+    shard_type = (ShardType) type;
 
-    if (is_primary) {
+    if (shard_type == ShardType::kPrimary
+        || shard_type == ShardType::kReplica) {
       fprintf(stderr, "Primary: %d\n", id);
       primary_ids.push_back(id);
     }
   }
 
-  fprintf(stderr, "Read %zu configurations\n", primary_ids.size());
+  fprintf(stderr, "Read %zu primaries\n", primary_ids.size());
 }
 
 void print_usage(char *exec) {
@@ -80,8 +84,8 @@ int main(int argc, char **argv) {
   ParseConfig(primary_ids, config_file);
 
   // Benchmark core functions
-  SuccinctServerBenchmark s_bench(benchmark_type, skew, num_keys,
-                                  query_file, primary_ids);
+  SuccinctServerBenchmark s_bench(benchmark_type, skew, num_keys, query_file,
+                                  primary_ids);
   if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
   } else if (benchmark_type == "throughput-search") {

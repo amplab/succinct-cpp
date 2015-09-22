@@ -18,6 +18,7 @@ class QueryServiceIf {
   virtual int32_t Initialize(const int32_t id, const int32_t sampling_rate) = 0;
   virtual void Get(std::string& _return, const int64_t key) = 0;
   virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void FetchData(std::string& _return, const std::string& fname, const int64_t offset, const int64_t len) = 0;
   virtual int32_t GetNumKeys() = 0;
   virtual int64_t GetShardSize() = 0;
 };
@@ -57,6 +58,9 @@ class QueryServiceNull : virtual public QueryServiceIf {
     return;
   }
   void Search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void FetchData(std::string& /* _return */, const std::string& /* fname */, const int64_t /* offset */, const int64_t /* len */) {
     return;
   }
   int32_t GetNumKeys() {
@@ -402,6 +406,132 @@ class QueryService_Search_presult {
 
 };
 
+typedef struct _QueryService_FetchData_args__isset {
+  _QueryService_FetchData_args__isset() : fname(false), offset(false), len(false) {}
+  bool fname;
+  bool offset;
+  bool len;
+} _QueryService_FetchData_args__isset;
+
+class QueryService_FetchData_args {
+ public:
+
+  QueryService_FetchData_args() : fname(), offset(0), len(0) {
+  }
+
+  virtual ~QueryService_FetchData_args() throw() {}
+
+  std::string fname;
+  int64_t offset;
+  int64_t len;
+
+  _QueryService_FetchData_args__isset __isset;
+
+  void __set_fname(const std::string& val) {
+    fname = val;
+  }
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_len(const int64_t val) {
+    len = val;
+  }
+
+  bool operator == (const QueryService_FetchData_args & rhs) const
+  {
+    if (!(fname == rhs.fname))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_FetchData_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_FetchData_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class QueryService_FetchData_pargs {
+ public:
+
+
+  virtual ~QueryService_FetchData_pargs() throw() {}
+
+  const std::string* fname;
+  const int64_t* offset;
+  const int64_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_FetchData_result__isset {
+  _QueryService_FetchData_result__isset() : success(false) {}
+  bool success;
+} _QueryService_FetchData_result__isset;
+
+class QueryService_FetchData_result {
+ public:
+
+  QueryService_FetchData_result() : success() {
+  }
+
+  virtual ~QueryService_FetchData_result() throw() {}
+
+  std::string success;
+
+  _QueryService_FetchData_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const QueryService_FetchData_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const QueryService_FetchData_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueryService_FetchData_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _QueryService_FetchData_presult__isset {
+  _QueryService_FetchData_presult__isset() : success(false) {}
+  bool success;
+} _QueryService_FetchData_presult__isset;
+
+class QueryService_FetchData_presult {
+ public:
+
+
+  virtual ~QueryService_FetchData_presult() throw() {}
+
+  std::string* success;
+
+  _QueryService_FetchData_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class QueryService_GetNumKeys_args {
  public:
@@ -619,6 +749,9 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void Search(std::set<int64_t> & _return, const std::string& query);
   void send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return);
+  void FetchData(std::string& _return, const std::string& fname, const int64_t offset, const int64_t len);
+  void send_FetchData(const std::string& fname, const int64_t offset, const int64_t len);
+  void recv_FetchData(std::string& _return);
   int32_t GetNumKeys();
   void send_GetNumKeys();
   int32_t recv_GetNumKeys();
@@ -643,6 +776,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_Initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_FetchData(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_GetNumKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_GetShardSize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
@@ -651,6 +785,7 @@ class QueryServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["Initialize"] = &QueryServiceProcessor::process_Initialize;
     processMap_["Get"] = &QueryServiceProcessor::process_Get;
     processMap_["Search"] = &QueryServiceProcessor::process_Search;
+    processMap_["FetchData"] = &QueryServiceProcessor::process_FetchData;
     processMap_["GetNumKeys"] = &QueryServiceProcessor::process_GetNumKeys;
     processMap_["GetShardSize"] = &QueryServiceProcessor::process_GetShardSize;
   }
@@ -707,6 +842,16 @@ class QueryServiceMultiface : virtual public QueryServiceIf {
       ifaces_[i]->Search(_return, query);
     }
     ifaces_[i]->Search(_return, query);
+    return;
+  }
+
+  void FetchData(std::string& _return, const std::string& fname, const int64_t offset, const int64_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->FetchData(_return, fname, offset, len);
+    }
+    ifaces_[i]->FetchData(_return, fname, offset, len);
     return;
   }
 

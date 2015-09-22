@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TThreadedServer.h>
@@ -12,6 +13,7 @@
 
 #include "MasterService.h"
 #include "SuccinctService.h"
+#include "shard_config.h"
 #include "succinct_constants.h"
 #include "QueryService.h"
 #include "ports.h"
@@ -26,8 +28,11 @@ using boost::shared_ptr;
 class SuccinctMaster : virtual public MasterServiceIf {
 
  public:
-  SuccinctMaster(std::vector<std::string> hostnames) {
-    this->hostnames_ = hostnames;
+  SuccinctMaster(std::vector<std::string> hostnames, ConfigMap& conf,
+                 StripeList& s_list) {
+    hostnames_ = hostnames;
+    conf_ = conf;
+    s_list_ = s_list;
 
     std::vector<SuccinctServiceClient> clients;
     std::vector<boost::shared_ptr<TTransport> > transports;
@@ -93,53 +98,217 @@ class SuccinctMaster : virtual public MasterServiceIf {
     _return = hostnames_[rand() % hostnames_.size()];
   }
 
-  int64_t RepairNode(int32_t host_id, int32_t mode) {
-    if (mode == 0) {
+  int64_t RepairHost(int32_t host_id, int32_t mode) {
+    assert(mode == 0 || mode == 1);
+    std::vector<int32_t> failed_shards;
 
-    } else if(mode == 1) {
-
-    } else {
-      return -1;
+    // Determine the list of failed shards
+    int32_t num_shards = conf_.size();
+    for (int32_t i = 0; i < num_shards; i++) {
+      if (i % hostnames_.size() == host_id) {
+        failed_shards.push_back(i);
+      }
     }
-    return 0;
+
+    // Determine recovery shards
+    std::map<int32_t, std::vector<int32_t>> recovery_shard_map;
+    for (auto failed_shard : failed_shards) {
+      std::vector<int32_t> recovery_shards;
+      switch (mode) {
+        case 0: {
+          GetRecoveryReplica(recovery_shards, failed_shard);
+          assert(recovery_shards.size() == 1);
+          break;
+        }
+        case 1: {
+          GetRecoveryBlocks(recovery_shards, failed_shard);
+          assert(recovery_shards.size() == 10);
+          break;
+        }
+      }
+      recovery_shard_map[failed_shard] = recovery_shards;
+    }
+
+    // Repair all failed shards
+    uint64_t data_size = 0;
+    for (auto recovery_entry : recovery_shard_map) {
+      data_size += RepairShard(recovery_entry.first, recovery_entry.second);
+      // data_size += RepairShard(failed_shard, mode, clients);
+    }
+
+    return data_size;
   }
 
  private:
+
+  void GetRecoveryBlocks(std::vector<int32_t>& recovery_blocks,
+                         int32_t failed_shard) {
+    // Determine the blocks to recover from
+    for (auto stripe : s_list_) {
+      if (stripe.ContainsBlock(failed_shard)) {
+        stripe.GetRecoveryBlocks(recovery_blocks, failed_shard);
+      }
+    }
+  }
+
+  void GetRecoveryReplica(std::vector<int32_t>& recovery_replicas,
+                          int32_t failed_shard) {
+    if (conf_.at(failed_shard).shard_type == ShardType::kPrimary) {
+      // If failed shard is primary, just get
+      // the replica with the minimum sampling rate
+      recovery_replicas.push_back(
+          GetSmallestAvailableReplica(failed_shard, conf_.at(failed_shard)));
+    } else if (conf_.at(failed_shard).shard_type == ShardType::kReplica) {
+      // If failed shard is not a primary, then search
+      // for the primary whose replica this is
+      ShardMetadata sdata;
+      FindPrimary(sdata, failed_shard);
+      recovery_replicas.push_back(
+          GetSmallestAvailableReplica(failed_shard, sdata));
+    } else {
+      assert(0);
+    }
+  }
+
+  void FindPrimary(ShardMetadata& sdata, int32_t replica_id) {
+    for (auto conf_entry : conf_) {
+      if (conf_entry.second.ContainsReplica(replica_id)) {
+        sdata = conf_entry.second;
+      }
+    }
+  }
+
+  int32_t GetSmallestAvailableReplica(int32_t failed_shard,
+                                      ShardMetadata& sdata) {
+    // If failed shard is primary, just get
+    // the replica with the minimum sampling rate
+    uint32_t min_sampling_rate = conf_.at(sdata.replicas.at(0)).sampling_rate;
+    int32_t smallest_replica = 0;
+    for (auto replica : sdata.replicas) {
+      if (conf_.at(replica).sampling_rate < min_sampling_rate
+          && replica != failed_shard) {
+        min_sampling_rate = conf_.at(replica).sampling_rate;
+        smallest_replica = replica;
+      }
+    }
+    return smallest_replica;
+  }
+
+  int64_t RepairShard(int32_t shard_id, std::vector<int32_t>& recovery_shards) {
+    std::string filenames[5] = { "metadata", "keyval", "npa", "isa", "sa" };
+
+    // Obtain clients for recovery shards
+    std::map<int32_t, SuccinctServiceClient> clients;
+    std::vector<boost::shared_ptr<TTransport> > transports;
+    for (auto recovery_shard : recovery_shards) {
+      uint32_t host_id = recovery_shard % hostnames_.size();
+      try {
+        boost::shared_ptr<TSocket> socket(
+            new TSocket(hostnames_[host_id], QUERY_HANDLER_PORT));
+        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        SuccinctServiceClient client(protocol);
+        transport->open();
+        fprintf(stderr, "Connected!\n");
+        clients.insert(
+            std::pair<int32_t, SuccinctServiceClient>(recovery_shard, client));
+        transports.push_back(transport);
+      } catch (std::exception& e) {
+        fprintf(stderr, "Could not connect to handler on %s: %s\n",
+                hostnames_[host_id].c_str(), e.what());
+        exit(1);
+      }
+    }
+
+    for (auto filename : filenames) {
+      RepairShardFile(filename, clients);
+    }
+
+    return 0;
+  }
+
+  int64_t RepairShardFile(std::string filename,
+                          std::map<int32_t, SuccinctServiceClient>& clients) {
+
+    // Fetch all blocks
+    int64_t sum = 0;
+    int64_t offset = 0;
+    int32_t len = 1024 * 1024 * 1024;  // 1GB at a time
+    std::string res;
+    do {
+      // Loop through the clients
+      for (auto client_entry : clients) {
+        client_entry.second.send_FetchShardData(client_entry.first, filename,
+                                                offset, len);
+      }
+
+      for (auto client_entry : clients) {
+        client_entry.second.recv_FetchShardData(res);
+      }
+
+      sum += res.length();
+      offset += res.length();
+      fprintf(stderr, "Reconstructed chunk of size = %lu\n", res.length());
+    } while (res.length() == len);
+
+    return 0;
+  }
+
+// Data members
   std::vector<std::string> hostnames_;
+  ConfigMap conf_;
+  StripeList s_list_;
 };
+
+void ParseHosts(std::vector<std::string>& hostnames, std::string& hosts_file) {
+  std::ifstream hosts(hosts_file);
+  std::string host;
+  while (std::getline(hosts, host)) {
+    hostnames.push_back(host);
+  }
+}
 
 void print_usage(char *exec) {
   fprintf(stderr, "Usage: %s [-h hostsfile]\n", exec);
 }
 
 int main(int argc, char **argv) {
-  if (argc < 1 || argc > 3) {
+  if (argc < 1 || argc > 7) {
     print_usage(argv[0]);
     return -1;
   }
 
   int c;
-  std::string hostsfile = "./conf/hosts";
-  while ((c = getopt(argc, argv, "h:")) != -1) {
+  std::string hosts_file = "./conf/hosts";
+  std::string erasure_conf_file = "./conf/erasure.conf";
+  std::string conf_file = "./conf/blowfish.conf";
+  while ((c = getopt(argc, argv, "h:e:c:")) != -1) {
     switch (c) {
       case 'h':
-        hostsfile = optarg;
+        hosts_file = optarg;
+        break;
+      case 'e':
+        erasure_conf_file = optarg;
+        break;
+      case 'c':
+        conf_file = optarg;
         break;
       default:
-        hostsfile = "./conf/hosts";
+        hosts_file = "./conf/hosts";
     }
   }
 
-  std::ifstream hosts(hostsfile);
-  std::string host;
   std::vector<std::string> hostnames;
-  while (std::getline(hosts, host, '\n')) {
-    hostnames.push_back(host);
-    fprintf(stderr, "Read host: %s\n", host.c_str());
-  }
+  ConfigMap conf;
+  StripeList s_list;
+
+  ParseHosts(hostnames, hosts_file);
+  ParseConfig(conf, conf_file);
+  ParseErasureConfig(s_list, erasure_conf_file);
 
   int port = SUCCINCT_MASTER_PORT;
-  shared_ptr<SuccinctMaster> handler(new SuccinctMaster(hostnames));
+  shared_ptr<SuccinctMaster> handler(
+      new SuccinctMaster(hostnames, conf, s_list));
   shared_ptr<TProcessor> processor(new MasterServiceProcessor(handler));
 
   try {

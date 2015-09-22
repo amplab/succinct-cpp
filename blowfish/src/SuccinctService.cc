@@ -1655,6 +1655,216 @@ uint32_t SuccinctService_SearchLocal_presult::read(::apache::thrift::protocol::T
   return xfer;
 }
 
+uint32_t SuccinctService_FetchShardData_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->shard_id);
+          this->__isset.shard_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->fname);
+          this->__isset.fname = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->offset);
+          this->__isset.offset = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->len);
+          this->__isset.len = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t SuccinctService_FetchShardData_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("SuccinctService_FetchShardData_args");
+
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->shard_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("fname", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->fname);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64(this->offset);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64(this->len);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t SuccinctService_FetchShardData_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("SuccinctService_FetchShardData_pargs");
+
+  xfer += oprot->writeFieldBegin("shard_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->shard_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("fname", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->fname)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("offset", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64((*(this->offset)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("len", ::apache::thrift::protocol::T_I64, 4);
+  xfer += oprot->writeI64((*(this->len)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t SuccinctService_FetchShardData_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readBinary(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t SuccinctService_FetchShardData_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("SuccinctService_FetchShardData_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeBinary(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t SuccinctService_FetchShardData_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readBinary((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t SuccinctService_GetNumHosts_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -2840,6 +3050,67 @@ void SuccinctServiceClient::recv_SearchLocal(std::set<int64_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "SearchLocal failed: unknown result");
 }
 
+void SuccinctServiceClient::FetchShardData(std::string& _return, const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len)
+{
+  send_FetchShardData(shard_id, fname, offset, len);
+  recv_FetchShardData(_return);
+}
+
+void SuccinctServiceClient::send_FetchShardData(const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("FetchShardData", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  SuccinctService_FetchShardData_pargs args;
+  args.shard_id = &shard_id;
+  args.fname = &fname;
+  args.offset = &offset;
+  args.len = &len;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void SuccinctServiceClient::recv_FetchShardData(std::string& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("FetchShardData") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  SuccinctService_FetchShardData_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "FetchShardData failed: unknown result");
+}
+
 int32_t SuccinctServiceClient::GetNumHosts()
 {
   send_GetNumHosts();
@@ -3626,6 +3897,60 @@ void SuccinctServiceProcessor::process_SearchLocal(int32_t seqid, ::apache::thri
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "SuccinctService.SearchLocal", bytes);
+  }
+}
+
+void SuccinctServiceProcessor::process_FetchShardData(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("SuccinctService.FetchShardData", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "SuccinctService.FetchShardData");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "SuccinctService.FetchShardData");
+  }
+
+  SuccinctService_FetchShardData_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "SuccinctService.FetchShardData", bytes);
+  }
+
+  SuccinctService_FetchShardData_result result;
+  try {
+    iface_->FetchShardData(result.success, args.shard_id, args.fname, args.offset, args.len);
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "SuccinctService.FetchShardData");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("FetchShardData", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "SuccinctService.FetchShardData");
+  }
+
+  oprot->writeMessageBegin("FetchShardData", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "SuccinctService.FetchShardData", bytes);
   }
 }
 

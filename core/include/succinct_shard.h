@@ -68,6 +68,9 @@ class SuccinctShard : public SuccinctCore {
 
   void RegexCount(std::vector<size_t>& result, const std::string& str);
 
+  void FetchData(std::string& result, const std::string& filename,
+                    const int64_t offset, const int64_t length);
+
   // Serialize succinct data structures
   virtual size_t Serialize();
 

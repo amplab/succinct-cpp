@@ -16,6 +16,7 @@ class MasterServiceIf {
  public:
   virtual ~MasterServiceIf() {}
   virtual void GetClient(std::string& _return) = 0;
+  virtual int64_t RepairHost(const int32_t host_id, const int32_t mode) = 0;
 };
 
 class MasterServiceIfFactory {
@@ -47,6 +48,10 @@ class MasterServiceNull : virtual public MasterServiceIf {
   virtual ~MasterServiceNull() {}
   void GetClient(std::string& /* _return */) {
     return;
+  }
+  int64_t RepairHost(const int32_t /* host_id */, const int32_t /* mode */) {
+    int64_t _return = 0;
+    return _return;
   }
 };
 
@@ -144,6 +149,123 @@ class MasterService_GetClient_presult {
 
 };
 
+typedef struct _MasterService_RepairHost_args__isset {
+  _MasterService_RepairHost_args__isset() : host_id(false), mode(false) {}
+  bool host_id;
+  bool mode;
+} _MasterService_RepairHost_args__isset;
+
+class MasterService_RepairHost_args {
+ public:
+
+  MasterService_RepairHost_args() : host_id(0), mode(0) {
+  }
+
+  virtual ~MasterService_RepairHost_args() throw() {}
+
+  int32_t host_id;
+  int32_t mode;
+
+  _MasterService_RepairHost_args__isset __isset;
+
+  void __set_host_id(const int32_t val) {
+    host_id = val;
+  }
+
+  void __set_mode(const int32_t val) {
+    mode = val;
+  }
+
+  bool operator == (const MasterService_RepairHost_args & rhs) const
+  {
+    if (!(host_id == rhs.host_id))
+      return false;
+    if (!(mode == rhs.mode))
+      return false;
+    return true;
+  }
+  bool operator != (const MasterService_RepairHost_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const MasterService_RepairHost_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class MasterService_RepairHost_pargs {
+ public:
+
+
+  virtual ~MasterService_RepairHost_pargs() throw() {}
+
+  const int32_t* host_id;
+  const int32_t* mode;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _MasterService_RepairHost_result__isset {
+  _MasterService_RepairHost_result__isset() : success(false) {}
+  bool success;
+} _MasterService_RepairHost_result__isset;
+
+class MasterService_RepairHost_result {
+ public:
+
+  MasterService_RepairHost_result() : success(0) {
+  }
+
+  virtual ~MasterService_RepairHost_result() throw() {}
+
+  int64_t success;
+
+  _MasterService_RepairHost_result__isset __isset;
+
+  void __set_success(const int64_t val) {
+    success = val;
+  }
+
+  bool operator == (const MasterService_RepairHost_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const MasterService_RepairHost_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const MasterService_RepairHost_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _MasterService_RepairHost_presult__isset {
+  _MasterService_RepairHost_presult__isset() : success(false) {}
+  bool success;
+} _MasterService_RepairHost_presult__isset;
+
+class MasterService_RepairHost_presult {
+ public:
+
+
+  virtual ~MasterService_RepairHost_presult() throw() {}
+
+  int64_t* success;
+
+  _MasterService_RepairHost_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class MasterServiceClient : virtual public MasterServiceIf {
  public:
   MasterServiceClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -167,6 +289,9 @@ class MasterServiceClient : virtual public MasterServiceIf {
   void GetClient(std::string& _return);
   void send_GetClient();
   void recv_GetClient(std::string& _return);
+  int64_t RepairHost(const int32_t host_id, const int32_t mode);
+  void send_RepairHost(const int32_t host_id, const int32_t mode);
+  int64_t recv_RepairHost();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -183,10 +308,12 @@ class MasterServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_GetClient(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_RepairHost(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   MasterServiceProcessor(boost::shared_ptr<MasterServiceIf> iface) :
     iface_(iface) {
     processMap_["GetClient"] = &MasterServiceProcessor::process_GetClient;
+    processMap_["RepairHost"] = &MasterServiceProcessor::process_RepairHost;
   }
 
   virtual ~MasterServiceProcessor() {}
@@ -223,6 +350,15 @@ class MasterServiceMultiface : virtual public MasterServiceIf {
     }
     ifaces_[i]->GetClient(_return);
     return;
+  }
+
+  int64_t RepairHost(const int32_t host_id, const int32_t mode) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->RepairHost(host_id, mode);
+    }
+    return ifaces_[i]->RepairHost(host_id, mode);
   }
 
 };

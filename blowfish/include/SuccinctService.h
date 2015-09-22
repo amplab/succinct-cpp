@@ -25,6 +25,7 @@ class SuccinctServiceIf {
   virtual void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
   virtual void Search(std::set<int64_t> & _return, const int32_t shard_id, const std::string& query) = 0;
   virtual void SearchLocal(std::set<int64_t> & _return, const int32_t qserver_id, const std::string& query) = 0;
+  virtual void FetchShardData(std::string& _return, const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len) = 0;
   virtual int32_t GetNumHosts() = 0;
   virtual int32_t GetNumShards(const int32_t host_id) = 0;
   virtual int32_t GetNumKeys(const int32_t shard_id) = 0;
@@ -92,6 +93,9 @@ class SuccinctServiceNull : virtual public SuccinctServiceIf {
     return;
   }
   void SearchLocal(std::set<int64_t> & /* _return */, const int32_t /* qserver_id */, const std::string& /* query */) {
+    return;
+  }
+  void FetchShardData(std::string& /* _return */, const int32_t /* shard_id */, const std::string& /* fname */, const int64_t /* offset */, const int64_t /* len */) {
     return;
   }
   int32_t GetNumHosts() {
@@ -1158,6 +1162,141 @@ class SuccinctService_SearchLocal_presult {
 
 };
 
+typedef struct _SuccinctService_FetchShardData_args__isset {
+  _SuccinctService_FetchShardData_args__isset() : shard_id(false), fname(false), offset(false), len(false) {}
+  bool shard_id;
+  bool fname;
+  bool offset;
+  bool len;
+} _SuccinctService_FetchShardData_args__isset;
+
+class SuccinctService_FetchShardData_args {
+ public:
+
+  SuccinctService_FetchShardData_args() : shard_id(0), fname(), offset(0), len(0) {
+  }
+
+  virtual ~SuccinctService_FetchShardData_args() throw() {}
+
+  int32_t shard_id;
+  std::string fname;
+  int64_t offset;
+  int64_t len;
+
+  _SuccinctService_FetchShardData_args__isset __isset;
+
+  void __set_shard_id(const int32_t val) {
+    shard_id = val;
+  }
+
+  void __set_fname(const std::string& val) {
+    fname = val;
+  }
+
+  void __set_offset(const int64_t val) {
+    offset = val;
+  }
+
+  void __set_len(const int64_t val) {
+    len = val;
+  }
+
+  bool operator == (const SuccinctService_FetchShardData_args & rhs) const
+  {
+    if (!(shard_id == rhs.shard_id))
+      return false;
+    if (!(fname == rhs.fname))
+      return false;
+    if (!(offset == rhs.offset))
+      return false;
+    if (!(len == rhs.len))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_FetchShardData_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_FetchShardData_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class SuccinctService_FetchShardData_pargs {
+ public:
+
+
+  virtual ~SuccinctService_FetchShardData_pargs() throw() {}
+
+  const int32_t* shard_id;
+  const std::string* fname;
+  const int64_t* offset;
+  const int64_t* len;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_FetchShardData_result__isset {
+  _SuccinctService_FetchShardData_result__isset() : success(false) {}
+  bool success;
+} _SuccinctService_FetchShardData_result__isset;
+
+class SuccinctService_FetchShardData_result {
+ public:
+
+  SuccinctService_FetchShardData_result() : success() {
+  }
+
+  virtual ~SuccinctService_FetchShardData_result() throw() {}
+
+  std::string success;
+
+  _SuccinctService_FetchShardData_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  bool operator == (const SuccinctService_FetchShardData_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const SuccinctService_FetchShardData_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const SuccinctService_FetchShardData_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _SuccinctService_FetchShardData_presult__isset {
+  _SuccinctService_FetchShardData_presult__isset() : success(false) {}
+  bool success;
+} _SuccinctService_FetchShardData_presult__isset;
+
+class SuccinctService_FetchShardData_presult {
+ public:
+
+
+  virtual ~SuccinctService_FetchShardData_presult() throw() {}
+
+  std::string* success;
+
+  _SuccinctService_FetchShardData_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 
 class SuccinctService_GetNumHosts_args {
  public:
@@ -1612,6 +1751,9 @@ class SuccinctServiceClient : virtual public SuccinctServiceIf {
   void SearchLocal(std::set<int64_t> & _return, const int32_t qserver_id, const std::string& query);
   void send_SearchLocal(const int32_t qserver_id, const std::string& query);
   void recv_SearchLocal(std::set<int64_t> & _return);
+  void FetchShardData(std::string& _return, const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len);
+  void send_FetchShardData(const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len);
+  void recv_FetchShardData(std::string& _return);
   int32_t GetNumHosts();
   void send_GetNumHosts();
   int32_t recv_GetNumHosts();
@@ -1649,6 +1791,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_GetLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_SearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_FetchShardData(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_GetNumHosts(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_GetNumShards(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_GetNumKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -1666,6 +1809,7 @@ class SuccinctServiceProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["GetLocal"] = &SuccinctServiceProcessor::process_GetLocal;
     processMap_["Search"] = &SuccinctServiceProcessor::process_Search;
     processMap_["SearchLocal"] = &SuccinctServiceProcessor::process_SearchLocal;
+    processMap_["FetchShardData"] = &SuccinctServiceProcessor::process_FetchShardData;
     processMap_["GetNumHosts"] = &SuccinctServiceProcessor::process_GetNumHosts;
     processMap_["GetNumShards"] = &SuccinctServiceProcessor::process_GetNumShards;
     processMap_["GetNumKeys"] = &SuccinctServiceProcessor::process_GetNumKeys;
@@ -1789,6 +1933,16 @@ class SuccinctServiceMultiface : virtual public SuccinctServiceIf {
       ifaces_[i]->SearchLocal(_return, qserver_id, query);
     }
     ifaces_[i]->SearchLocal(_return, qserver_id, query);
+    return;
+  }
+
+  void FetchShardData(std::string& _return, const int32_t shard_id, const std::string& fname, const int64_t offset, const int64_t len) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->FetchShardData(_return, shard_id, fname, offset, len);
+    }
+    ifaces_[i]->FetchShardData(_return, shard_id, fname, offset, len);
     return;
   }
 

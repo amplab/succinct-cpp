@@ -108,6 +108,16 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     qservers_.at(qserver_id).Search(_return, query);
   }
 
+  void FetchShardData(std::string& _return, const int32_t shard_id,
+                      const std::string& filename, const int64_t offset,
+                      const int64_t length) {
+    IdType host_id = shard_id % hostnames_.size();
+    IdType qserver_id = shard_id / hostnames_.size();
+
+    assert(host_id == local_host_id_);
+    qservers_.at(qserver_id).FetchData(_return, filename, offset, length);
+  }
+
   int32_t GetNumHosts() {
     return hostnames_.size();
   }
@@ -276,77 +286,6 @@ class HandlerProcessorFactory : public TProcessorFactory {
   uint32_t num_shards_;
   ConfigMap conf_;
 };
-
-template<typename T>
-void ParseCsvEntry(std::vector<T> &out, std::string csv_entry) {
-  std::string delimiter = ",";
-  size_t pos = 0;
-  std::string elem;
-  while ((pos = csv_entry.find(delimiter)) != std::string::npos) {
-    elem = csv_entry.substr(0, pos);
-    out.push_back((T) atof(elem.c_str()));
-    csv_entry.erase(0, pos + delimiter.length());
-  }
-
-  if (csv_entry != "-") {
-    out.push_back(atof(csv_entry.c_str()));
-  } else {
-    assert(out.empty());
-  }
-}
-
-void ParseConfig(ConfigMap& conf, std::string& conf_file) {
-  std::ifstream conf_stream(conf_file);
-
-  std::string line;
-  while (std::getline(conf_stream, line)) {
-    IdType id;
-    ShardMetadata sdata;
-    std::istringstream iss(line);
-
-    // Get ID and sampling rate
-    iss >> id >> sdata.sampling_rate;
-
-    // Get get whether it is primary or not
-    iss >> sdata.is_primary;
-
-    // Get and parse ids
-    std::string ids;
-    iss >> ids;
-    ParseCsvEntry<int32_t>(sdata.replicas, ids);
-
-    // Get and parse distributions
-    std::string distributions;
-    iss >> distributions;
-    ParseCsvEntry<double>(sdata.distribution, distributions);
-
-    sdata.ComputeCumulativeDistribution();
-
-    conf[id] = sdata;
-
-    fprintf(stderr,
-            "Shard ID = %d, Sampling Rate = %d, Is Primary? = %d, Replicas: ",
-            id, sdata.sampling_rate, sdata.is_primary);
-
-    for (auto replica : sdata.replicas) {
-      fprintf(stderr, "%d;", replica);
-    }
-
-    fprintf(stderr, ", Distribution: ");
-    for (auto prob : sdata.distribution) {
-      fprintf(stderr, "%f;", prob);
-    }
-
-    fprintf(stderr, ", Cumulative Distribution: ");
-    for (auto cum_prob : sdata.cum_dist) {
-      fprintf(stderr, "%f;", cum_prob);
-    }
-
-    fprintf(stderr, "\n");
-  }
-
-  fprintf(stderr, "Read %zu configurations\n", conf.size());
-}
 
 void ParseHosts(std::vector<std::string>& hostnames, std::string& hosts_file) {
   std::ifstream hosts(hosts_file);

@@ -239,6 +239,29 @@ void SuccinctShard::FlatSearch(std::vector<int64_t>& result,
   }
 }
 
+std::ifstream::pos_type filesize(const std::string& filename) {
+  std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+  return in.tellg();
+}
+
+void SuccinctShard::FetchData(std::string& result,
+                                 const std::string& filename,
+                                 const int64_t offset, const int64_t length) {
+
+  std::string path = succinct_path_ + "/" + filename;
+  fprintf(stderr, "Offset = %lld, Length = %lld\n", offset, length);
+
+  int64_t file_size = filesize(path);
+  int64_t read_size = SuccinctUtils::Min(length, (file_size - offset));
+  result.resize(read_size);
+
+  std::ifstream in(path);
+  assert(in);
+
+  in.seekg(offset);
+  in.read(&result[0], read_size);
+}
+
 size_t SuccinctShard::Serialize() {
   size_t out_size = SuccinctCore::Serialize();
 

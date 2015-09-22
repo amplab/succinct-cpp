@@ -20,7 +20,7 @@ if [ "$BLOWFISH_CONF" = "" ]; then
 	if [ -f "${SUCCINCT_CONF_DIR}/blowfish.conf" ]; then
 		BLOWFISH_CONF="${SUCCINCT_CONF_DIR}/blowfish.conf"
 	else
-		echo "Hosts file not found"
+		echo "Conf file not found"
 		exit
 	fi
 fi

@@ -18,14 +18,23 @@ bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-if [ "$SUCCINCT_DATA_PATH" = "" ]; then
-  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
-fi
-
 if [ "$SUCCINCT_LOG_PATH" = "" ]; then
 	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
 fi
 
+if [ "$SUCCINCT_HOSTS" = "" ]; then
+	SUCCINCT_HOSTS="$SUCCINCT_CONF_DIR/hosts"
+fi
+
+if [ "$BLOWFISH_CONF" = "" ]; then
+	if [ -f "${SUCCINCT_CONF_DIR}/blowfish.conf" ]; then
+		BLOWFISH_CONF="${SUCCINCT_CONF_DIR}/blowfish.conf"
+	else
+		echo "Conf file not found"
+		exit
+	fi
+fi
+
 mkdir -p $SUCCINCT_LOG_PATH
 
-nohup "$bin/shandler" -s "${1}" -h "$SUCCINCT_CONF_DIR/hosts" -c "$SUCCINCT_CONF_DIR/blowfish.conf" -i "${2}" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
+nohup "$bin/shandler" -s "${1}" -h "$SUCCINCT_HOSTS" -c "$BLOWFISH_CONF" -i "${2}" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &

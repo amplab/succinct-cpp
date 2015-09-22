@@ -15,6 +15,7 @@ class LoadBalancer {
 
   uint32_t GetReplica(IdType primary_id) {
     ShardMetadata sdata = conf_.at(primary_id);
+    assert(sdata.shard_type == ShardType::kPrimary);
     double r = ((double) rand() / (RAND_MAX));
     for (size_t i = 0; i < sdata.cum_dist.size(); i++) {
       if (r < sdata.cum_dist.at(i)) {
