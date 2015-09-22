@@ -33,12 +33,12 @@ class QueryServiceHandler : virtual public QueryServiceIf {
 
   int32_t Initialize(int32_t id, int32_t sampling_rate) {
     if (!is_init_) {
-      assert(ISPOWOF2(sampling_rate));
       std::string filename = data_path_ + "/data_" + std::to_string(id);
       fprintf(
           stderr,
           "Memory mapping shard with id = %d, sampling-rate = %d, path = %s...\n",
           id, sampling_rate, filename.c_str());
+      assert(ISPOWOF2(sampling_rate));
 
       succinct_shard_ = new SuccinctShard(id, filename,
                                           SuccinctMode::LOAD_MEMORY_MAPPED,
