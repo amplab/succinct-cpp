@@ -42,20 +42,25 @@ typedef struct Stripe {
     BlockIdIterator parity_pos = FindParityBlock(failed_block);
 
     if (data_pos != data_blocks.end()) {
+      fprintf(stderr, "Failed Block is a data block\n");
+
       // Pick all parity blocks
-      recovery_blocks.insert(recovery_blocks.end(), parity_blocks.begin(),
-                             parity_blocks.end());
+      for (auto parity_block : parity_blocks) {
+        recovery_blocks.push_back(parity_block);
+      }
 
       // Pick 8 remaining data blocks
       for (auto data_block : data_blocks) {
         if (data_block == failed_block)
           continue;
         recovery_blocks.push_back(data_block);
-        if (recovery_blocks.size() == 12)
+        if (recovery_blocks.size() == 10)
           break;
       }
 
     } else if (parity_pos != parity_blocks.end()) {
+      fprintf(stderr, "Failed Block is a parity block\n");
+
       // Pick one parity block
       for (auto parity_block : parity_blocks) {
         if (parity_block == failed_block)
@@ -64,8 +69,10 @@ typedef struct Stripe {
       }
 
       // Pick 9 remaining data blocks
-      recovery_blocks.insert(recovery_blocks.end(), data_blocks.begin(),
-                             data_blocks.begin() + 9);
+      for (auto data_block : data_blocks) {
+        recovery_blocks.push_back(data_block);
+        if (recovery_blocks.size() == 10) break;
+      }
     } else {
       // This should not happen
       assert(0);

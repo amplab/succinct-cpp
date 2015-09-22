@@ -120,7 +120,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
         case 0: {
           GetRecoveryReplica(recovery_shards, failed_shard);
           for (auto recovery_shard : recovery_shards) {
-            fprintf(stderr, "Recovery Replica: %u\n");
+            fprintf(stderr, "Recovery Replica: %u\n", recovery_shard);
           }
           assert(recovery_shards.size() == 1);
           break;
@@ -128,7 +128,7 @@ class SuccinctMaster : virtual public MasterServiceIf {
         case 1: {
           GetRecoveryBlocks(recovery_shards, failed_shard);
           for (auto recovery_shard : recovery_shards) {
-            fprintf(stderr, "Recovery Replica: %u\n");
+            fprintf(stderr, "Recovery Replica: %u\n", recovery_shard);
           }
           assert(recovery_shards.size() == 10);
           break;
