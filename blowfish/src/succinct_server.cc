@@ -79,10 +79,19 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     IdType replica_id = load_balancer_->GetReplica(shard_id);
     IdType host_id = replica_id % hostnames_.size();
     IdType qserver_id = replica_id / hostnames_.size();
-    if (host_id == local_host_id_) {
-      GetLocal(_return, qserver_id, key);
+
+    if (host_id == 0) {
+      // Fetch from next 10 shards
+      for (IdType i = replica_id; i < replica_id + 10; i++) {
+        Get(_return, replica_id, key);
+      }
     } else {
-      qhandlers_.at(host_id).GetLocal(_return, qserver_id, key);
+
+      if (host_id == local_host_id_) {
+        GetLocal(_return, qserver_id, key);
+      } else {
+        qhandlers_.at(host_id).GetLocal(_return, qserver_id, key);
+      }
     }
   }
 
@@ -96,10 +105,19 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
     IdType replica_id = load_balancer_->GetReplica(shard_id);
     IdType host_id = replica_id % hostnames_.size();
     IdType qserver_id = replica_id / hostnames_.size();
-    if (host_id == local_host_id_) {
-      SearchLocal(_return, qserver_id, query);
+
+    if (host_id == 0) {
+      // Fetch from next 10 shards
+      for (IdType i = replica_id; i < replica_id + 10; i++) {
+        _return.clear();
+        Search(_return, replica_id, query);
+      }
     } else {
-      qhandlers_.at(host_id).SearchLocal(_return, qserver_id, query);
+      if (host_id == local_host_id_) {
+        SearchLocal(_return, qserver_id, query);
+      } else {
+        qhandlers_.at(host_id).SearchLocal(_return, qserver_id, query);
+      }
     }
   }
 
