@@ -278,6 +278,12 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  fprintf(stderr, "Command line: ");
+  for (int i = 0; i < argc; i++) {
+    fprintf(stderr, "%s ", argv[i]);
+  }
+  fprintf(stderr, "\n");
+
   int c;
   std::string hosts_file = "./conf/hosts";
   std::string erasure_conf_file = "./conf/erasure.conf";
