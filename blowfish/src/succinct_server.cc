@@ -76,17 +76,17 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
   }
 
   void Get(std::string& _return, const int32_t shard_id, const int64_t key) {
-    IdType replica_id = load_balancer_->GetReplica(shard_id);
-    IdType host_id = replica_id % hostnames_.size();
-    IdType qserver_id = replica_id / hostnames_.size();
+    IdType host_id = shard_id % hostnames_.size();
+    IdType qserver_id = shard_id / hostnames_.size();
 
     if (host_id == 0) {
       // Fetch from next 10 shards
-      for (IdType i = replica_id; i < replica_id + 10; i++) {
-        Get(_return, replica_id, key);
+      assert(local_host_id_ != host_id);
+
+      for (IdType i = shard_id + 1; i <= shard_id + 10; i++) {
+        Get(_return, i, key);
       }
     } else {
-
       if (host_id == local_host_id_) {
         GetLocal(_return, qserver_id, key);
       } else {
@@ -102,15 +102,16 @@ class SuccinctServiceHandler : virtual public SuccinctServiceIf {
 
   void Search(std::set<int64_t> & _return, const int32_t shard_id,
               const std::string& query) {
-    IdType replica_id = load_balancer_->GetReplica(shard_id);
-    IdType host_id = replica_id % hostnames_.size();
-    IdType qserver_id = replica_id / hostnames_.size();
+    IdType host_id = shard_id % hostnames_.size();
+    IdType qserver_id = shard_id / hostnames_.size();
 
     if (host_id == 0) {
       // Fetch from next 10 shards
-      for (IdType i = replica_id; i < replica_id + 10; i++) {
+      assert(local_host_id_ != host_id);
+
+      for (IdType i = shard_id + 1; i <= shard_id + 10; i++) {
         _return.clear();
-        Search(_return, replica_id, query);
+        Search(_return, i, query);
       }
     } else {
       if (host_id == local_host_id_) {
