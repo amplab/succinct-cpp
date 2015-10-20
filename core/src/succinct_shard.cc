@@ -22,30 +22,17 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
       std::ifstream input(filename);
       int64_t value_offset = 0;
       for (uint32_t i = 0; !input.eof(); i++) {
-        keys_.push_back(i);
         value_offsets_.push_back(value_offset);
         std::string line;
         std::getline(input, line, '\n');
         value_offset += line.length() + 1;
       }
       input.close();
-      invalid_offsets_ = new Bitmap;
-      InitBitmap(&invalid_offsets_, keys_.size(), s_allocator);
       break;
     }
     case SuccinctMode::LOAD_IN_MEMORY: {
       // Read keys, value offsets, and invalid bitmap from file
       std::ifstream keyval(succinct_path_ + "/keyval");
-
-      // Read keys
-      size_t keys_size;
-      keyval.read(reinterpret_cast<char *>(&keys_size), sizeof(size_t));
-      keys_.reserve(keys_size);
-      for (size_t i = 0; i < keys_size; i++) {
-        uint64_t key;
-        keyval.read(reinterpret_cast<char *>(&key), sizeof(int64_t));
-        keys_.push_back(key);
-      }
 
       // Read values
       size_t value_offsets_size;
@@ -58,22 +45,12 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
         value_offsets_.push_back(value_offset);
       }
 
-      // Read bitmap
-      SuccinctBase::DeserializeBitmap(&invalid_offsets_, keyval);
       break;
     }
     case SuccinctMode::LOAD_MEMORY_MAPPED: {
       uint8_t *data, *data_beg;
       data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
           succinct_path_ + "/keyval");
-
-      // Read keys
-      size_t keys_size = *((size_t *) data);
-      data += sizeof(size_t);
-      buf_allocator<int64_t> key_allocator((int64_t *) data);
-      keys_ = std::vector<int64_t>((int64_t *) data,
-                                   (int64_t *) data + keys_size, key_allocator);
-      data += (sizeof(int64_t) * keys_size);
 
       // Read values
       size_t value_offsets_size = *((size_t *) data);
@@ -84,8 +61,6 @@ SuccinctShard::SuccinctShard(uint32_t id, std::string filename,
           value_offsets_allocator);
       data += (sizeof(int64_t) * value_offsets_size);
 
-      // Read bitmap
-      data += SuccinctBase::MemoryMapBitmap(&invalid_offsets_, data);
       break;
     }
   }
@@ -145,7 +120,7 @@ std::string SuccinctShard::Name() {
 }
 
 size_t SuccinctShard::GetNumKeys() {
-  return keys_.size();
+  return value_offsets_.size();
 }
 
 uint32_t SuccinctShard::GetSASamplingRate() {
@@ -160,19 +135,11 @@ uint32_t SuccinctShard::GetNPASamplingRate() {
   return npa_->GetSamplingRate();
 }
 
-int64_t SuccinctShard::GetValueOffsetPos(const int64_t key) {
-  size_t pos = std::lower_bound(keys_.begin(), keys_.end(), key)
-      - keys_.begin();
-  return
-      (keys_[pos] != key || pos >= keys_.size()
-          || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
-}
-
 void SuccinctShard::Access(std::string& result, int64_t key, int32_t offset,
                            int32_t len) {
   result = "";
-  int64_t pos = GetValueOffsetPos(key);
-  if (pos < 0)
+  int64_t pos = key;
+  if (pos < 0 || pos > value_offsets_.size())
     return;
   int64_t start = value_offsets_[pos] + offset;
   int64_t end =
@@ -194,8 +161,8 @@ void SuccinctShard::Access(std::string& result, int64_t key, int32_t offset,
 
 void SuccinctShard::Get(std::string& result, int64_t key) {
   result = "";
-  int64_t pos = GetValueOffsetPos(key);
-  if (pos < 0)
+  int64_t pos = key;
+  if (pos < 0 || pos > value_offsets_.size())
     return;
   int64_t start = value_offsets_[pos];
   int64_t end =
@@ -219,9 +186,7 @@ int64_t SuccinctShard::GetKeyPos(const int64_t value_offset) {
   int64_t pos = std::prev(
       std::upper_bound(value_offsets_.begin(), value_offsets_.end(),
                        value_offset)) - value_offsets_.begin();
-  return
-      (pos >= (int64_t) value_offsets_.size()
-          || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
+  return (pos >= (int64_t) value_offsets_.size()) ? -1 : pos;
 }
 
 void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
@@ -231,7 +196,7 @@ void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
   for (int64_t i = range.first; i <= range.second; i++) {
     int64_t key_pos = GetKeyPos((int64_t) LookupSA(i));
     if (key_pos >= 0) {
-      result.insert(keys_[key_pos]);
+      result.insert(key_pos);
     }
   }
 }
@@ -287,15 +252,6 @@ size_t SuccinctShard::Serialize() {
   // Write keys, value offsets, and invalid bitmap to file
   std::ofstream keyval(succinct_path_ + "/keyval");
 
-  // Write keys
-  size_t keys_size = keys_.size();
-  keyval.write(reinterpret_cast<const char *>(&(keys_size)), sizeof(size_t));
-  out_size += sizeof(size_t);
-  for (size_t i = 0; i < keys_.size(); i++) {
-    keyval.write(reinterpret_cast<const char *>(&keys_[i]), sizeof(int64_t));
-    out_size += sizeof(int64_t);
-  }
-
   // Write values
   size_t value_offsets_size = value_offsets_.size();
   keyval.write(reinterpret_cast<const char *>(&(value_offsets_size)),
@@ -307,9 +263,6 @@ size_t SuccinctShard::Serialize() {
     out_size += sizeof(int64_t);
   }
 
-  // Write bitmap
-  SuccinctBase::SerializeBitmap(invalid_offsets_, keyval);
-
   return out_size;
 }
 
@@ -318,18 +271,6 @@ size_t SuccinctShard::Deserialize() {
 
   // Read keys, value offsets, and invalid bitmap from file
   std::ifstream keyval(succinct_path_ + "/keyval");
-
-  // Read keys
-  size_t keys_size;
-  keyval.read(reinterpret_cast<char *>(&keys_size), sizeof(size_t));
-  in_size += sizeof(size_t);
-  keys_.reserve(keys_size);
-  for (size_t i = 0; i < keys_size; i++) {
-    uint64_t key;
-    keyval.read(reinterpret_cast<char *>(&key), sizeof(int64_t));
-    keys_.push_back(key);
-    in_size += sizeof(int64_t);
-  }
 
   // Read values
   size_t value_offsets_size;
@@ -343,9 +284,6 @@ size_t SuccinctShard::Deserialize() {
     in_size += sizeof(int64_t);
   }
 
-  // Read bitmap
-  SuccinctBase::DeserializeBitmap(&invalid_offsets_, keyval);
-
   return in_size;
 }
 
@@ -355,14 +293,6 @@ size_t SuccinctShard::MemoryMap() {
   uint8_t *data, *data_beg;
   data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
       succinct_path_ + "/keyval");
-
-  // Read keys
-  size_t keys_size = *((size_t *) data);
-  data += sizeof(size_t);
-  buf_allocator<int64_t> key_allocator((int64_t *) data);
-  keys_ = std::vector<int64_t>((int64_t *) data, (int64_t *) data + keys_size,
-                               key_allocator);
-  data += (keys_size * sizeof(int64_t));
 
   // Read values
   size_t value_offsets_size = *((size_t *) data);
@@ -374,17 +304,12 @@ size_t SuccinctShard::MemoryMap() {
                                         value_offsets_allocator);
   data += (sizeof(int64_t) * value_offsets_size);
 
-  // Read bitmap
-  data += SuccinctBase::MemoryMapBitmap(&invalid_offsets_, data);
-
   return core_size + (data - data_beg);
 }
 
 size_t SuccinctShard::StorageSize() {
   size_t tot_size = SuccinctCore::StorageSize();
   tot_size += sizeof(sizeof(uint32_t));
-  tot_size += keys_.size() * sizeof(int64_t) + sizeof(size_t);
   tot_size += value_offsets_.size() * sizeof(int64_t) + sizeof(size_t);
-  tot_size += SuccinctBase::BitmapSize(invalid_offsets_);
   return tot_size;
 }

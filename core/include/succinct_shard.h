@@ -82,16 +82,13 @@ class SuccinctShard : public SuccinctCore {
 
  protected:
   int64_t GetKeyPos(const int64_t value_offset);
-  int64_t GetValueOffsetPos(const int64_t key);
 
   // std::pair<int64_t, int64_t> get_range_slow(const char *str, uint64_t len);
   std::pair<int64_t, int64_t> GetRange(const char *str, uint64_t len);
 
   uint64_t ComputeContextValue(const char *str, uint64_t pos);
 
-  std::vector<int64_t> keys_;
   std::vector<int64_t> value_offsets_;
-  Bitmap *invalid_offsets_;
   uint32_t id_;
 };
 
