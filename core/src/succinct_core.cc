@@ -222,7 +222,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
 
   // Auxiliary Data Structures for NPA
   std::vector<uint64_t> col_offsets;
-  uint64_t last_i = 0;
   uint64_t cur_sa, prv_sa;
 
   prv_sa = cur_sa = sa_stream.Get();
@@ -237,7 +236,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
           i, alphabet_size_++);
       col_offsets.push_back(i);
-      last_i = i;
     }
     prv_sa = cur_sa;
   }
