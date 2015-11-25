@@ -282,6 +282,7 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
       return;
     }
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
+      isa_stream.CloseAndRemove();
       Bitmap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
       Bitmap *compactISA = ReadAsBitmap(input_size_, bits, s_allocator,
                                         isa_file);
@@ -294,7 +295,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     default:
       npa_ = NULL;
   }
-  isa_stream.Reset();
   assert(npa_ != NULL);
 
   switch (sa_sampling_scheme) {
@@ -351,7 +351,6 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   assert(isa_ != NULL);
 
   sa_stream.CloseAndRemove();
-  isa_stream.CloseAndRemove();
 }
 
 /* Lookup functions for each of the core data structures */

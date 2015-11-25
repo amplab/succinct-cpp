@@ -126,7 +126,6 @@ class DeltaEncodedNPA : public NPA {
 
     ArrayStream isa_stream(isa_file);
     first_idx = isa_stream.Get();
-    isa_stream.Close();
     num_elements_per_chunk = SuccinctUtils::NumBlocks(npa_size_, 8);
     for (uint8_t i = 0; i < 8; i++) {
       uint64_t remaining_elements =
@@ -138,9 +137,12 @@ class DeltaEncodedNPA : public NPA {
                                     isa_file, i * num_elements_per_chunk,
                                     num_elements, (i == 7) ? first_idx : -1ULL);
     }
+
     for (uint8_t i = 0; i < 8; i++) {
       constructor_thread[i].join();
     }
+
+    isa_stream.CloseAndRemove();
 
     SuccinctUtils::WriteToFile(lNPA, npa_size_, npa_file);
     delete[] lNPA;
