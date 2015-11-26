@@ -17,9 +17,13 @@ int main(int argc, char **argv) {
 
   int c;
   int32_t len = 100;
+  int32_t num_threads = 1;
   std::string queryfile = "";
-  while ((c = getopt(argc, argv, "q:l:")) != -1) {
+  while ((c = getopt(argc, argv, "q:l:t:")) != -1) {
     switch (c) {
+      case 't':
+        num_threads = atoi(optarg);
+        break;
       case 'l':
         len = atoi(optarg);
         break;
@@ -27,8 +31,8 @@ int main(int argc, char **argv) {
         queryfile = std::string(optarg);
         break;
       default:
-        len = 100;
-        queryfile = "";
+        fprintf(stderr, "Invalid option %c", c);
+        return -1;
     }
   }
 
@@ -51,6 +55,12 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkAccessLatency("latency_results_access", len);
   } else if (benchmark_type == "latency-regex") {
     s_bench.BenchmarkRegexLatency("latency_results_regex_search");
+  } else if (benchmark_type == "throughput-search") {
+    s_bench.BenchmarkSearchThroughput(num_threads);
+  } else if (benchmark_type == "throughput-get") {
+    s_bench.BenchmarkGetThroughput(num_threads);
+  } else if (benchmark_type == "throughput-access") {
+    s_bench.BenchmarkAccessThroughput(num_threads, len);
   } else {
     // Not supported
     assert(0);
