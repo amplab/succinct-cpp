@@ -200,7 +200,7 @@ class SuccinctKVBenchmark : public Benchmark {
   }
 
   static void *GetThroughput(void *ptr) {
-    ThreadData data = *((ThreadData*) ptr);
+    RandomAccessData data = *((RandomAccessData*) ptr);
     std::cout << "GET\n";
 
     SuccinctKVClient client = *(data.client);
@@ -251,11 +251,11 @@ class SuccinctKVBenchmark : public Benchmark {
 
   int BenchmarkGetThroughput(uint32_t num_threads) {
     pthread_t thread[num_threads];
-    std::vector<ThreadData> data;
+    std::vector<RandomAccessData> data;
     fprintf(stderr, "Starting all threads...\n");
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
-        ThreadData th_data;
+        RandomAccessData th_data;
         th_data.client = new SuccinctKVClient("localhost");
         th_data.randoms = randoms_;
         data.push_back(th_data);
@@ -292,7 +292,7 @@ class SuccinctKVBenchmark : public Benchmark {
   }
 
   static void *AccessThroughput(void *ptr) {
-    ThreadData data = *((ThreadData*) ptr);
+    RandomAccessData data = *((RandomAccessData*) ptr);
     std::cout << "ACCESS\n";
 
     SuccinctKVClient client = *(data.client);
@@ -347,11 +347,11 @@ class SuccinctKVBenchmark : public Benchmark {
 
   int BenchmarkAccessThroughput(uint32_t num_threads, int32_t len) {
     pthread_t thread[num_threads];
-    std::vector<ThreadData> data;
+    std::vector<RandomAccessData> data;
     fprintf(stderr, "Starting all threads...\n");
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
-        ThreadData th_data;
+        RandomAccessData th_data;
         th_data.client = new SuccinctKVClient("localhost");
         th_data.randoms = randoms_;
         th_data.fetch_length = len;
@@ -388,12 +388,112 @@ class SuccinctKVBenchmark : public Benchmark {
     return 0;
   }
 
+  static void *SearchThroughput(void *ptr) {
+    SearchData data = *((SearchData*) ptr);
+    std::cout << "SEARCH\n";
+
+    SuccinctKVClient client = *(data.client);
+
+    double thput = 0;
+    try {
+      // Warmup phase
+      long i = 0;
+      TimeStamp warmup_start = GetTimestamp();
+      while (GetTimestamp() - warmup_start < kWarmupTime) {
+        std::set<int64_t> results;
+        client.Search(results, data.queries[i % data.queries.size()]);
+        i++;
+      }
+
+      // Measure phase
+      i = 0;
+      TimeStamp start = GetTimestamp();
+      while (GetTimestamp() - start < kMeasureTime) {
+        std::set<int64_t> results;
+        client.Search(results, data.queries[i % data.queries.size()]);
+        i++;
+      }
+      TimeStamp end = GetTimestamp();
+      double totsecs = (double) (end - start) / (1000.0 * 1000.0);
+      thput = ((double) i / totsecs);
+
+      // Cooldown phase
+      i = 0;
+      TimeStamp cooldown_start = GetTimestamp();
+      while (GetTimestamp() - cooldown_start < kCooldownTime) {
+        std::set<int64_t> results;
+        client.Search(results, data.queries[i % data.queries.size()]);
+        i++;
+      }
+
+    } catch (std::exception &e) {
+      fprintf(stderr, "Throughput test ends...\n");
+    }
+
+    printf("Get throughput: %lf\n", thput);
+
+    std::ofstream ofs;
+    ofs.open("throughput_results_get", std::ofstream::out | std::ofstream::app);
+    ofs << thput << "\n";
+    ofs.close();
+
+    return 0;
+  }
+
+  int BenchmarkSearchThroughput(uint32_t num_threads) {
+    pthread_t thread[num_threads];
+    std::vector<SearchData> data;
+    fprintf(stderr, "Starting all threads...\n");
+    for (uint32_t i = 0; i < num_threads; i++) {
+      try {
+        SearchData th_data;
+        th_data.client = new SuccinctKVClient("localhost");
+        th_data.queries = queries_;
+        data.push_back(th_data);
+      } catch (std::exception& e) {
+        fprintf(stderr, "Could not connect to handler on localhost : %s\n",
+                e.what());
+        return -1;
+      }
+    }
+    fprintf(stderr, "Started %zu clients.\n", data.size());
+
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      int result = 0;
+      result = pthread_create(&thread[current_t], NULL,
+                              SuccinctKVBenchmark::SearchThroughput,
+                              static_cast<void*>(&(data[current_t])));
+      if (result != 0) {
+        fprintf(stderr, "Error creating thread %d; return code = %d\n",
+                current_t, result);
+      }
+    }
+
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      pthread_join(thread[current_t], NULL);
+    }
+    fprintf(stderr, "All threads completed.\n");
+
+    for (uint32_t i = 0; i < num_threads; i++) {
+      delete data[i].client;
+    }
+
+    data.clear();
+    return 0;
+  }
+
  private:
   typedef struct {
     SuccinctKVClient *client;
     std::vector<int64_t> randoms;
     int32_t fetch_length;
-  } ThreadData;
+  } RandomAccessData;
+
+  typedef struct {
+    SuccinctKVClient *client;
+    std::vector<std::string> queries;
+    int32_t fetch_length;
+  } SearchData;
 
   static const uint64_t kMaxSum = 10000;
 
@@ -438,9 +538,13 @@ class SuccinctKVBenchmark : public Benchmark {
     std::string line, query, query_count;
     while (getline(inputfile, line)) {
       // Extract key and value
-      int split_index = line.find_first_of('\t');
-      query = line.substr(0, split_index);
-      query_count = line.substr(split_index + 1);
+      int split_index = line.find_first_of('|');
+      int query_id = atoi(line.substr(0, split_index).c_str());
+      if (query_id == 0) {
+        query = line.substr(split_index + 1) + "|";
+      } else {
+        query = "|" + line.substr(split_index + 1) + "|";
+      }
       queries_.push_back(query);
     }
     inputfile.close();

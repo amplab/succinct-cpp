@@ -73,8 +73,8 @@ class Benchmark {
   static const uint64_t kMeasureCount = 100000;
   static const uint64_t kCooldownCount = 1000;
 
-  static const uint64_t kWarmupTime = 120000000;
-  static const uint64_t kMeasureTime = 300000000;
+  static const uint64_t kWarmupTime = 60000000;
+  static const uint64_t kMeasureTime = 120000000;
   static const uint64_t kCooldownTime = 5000000;
 
   std::vector<int64_t> randoms_;
