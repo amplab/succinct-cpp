@@ -525,7 +525,7 @@ class SuccinctKVBenchmark : public Benchmark {
 
     std::string query;
     while (getline(inputfile, query)) {
-      queries_.push_back(query);
+      queries_.push_back("|" + query + "|");
     }
     inputfile.close();
   }
