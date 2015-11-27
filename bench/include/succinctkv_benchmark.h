@@ -144,7 +144,7 @@ class SuccinctKVBenchmark : public Benchmark {
 
     // Warmup
     sum = 0;
-    fprintf(stderr, "Warming up for %llu queries...\n", kWarmupCount);
+    fprintf(stderr, "Warming up for %llu queries...\n", std::min(queries_.size(), 100UL));
     for (uint64_t i = 0; i < std::min(queries_.size(), 100UL); i++) {
       std::set<int64_t> result;
       client_->Search(result, queries_[i]);
@@ -155,7 +155,7 @@ class SuccinctKVBenchmark : public Benchmark {
 
     // Measure
     sum = 0;
-    fprintf(stderr, "Measuring for %llu queries...\n", kMeasureCount);
+    fprintf(stderr, "Measuring for %llu queries...\n", queries_.size());
     for (uint64_t i = 0; i < queries_.size(); i++) {
       std::set<int64_t> result;
       t0 = GetTimestamp();
@@ -433,7 +433,7 @@ class SuccinctKVBenchmark : public Benchmark {
     printf("Get throughput: %lf\n", thput);
 
     std::ofstream ofs;
-    ofs.open("throughput_results_get", std::ofstream::out | std::ofstream::app);
+    ofs.open("throughput_results_search", std::ofstream::out | std::ofstream::app);
     ofs << thput << "\n";
     ofs.close();
 
