@@ -283,10 +283,6 @@ class SuccinctKVBenchmark : public Benchmark {
     }
     fprintf(stderr, "All threads completed.\n");
 
-    for (uint32_t i = 0; i < num_threads; i++) {
-      delete data[i].client;
-    }
-
     data.clear();
     return 0;
   }
@@ -380,10 +376,6 @@ class SuccinctKVBenchmark : public Benchmark {
     }
     fprintf(stderr, "All threads completed.\n");
 
-    for (uint32_t i = 0; i < num_threads; i++) {
-      delete data[i].client;
-    }
-
     data.clear();
     return 0;
   }
@@ -473,10 +465,6 @@ class SuccinctKVBenchmark : public Benchmark {
       pthread_join(thread[current_t], NULL);
     }
     fprintf(stderr, "All threads completed.\n");
-
-    for (uint32_t i = 0; i < num_threads; i++) {
-      delete data[i].client;
-    }
 
     data.clear();
     return 0;
