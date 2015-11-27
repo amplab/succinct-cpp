@@ -523,16 +523,8 @@ class SuccinctKVBenchmark : public Benchmark {
       return;
     }
 
-    std::string line, query, query_count;
-    while (getline(inputfile, line)) {
-      // Extract key and value
-      int split_index = line.find_first_of('|');
-      int query_id = atoi(line.substr(0, split_index).c_str());
-      if (query_id == 0) {
-        query = line.substr(split_index + 1) + "|";
-      } else {
-        query = "|" + line.substr(split_index + 1) + "|";
-      }
+    std::string query;
+    while (getline(inputfile, query)) {
       queries_.push_back(query);
     }
     inputfile.close();
