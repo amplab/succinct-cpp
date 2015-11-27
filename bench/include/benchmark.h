@@ -73,7 +73,7 @@ class Benchmark {
   static const uint64_t kMeasureCount = 100000;
   static const uint64_t kCooldownCount = 1000;
 
-  static const uint64_t kWarmupTime = 60000000;
+  static const uint64_t kWarmupTime = 25000000;
   static const uint64_t kMeasureTime = 120000000;
   static const uint64_t kCooldownTime = 5000000;
 
