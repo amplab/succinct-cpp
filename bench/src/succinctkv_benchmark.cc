@@ -59,6 +59,8 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkSearchThroughput(num_threads);
   } else if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
+  } else if (benchmark_type == "throughput-get-search") {
+    s_bench.BenchmarkGetAndSearchThroughput(num_threads);
   } else if (benchmark_type == "throughput-access") {
     s_bench.BenchmarkAccessThroughput(num_threads, len);
   } else {
