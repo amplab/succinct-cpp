@@ -44,6 +44,9 @@ bench/plot
 # Netbeans files
 nbproject
 
+# Idea files
+.idea
+
 # generic ignores
 *.deps
 *.dirstamp
