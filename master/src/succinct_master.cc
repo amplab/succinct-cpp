@@ -6,14 +6,9 @@
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TThreadedServer.h>
 #include <thrift/server/TNonblockingServer.h>
-#include <thrift/transport/TSocket.h>
-#include <thrift/transport/TBufferTransports.h>
-#include <thrift/concurrency/PosixThreadFactory.h>
 
 #include "MasterService.h"
 #include "SuccinctService.h"
-#include "succinct_constants.h"
-#include "QueryService.h"
 #include "ports.h"
 
 using namespace ::apache::thrift;
