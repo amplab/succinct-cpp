@@ -19,10 +19,10 @@ enable_language(C)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)
 
 # Builds all of Succinct's sub-modules
+add_subdirectory(utils)
 add_subdirectory(core)
-add_subdirectory(thrift)
-add_subdirectory(adaptive)
 add_subdirectory(construct)
+add_subdirectory(master)
 add_subdirectory(bench)
 
 # Testing framework
