@@ -1,0 +1,3 @@
+service MasterService {
+	string GetHost(),
+}
