@@ -1,0 +1,43 @@
+1. Data Partitioning & Fault Tolerance
+
+- Data is partitioned into shards, each server has multiple shards. Ideally, we 
+want each core to cater to a single shard. 
+
+- Each shard has k replicas. The replicas are distributed across different
+servers. Each server is assigned a logical identifier, and the identifiers
+are increasing numbers starting from 0. For a particular shard whose primary
+resides on server i, we create replicas for it on servers (i + 1), (i + 2), ...
+(i + k - 1), leading to k-replication. Note that this only makes sense if k < N,
+where N is the total number of servers in the system.
+
+- On each server, there is a QueryServer process to cater to each replica or
+primary. All queries that must go to data owned by a replica/primary are 
+received by the QueryServer. Additionally, there is a QueryHandler process on
+each server, which serves two purposes:
+ 1. Intercept queries from a client; a client for Succinct can connect to
+    a QueryHandler on any server hosting data. 
+ 2. Forward queries from the client to local QueryServers (if they are can
+    answer the query), or to remote QueryHandlers, depending on the server
+    that is responsible for the data for answering the query.
+Besides, the QueryHandler module is also responsible for detecting and repairing
+failures for local QueryServers. In particular, they host a dedicated 
+"heartbeat" thread, which sends out periodic heartbeat messages to all local
+QueryServer processes. Based on the responses (or their lack thereof), the 
+QueryHandler can re-start failed QueryServer processes.
+
+- There is an additional, dedicated server, which hosts no data, but a single
+"Master" process. This master process houses a "heartbeat" thread (similar to
+the one on each QueryHandler), which is responsible for detecting and repairing
+failed QueryHandler processes. We intend to use the Master process for more
+book-keeping/metadata management in the future.
+
+2. Query Fault Tolerance
+
+- Each query goes from the client, to the QueryHandler, which forwards it to
+the primary for the shard (or shards) to obtain the query response (responses).
+The query response then follows the same path back to the client.
+
+- In case of a server failure, the QueryHandler (on being unable to contact a
+primary) automatically contacts a replica (in a certain preference order, or
+even randomly). The replica then responds, and sends a response back. If none
+of the replicas are available, the query fails.

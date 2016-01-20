@@ -1,0 +1,5 @@
+1. Data fault tolerance (Heartbeats)
+2. Query fault tolerance (Replication)
+3. SuffixStore, LogStore (With fault tolerance)
+4. Configuration (Cleanup)
+5. Pre-processing, initial setup
