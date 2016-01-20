@@ -1,3 +1,4 @@
+rm -rf gen
 mkdir -p gen/master
 mkdir -p gen/handler
 mkdir -p gen/server

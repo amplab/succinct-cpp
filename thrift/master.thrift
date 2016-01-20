@@ -1,3 +1,5 @@
-service MasterService {
-	string GetHost(),
+namespace cpp succinct
+
+service Master {
+	string GetHostname(),
 }
