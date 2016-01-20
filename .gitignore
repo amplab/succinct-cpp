@@ -37,6 +37,7 @@ log
 res
 bench/res
 bench/plot
+thrift/gen
 
 # Eclipse files
 .settings
