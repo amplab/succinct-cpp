@@ -3,8 +3,8 @@ include "heartbeat.thrift"
 namespace cpp succinct
 
 service Server {
-	// Intialize
-	i32 Intialize(1:i32 shard_id, 2:i32 replica_id),
+	// Initialize
+	i32 Initialize(),
 	
 	// Supported operations
 	string Get(1: i64 key),
