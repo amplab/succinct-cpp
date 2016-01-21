@@ -1,13 +1,17 @@
-#include "global_heartbeat_manager.h"
+#include "master_heartbeat_manager.h"
 
-GlobalHeartBeatManager::GlobalHeartBeatManager(uint32_t hb_interval) {
+namespace succinct {
+
+MasterHeartBeatManager::MasterHeartBeatManager(uint32_t hb_interval) {
   hb_interval_ = hb_interval;
 }
 
-void GlobalHeartBeatManager::PeriodicHeartBeats(std::vector<HandlerClientInfo> client_list) {
+void MasterHeartBeatManager::PeriodicHeartBeats(std::vector<HandlerClientInfo> client_list) {
 
 }
 
-void GlobalHeartBeatManager::Start() {
+void MasterHeartBeatManager::Start() {
+
+}
 
 }

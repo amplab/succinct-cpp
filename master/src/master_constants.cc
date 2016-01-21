@@ -6,12 +6,12 @@
  */
 #include "master_constants.h"
 
-
+namespace succinct {
 
 const masterConstants g_master_constants;
 
 masterConstants::masterConstants() {
 }
 
-
+} // namespace
 

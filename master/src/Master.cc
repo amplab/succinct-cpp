@@ -4,16 +4,16 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "MasterService.h"
+#include "Master.h"
+
+namespace succinct {
 
 
-
-
-MasterService_GetHost_args::~MasterService_GetHost_args() throw() {
+Master_GetHostname_args::~Master_GetHostname_args() throw() {
 }
 
 
-uint32_t MasterService_GetHost_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Master_GetHostname_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -41,10 +41,10 @@ uint32_t MasterService_GetHost_args::read(::apache::thrift::protocol::TProtocol*
   return xfer;
 }
 
-uint32_t MasterService_GetHost_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Master_GetHostname_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("MasterService_GetHost_args");
+  xfer += oprot->writeStructBegin("Master_GetHostname_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -52,14 +52,14 @@ uint32_t MasterService_GetHost_args::write(::apache::thrift::protocol::TProtocol
 }
 
 
-MasterService_GetHost_pargs::~MasterService_GetHost_pargs() throw() {
+Master_GetHostname_pargs::~Master_GetHostname_pargs() throw() {
 }
 
 
-uint32_t MasterService_GetHost_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Master_GetHostname_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("MasterService_GetHost_pargs");
+  xfer += oprot->writeStructBegin("Master_GetHostname_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -67,11 +67,11 @@ uint32_t MasterService_GetHost_pargs::write(::apache::thrift::protocol::TProtoco
 }
 
 
-MasterService_GetHost_result::~MasterService_GetHost_result() throw() {
+Master_GetHostname_result::~Master_GetHostname_result() throw() {
 }
 
 
-uint32_t MasterService_GetHost_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Master_GetHostname_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -112,11 +112,11 @@ uint32_t MasterService_GetHost_result::read(::apache::thrift::protocol::TProtoco
   return xfer;
 }
 
-uint32_t MasterService_GetHost_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Master_GetHostname_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("MasterService_GetHost_result");
+  xfer += oprot->writeStructBegin("Master_GetHostname_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -129,11 +129,11 @@ uint32_t MasterService_GetHost_result::write(::apache::thrift::protocol::TProtoc
 }
 
 
-MasterService_GetHost_presult::~MasterService_GetHost_presult() throw() {
+Master_GetHostname_presult::~Master_GetHostname_presult() throw() {
 }
 
 
-uint32_t MasterService_GetHost_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Master_GetHostname_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -174,18 +174,18 @@ uint32_t MasterService_GetHost_presult::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-void MasterServiceClient::GetHost(std::string& _return)
+void MasterClient::GetHostname(std::string& _return)
 {
-  send_GetHost();
-  recv_GetHost(_return);
+  send_GetHostname();
+  recv_GetHostname(_return);
 }
 
-void MasterServiceClient::send_GetHost()
+void MasterClient::send_GetHostname()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("GetHost", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  MasterService_GetHost_pargs args;
+  Master_GetHostname_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -193,7 +193,7 @@ void MasterServiceClient::send_GetHost()
   oprot_->getTransport()->flush();
 }
 
-void MasterServiceClient::recv_GetHost(std::string& _return)
+void MasterClient::recv_GetHostname(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -213,12 +213,12 @@ void MasterServiceClient::recv_GetHost(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("GetHost") != 0) {
+  if (fname.compare("GetHostname") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  MasterService_GetHost_presult result;
+  Master_GetHostname_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -228,10 +228,10 @@ void MasterServiceClient::recv_GetHost(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHost failed: unknown result");
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHostname failed: unknown result");
 }
 
-bool MasterServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
+bool MasterProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {
@@ -250,38 +250,38 @@ bool MasterServiceProcessor::dispatchCall(::apache::thrift::protocol::TProtocol*
   return true;
 }
 
-void MasterServiceProcessor::process_GetHost(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void MasterProcessor::process_GetHostname(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("MasterService.GetHost", callContext);
+    ctx = this->eventHandler_->getContext("Master.GetHostname", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MasterService.GetHost");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Master.GetHostname");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "MasterService.GetHost");
+    this->eventHandler_->preRead(ctx, "Master.GetHostname");
   }
 
-  MasterService_GetHost_args args;
+  Master_GetHostname_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "MasterService.GetHost", bytes);
+    this->eventHandler_->postRead(ctx, "Master.GetHostname", bytes);
   }
 
-  MasterService_GetHost_result result;
+  Master_GetHostname_result result;
   try {
-    iface_->GetHost(result.success);
+    iface_->GetHostname(result.success);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "MasterService.GetHost");
+      this->eventHandler_->handlerError(ctx, "Master.GetHostname");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("GetHost", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -290,40 +290,40 @@ void MasterServiceProcessor::process_GetHost(int32_t seqid, ::apache::thrift::pr
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "MasterService.GetHost");
+    this->eventHandler_->preWrite(ctx, "Master.GetHostname");
   }
 
-  oprot->writeMessageBegin("GetHost", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "MasterService.GetHost", bytes);
+    this->eventHandler_->postWrite(ctx, "Master.GetHostname", bytes);
   }
 }
 
-::boost::shared_ptr< ::apache::thrift::TProcessor > MasterServiceProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
-  ::apache::thrift::ReleaseHandler< MasterServiceIfFactory > cleanup(handlerFactory_);
-  ::boost::shared_ptr< MasterServiceIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
-  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new MasterServiceProcessor(handler));
+::boost::shared_ptr< ::apache::thrift::TProcessor > MasterProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
+  ::apache::thrift::ReleaseHandler< MasterIfFactory > cleanup(handlerFactory_);
+  ::boost::shared_ptr< MasterIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
+  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new MasterProcessor(handler));
   return processor;
 }
 
-void MasterServiceConcurrentClient::GetHost(std::string& _return)
+void MasterConcurrentClient::GetHostname(std::string& _return)
 {
-  int32_t seqid = send_GetHost();
-  recv_GetHost(_return, seqid);
+  int32_t seqid = send_GetHostname();
+  recv_GetHostname(_return, seqid);
 }
 
-int32_t MasterServiceConcurrentClient::send_GetHost()
+int32_t MasterConcurrentClient::send_GetHostname()
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
-  oprot_->writeMessageBegin("GetHost", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  MasterService_GetHost_pargs args;
+  Master_GetHostname_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -334,7 +334,7 @@ int32_t MasterServiceConcurrentClient::send_GetHost()
   return cseqid;
 }
 
-void MasterServiceConcurrentClient::recv_GetHost(std::string& _return, const int32_t seqid)
+void MasterConcurrentClient::recv_GetHostname(std::string& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -363,7 +363,7 @@ void MasterServiceConcurrentClient::recv_GetHost(std::string& _return, const int
         iprot_->readMessageEnd();
         iprot_->getTransport()->readEnd();
       }
-      if (fname.compare("GetHost") != 0) {
+      if (fname.compare("GetHostname") != 0) {
         iprot_->skip(::apache::thrift::protocol::T_STRUCT);
         iprot_->readMessageEnd();
         iprot_->getTransport()->readEnd();
@@ -372,7 +372,7 @@ void MasterServiceConcurrentClient::recv_GetHost(std::string& _return, const int
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
-      MasterService_GetHost_presult result;
+      Master_GetHostname_presult result;
       result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
@@ -384,7 +384,7 @@ void MasterServiceConcurrentClient::recv_GetHost(std::string& _return, const int
         return;
       }
       // in a bad state, don't commit
-      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHost failed: unknown result");
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHostname failed: unknown result");
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);
@@ -394,5 +394,5 @@ void MasterServiceConcurrentClient::recv_GetHost(std::string& _return, const int
   } // end while(true)
 }
 
-
+} // namespace
 

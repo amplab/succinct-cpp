@@ -5,16 +5,18 @@
 
 #include <thrift/transport/TTransport.h>
 
-#include "SuccinctService.h"
+#include "Handler.h"
 
 using namespace ::apache::thrift::transport;
 
-class GlobalHeartBeatManager {
+namespace succinct {
+
+class MasterHeartBeatManager {
 public:
   static const uint32_t kDefaultHBInterval = 5;
 
   typedef struct {
-    SuccinctServiceClient *client;
+    HandlerClient *client;
     boost::shared_ptr<TTransport> transport;
     std::string hostname;
     uint16_t port;
@@ -22,9 +24,9 @@ public:
     uint8_t num_retries;
   } HandlerClientInfo;
 
-  GlobalHeartBeatManager(uint32_t hb_interval = kDefaultHBInterval);
+  MasterHeartBeatManager(uint32_t hb_interval = kDefaultHBInterval);
 
-  ~GlobalHeartBeatManager();
+  ~MasterHeartBeatManager();
 
   void Start();
 
@@ -33,5 +35,7 @@ private:
 
   uint32_t hb_interval_;
 };
+
+}
 
 #endif // GLOBAL_HEARTBEAT_MANAGER_H

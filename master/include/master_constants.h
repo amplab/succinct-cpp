@@ -9,7 +9,7 @@
 
 #include "master_types.h"
 
-
+namespace succinct {
 
 class masterConstants {
  public:
@@ -19,6 +19,6 @@ class masterConstants {
 
 extern const masterConstants g_master_constants;
 
-
+} // namespace
 
 #endif
