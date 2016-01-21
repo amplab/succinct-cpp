@@ -26,8 +26,8 @@ class Defaults {
 
   // Server defaults
   static constexpr const char* kServerLogFilePrefix = "server";
-  static const int32_t kNumShards = 1;
-  static const int32_t kLoadMode = 0;
+  static const int32_t kShardsPerServer = 1;
+  static const int32_t kLoadMode = 3;
   static const uint16_t kServerPort = 11002;
 
   // Core defaults

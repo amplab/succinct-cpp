@@ -8,24 +8,24 @@ ConfigurationManager::ConfigurationManager() {
   // System configuration parameters
   SetFromEnv("CONF_PATH", Defaults::kConfPath);
   SetFromEnv("LOG_PATH", Defaults::kLogPath);
-  SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + Defaults::kHostsFile);
+  SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + "/" + Defaults::kHostsFile);
 
   // Master configuration parameters
   SetFromEnv("MASTER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
-  SetFromEnv("MASTER_LOG_FILE", Get("LOG_PATH") + Defaults::kMasterLogFile);
+  SetFromEnv("MASTER_LOG_FILE", Get("LOG_PATH") + "/" + Defaults::kMasterLogFile);
   SetFromEnv("MASTER_PORT", std::to_string(Defaults::kMasterPort));
 
   // Handler configuration parameters
   SetFromEnv("HANDLER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
-  SetFromEnv("HANDLER_LOG_PATH_PREFIX", Get("LOG_PATH") + Defaults::kHandlerLogFilePrefix);
+  SetFromEnv("HANDLER_LOG_PATH_PREFIX", Get("LOG_PATH") + "/" + Defaults::kHandlerLogFilePrefix);
   SetFromEnv("HANDLER_PORT", std::to_string(Defaults::kHandlerPort));
 
   // Server configuration parameters
   SetFromEnv("SERVER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
-  SetFromEnv("SERVER_LOG_PATH_PREFIX", Get("LOG_PATH") + Defaults::kServerLogFilePrefix);
+  SetFromEnv("SERVER_LOG_PATH_PREFIX", Get("LOG_PATH") + "/" + Defaults::kServerLogFilePrefix);
   SetFromEnv("SERVER_PORT", std::to_string(Defaults::kServerPort));
   SetFromEnv("LOAD_MODE", std::to_string(Defaults::kLoadMode));
-  SetFromEnv("NUM_SHARDS", std::to_string(Defaults::kNumShards));
+  SetFromEnv("SHARDS_PER_SERVER", std::to_string(Defaults::kShardsPerServer));
 
   // Core configuration parameters
   SetFromEnv("SA_SAMPLING_RATE", std::to_string(Defaults::kSASamplingRate));
