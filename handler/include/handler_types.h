@@ -15,58 +15,11 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "heartbeat_types.h"
 
 
+namespace succinct {
 
-
-class HandlerHeartBeat;
-
-typedef struct _HandlerHeartBeat__isset {
-  _HandlerHeartBeat__isset() : timestamp(false) {}
-  bool timestamp :1;
-} _HandlerHeartBeat__isset;
-
-class HandlerHeartBeat {
- public:
-
-  HandlerHeartBeat(const HandlerHeartBeat&);
-  HandlerHeartBeat& operator=(const HandlerHeartBeat&);
-  HandlerHeartBeat() : timestamp(0) {
-  }
-
-  virtual ~HandlerHeartBeat() throw();
-  int64_t timestamp;
-
-  _HandlerHeartBeat__isset __isset;
-
-  void __set_timestamp(const int64_t val);
-
-  bool operator == (const HandlerHeartBeat & rhs) const
-  {
-    if (!(timestamp == rhs.timestamp))
-      return false;
-    return true;
-  }
-  bool operator != (const HandlerHeartBeat &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const HandlerHeartBeat & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  virtual void printTo(std::ostream& out) const;
-};
-
-void swap(HandlerHeartBeat &a, HandlerHeartBeat &b);
-
-inline std::ostream& operator<<(std::ostream& out, const HandlerHeartBeat& obj)
-{
-  obj.printTo(out);
-  return out;
-}
-
-
+} // namespace
 
 #endif

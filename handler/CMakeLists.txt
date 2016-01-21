@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(succinct-thrift CXX)
+project(succinct-handler CXX)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -18,42 +18,23 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
 find_package(Thrift REQUIRED)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 
 set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
+set(SERVER_CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../server/include)
+set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils/include)
 
-set(GENERAL_SOURCES ${SOURCES_DIR}/succinct_constants.cc
-    ${SOURCES_DIR}/succinct_types.cc)
+file(GLOB_RECURSE HANDLER_SOURCES ${SOURCES_DIR}/*.cc)
+set(HANDLER_CLIENT_SOURCES ${SOURCES_DIR}/handler_types.cc
+                           ${SOURCES_DIR}/handler_constants.cc
+                           ${SOURCES_DIR}/Handler.cc)
 
-set(SERVER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cc
-    ${SOURCES_DIR}/query_server.cc)
+include_directories(${INCLUDE_DIR} ${SERVER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
 
-set(HANDLER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cc
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/succinct_server.cc)
+add_executable(succinct-handler ${HANDLER_SOURCES})
+add_library(succinct-handler-client ${HANDLER_CLIENT_SOURCES})
 
-set(MASTER_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/MasterService.cc
-    ${SOURCES_DIR}/succinct_master.cc)
-
-set(CLIENT_SOURCES ${GENERAL_SOURCES}
-    ${SOURCES_DIR}/QueryService.cc
-    ${SOURCES_DIR}/SuccinctService.cc
-    ${SOURCES_DIR}/MasterService.cc)
-
-include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
-
-add_executable(sserver ${SERVER_SOURCES})
-add_executable(shandler ${HANDLER_SOURCES})
-add_executable(smaster ${MASTER_SOURCES})
-add_library(sclient ${CLIENT_SOURCES})
-
-target_link_libraries(sserver succinct)
-target_link_libraries(sserver ${THRIFT_LIBRARIES})
-target_link_libraries(shandler ${THRIFT_LIBRARIES})
-target_link_libraries(smaster ${THRIFT_LIBRARIES})
+target_link_libraries(succinct-handler succinct-utils succinct-server-client ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

@@ -9,7 +9,7 @@
 
 #include "handler_types.h"
 
-
+namespace succinct {
 
 class handlerConstants {
  public:
@@ -19,6 +19,6 @@ class handlerConstants {
 
 extern const handlerConstants g_handler_constants;
 
-
+} // namespace
 
 #endif
