@@ -32,7 +32,7 @@ set(SERVER_CLIENT_SOURCES ${SOURCES_DIR}/Server.cc)
 
 include_directories(${INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${CORE_INCLUDE_DIR})
 
-add_executable(succinct-server ${SERVER_SOURCES})
-add_library(succinct-server-client ${SERVER_CLIENT_SOURCES})
+add_executable(sserver ${SERVER_SOURCES})
+add_library(sserverclient ${SERVER_CLIENT_SOURCES})
 
-target_link_libraries(succinct-server succinct succinct-utils ${THRIFT_LIBRARIES})
+target_link_libraries(sserver succinct sutils ${THRIFT_LIBRARIES})

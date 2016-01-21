@@ -28,13 +28,11 @@ set(SERVER_CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../server/include)
 set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils/include)
 
 file(GLOB_RECURSE HANDLER_SOURCES ${SOURCES_DIR}/*.cc)
-set(HANDLER_CLIENT_SOURCES ${SOURCES_DIR}/handler_types.cc
-                           ${SOURCES_DIR}/handler_constants.cc
-                           ${SOURCES_DIR}/Handler.cc)
+set(HANDLER_CLIENT_SOURCES ${SOURCES_DIR}/Handler.cc)
 
 include_directories(${INCLUDE_DIR} ${SERVER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
 
-add_executable(succinct-handler ${HANDLER_SOURCES})
-add_library(succinct-handler-client ${HANDLER_CLIENT_SOURCES})
+add_executable(shandler ${HANDLER_SOURCES})
+add_library(shandlerclient ${HANDLER_CLIENT_SOURCES})
 
-target_link_libraries(succinct-handler succinct-utils succinct-server-client ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(shandler sutils sserverclient ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

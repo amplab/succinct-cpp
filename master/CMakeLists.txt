@@ -33,6 +33,6 @@ set(MASTER_SOURCES ${SOURCES_DIR}/master_constants.cc
 
 include_directories(${INCLUDE_DIR} ${HANDLER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
 
-add_executable(succinct-master ${MASTER_SOURCES})
+add_executable(smaster ${MASTER_SOURCES})
 
-target_link_libraries(succinct-master succinct-utils succinct-handler-client ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(smaster sutils shandlerclient ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
