@@ -13,11 +13,21 @@ bin="`cd "$bin"; pwd`"
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
 if [ "$LOG_PATH" = "" ]; then
-  LOG_PATH="$SUCCINCT_HOME/log/"
+  export LOG_PATH="$SUCCINCT_HOME/log"
+fi
+
+mkdir -p $LOG_PATH/stderr
+
+if [ "$CONF_PATH" = "" ]; then
+  export CONF_PATH="$SUCCINCT_HOME/conf"
+fi
+
+if [ "$SUCCINCT_DATA_PATH" = "" ]; then
+  export SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
 fi
 
 limit=$(($1 - 1))
 for i in `seq 0 $limit`; do
 	DATA_FILE="$SUCCINCT_DATA_PATH/data_$i"
-	nohup "$bin/succinct-server" $i $DATA_FILE &
+	nohup "$bin/sserver" $i $DATA_FILE >/dev/null 2>"$LOG_PATH/stderr/server_$i.stderr" &
 done

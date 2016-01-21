@@ -11,9 +11,15 @@ bin="$MASTER_BIN_DIR"
 bin="`cd "$bin"; pwd`"
 
 if [ "$LOG_PATH" = "" ]; then
-    LOG_PATH="$SUCCINCT_HOME/log/"
+  export LOG_PATH="$SUCCINCT_HOME/log"
+fi
+
+mkdir -p $LOG_PATH/stderr
+
+if [ "$CONF_PATH" = "" ]; then
+  export CONF_PATH="$SUCCINCT_HOME/conf"
 fi
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-"$bin/succinct-master" &
+nohup "$bin/smaster" >/dev/null 2>"$LOG_PATH/stderr/master.stderr" &

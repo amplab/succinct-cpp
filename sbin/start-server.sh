@@ -1,5 +1,5 @@
-# Usage: start-server.sh <datafile> <server#>
-usage="Usage: start-server.sh <datafile> <server#>"
+# Usage: start-server.sh <server-id> <data-file>
+usage="Usage: start-server.sh <server-id> <data-file>"
 
 if [ $# -le 1 ]; then
   echo $usage
@@ -18,8 +18,14 @@ bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-if [ $LOG_PATH == "" ]; then
-    export LOG_PATH="$SUCCINCT_HOME/log/"
+if [ "$LOG_PATH" == "" ]; then
+    export LOG_PATH="$SUCCINCT_HOME/log"
 fi
 
-nohup "$bin/succinct-server" $1 $2 &
+mkdir -p $LOG_PATH/stderr
+
+if [ "$CONF_PATH" = "" ]; then
+    export CONF_PATH="$SUCCINCT_HOME/conf"
+fi
+
+nohup "$bin/sserver" $1 $2 >/dev/null 2>"$LOG_PATH/stderr/server_$2.stderr" &
