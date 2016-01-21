@@ -2,19 +2,38 @@
 
 #include <cstdlib>
 
+#include "constants.h"
+
 ConfigurationManager::ConfigurationManager() {
-  SetFromEnv("HOSTS_LIST", "conf/hosts");
-  SetFromEnv("MASTER_PORT", "11000");
-  SetFromEnv("HANDLER_PORT", "11001");
-  SetFromEnv("SERVER_PORT", "11002");
-  SetFromEnv("NUM_SHARDS", "1");
-  SetFromEnv("SA_SAMPLING_RATE", "32");
-  SetFromEnv("ISA_SAMPLING_RATE", "32");
-  SetFromEnv("NPA_SAMPLING_RATE", "128");
-  SetFromEnv("SA_SAMPLING_SCHEME", "0");
-  SetFromEnv("ISA_SAMPLING_SCHEME", "0");
-  SetFromEnv("NPA_SCHEME", "1");
-  SetFromEnv("LOAD_MODE", "0");
+  // System configuration parameters
+  SetFromEnv("CONF_PATH", Defaults::kConfPath);
+  SetFromEnv("LOG_PATH", Defaults::kLogPath);
+  SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + Defaults::kHostsFile);
+
+  // Master configuration parameters
+  SetFromEnv("MASTER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
+  SetFromEnv("MASTER_LOG_FILE", Get("LOG_PATH") + Defaults::kMasterLogFile);
+  SetFromEnv("MASTER_PORT", std::to_string(Defaults::kMasterPort));
+
+  // Handler configuration parameters
+  SetFromEnv("HANDLER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
+  SetFromEnv("HANDLER_LOG_PATH_PREFIX", Get("LOG_PATH") + Defaults::kHandlerLogFilePrefix);
+  SetFromEnv("HANDLER_PORT", std::to_string(Defaults::kHandlerPort));
+
+  // Server configuration parameters
+  SetFromEnv("SERVER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
+  SetFromEnv("SERVER_LOG_PATH_PREFIX", Get("LOG_PATH") + Defaults::kServerLogFilePrefix);
+  SetFromEnv("SERVER_PORT", std::to_string(Defaults::kServerPort));
+  SetFromEnv("LOAD_MODE", std::to_string(Defaults::kLoadMode));
+  SetFromEnv("NUM_SHARDS", std::to_string(Defaults::kNumShards));
+
+  // Core configuration parameters
+  SetFromEnv("SA_SAMPLING_RATE", std::to_string(Defaults::kSASamplingRate));
+  SetFromEnv("ISA_SAMPLING_RATE", std::to_string(Defaults::kISASamplingRate));
+  SetFromEnv("NPA_SAMPLING_RATE", std::to_string(Defaults::kNPASamplingRate));
+  SetFromEnv("SA_SAMPLING_SCHEME", std::to_string(Defaults::kSASamplingScheme));
+  SetFromEnv("ISA_SAMPLING_SCHEME", std::to_string(Defaults::kISASamplingScheme));
+  SetFromEnv("NPA_SCHEME", std::to_string(Defaults::kNPASamplingScheme));
 }
 
 const std::string ConfigurationManager::ReadEnvStr(const char *env_var, const std::string& default_str) {
@@ -25,7 +44,7 @@ const std::string ConfigurationManager::ReadEnvStr(const char *env_var, const st
 }
 
 void ConfigurationManager::SetFromEnv(const std::string &key, const std::string& default_value) {
-  conf[key] = ReadEnvStr(key.c_str());
+  conf[key] = ReadEnvStr(key.c_str(), default_value);
 }
 
 void ConfigurationManager::Set(const std::string &key, const std::string &value) {

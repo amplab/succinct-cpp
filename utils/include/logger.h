@@ -43,6 +43,20 @@ class Logger {
   Level GetLevel();
 
   /**
+   * Set the output descriptor.
+   *
+   * @param descriptor The output descriptor for the logger.
+   */
+  void SetDescriptor(FILE *descriptor);
+
+  /**
+   * Get the output descriptor.
+   *
+   * @return The output descriptor for the logger.
+   */
+  FILE* GetDescriptor();
+
+  /**
    * Logs message as DEBUG.
    *
    * @param formatted_msg The formatted message.

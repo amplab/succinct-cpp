@@ -6,7 +6,7 @@
 
 class ConfigurationManager {
 public:
-  typedef std::unordered_map<const std::string, const std::string> Properties;
+  typedef std::unordered_map<std::string, std::string> Properties;
 
   ConfigurationManager();
 

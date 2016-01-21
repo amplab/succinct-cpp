@@ -13,6 +13,14 @@ Logger::Level Logger::GetLevel() {
   return level_;
 }
 
+void Logger::SetDescriptor(FILE *descriptor) {
+  out_ = descriptor;
+}
+
+FILE* Logger::GetDescriptor() {
+  return out_;
+}
+
 void Logger::Debug(const char* formatted_msg, ...) {
   if (level_ > Level::DEBUG) {
     return;
