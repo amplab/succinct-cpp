@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep sserver`"
+pids="`pgrep succinct-server`"
 
 for pid in $pids
 do

@@ -13,25 +13,13 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$THRIFT_BIN_DIR"
+bin="$SERVER_BIN_DIR"
 bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-if [ "$SUCCINCT_DATA_PATH" = "" ]; then
-  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
+if [ $LOG_PATH == "" ]; then
+    export LOG_PATH="$SUCCINCT_HOME/log/"
 fi
 
-if [ "$SUCCINCT_LOG_PATH" = "" ]; then
-	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
-fi
-
-mkdir -p $SUCCINCT_LOG_PATH
-
-if [ "$QUERY_SERVER_PORT" = "" ]; then
-	QUERY_SERVER_PORT=11002
-fi
-
-port=$(( $QUERY_SERVER_PORT + $2 ))
-
-nohup "$bin/sserver" -m 1 -p $port ${1} 2>"$SUCCINCT_LOG_PATH/server_${2}.log" &
+nohup "$bin/succinct-server" $1 $2 &

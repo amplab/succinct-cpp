@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep shandler`"
+pids="`pgrep succinct-handler`"
 
 for pid in $pids
 do

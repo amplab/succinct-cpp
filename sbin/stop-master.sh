@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep smaster`"
+pids="`pgrep succinct-master`"
 
 for pid in $pids
 do

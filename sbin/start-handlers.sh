@@ -39,10 +39,10 @@ fi
 i=0
 for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $SHARDS_PER_SERVER $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $i \
       2>&1 | sed "s/^/$host: /"
   else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $SHARDS_PER_SERVER $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-handler.sh" $i \
       2>&1 | sed "s/^/$host: /" &
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then

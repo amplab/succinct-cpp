@@ -1,7 +1,7 @@
-# Usage: start-handler.sh <#shards> <handler#>
-usage="Usage: start-handler.sh <#shards> <handler#>"
+# Usage: start-handler.sh <handler-id>
+usage="Usage: start-handler.sh <handler-id>"
 
-if [ $# -le 1 ]; then
+if [ $# -ne 1 ]; then
   echo $usage
   exit 1
 fi
@@ -13,23 +13,13 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$THRIFT_BIN_DIR"
+bin="$HANDLER_BIN_DIR"
 bin="`cd "$bin"; pwd`"
 
 export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
-if [ "$SUCCINCT_DATA_PATH" = "" ]; then
-  SUCCINCT_DATA_PATH="$SUCCINCT_HOME/dat"
+if [ "$LOG_PATH" = "" ]; then
+	LOG_PATH="$SUCCINCT_HOME/log/"
 fi
 
-if [ "$SUCCINCT_LOG_PATH" = "" ]; then
-	SUCCINCT_LOG_PATH="$SUCCINCT_HOME/log"
-fi
-
-if [ "$NUM_FAILURES" = "" ]; then
-	NUM_FAILURES=0
-fi
-
-mkdir -p $SUCCINCT_LOG_PATH
-
-nohup "$bin/shandler" -m 1 -s "$1" -h "$SUCCINCT_CONF_DIR/hosts" -r "$SUCCINCT_CONF_DIR/repl" -i "$2" "$SUCCINCT_DATA_PATH/data" -f "$NUM_FAILURES" 2>"$SUCCINCT_LOG_PATH/handler_${2}.log" &
+nohup "$bin/succinct-handler" "$1"&
