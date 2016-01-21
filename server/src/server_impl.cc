@@ -48,13 +48,7 @@ class ServerImpl : virtual public ServerIf {
       return -1;
     }
 
-    // Setup logger
-    std::string log_output = conf_.Get("SERVER_LOG_PATH_PREFIX") + "_"
-        + std::to_string(id_) + ".log";
-    FILE *out = fopen(log_output.c_str(), "a");
-    logger_.SetDescriptor(out);
-
-    logger_.Info("Initializing data structures.");
+    logger_.Info("Initializing data structures...");
 
     // Read configuration parameters
     SuccinctMode mode = static_cast<SuccinctMode>(conf_.GetInt("LOAD_MODE"));
@@ -133,7 +127,7 @@ void print_usage(char *exec) {
 }
 
 int main(int argc, char **argv) {
-
+  fprintf(stderr, "Started server...\n");
   if (argc != 3) {
     print_usage(argv[0]);
     return -1;
@@ -142,8 +136,17 @@ int main(int argc, char **argv) {
   int32_t id = atoi(argv[1]);
   std::string filename = std::string(argv[2]);
   ConfigurationManager conf;
-  Logger logger(static_cast<Logger::Level>(conf.GetInt("LOG_LEVEL")));
-  logger.Info("Server.");
+  std::string server_log_output = conf.Get("SERVER_LOG_PATH_PREFIX") + "_"
+      + std::to_string(id) + ".log";
+  FILE *desc = fopen(server_log_output.c_str(), "a");
+  if (desc == NULL) {
+    fprintf(stderr, "Could not obtain descriptor for %s, logging to stderr.\n",
+            server_log_output.c_str());
+    desc = stderr;
+  }
+
+  Logger logger(static_cast<Logger::Level>(conf.GetInt("SERVER_LOG_LEVEL")),
+                desc);
 
   shared_ptr<succinct::ServerImpl> handler(
       new succinct::ServerImpl(id, filename, conf, logger));
@@ -151,15 +154,18 @@ int main(int argc, char **argv) {
 
   try {
     shared_ptr<TServerSocket> server_transport(
-        new TServerSocket(conf.GetInt("SERVER_PORT")));
+        new TServerSocket(conf.GetInt("SERVER_PORT") + id));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());
     shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
+
+    logger.Info("Starting server on port %d...", conf.GetInt("SERVER_PORT") + id);
     server.serve();
   } catch (std::exception& e) {
-    logger.Error("Exception at Server:main(): %s", e.what());
+    logger.Error("Could not create server listening on port %d. Reason: %s",
+                 conf.GetInt("SERVER_PORT") + id, e.what());
   }
   return 0;
 }

@@ -35,7 +35,8 @@ class MasterImpl : virtual public MasterIf {
     for (int i = 0; i < hostnames_.size(); i++) {
       logger_.Info("Connecting to handler at %s...", hostnames_[i].c_str());
       try {
-        boost::shared_ptr<TSocket> socket(new TSocket(hostnames_[i], handler_port));
+        boost::shared_ptr<TSocket> socket(
+            new TSocket(hostnames_[i], handler_port));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         HandlerClient client(protocol);
@@ -44,7 +45,8 @@ class MasterImpl : virtual public MasterIf {
         clients.push_back(client);
         transports.push_back(transport);
       } catch (std::exception& e) {
-        logger_.Error("Could not connect to handler on %s. Reason: %s", hostnames_[i].c_str(), e.what());
+        logger_.Error("Could not connect to handler on %s. Reason: %s",
+                      hostnames_[i].c_str(), e.what());
         exit(1);
       }
     }
@@ -55,7 +57,8 @@ class MasterImpl : virtual public MasterIf {
         logger_.Info("Starting initialization at %s...", hostnames_[i].c_str());
         clients[i].send_StartLocalServers();
       } catch (std::exception& e) {
-        logger_.Error("Could not send start_servers signal to %s. Reason: %s", hostnames_[i].c_str(), e.what());
+        logger_.Error("Could not send start_servers signal to %s. Reason: %s",
+                      hostnames_[i].c_str(), e.what());
         exit(1);
       }
     }
@@ -66,14 +69,17 @@ class MasterImpl : virtual public MasterIf {
         clients[i].recv_StartLocalServers();
         logger_.Info("Finished initialization at %s.", hostnames_[i].c_str());
       } catch (std::exception& e) {
-        logger_.Error("Could not receive start_servers signal from %s. Reason: %s", hostnames_[i].c_str(), e.what());
+        logger_.Error(
+            "Could not receive start_servers signal from %s. Reason: %s",
+            hostnames_[i].c_str(), e.what());
         exit(1);
       }
       try {
         transports[i]->close();
         logger_.Info("Closed connection.");
       } catch (std::exception& e) {
-        logger_.Error("Could not close connection to %s. Reason: %s\n", hostnames_[i].c_str(), e.what());
+        logger_.Error("Could not close connection to %s. Reason: %s",
+                      hostnames_[i].c_str(), e.what());
         exit(1);
       }
     }
@@ -111,21 +117,31 @@ int main(int argc, char **argv) {
   ConfigurationManager conf;
   std::string master_log_output = conf.Get("MASTER_LOG_FILE");
   FILE *desc = fopen(master_log_output.c_str(), "a");
-  Logger logger(static_cast<Logger::Level>(conf.GetInt("MASTER_LOG_LEVEL")));
-  shared_ptr<succinct::MasterImpl> handler(new succinct::MasterImpl(conf, logger));
+  if (desc == NULL) {
+    fprintf(stderr, "Could not obtain descriptor for %s, logging to stderr.\n",
+            master_log_output.c_str());
+    desc = stderr;
+  }
+
+  Logger logger(static_cast<Logger::Level>(conf.GetInt("MASTER_LOG_LEVEL")),
+                desc);
+  shared_ptr<succinct::MasterImpl> handler(
+      new succinct::MasterImpl(conf, logger));
   shared_ptr<TProcessor> processor(new succinct::MasterProcessor(handler));
 
   try {
-    shared_ptr<TServerSocket> server_transport(new TServerSocket(conf.GetInt("MASTER_PORT")));
+    shared_ptr<TServerSocket> server_transport(
+        new TServerSocket(conf.GetInt("MASTER_PORT")));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());
     shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
-    logger.Info("Starting Master Daemon...");
+    logger.Info("Starting Master on port %d...", conf.GetInt("MASTER_PORT"));
     server.serve();
   } catch (std::exception& e) {
-    logger.Error("Exception at Master:main(): %s", e.what());
+    logger.Error("Could not create master listening on port %d. Reason: %s",
+                 conf.GetInt("MASTER_PORT"), e.what());
   }
 
   return 0;

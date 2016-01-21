@@ -36,7 +36,7 @@ class HandlerImpl : virtual public HandlerIf {
     conf_ = conf;
     logger_ = logger;
 
-    num_shards_ = conf_.GetInt("NUM_SHARDS");
+    num_shards_ = conf_.GetInt("SHARDS_PER_SERVER");
     ReadHostNames(conf_.Get("HOSTS_LIST"));
   }
 
@@ -55,7 +55,8 @@ class HandlerImpl : virtual public HandlerIf {
       ServerClient client(protocol);
       transport->open();
 
-      logger_.Info("Connection to local server %u successful.\n", i);
+      logger_.Info("Connection to local server %u successful.", i);
+      logger_.Info("Sending initialization signal...");
 
       client.send_Initialize();
       qservers_.push_back(client);
@@ -65,12 +66,12 @@ class HandlerImpl : virtual public HandlerIf {
     for (auto client : qservers_) {
       int32_t status = client.recv_Initialize();
       if (status) {
-        logger_.Error("Initialization failed, status = %d!\n", status);
+        logger_.Error("Initialization failed, status = %d!", status);
         return status;
       }
     }
 
-    logger_.Info("Initialization successful.\n");
+    logger_.Info("Initialization successful.");
 
     return 0;
   }
@@ -199,12 +200,12 @@ class HandlerImpl : virtual public HandlerIf {
           qhandler_transports_.push_back(transport);
           qhandlers_.insert(std::pair<int, HandlerClient>(i, client));
 
-          logger_.Info("Asking %s to connect to local servers...\n",
+          logger_.Info("Asking %s to connect to local servers...",
                        hostnames_[i].c_str());
           client.ConnectToLocalServers();
         }
       } catch (std::exception& e) {
-        logger_.Error("Could not connect to handler at %s:%d. Reason: %s\n ",
+        logger_.Error("Could not connect to handler at %s:%d. Reason: %s ",
                       hostnames_[i].c_str(), handler_port, e.what());
         return -1;
       }
@@ -237,7 +238,7 @@ class HandlerImpl : virtual public HandlerIf {
 
         logger_.Info("Connection successful.");
       } catch (std::exception& e) {
-        logger_.Error("Could not connect to server %d. Reason: %s\n", i,
+        logger_.Error("Could not connect to server %d. Reason: %s", i,
                       e.what());
         return -1;
       }
@@ -273,7 +274,7 @@ class HandlerImpl : virtual public HandlerIf {
         }
       } catch (std::exception& e) {
         logger_.Info(
-            "Could not close connection to handler at %s:%d. Reaon: %s\n",
+            "Could not close connection to handler at %s:%d. Reaon: %s",
             hostnames_[i].c_str(), handler_port, e.what());
         return -1;
       }
@@ -294,7 +295,7 @@ class HandlerImpl : virtual public HandlerIf {
         logger_.Info("Disconnected.");
       } catch (std::exception& e) {
         logger_.Error(
-            "Could not close local connection to server %d. Reason: %s\n", i,
+            "Could not close local connection to server %d. Reason: %s", i,
             e.what());
         return -1;
       }
@@ -342,14 +343,15 @@ class HandlerImpl : virtual public HandlerIf {
 
 class HandlerImplProcessorFactory : public TProcessorFactory {
  public:
-  HandlerImplProcessorFactory(uint32_t local_host_id, ConfigurationManager& conf,
-                          Logger& logger) {
+  HandlerImplProcessorFactory(uint32_t local_host_id,
+                              ConfigurationManager& conf, Logger& logger) {
     local_host_id_ = local_host_id;
     conf_ = conf;
     logger_ = logger;
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
+    logger_.Info("Creating new processor for handler...");
     boost::shared_ptr<HandlerImpl> handler(
         new HandlerImpl(local_host_id_, conf_, logger_));
     boost::shared_ptr<TProcessor> handlerProcessor(
@@ -366,7 +368,7 @@ class HandlerImplProcessorFactory : public TProcessorFactory {
 }
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [hostid]\n", exec);
+  fprintf(stderr, "Usage: %s [hostid]", exec);
 }
 
 int main(int argc, char **argv) {
@@ -377,12 +379,19 @@ int main(int argc, char **argv) {
 
   int32_t host_id = atoi(argv[1]);
   ConfigurationManager conf;
-  const std::string server_log_output = conf.Get("SERVER_LOG_PATH_PREFIX") + "_"
-      + std::to_string(host_id) + ".log";
-  FILE *desc = fopen(server_log_output.c_str(), "a");
-  Logger logger(static_cast<Logger::Level>(conf.GetInt("LOG_LEVEL")), desc);
+  const std::string handler_log_output = conf.Get("HANDLER_LOG_PATH_PREFIX")
+      + "_" + std::to_string(host_id) + ".log";
 
-  logger.Info("Handler.");
+  FILE *desc = fopen(handler_log_output.c_str(), "a");
+  if (desc == NULL) {
+    fprintf(stderr, "Could not obtain descriptor for %s, logging to stderr.\n",
+            handler_log_output.c_str());
+    desc = stderr;
+  }
+  Logger logger(static_cast<Logger::Level>(conf.GetInt("HANDLER_LOG_LEVEL")),
+                desc);
+
+  logger.Info("====Handler Starting====");
 
   int port = conf.GetInt("HANDLER_PORT");
   try {
@@ -394,9 +403,12 @@ int main(int argc, char **argv) {
     shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
     TThreadedServer server(handlerFactory, server_transport, transport_factory,
                            protocol_factory);
+
+    logger.Info("Starting Handler on port %d...", port);
     server.serve();
   } catch (std::exception& e) {
-    logger.Error("Exception at Handler:main(): %s", e.what());
+    logger.Error("Could not create handler listening on port %d. Reason: %s",
+                 conf.GetInt("HANDLER_PORT"), e.what());
   }
 
   return 0;
