@@ -9,7 +9,7 @@
 
 #include "server_types.h"
 
-
+namespace succinct {
 
 class serverConstants {
  public:
@@ -19,6 +19,6 @@ class serverConstants {
 
 extern const serverConstants g_server_constants;
 
-
+} // namespace
 
 #endif

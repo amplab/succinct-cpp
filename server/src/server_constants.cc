@@ -6,12 +6,12 @@
  */
 #include "server_constants.h"
 
-
+namespace succinct {
 
 const serverConstants g_server_constants;
 
 serverConstants::serverConstants() {
 }
 
-
+} // namespace
 
