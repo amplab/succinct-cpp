@@ -14,6 +14,8 @@ ConfigurationManager::ConfigurationManager() {
   SetFromEnv("MASTER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
   SetFromEnv("MASTER_LOG_FILE", Get("LOG_PATH") + "/" + Defaults::kMasterLogFile);
   SetFromEnv("MASTER_PORT", std::to_string(Defaults::kMasterPort));
+  SetFromEnv("MASTER_HEARTBEAT_PERIOD", std::to_string(Defaults::kMasterHBPeriod));
+  SetFromEnv("MASTER_MAX_RETRIES", std::to_string(Defaults::kMasterMaxRetries));
 
   // Handler configuration parameters
   SetFromEnv("HANDLER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));

@@ -18,6 +18,8 @@ class Defaults {
   // Master defaults
   static constexpr const char* kMasterLogFile = "master.log";
   static const uint16_t kMasterPort = 11000;
+  static const int32_t kMasterHBPeriod = 5;
+  static const int32_t kMasterMaxRetries = 3;
 
   // Handler defaults
   static constexpr const char* kHandlerLogFilePrefix = "handler";
