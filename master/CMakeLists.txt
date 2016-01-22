@@ -26,10 +26,7 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(HANDLER_CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../handler/include)
 set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils/include)
 
-set(MASTER_SOURCES ${SOURCES_DIR}/master_constants.cc
-    ${SOURCES_DIR}/master_types.cc
-    ${SOURCES_DIR}/Master.cc
-    ${SOURCES_DIR}/master_impl.cc)
+file(GLOB_RECURSE MASTER_SOURCES ${SOURCES_DIR}/*.cc)
 
 include_directories(${INCLUDE_DIR} ${HANDLER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
 
