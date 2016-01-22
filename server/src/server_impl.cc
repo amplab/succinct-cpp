@@ -127,7 +127,6 @@ void print_usage(char *exec) {
 }
 
 int main(int argc, char **argv) {
-  fprintf(stderr, "Started server...\n");
   if (argc != 3) {
     print_usage(argv[0]);
     return -1;
