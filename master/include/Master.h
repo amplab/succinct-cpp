@@ -22,6 +22,7 @@ class MasterIf {
  public:
   virtual ~MasterIf() {}
   virtual void GetHostname(std::string& _return) = 0;
+  virtual void Ping(const  ::HeartBeat& hb) = 0;
 };
 
 class MasterIfFactory {
@@ -52,6 +53,9 @@ class MasterNull : virtual public MasterIf {
  public:
   virtual ~MasterNull() {}
   void GetHostname(std::string& /* _return */) {
+    return;
+  }
+  void Ping(const  ::HeartBeat& /* hb */) {
     return;
   }
 };
@@ -148,6 +152,92 @@ class Master_GetHostname_presult {
 
 };
 
+typedef struct _Master_Ping_args__isset {
+  _Master_Ping_args__isset() : hb(false) {}
+  bool hb :1;
+} _Master_Ping_args__isset;
+
+class Master_Ping_args {
+ public:
+
+  Master_Ping_args(const Master_Ping_args&);
+  Master_Ping_args& operator=(const Master_Ping_args&);
+  Master_Ping_args() {
+  }
+
+  virtual ~Master_Ping_args() throw();
+   ::HeartBeat hb;
+
+  _Master_Ping_args__isset __isset;
+
+  void __set_hb(const  ::HeartBeat& val);
+
+  bool operator == (const Master_Ping_args & rhs) const
+  {
+    if (!(hb == rhs.hb))
+      return false;
+    return true;
+  }
+  bool operator != (const Master_Ping_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Master_Ping_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Master_Ping_pargs {
+ public:
+
+
+  virtual ~Master_Ping_pargs() throw();
+  const  ::HeartBeat* hb;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Master_Ping_result {
+ public:
+
+  Master_Ping_result(const Master_Ping_result&);
+  Master_Ping_result& operator=(const Master_Ping_result&);
+  Master_Ping_result() {
+  }
+
+  virtual ~Master_Ping_result() throw();
+
+  bool operator == (const Master_Ping_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Master_Ping_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Master_Ping_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Master_Ping_presult {
+ public:
+
+
+  virtual ~Master_Ping_presult() throw();
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class MasterClient : virtual public MasterIf {
  public:
   MasterClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -176,6 +266,9 @@ class MasterClient : virtual public MasterIf {
   void GetHostname(std::string& _return);
   void send_GetHostname();
   void recv_GetHostname(std::string& _return);
+  void Ping(const  ::HeartBeat& hb);
+  void send_Ping(const  ::HeartBeat& hb);
+  void recv_Ping();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -192,10 +285,12 @@ class MasterProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_GetHostname(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   MasterProcessor(boost::shared_ptr<MasterIf> iface) :
     iface_(iface) {
     processMap_["GetHostname"] = &MasterProcessor::process_GetHostname;
+    processMap_["Ping"] = &MasterProcessor::process_Ping;
   }
 
   virtual ~MasterProcessor() {}
@@ -234,6 +329,15 @@ class MasterMultiface : virtual public MasterIf {
     return;
   }
 
+  void Ping(const  ::HeartBeat& hb) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->Ping(hb);
+    }
+    ifaces_[i]->Ping(hb);
+  }
+
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -267,6 +371,9 @@ class MasterConcurrentClient : virtual public MasterIf {
   void GetHostname(std::string& _return);
   int32_t send_GetHostname();
   void recv_GetHostname(std::string& _return, const int32_t seqid);
+  void Ping(const  ::HeartBeat& hb);
+  int32_t send_Ping(const  ::HeartBeat& hb);
+  void recv_Ping(const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

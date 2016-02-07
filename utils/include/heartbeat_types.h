@@ -22,8 +22,9 @@
 class HeartBeat;
 
 typedef struct _HeartBeat__isset {
-  _HeartBeat__isset() : timestamp(false) {}
+  _HeartBeat__isset() : timestamp(false), sender_id(false) {}
   bool timestamp :1;
+  bool sender_id :1;
 } _HeartBeat__isset;
 
 class HeartBeat {
@@ -31,19 +32,24 @@ class HeartBeat {
 
   HeartBeat(const HeartBeat&);
   HeartBeat& operator=(const HeartBeat&);
-  HeartBeat() : timestamp(0) {
+  HeartBeat() : timestamp(0), sender_id(0) {
   }
 
   virtual ~HeartBeat() throw();
   int64_t timestamp;
+  int32_t sender_id;
 
   _HeartBeat__isset __isset;
 
   void __set_timestamp(const int64_t val);
 
+  void __set_sender_id(const int32_t val);
+
   bool operator == (const HeartBeat & rhs) const
   {
     if (!(timestamp == rhs.timestamp))
+      return false;
+    if (!(sender_id == rhs.sender_id))
       return false;
     return true;
   }

@@ -1,12 +1,26 @@
 #ifndef CONFIGURATION_MANAGER_H
 #define CONFIGURATION_MANAGER_H
 
-#include <unordered_map>
+#include <map>
 #include <string>
 
+class ConfigNotFoundException : std::exception {
+ public:
+  ConfigNotFoundException(const std::string& msg)
+      : msg_(msg) {
+  }
+
+  virtual const char *what() const throw () {
+    return msg_.c_str();
+  }
+
+ private:
+  const std::string msg_;
+};
+
 class ConfigurationManager {
-public:
-  typedef std::unordered_map<std::string, std::string> Properties;
+ public:
+  typedef std::map<std::string, std::string> Properties;
 
   ConfigurationManager();
 
@@ -25,9 +39,10 @@ public:
   const int32_t GetInt(const std::string& key);
   const int64_t GetLong(const std::string& key);
 
-  const std::string ReadEnvStr(const char *env_var, const std::string& default_str = "");
+  const std::string ReadEnvStr(const char *env_var,
+                               const std::string& default_str = "");
 
-private:
+ private:
   void SetFromEnv(const std::string& key, const std::string& default_value);
 
   Properties conf;

@@ -30,7 +30,7 @@ class HandlerIf {
   virtual void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
   virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
   virtual void SearchLocal(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void GetHeartBeat( ::HeartBeat& _return) = 0;
+  virtual void Ping(const  ::HeartBeat& hb) = 0;
 };
 
 class HandlerIfFactory {
@@ -92,7 +92,7 @@ class HandlerNull : virtual public HandlerIf {
   void SearchLocal(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
-  void GetHeartBeat( ::HeartBeat& /* _return */) {
+  void Ping(const  ::HeartBeat& /* hb */) {
     return;
   }
 };
@@ -980,93 +980,87 @@ class Handler_SearchLocal_presult {
 
 };
 
+typedef struct _Handler_Ping_args__isset {
+  _Handler_Ping_args__isset() : hb(false) {}
+  bool hb :1;
+} _Handler_Ping_args__isset;
 
-class Handler_GetHeartBeat_args {
+class Handler_Ping_args {
  public:
 
-  Handler_GetHeartBeat_args(const Handler_GetHeartBeat_args&);
-  Handler_GetHeartBeat_args& operator=(const Handler_GetHeartBeat_args&);
-  Handler_GetHeartBeat_args() {
+  Handler_Ping_args(const Handler_Ping_args&);
+  Handler_Ping_args& operator=(const Handler_Ping_args&);
+  Handler_Ping_args() {
   }
 
-  virtual ~Handler_GetHeartBeat_args() throw();
+  virtual ~Handler_Ping_args() throw();
+   ::HeartBeat hb;
 
-  bool operator == (const Handler_GetHeartBeat_args & /* rhs */) const
+  _Handler_Ping_args__isset __isset;
+
+  void __set_hb(const  ::HeartBeat& val);
+
+  bool operator == (const Handler_Ping_args & rhs) const
   {
-    return true;
-  }
-  bool operator != (const Handler_GetHeartBeat_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Handler_GetHeartBeat_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Handler_GetHeartBeat_pargs {
- public:
-
-
-  virtual ~Handler_GetHeartBeat_pargs() throw();
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Handler_GetHeartBeat_result__isset {
-  _Handler_GetHeartBeat_result__isset() : success(false) {}
-  bool success :1;
-} _Handler_GetHeartBeat_result__isset;
-
-class Handler_GetHeartBeat_result {
- public:
-
-  Handler_GetHeartBeat_result(const Handler_GetHeartBeat_result&);
-  Handler_GetHeartBeat_result& operator=(const Handler_GetHeartBeat_result&);
-  Handler_GetHeartBeat_result() {
-  }
-
-  virtual ~Handler_GetHeartBeat_result() throw();
-   ::HeartBeat success;
-
-  _Handler_GetHeartBeat_result__isset __isset;
-
-  void __set_success(const  ::HeartBeat& val);
-
-  bool operator == (const Handler_GetHeartBeat_result & rhs) const
-  {
-    if (!(success == rhs.success))
+    if (!(hb == rhs.hb))
       return false;
     return true;
   }
-  bool operator != (const Handler_GetHeartBeat_result &rhs) const {
+  bool operator != (const Handler_Ping_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Handler_GetHeartBeat_result & ) const;
+  bool operator < (const Handler_Ping_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Handler_GetHeartBeat_presult__isset {
-  _Handler_GetHeartBeat_presult__isset() : success(false) {}
-  bool success :1;
-} _Handler_GetHeartBeat_presult__isset;
 
-class Handler_GetHeartBeat_presult {
+class Handler_Ping_pargs {
  public:
 
 
-  virtual ~Handler_GetHeartBeat_presult() throw();
-   ::HeartBeat* success;
+  virtual ~Handler_Ping_pargs() throw();
+  const  ::HeartBeat* hb;
 
-  _Handler_GetHeartBeat_presult__isset __isset;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Handler_Ping_result {
+ public:
+
+  Handler_Ping_result(const Handler_Ping_result&);
+  Handler_Ping_result& operator=(const Handler_Ping_result&);
+  Handler_Ping_result() {
+  }
+
+  virtual ~Handler_Ping_result() throw();
+
+  bool operator == (const Handler_Ping_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Handler_Ping_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Handler_Ping_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Handler_Ping_presult {
+ public:
+
+
+  virtual ~Handler_Ping_presult() throw();
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1124,9 +1118,9 @@ class HandlerClient : virtual public HandlerIf {
   void SearchLocal(std::set<int64_t> & _return, const std::string& query);
   void send_SearchLocal(const std::string& query);
   void recv_SearchLocal(std::set<int64_t> & _return);
-  void GetHeartBeat( ::HeartBeat& _return);
-  void send_GetHeartBeat();
-  void recv_GetHeartBeat( ::HeartBeat& _return);
+  void Ping(const  ::HeartBeat& hb);
+  void send_Ping(const  ::HeartBeat& hb);
+  void recv_Ping();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -1151,7 +1145,7 @@ class HandlerProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_GetLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_SearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_GetHeartBeat(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   HandlerProcessor(boost::shared_ptr<HandlerIf> iface) :
     iface_(iface) {
@@ -1164,7 +1158,7 @@ class HandlerProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["GetLocal"] = &HandlerProcessor::process_GetLocal;
     processMap_["Search"] = &HandlerProcessor::process_Search;
     processMap_["SearchLocal"] = &HandlerProcessor::process_SearchLocal;
-    processMap_["GetHeartBeat"] = &HandlerProcessor::process_GetHeartBeat;
+    processMap_["Ping"] = &HandlerProcessor::process_Ping;
   }
 
   virtual ~HandlerProcessor() {}
@@ -1278,14 +1272,13 @@ class HandlerMultiface : virtual public HandlerIf {
     return;
   }
 
-  void GetHeartBeat( ::HeartBeat& _return) {
+  void Ping(const  ::HeartBeat& hb) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->GetHeartBeat(_return);
+      ifaces_[i]->Ping(hb);
     }
-    ifaces_[i]->GetHeartBeat(_return);
-    return;
+    ifaces_[i]->Ping(hb);
   }
 
 };
@@ -1345,9 +1338,9 @@ class HandlerConcurrentClient : virtual public HandlerIf {
   void SearchLocal(std::set<int64_t> & _return, const std::string& query);
   int32_t send_SearchLocal(const std::string& query);
   void recv_SearchLocal(std::set<int64_t> & _return, const int32_t seqid);
-  void GetHeartBeat( ::HeartBeat& _return);
-  int32_t send_GetHeartBeat();
-  void recv_GetHeartBeat( ::HeartBeat& _return, const int32_t seqid);
+  void Ping(const  ::HeartBeat& hb);
+  int32_t send_Ping(const  ::HeartBeat& hb);
+  void recv_Ping(const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

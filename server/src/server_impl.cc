@@ -16,6 +16,7 @@
 #include "heartbeat_types.h"
 #include "configuration_manager.h"
 #include "logger.h"
+#include "server_heartbeat_manager.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -29,11 +30,13 @@ namespace succinct {
 class ServerImpl : virtual public ServerIf {
  public:
   ServerImpl(int32_t id, const std::string& filename,
-             ConfigurationManager &conf, Logger &logger)
+             ConfigurationManager &conf, Logger &logger,
+             ServerHeartbeatManager &hb_manager)
       : filename_(filename),
-        id_(id) {
-    conf_ = conf;
-    logger_ = logger;
+        id_(id),
+        conf_(conf),
+        logger_(logger),
+        hb_manager_(hb_manager) {
 
     succinct_shard_ = NULL;
     is_init_ = false;
@@ -83,6 +86,7 @@ class ServerImpl : virtual public ServerIf {
     logger_.Info("Initialization successful.");
     is_init_ = true;
     num_keys_ = succinct_shard_->GetNumKeys();
+
     return 0;
   }
 
@@ -92,12 +96,6 @@ class ServerImpl : virtual public ServerIf {
 
   void Search(std::set<int64_t>& _return, const std::string& query) {
     succinct_shard_->Search(_return, query);
-  }
-
-  void GetHeartBeat(HeartBeat& _return) {
-    std::time_t ts = std::time(nullptr);
-    logger_.Info("Received heartbeat request. Timestamp = %ld.", ts);
-    _return.timestamp = ts;
   }
 
   void RegexSearch(std::set<int64_t> &_return, const std::string &query) {
@@ -112,6 +110,7 @@ class ServerImpl : virtual public ServerIf {
   const int32_t id_;
   const std::string filename_;
   ConfigurationManager conf_;
+  ServerHeartbeatManager hb_manager_;
   Logger logger_;
 
   SuccinctShard *succinct_shard_;
@@ -147,8 +146,10 @@ int main(int argc, char **argv) {
   Logger logger(static_cast<Logger::Level>(conf.GetInt("SERVER_LOG_LEVEL")),
                 desc);
 
+  succinct::ServerHeartbeatManager hb_manager(id, conf, logger);
+
   shared_ptr<succinct::ServerImpl> handler(
-      new succinct::ServerImpl(id, filename, conf, logger));
+      new succinct::ServerImpl(id, filename, conf, logger, hb_manager));
   shared_ptr<TProcessor> processor(new succinct::ServerProcessor(handler));
 
   try {
@@ -160,7 +161,8 @@ int main(int argc, char **argv) {
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
 
-    logger.Info("Starting server on port %d...", conf.GetInt("SERVER_PORT") + id);
+    logger.Info("Starting server on port %d...",
+                conf.GetInt("SERVER_PORT") + id);
     server.serve();
   } catch (std::exception& e) {
     logger.Error("Could not create server listening on port %d. Reason: %s",

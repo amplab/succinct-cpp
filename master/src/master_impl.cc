@@ -1,5 +1,7 @@
 #include <vector>
 #include <fstream>
+#include <ctime>
+#include <thread>
 
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TThreadedServer.h>
@@ -9,6 +11,7 @@
 #include "Handler.h"
 #include "logger.h"
 #include "configuration_manager.h"
+#include "constants.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -21,9 +24,48 @@ namespace succinct {
 class MasterImpl : virtual public MasterIf {
 
  public:
-  MasterImpl(ConfigurationManager& conf, Logger& logger) {
-    conf_ = conf;
-    logger_ = logger;
+  typedef struct HandlerMetadata {
+   public:
+    HandlerMetadata() {
+      host_id = 0;
+      hostname = "";
+
+      last_hb_local_timestamp = 0;
+      last_hb_timestamp = 0;
+      goodness = 1.0;
+    }
+
+    HandlerMetadata(int32_t host_id, const std::string& hostname) {
+      this->host_id = host_id;
+      this->hostname = hostname;
+
+      last_hb_local_timestamp = 0;
+      last_hb_timestamp = 0;
+      goodness = 1.0;
+    }
+
+    void NewHeartbeat(std::time_t hb_timestamp, std::time_t local_timestamp) {
+      last_hb_timestamp = hb_timestamp;
+      last_hb_local_timestamp = local_timestamp;
+    }
+
+    void UpdateGoodness(std::time_t current_local_timestamp) {
+      goodness = ((double) Defaults::kHBPeriod)
+          / (double) (current_local_timestamp - last_hb_local_timestamp);
+    }
+
+    int32_t host_id;
+    std::string hostname;
+    std::time_t last_hb_local_timestamp;
+    std::time_t last_hb_timestamp;
+    double goodness;
+  } HandlerMetadata;
+
+  typedef std::map<int32_t, HandlerMetadata> HandlerMetadataMap;
+
+  MasterImpl(ConfigurationManager& conf, Logger& logger)
+      : conf_(conf),
+        logger_(logger) {
 
     ReadHostNames(conf_.Get("HOSTS_LIST"));
 
@@ -45,8 +87,8 @@ class MasterImpl : virtual public MasterIf {
         clients.push_back(client);
         transports.push_back(transport);
       } catch (std::exception& e) {
-        logger_.Error("Could not connect to handler on %s. Reason: %s",
-                      hostnames_[i].c_str(), e.what());
+        logger_.Error("Could not connect to handler on %s:%d. Reason: %s",
+                      hostnames_[i].c_str(), handler_port, e.what());
         exit(1);
       }
     }
@@ -84,11 +126,49 @@ class MasterImpl : virtual public MasterIf {
       }
     }
 
+    // Initialize handler metadata
+    for (int i = 0; i < hostnames_.size(); i++) {
+      typedef std::pair<int32_t, HandlerMetadata> HMEntry;
+      hm_map_.insert(HMEntry(i, HandlerMetadata(i, hostnames_[i])));
+
+      logger_.Info("Initialized metadata for handler at %s...",
+                   hostnames_[i].c_str());
+    }
+
     logger_.Info("Initialization complete.");
+
+    std::thread hb_monitor_thread = std::thread([=] {
+      MonitorHeartbeats();
+    });
+    hb_monitor_thread.detach();
   }
 
   void GetHostname(std::string& _return) {
     _return = hostnames_[rand() % hostnames_.size()];
+  }
+
+  void Ping(const HeartBeat& hb) {
+    logger_.Debug("Received heartbeat from handler %d.");
+    hm_map_.at(hb.sender_id).NewHeartbeat(hb.timestamp, std::time(NULL));
+    logger_.Debug("Updated handler metadata.");
+  }
+
+  void MonitorHeartbeats() {
+    while (true) {
+      for (size_t i = 0; i < hm_map_.size(); i++) {
+        hm_map_[i].UpdateGoodness(std::time(NULL));
+        if (hm_map_[i].goodness < 0.3) {
+          logger_.Warn("Goodness for handler %d at %s is low (%lf)!",
+                       hm_map_[i].host_id, hm_map_[i].hostname.c_str(),
+                       hm_map_[i].goodness);
+        } else {
+          logger_.Debug("Goodness for handler %d at %s is ok (%lf).",
+                        hm_map_[i].host_id, hm_map_[i].hostname.c_str(),
+                        hm_map_[i].goodness);
+        }
+      }
+      sleep(Defaults::kHBPeriod);
+    }
   }
 
  private:
@@ -105,6 +185,7 @@ class MasterImpl : virtual public MasterIf {
     }
   }
 
+  HandlerMetadataMap hm_map_;
   std::vector<std::string> hostnames_;
   ConfigurationManager conf_;
   Logger logger_;

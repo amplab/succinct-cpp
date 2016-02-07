@@ -22,6 +22,10 @@ void HeartBeat::__set_timestamp(const int64_t val) {
   this->timestamp = val;
 }
 
+void HeartBeat::__set_sender_id(const int32_t val) {
+  this->sender_id = val;
+}
+
 uint32_t HeartBeat::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -51,6 +55,14 @@ uint32_t HeartBeat::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->sender_id);
+          this->__isset.sender_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -72,6 +84,10 @@ uint32_t HeartBeat::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeI64(this->timestamp);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("sender_id", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->sender_id);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -80,15 +96,18 @@ uint32_t HeartBeat::write(::apache::thrift::protocol::TProtocol* oprot) const {
 void swap(HeartBeat &a, HeartBeat &b) {
   using ::std::swap;
   swap(a.timestamp, b.timestamp);
+  swap(a.sender_id, b.sender_id);
   swap(a.__isset, b.__isset);
 }
 
 HeartBeat::HeartBeat(const HeartBeat& other0) {
   timestamp = other0.timestamp;
+  sender_id = other0.sender_id;
   __isset = other0.__isset;
 }
 HeartBeat& HeartBeat::operator=(const HeartBeat& other1) {
   timestamp = other1.timestamp;
+  sender_id = other1.sender_id;
   __isset = other1.__isset;
   return *this;
 }
@@ -96,6 +115,7 @@ void HeartBeat::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "HeartBeat(";
   out << "timestamp=" << to_string(timestamp);
+  out << ", " << "sender_id=" << to_string(sender_id);
   out << ")";
 }
 

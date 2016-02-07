@@ -1,8 +1,10 @@
-export SHARDS_PER_SERVER="8"
+export SHARDS_PER_SERVER="1"
 
-export MASTER_LOG_LEVEL="2" # Info
-export HANDLER_LOG_LEVEL="2" # Info
-export SERVER_LOG_LEVEL="2" # Info
+export MASTER_HOSTNAME="localhost"
+
+export MASTER_LOG_LEVEL="1" # Debug
+export HANDLER_LOG_LEVEL="1" # Debug
+export SERVER_LOG_LEVEL="1" # Debug
 
 export MASTER_PORT="11001"
 export HANDLER_PORT="11002"

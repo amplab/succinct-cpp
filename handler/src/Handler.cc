@@ -1671,11 +1671,90 @@ uint32_t Handler_SearchLocal_presult::read(::apache::thrift::protocol::TProtocol
 }
 
 
-Handler_GetHeartBeat_args::~Handler_GetHeartBeat_args() throw() {
+Handler_Ping_args::~Handler_Ping_args() throw() {
 }
 
 
-uint32_t Handler_GetHeartBeat_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Handler_Ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->hb.read(iprot);
+          this->__isset.hb = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Handler_Ping_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Handler_Ping_args");
+
+  xfer += oprot->writeFieldBegin("hb", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->hb.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Handler_Ping_pargs::~Handler_Ping_pargs() throw() {
+}
+
+
+uint32_t Handler_Ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("Handler_Ping_pargs");
+
+  xfer += oprot->writeFieldBegin("hb", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->hb)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+Handler_Ping_result::~Handler_Ping_result() throw() {
+}
+
+
+uint32_t Handler_Ping_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -1703,10 +1782,11 @@ uint32_t Handler_GetHeartBeat_args::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t Handler_GetHeartBeat_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Handler_Ping_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
   uint32_t xfer = 0;
-  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Handler_GetHeartBeat_args");
+
+  xfer += oprot->writeStructBegin("Handler_Ping_result");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -1714,26 +1794,11 @@ uint32_t Handler_GetHeartBeat_args::write(::apache::thrift::protocol::TProtocol*
 }
 
 
-Handler_GetHeartBeat_pargs::~Handler_GetHeartBeat_pargs() throw() {
+Handler_Ping_presult::~Handler_Ping_presult() throw() {
 }
 
 
-uint32_t Handler_GetHeartBeat_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Handler_GetHeartBeat_pargs");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-Handler_GetHeartBeat_result::~Handler_GetHeartBeat_result() throw() {
-}
-
-
-uint32_t Handler_GetHeartBeat_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Handler_Ping_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -1752,82 +1817,7 @@ uint32_t Handler_GetHeartBeat_result::read(::apache::thrift::protocol::TProtocol
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->success.read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t Handler_GetHeartBeat_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("Handler_GetHeartBeat_result");
-
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
-    xfer += this->success.write(oprot);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-Handler_GetHeartBeat_presult::~Handler_GetHeartBeat_presult() throw() {
-}
-
-
-uint32_t Handler_GetHeartBeat_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += (*(this->success)).read(iprot);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -2354,18 +2344,19 @@ void HandlerClient::recv_SearchLocal(std::set<int64_t> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "SearchLocal failed: unknown result");
 }
 
-void HandlerClient::GetHeartBeat( ::HeartBeat& _return)
+void HandlerClient::Ping(const  ::HeartBeat& hb)
 {
-  send_GetHeartBeat();
-  recv_GetHeartBeat(_return);
+  send_Ping(hb);
+  recv_Ping();
 }
 
-void HandlerClient::send_GetHeartBeat()
+void HandlerClient::send_Ping(const  ::HeartBeat& hb)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("GetHeartBeat", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Ping", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Handler_GetHeartBeat_pargs args;
+  Handler_Ping_pargs args;
+  args.hb = &hb;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -2373,7 +2364,7 @@ void HandlerClient::send_GetHeartBeat()
   oprot_->getTransport()->flush();
 }
 
-void HandlerClient::recv_GetHeartBeat( ::HeartBeat& _return)
+void HandlerClient::recv_Ping()
 {
 
   int32_t rseqid = 0;
@@ -2393,22 +2384,17 @@ void HandlerClient::recv_GetHeartBeat( ::HeartBeat& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("GetHeartBeat") != 0) {
+  if (fname.compare("Ping") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Handler_GetHeartBeat_presult result;
-  result.success = &_return;
+  Handler_Ping_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHeartBeat failed: unknown result");
+  return;
 }
 
 bool HandlerProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
@@ -2916,38 +2902,37 @@ void HandlerProcessor::process_SearchLocal(int32_t seqid, ::apache::thrift::prot
   }
 }
 
-void HandlerProcessor::process_GetHeartBeat(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void HandlerProcessor::process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Handler.GetHeartBeat", callContext);
+    ctx = this->eventHandler_->getContext("Handler.Ping", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Handler.GetHeartBeat");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Handler.Ping");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Handler.GetHeartBeat");
+    this->eventHandler_->preRead(ctx, "Handler.Ping");
   }
 
-  Handler_GetHeartBeat_args args;
+  Handler_Ping_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Handler.GetHeartBeat", bytes);
+    this->eventHandler_->postRead(ctx, "Handler.Ping", bytes);
   }
 
-  Handler_GetHeartBeat_result result;
+  Handler_Ping_result result;
   try {
-    iface_->GetHeartBeat(result.success);
-    result.__isset.success = true;
+    iface_->Ping(args.hb);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Handler.GetHeartBeat");
+      this->eventHandler_->handlerError(ctx, "Handler.Ping");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("GetHeartBeat", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("Ping", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -2956,17 +2941,17 @@ void HandlerProcessor::process_GetHeartBeat(int32_t seqid, ::apache::thrift::pro
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Handler.GetHeartBeat");
+    this->eventHandler_->preWrite(ctx, "Handler.Ping");
   }
 
-  oprot->writeMessageBegin("GetHeartBeat", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("Ping", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Handler.GetHeartBeat", bytes);
+    this->eventHandler_->postWrite(ctx, "Handler.Ping", bytes);
   }
 }
 
@@ -3729,19 +3714,20 @@ void HandlerConcurrentClient::recv_SearchLocal(std::set<int64_t> & _return, cons
   } // end while(true)
 }
 
-void HandlerConcurrentClient::GetHeartBeat( ::HeartBeat& _return)
+void HandlerConcurrentClient::Ping(const  ::HeartBeat& hb)
 {
-  int32_t seqid = send_GetHeartBeat();
-  recv_GetHeartBeat(_return, seqid);
+  int32_t seqid = send_Ping(hb);
+  recv_Ping(seqid);
 }
 
-int32_t HandlerConcurrentClient::send_GetHeartBeat()
+int32_t HandlerConcurrentClient::send_Ping(const  ::HeartBeat& hb)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
-  oprot_->writeMessageBegin("GetHeartBeat", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("Ping", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Handler_GetHeartBeat_pargs args;
+  Handler_Ping_pargs args;
+  args.hb = &hb;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3752,7 +3738,7 @@ int32_t HandlerConcurrentClient::send_GetHeartBeat()
   return cseqid;
 }
 
-void HandlerConcurrentClient::recv_GetHeartBeat( ::HeartBeat& _return, const int32_t seqid)
+void HandlerConcurrentClient::recv_Ping(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -3781,7 +3767,7 @@ void HandlerConcurrentClient::recv_GetHeartBeat( ::HeartBeat& _return, const int
         iprot_->readMessageEnd();
         iprot_->getTransport()->readEnd();
       }
-      if (fname.compare("GetHeartBeat") != 0) {
+      if (fname.compare("Ping") != 0) {
         iprot_->skip(::apache::thrift::protocol::T_STRUCT);
         iprot_->readMessageEnd();
         iprot_->getTransport()->readEnd();
@@ -3790,19 +3776,13 @@ void HandlerConcurrentClient::recv_GetHeartBeat( ::HeartBeat& _return, const int
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
-      Handler_GetHeartBeat_presult result;
-      result.success = &_return;
+      Handler_Ping_presult result;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
-      if (result.__isset.success) {
-        // _return pointer has now been filled
-        sentry.commit();
-        return;
-      }
-      // in a bad state, don't commit
-      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHeartBeat failed: unknown result");
+      sentry.commit();
+      return;
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);

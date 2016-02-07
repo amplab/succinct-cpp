@@ -18,6 +18,7 @@
 #include "constants.h"
 #include "configuration_manager.h"
 #include "logger.h"
+#include "handler_heartbeat_manager.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -31,13 +32,16 @@ namespace succinct {
 class HandlerImpl : virtual public HandlerIf {
  public:
   HandlerImpl(const uint32_t host_id, ConfigurationManager& conf,
-              Logger& logger)
-      : host_id_(host_id) {
-    conf_ = conf;
-    logger_ = logger;
+              Logger& logger, HandlerHeartbeatManager& hb_manager)
+      : host_id_(host_id),
+        conf_(conf),
+        logger_(logger),
+        hb_manager_(hb_manager) {
 
     num_shards_ = conf_.GetInt("SHARDS_PER_SERVER");
     ReadHostNames(conf_.Get("HOSTS_LIST"));
+
+    logger_.Info("Initialized handler.");
   }
 
   int32_t StartLocalServers() {
@@ -73,6 +77,8 @@ class HandlerImpl : virtual public HandlerIf {
 
     logger_.Info("Initialization successful.");
 
+    hb_manager_.Start();
+
     return 0;
   }
 
@@ -96,9 +102,9 @@ class HandlerImpl : virtual public HandlerIf {
 
   void Search(std::set<int64_t> & _return, const std::string& query) {
 
-    for (int i = 0; i < hostnames_.size(); i++) {
+    for (size_t i = 0; i < hostnames_.size(); i++) {
       if (i == host_id_) {
-        for (int j = 0; j < qservers_.size(); j++) {
+        for (size_t j = 0; j < qservers_.size(); j++) {
           qservers_[j].send_Search(query);
         }
       } else {
@@ -106,9 +112,9 @@ class HandlerImpl : virtual public HandlerIf {
       }
     }
 
-    for (int i = 0; i < hostnames_.size(); i++) {
+    for (size_t i = 0; i < hostnames_.size(); i++) {
       if (i == host_id_) {
-        for (int j = 0; j < qservers_.size(); j++) {
+        for (size_t j = 0; j < qservers_.size(); j++) {
           std::set<int64_t> keys;
           qservers_[j].recv_Search(keys);
           _return.insert(keys.begin(), keys.end());
@@ -122,11 +128,11 @@ class HandlerImpl : virtual public HandlerIf {
   }
 
   void SearchLocal(std::set<int64_t> & _return, const std::string& query) {
-    for (int j = 0; j < qservers_.size(); j++) {
+    for (size_t j = 0; j < qservers_.size(); j++) {
       qservers_[j].send_Search(query);
     }
 
-    for (int j = 0; j < qservers_.size(); j++) {
+    for (size_t j = 0; j < qservers_.size(); j++) {
       std::set<int64_t> keys;
       qservers_[j].recv_Search(keys);
       _return.insert(keys.begin(), keys.end());
@@ -177,7 +183,7 @@ class HandlerImpl : virtual public HandlerIf {
     uint16_t handler_port = conf_.GetInt("HANDLER_PORT");
 
     // Create connections to all handlers
-    for (int i = 0; i < hostnames_.size(); i++) {
+    for (size_t i = 0; i < hostnames_.size(); i++) {
       try {
         if (i == host_id_) {
           logger_.Info("Connecting to local servers...");
@@ -221,7 +227,7 @@ class HandlerImpl : virtual public HandlerIf {
     // Get base server port
     uint16_t server_base_port = conf_.GetInt("SERVER_PORT");
 
-    for (int i = 0; i < num_shards_; i++) {
+    for (size_t i = 0; i < num_shards_; i++) {
       try {
         logger_.Info("Connecting to local server %d...", i);
 
@@ -255,7 +261,7 @@ class HandlerImpl : virtual public HandlerIf {
     uint16_t handler_port = conf_.GetInt("HANDLER_PORT");
 
     // Destroy connections to all handlers
-    for (int i = 0; i < hostnames_.size(); i++) {
+    for (size_t i = 0; i < hostnames_.size(); i++) {
       try {
         if (i == host_id_) {
           logger_.Info("Killing local server connections...");
@@ -287,7 +293,7 @@ class HandlerImpl : virtual public HandlerIf {
   }
 
   int32_t DisconnectFromLocalServers() {
-    for (int i = 0; i < qservers_.size(); i++) {
+    for (size_t i = 0; i < qservers_.size(); i++) {
       try {
         logger_.Info("Disconnecting from local server %d", i);
         qserver_transports_[i]->close();
@@ -307,10 +313,10 @@ class HandlerImpl : virtual public HandlerIf {
     return 0;
   }
 
-  void GetHeartBeat(HeartBeat& _return) {
-    std::time_t ts = std::time(nullptr);
-    logger_.Info("Received heartbeat request. Timestamp = %ld.", ts);
-    _return.timestamp = ts;
+  void Ping(const HeartBeat& _return) {
+    logger_.Info("Received heartbeat from server %d with timestamp %ld.",
+                 _return.sender_id, _return.timestamp);
+    // TODO: Update server metadata based on heartbeat message
   }
 
  private:
@@ -333,6 +339,7 @@ class HandlerImpl : virtual public HandlerIf {
 
   ConfigurationManager conf_;
   Logger logger_;
+  HandlerHeartbeatManager hb_manager_;
 
   std::vector<ServerClient> qservers_;
   std::vector<boost::shared_ptr<TTransport>> qserver_transports_;
@@ -343,26 +350,29 @@ class HandlerImpl : virtual public HandlerIf {
 
 class HandlerImplProcessorFactory : public TProcessorFactory {
  public:
-  HandlerImplProcessorFactory(uint32_t local_host_id,
-                              ConfigurationManager& conf, Logger& logger) {
-    local_host_id_ = local_host_id;
-    conf_ = conf;
-    logger_ = logger;
+  HandlerImplProcessorFactory(uint32_t host_id, ConfigurationManager& conf,
+                              Logger& logger,
+                              HandlerHeartbeatManager& hb_manager)
+      : host_id_(host_id),
+        conf_(conf),
+        logger_(logger),
+        hb_manager_(hb_manager) {
   }
 
   boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
-    logger_.Info("Creating new processor for handler...");
+    logger_.Info("===Creating new processor for handler===");
     boost::shared_ptr<HandlerImpl> handler(
-        new HandlerImpl(local_host_id_, conf_, logger_));
+        new HandlerImpl(host_id_, conf_, logger_, hb_manager_));
     boost::shared_ptr<TProcessor> handlerProcessor(
         new HandlerProcessor(handler));
     return handlerProcessor;
   }
 
  private:
-  uint32_t local_host_id_;
+  uint32_t host_id_;
   ConfigurationManager conf_;
   Logger logger_;
+  HandlerHeartbeatManager hb_manager_;
 };
 
 }
@@ -391,12 +401,13 @@ int main(int argc, char **argv) {
   Logger logger(static_cast<Logger::Level>(conf.GetInt("HANDLER_LOG_LEVEL")),
                 desc);
 
-  logger.Info("====Handler Starting====");
+  succinct::HandlerHeartbeatManager hb_manager(host_id, conf, logger);
 
   int port = conf.GetInt("HANDLER_PORT");
   try {
     shared_ptr<succinct::HandlerImplProcessorFactory> handlerFactory(
-        new succinct::HandlerImplProcessorFactory(host_id, conf, logger));
+        new succinct::HandlerImplProcessorFactory(host_id, conf, logger,
+                                                  hb_manager));
     shared_ptr<TServerSocket> server_transport(new TServerSocket(port));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());

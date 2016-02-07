@@ -21,6 +21,6 @@ service Handler {
 	set<i64> Search(1:string query),
 	set<i64> SearchLocal(1:string query),
 
-	// I-Am-Alive messages to master
-	heartbeat.HeartBeat GetHeartBeat(),
+	// I-Am-Alive messages from server
+	void Ping(1:heartbeat.HeartBeat hb),
 }

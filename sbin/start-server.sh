@@ -28,4 +28,4 @@ if [ "$CONF_PATH" = "" ]; then
     export CONF_PATH="$SUCCINCT_HOME/conf"
 fi
 
-nohup "$bin/sserver" $1 $2 >/dev/null 2>"$LOG_PATH/stderr/server_$2.stderr" &
+nohup "$bin/sserver" $1 $2 >/dev/null 2>"$LOG_PATH/stderr/server_$1.stderr" &

@@ -15,6 +15,7 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "heartbeat_types.h"
 
 
 namespace succinct {

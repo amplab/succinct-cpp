@@ -24,7 +24,6 @@ class ServerIf {
   virtual int32_t Initialize() = 0;
   virtual void Get(std::string& _return, const int64_t key) = 0;
   virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
-  virtual void GetHeartBeat( ::HeartBeat& _return) = 0;
 };
 
 class ServerIfFactory {
@@ -62,9 +61,6 @@ class ServerNull : virtual public ServerIf {
     return;
   }
   void Search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
-    return;
-  }
-  void GetHeartBeat( ::HeartBeat& /* _return */) {
     return;
   }
 };
@@ -369,98 +365,6 @@ class Server_Search_presult {
 
 };
 
-
-class Server_GetHeartBeat_args {
- public:
-
-  Server_GetHeartBeat_args(const Server_GetHeartBeat_args&);
-  Server_GetHeartBeat_args& operator=(const Server_GetHeartBeat_args&);
-  Server_GetHeartBeat_args() {
-  }
-
-  virtual ~Server_GetHeartBeat_args() throw();
-
-  bool operator == (const Server_GetHeartBeat_args & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const Server_GetHeartBeat_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Server_GetHeartBeat_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Server_GetHeartBeat_pargs {
- public:
-
-
-  virtual ~Server_GetHeartBeat_pargs() throw();
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Server_GetHeartBeat_result__isset {
-  _Server_GetHeartBeat_result__isset() : success(false) {}
-  bool success :1;
-} _Server_GetHeartBeat_result__isset;
-
-class Server_GetHeartBeat_result {
- public:
-
-  Server_GetHeartBeat_result(const Server_GetHeartBeat_result&);
-  Server_GetHeartBeat_result& operator=(const Server_GetHeartBeat_result&);
-  Server_GetHeartBeat_result() {
-  }
-
-  virtual ~Server_GetHeartBeat_result() throw();
-   ::HeartBeat success;
-
-  _Server_GetHeartBeat_result__isset __isset;
-
-  void __set_success(const  ::HeartBeat& val);
-
-  bool operator == (const Server_GetHeartBeat_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    return true;
-  }
-  bool operator != (const Server_GetHeartBeat_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Server_GetHeartBeat_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Server_GetHeartBeat_presult__isset {
-  _Server_GetHeartBeat_presult__isset() : success(false) {}
-  bool success :1;
-} _Server_GetHeartBeat_presult__isset;
-
-class Server_GetHeartBeat_presult {
- public:
-
-
-  virtual ~Server_GetHeartBeat_presult() throw();
-   ::HeartBeat* success;
-
-  _Server_GetHeartBeat_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
 class ServerClient : virtual public ServerIf {
  public:
   ServerClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -495,9 +399,6 @@ class ServerClient : virtual public ServerIf {
   void Search(std::set<int64_t> & _return, const std::string& query);
   void send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return);
-  void GetHeartBeat( ::HeartBeat& _return);
-  void send_GetHeartBeat();
-  void recv_GetHeartBeat( ::HeartBeat& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -516,14 +417,12 @@ class ServerProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_Initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_GetHeartBeat(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   ServerProcessor(boost::shared_ptr<ServerIf> iface) :
     iface_(iface) {
     processMap_["Initialize"] = &ServerProcessor::process_Initialize;
     processMap_["Get"] = &ServerProcessor::process_Get;
     processMap_["Search"] = &ServerProcessor::process_Search;
-    processMap_["GetHeartBeat"] = &ServerProcessor::process_GetHeartBeat;
   }
 
   virtual ~ServerProcessor() {}
@@ -581,16 +480,6 @@ class ServerMultiface : virtual public ServerIf {
     return;
   }
 
-  void GetHeartBeat( ::HeartBeat& _return) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->GetHeartBeat(_return);
-    }
-    ifaces_[i]->GetHeartBeat(_return);
-    return;
-  }
-
 };
 
 // The 'concurrent' client is a thread safe client that correctly handles
@@ -630,9 +519,6 @@ class ServerConcurrentClient : virtual public ServerIf {
   void Search(std::set<int64_t> & _return, const std::string& query);
   int32_t send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return, const int32_t seqid);
-  void GetHeartBeat( ::HeartBeat& _return);
-  int32_t send_GetHeartBeat();
-  void recv_GetHeartBeat( ::HeartBeat& _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

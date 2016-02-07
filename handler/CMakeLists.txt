@@ -25,14 +25,16 @@ file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SERVER_CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../server/include)
+set(MASTER_CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../master/include)
 set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils/include)
 
 file(GLOB_RECURSE HANDLER_SOURCES ${SOURCES_DIR}/*.cc)
 set(HANDLER_CLIENT_SOURCES ${SOURCES_DIR}/Handler.cc)
 
-include_directories(${INCLUDE_DIR} ${SERVER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${SERVER_CLIENT_INCLUDE_DIR} ${MASTER_CLIENT_INCLUDE_DIR} ${UTILS_INCLUDE_DIR})
 
-add_executable(shandler ${HANDLER_SOURCES})
+# Bit of a hack
+add_executable(shandler ${HANDLER_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/../master/src/Master.cc)
 add_library(shandlerclient ${HANDLER_CLIENT_SOURCES})
 
 target_link_libraries(shandler sutils sserverclient ${THRIFT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
