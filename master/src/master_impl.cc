@@ -137,10 +137,10 @@ class MasterImpl : virtual public MasterIf {
 
     logger_.Info("Initialization complete.");
 
-    std::thread hb_monitor_thread = std::thread([=] {
-      MonitorHeartbeats();
-    });
-    hb_monitor_thread.detach();
+//    std::thread hb_monitor_thread = std::thread([=] {
+//      MonitorHeartbeats();
+//    });
+//    hb_monitor_thread.detach();
   }
 
   void GetHostname(std::string& _return) {
