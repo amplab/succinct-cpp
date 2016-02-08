@@ -77,7 +77,7 @@ class HandlerImpl : virtual public HandlerIf {
 
     logger_.Info("Initialization successful.");
 
-    hb_manager_.Start();
+    // hb_manager_.Start();
 
     return 0;
   }
@@ -401,7 +401,7 @@ int main(int argc, char **argv) {
   Logger logger(static_cast<Logger::Level>(conf.GetInt("HANDLER_LOG_LEVEL")),
                 desc);
 
-  // succinct::HandlerHeartbeatManager hb_manager(host_id, conf, logger);
+  succinct::HandlerHeartbeatManager hb_manager(host_id, conf, logger);
 
   int port = conf.GetInt("HANDLER_PORT");
   try {
