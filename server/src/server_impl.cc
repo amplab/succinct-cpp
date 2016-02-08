@@ -66,6 +66,7 @@ class ServerImpl : virtual public ServerIf {
         static_cast<NPA::NPAEncodingScheme>(conf_.GetInt("NPA_SCHEME"));
 
     logger_.Info("Load mode is set to %d.", mode);
+    logger_.Info("Data path is set to %s.", filename_.c_str());
 
     // Initialize data structures
     succinct_shard_ = new SuccinctShard(id_, filename_, mode, sa_sampling_rate,
