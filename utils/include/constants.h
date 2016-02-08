@@ -39,7 +39,7 @@ class Defaults {
   static const int32_t kNPASamplingRate = 128;
   static const int32_t kSASamplingScheme = 0;
   static const int32_t kISASamplingScheme = 0;
-  static const int32_t kNPASamplingScheme = 1;
+  static const int32_t kNPASamplingScheme = 2;
 
 };
 
