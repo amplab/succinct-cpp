@@ -39,7 +39,7 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
         case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
           npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
                                           s_allocator);
-          return;
+          break;
         case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
           npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
                                            s_allocator);
@@ -110,7 +110,7 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
         case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
           npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
                                           s_allocator);
-          return;
+          break;
         case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
           npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
                                            s_allocator);
