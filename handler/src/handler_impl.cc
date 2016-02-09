@@ -121,7 +121,7 @@ class HandlerImpl : virtual public HandlerIf {
         }
       } else {
         std::set<int64_t> keys;
-        qhandlers_.at(i).recv_Search(keys);
+        qhandlers_.at(i).recv_SearchLocal(keys);
         _return.insert(keys.begin(), keys.end());
       }
     }
