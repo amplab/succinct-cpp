@@ -73,17 +73,6 @@ class SuccinctServerBenchmark : public Benchmark {
     fprintf(stderr, "Measure chksum = %llu\n", sum);
     fprintf(stderr, "Measure complete.\n");
 
-    // Cooldown
-    sum = 0;
-    fprintf(stderr, "Cooling down for %llu queries...\n", kCooldownCount);
-    for (uint64_t i = kWarmupCount + kMeasureCount; i < randoms_.size(); i++) {
-      std::string result;
-      client_->Get(result, randoms_[i]);
-      sum = (sum + result.length()) % kMaxSum;
-    }
-    fprintf(stderr, "Cooldown chksum = %llu\n", sum);
-    fprintf(stderr, "Cooldown complete.\n");
-
     result_stream.close();
 
   }
