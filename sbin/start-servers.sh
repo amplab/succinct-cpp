@@ -48,5 +48,5 @@ for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
     sleep $SUCCINCT_HOST_SLEEP
   fi
-  i=$((i+1))
+  i=$(($i+1))
 done
