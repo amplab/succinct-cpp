@@ -65,6 +65,8 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkSearchLatency("latency_results_search");
   } else if (benchmark_type == "throughput-get") {
     s_bench.BenchmarkGetThroughput(num_threads);
+  } else if (benchmark_type == "throughput-search") {
+    s_bench.BenchmarkSearchThroughput(num_threads);
   } else {
     // Not supported
     assert(0);
