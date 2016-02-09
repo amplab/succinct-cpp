@@ -29,5 +29,6 @@ fi
 limit=$(($1 - 1))
 for i in `seq 0 $limit`; do
 	DATA_FILE="$SUCCINCT_DATA_PATH/data_$i"
+  SHARD_ID=$(($1 * $2 + $i))
 	nohup "$bin/sserver" $i $DATA_FILE >/dev/null 2>"$LOG_PATH/stderr/server_$i.stderr" &
 done
