@@ -30,11 +30,12 @@ namespace succinct {
 
 class ServerImpl : virtual public ServerIf {
  public:
-  ServerImpl(int32_t id, const std::string& filename,
+  ServerImpl(int32_t host_id, int32_t server_id, const std::string& filename,
              ConfigurationManager &conf, Logger &logger,
              ServerHeartbeatManager &hb_manager)
       : filename_(filename),
-        id_(id),
+        host_id_(host_id),
+        server_id_(server_id),
         conf_(conf),
         logger_(logger),
         hb_manager_(hb_manager) {
@@ -65,15 +66,18 @@ class ServerImpl : virtual public ServerIf {
         .GetInt("ISA_SAMPLING_SCHEME"));
     NPA::NPAEncodingScheme npa_scheme =
         static_cast<NPA::NPAEncodingScheme>(conf_.GetInt("NPA_SCHEME"));
+    int32_t shards_per_server = conf_.GetInt("SHARDS_PER_SERVER");
 
     logger_.Info("Load mode is set to %d.", mode);
     logger_.Info("Data path is set to %s.", filename_.c_str());
 
     // Initialize data structures
-    succinct_shard_ = new SuccinctShard(id_, filename_, mode, sa_sampling_rate,
-                                        isa_sampling_rate, npa_sampling_rate,
-                                        sa_sampling_scheme, isa_sampling_scheme,
-                                        npa_scheme);
+    int32_t shard_id = host_id_ * shards_per_server + server_id_;
+    logger_.Info("Creating shard id = %d", shard_id);
+    succinct_shard_ = new SuccinctShard(shard_id, filename_, mode,
+                                        sa_sampling_rate, isa_sampling_rate,
+                                        npa_sampling_rate, sa_sampling_scheme,
+                                        isa_sampling_scheme, npa_scheme);
     if (mode == SuccinctMode::CONSTRUCT_IN_MEMORY
         || mode == SuccinctMode::CONSTRUCT_MEMORY_MAPPED) {
       logger_.Info("Serializing data structures for file %s.",
@@ -99,7 +103,7 @@ class ServerImpl : virtual public ServerIf {
   void Search(std::set<int64_t>& _return, const std::string& query) {
     std::set<int64_t> results;
     succinct_shard_->Search(results, query);
-    for (auto res: results) {
+    for (auto res : results) {
       _return.insert(succinct_shard_->GetId() * Constants::kShardKeysMax + res);
     }
   }
@@ -113,7 +117,8 @@ class ServerImpl : virtual public ServerIf {
   }
 
  private:
-  const int32_t id_;
+  const int32_t host_id_;
+  const int32_t server_id_;
   const std::string filename_;
   ConfigurationManager conf_;
   ServerHeartbeatManager hb_manager_;
@@ -128,20 +133,21 @@ class ServerImpl : virtual public ServerIf {
 }
 
 void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [id] [file]\n", exec);
+  fprintf(stderr, "Usage: %s [host-id] [server-id] [file]\n", exec);
 }
 
 int main(int argc, char **argv) {
-  if (argc != 3) {
+  if (argc != 4) {
     print_usage(argv[0]);
     return -1;
   }
 
-  int32_t id = atoi(argv[1]);
-  std::string filename = std::string(argv[2]);
+  int32_t host_id = atoi(argv[1]);
+  int32_t server_id = atoi(argv[2]);
+  std::string filename = std::string(argv[3]);
   ConfigurationManager conf;
   std::string server_log_output = conf.Get("SERVER_LOG_PATH_PREFIX") + "_"
-      + std::to_string(id) + ".log";
+      + std::to_string(server_id) + ".log";
   FILE *desc = fopen(server_log_output.c_str(), "a");
   if (desc == NULL) {
     fprintf(stderr, "Could not obtain descriptor for %s, logging to stderr.\n",
@@ -152,27 +158,28 @@ int main(int argc, char **argv) {
   Logger logger(static_cast<Logger::Level>(conf.GetInt("SERVER_LOG_LEVEL")),
                 desc);
 
-  succinct::ServerHeartbeatManager hb_manager(id, conf, logger);
+  succinct::ServerHeartbeatManager hb_manager(server_id, conf, logger);
 
   shared_ptr<succinct::ServerImpl> handler(
-      new succinct::ServerImpl(id, filename, conf, logger, hb_manager));
+      new succinct::ServerImpl(host_id, server_id, filename, conf, logger,
+                               hb_manager));
   shared_ptr<TProcessor> processor(new succinct::ServerProcessor(handler));
 
   try {
     shared_ptr<TServerSocket> server_transport(
-        new TServerSocket(conf.GetInt("SERVER_PORT") + id));
+        new TServerSocket(conf.GetInt("SERVER_PORT") + server_id));
     shared_ptr<TBufferedTransportFactory> transport_factory(
         new TBufferedTransportFactory());
     shared_ptr<TProtocolFactory> protocol_factory(new TBinaryProtocolFactory());
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
 
-    logger.Info("Starting server id=%d on port %d...", id,
-                conf.GetInt("SERVER_PORT") + id);
+    logger.Info("Starting server id=%d on port %d...", server_id,
+                conf.GetInt("SERVER_PORT") + server_id);
     server.serve();
   } catch (std::exception& e) {
     logger.Error("Could not create server listening on port %d. Reason: %s",
-                 conf.GetInt("SERVER_PORT") + id, e.what());
+                 conf.GetInt("SERVER_PORT") + server_id, e.what());
   }
   return 0;
 }
