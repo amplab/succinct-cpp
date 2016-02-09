@@ -7,9 +7,7 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-bin="$THRIFT_BIN_DIR"
+bin="$BENCH_BIN_DIR"
 bin="`cd "$bin"; pwd`"
-
-export LD_LIBRARY_PATH=$SUCCINCT_HOME/lib
 
 "$bin/ssbench" "$@" 2>&1 &
