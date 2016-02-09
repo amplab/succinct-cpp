@@ -39,6 +39,10 @@ class SuccinctShard : public SuccinctCore {
   virtual ~SuccinctShard() {
   }
 
+  uint32_t GetId() {
+    return id_;
+  }
+
   uint32_t GetSASamplingRate();
 
   uint32_t GetISASamplngRate();

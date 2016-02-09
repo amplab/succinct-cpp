@@ -16,6 +16,7 @@
 #include "heartbeat_types.h"
 #include "configuration_manager.h"
 #include "logger.h"
+#include "constants.h"
 #include "server_heartbeat_manager.h"
 
 using namespace ::apache::thrift;
@@ -96,7 +97,11 @@ class ServerImpl : virtual public ServerIf {
   }
 
   void Search(std::set<int64_t>& _return, const std::string& query) {
-    succinct_shard_->Search(_return, query);
+    std::set<int64_t> results;
+    succinct_shard_->Search(results, query);
+    for (auto res: results) {
+      _return.insert(succinct_shard_->GetId() * Constants::kShardKeysMax + res);
+    }
   }
 
   void RegexSearch(std::set<int64_t> &_return, const std::string &query) {
@@ -162,8 +167,8 @@ int main(int argc, char **argv) {
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
 
-    logger.Info("Starting server id=%d on port %d...",
-                id, conf.GetInt("SERVER_PORT") + id);
+    logger.Info("Starting server id=%d on port %d...", id,
+                conf.GetInt("SERVER_PORT") + id);
     server.serve();
   } catch (std::exception& e) {
     logger.Error("Could not create server listening on port %d. Reason: %s",
