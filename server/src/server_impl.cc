@@ -162,8 +162,8 @@ int main(int argc, char **argv) {
     TThreadedServer server(processor, server_transport, transport_factory,
                            protocol_factory);
 
-    logger.Info("Starting server on port %d...",
-                conf.GetInt("SERVER_PORT") + id);
+    logger.Info("Starting server id=%d on port %d...",
+                id, conf.GetInt("SERVER_PORT") + id);
     server.serve();
   } catch (std::exception& e) {
     logger.Error("Could not create server listening on port %d. Reason: %s",
