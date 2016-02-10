@@ -42,7 +42,7 @@ NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2 || argc > 24) {
+  if (argc < 2 || argc > 26) {
     print_usage(argv[0]);
     return -1;
   }
@@ -60,8 +60,9 @@ int main(int argc, char **argv) {
   NPA::NPAEncodingScheme npa_scheme =
       NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED;
   std::string querypath = "";
+  int32_t nthreads = 1;
 
-  while ((c = getopt(argc, argv, "m:s:i:x:c:d:n:r:t:l:q:")) != -1) {
+  while ((c = getopt(argc, argv, "m:s:i:x:c:d:n:r:t:l:q:z:")) != -1) {
     switch (c) {
       case 'm': {
         mode = atoi(optarg);
@@ -123,6 +124,10 @@ int main(int argc, char **argv) {
       }
       case 'q': {
         querypath = std::string(optarg);
+        break;
+      }
+      case 'z': {
+        nthreads = atoi(optarg);
         break;
       }
       default: {
@@ -222,14 +227,10 @@ int main(int argc, char **argv) {
     s_bench.BenchmarkCountLatency("latency_results_count");
   } else if (type == "latency-search") {
     s_bench.BenchmarkSearchLatency("latency_results_search");
-  } else if (type == "throughput-access") {
-    s_bench.BenchmarkAccessThroughput(len);
   } else if (type == "throughput-get") {
-    s_bench.BenchmarkGetThroughput();
-  } else if (type == "throughput-count") {
-    s_bench.BenchmarkCountThrougput();
+    s_bench.BenchmarkGetThroughput(nthreads);
   } else if (type == "throughput-search") {
-    s_bench.BenchmarkSearchThroughput();
+    s_bench.BenchmarkSearchThroughput(nthreads);
   } else if (type == "reconstruct-sa") {
     if (scheme != SamplingScheme::LAYERED_SAMPLE_BY_INDEX
         && scheme != SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX) {

@@ -194,15 +194,20 @@ class ShardBenchmark : public Benchmark {
     result_stream.close();
   }
 
-  void BenchmarkGetThroughput() {
-    double thput = 0;
+  static void *GetThroughput(void *ptr) {
+    ThreadData data = *((ThreadData*) ptr);
+    std::cout << "GET\n";
+
+    SuccinctShard shard = *(data.shard);
     std::string value;
+
+    double thput = 0;
     try {
       // Warmup phase
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
+        shard.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -210,18 +215,17 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
+        shard.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
-      // Cooldown phase
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
+        shard.Get(value, data.randoms[i % data.randoms.size()]);
         i++;
       }
 
@@ -232,20 +236,65 @@ class ShardBenchmark : public Benchmark {
     printf("Get throughput: %lf\n", thput);
 
     std::ofstream ofs;
-    ofs.open("throughput_results_get", std::ofstream::out | std::ofstream::app);
+    ofs.open("thput", std::ofstream::out | std::ofstream::app);
     ofs << thput << "\n";
     ofs.close();
+
+    return 0;
   }
 
-  void BenchmarkAccessThroughput(int32_t fetch_length) {
+  int BenchmarkGetThroughput(uint32_t num_threads) {
+    pthread_t thread[num_threads];
+    std::vector<ThreadData> data;
+    fprintf(stderr, "Starting all threads...\n");
+    for (uint32_t i = 0; i < num_threads; i++) {
+      try {
+        ThreadData th_data;
+        th_data.shard = shard_;
+        th_data.randoms = randoms_;
+        data.push_back(th_data);
+      } catch (std::exception& e) {
+        fprintf(stderr, "Could not connect to handler on localhost : %s\n",
+                e.what());
+        return -1;
+      }
+    }
+    fprintf(stderr, "Started %zu clients.\n", data.size());
+
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      int result = 0;
+      result = pthread_create(&thread[current_t], NULL,
+                              ShardBenchmark::GetThroughput,
+                              static_cast<void*>(&(data[current_t])));
+      if (result != 0) {
+        fprintf(stderr, "Error creating thread %d; return code = %d\n",
+                current_t, result);
+      }
+    }
+
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      pthread_join(thread[current_t], NULL);
+    }
+    fprintf(stderr, "All threads completed.\n");
+
+    data.clear();
+    return 0;
+  }
+
+  static void *SearchThroughput(void *ptr) {
+    ThreadData data = *((ThreadData*) ptr);
+    std::cout << "SEARCH\n";
+
+    SuccinctShard shard = *(data.shard);
+
     double thput = 0;
-    std::string value;
     try {
       // Warmup phase
       long i = 0;
       TimeStamp warmup_start = GetTimestamp();
       while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        std::set<int64_t> res;
+        shard.Search(res, data.queries[i % data.queries.size()]);
         i++;
       }
 
@@ -253,18 +302,19 @@ class ShardBenchmark : public Benchmark {
       i = 0;
       TimeStamp start = GetTimestamp();
       while (GetTimestamp() - start < kMeasureTime) {
-        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        std::set<int64_t> res;
+        shard.Search(res, data.queries[i % data.queries.size()]);
         i++;
       }
       TimeStamp end = GetTimestamp();
       double totsecs = (double) (end - start) / (1000.0 * 1000.0);
       thput = ((double) i / totsecs);
 
-      // Cooldown phase
       i = 0;
       TimeStamp cooldown_start = GetTimestamp();
       while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->Access(value, randoms_[i % randoms_.size()], 0, fetch_length);
+        std::set<int64_t> res;
+        shard.Search(res, data.queries[i % data.queries.size()]);
         i++;
       }
 
@@ -272,103 +322,62 @@ class ShardBenchmark : public Benchmark {
       fprintf(stderr, "Throughput test ends...\n");
     }
 
-    printf("Access throughput: %lf\n", thput);
+    printf("Search throughput: %lf\n", thput);
 
     std::ofstream ofs;
-    ofs.open("throughput_results_access",
-             std::ofstream::out | std::ofstream::app);
+    ofs.open("thput", std::ofstream::out | std::ofstream::app);
     ofs << thput << "\n";
     ofs.close();
+
+    return 0;
   }
 
-  void BenchmarkCountThrougput() {
-    double thput = 0;
-    int64_t value;
-    try {
-      // Warmup phase
-      long i = 0;
-      TimeStamp warmup_start = GetTimestamp();
-      while (GetTimestamp() - warmup_start < kWarmupTime) {
-        value = shard_->Count(queries_[i % randoms_.size()]);
-        i++;
+  int BenchmarkSearchThroughput(uint32_t num_threads) {
+    pthread_t thread[num_threads];
+    std::vector<ThreadData> data;
+    fprintf(stderr, "Starting all threads...\n");
+    for (uint32_t i = 0; i < num_threads; i++) {
+      try {
+        ThreadData th_data;
+        th_data.shard = shard_;
+        th_data.queries = queries_;
+        data.push_back(th_data);
+      } catch (std::exception& e) {
+        fprintf(stderr, "Could not connect to handler on localhost : %s\n",
+                e.what());
+        return -1;
       }
+    }
+    fprintf(stderr, "Started %zu clients.\n", data.size());
 
-      // Measure phase
-      i = 0;
-      TimeStamp start = GetTimestamp();
-      while (GetTimestamp() - start < kMeasureTime) {
-        value = shard_->Count(queries_[i % randoms_.size()]);
-        i++;
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      int result = 0;
+      result = pthread_create(&thread[current_t], NULL,
+                              ShardBenchmark::SearchThroughput,
+                              static_cast<void*>(&(data[current_t])));
+      if (result != 0) {
+        fprintf(stderr, "Error creating thread %d; return code = %d\n",
+                current_t, result);
       }
-      TimeStamp end = GetTimestamp();
-      double totsecs = (double) (end - start) / (1000.0 * 1000.0);
-      thput = ((double) i / totsecs);
-
-      // Cooldown phase
-      i = 0;
-      TimeStamp cooldown_start = GetTimestamp();
-      while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        value = shard_->Count(queries_[i % randoms_.size()]);
-        i++;
-      }
-
-    } catch (std::exception &e) {
-      fprintf(stderr, "Throughput test ends...\n");
     }
 
-    printf("Count throughput: %lf\n", thput);
-
-    std::ofstream ofs;
-    ofs.open("throughput_results_count",
-             std::ofstream::out | std::ofstream::app);
-    ofs << thput << "\n";
-    ofs.close();
-  }
-
-  void BenchmarkSearchThroughput() {
-    double thput = 0;
-    std::string value;
-    try {
-      // Warmup phase
-      long i = 0;
-      TimeStamp warmup_start = GetTimestamp();
-      while (GetTimestamp() - warmup_start < kWarmupTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
-        i++;
-      }
-
-      // Measure phase
-      i = 0;
-      TimeStamp start = GetTimestamp();
-      while (GetTimestamp() - start < kMeasureTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
-        i++;
-      }
-      TimeStamp end = GetTimestamp();
-      double totsecs = (double) (end - start) / (1000.0 * 1000.0);
-      thput = ((double) i / totsecs);
-
-      // Cooldown phase
-      i = 0;
-      TimeStamp cooldown_start = GetTimestamp();
-      while (GetTimestamp() - cooldown_start < kCooldownTime) {
-        shard_->Get(value, randoms_[i % randoms_.size()]);
-        i++;
-      }
-
-    } catch (std::exception &e) {
-      fprintf(stderr, "Throughput test ends...\n");
+    for (uint32_t current_t = 0; current_t < num_threads; current_t++) {
+      pthread_join(thread[current_t], NULL);
     }
+    fprintf(stderr, "All threads completed.\n");
 
-    printf("Get throughput: %lf\n", thput);
-
-    std::ofstream ofs;
-    ofs.open("throughput_results_get", std::ofstream::out | std::ofstream::app);
-    ofs << thput << "\n";
-    ofs.close();
+    data.clear();
+    return 0;
   }
 
  private:
+  typedef struct {
+    SuccinctShard *shard;
+    std::vector<int64_t> randoms;
+    std::vector<std::string> queries;
+    int32_t fetch_length;
+  } ThreadData;
+
   void GenerateRandoms() {
     uint64_t q_cnt = kWarmupCount + kCooldownCount + kMeasureCount;
     for (uint64_t i = 0; i < q_cnt; i++) {
@@ -395,7 +404,7 @@ class ShardBenchmark : public Benchmark {
     inputfile.close();
   }
 
-  std::vector<uint64_t> randoms_;
+  std::vector<int64_t> randoms_;
   std::vector<std::string> queries_;
   SuccinctShard *shard_;
 };
