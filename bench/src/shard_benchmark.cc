@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   int c;
   std::vector<uint32_t> deleted_layers;
   std::vector<uint32_t> created_layers;
-  uint32_t mode = 0;
+  uint32_t mode = 1;
   uint32_t sa_sampling_rate = 32;
   uint32_t isa_sampling_rate = 32;
   uint32_t npa_sampling_rate = 128;
