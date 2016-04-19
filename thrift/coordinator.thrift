@@ -2,9 +2,9 @@ include "heartbeat.thrift"
 
 namespace cpp succinct
 
-service Master {
+service Coordinator {
 	string GetHostname(),
 
-  // I-Am-Alive messages from handler
+  // I-Am-Alive messages from server
   void Ping(1:heartbeat.HeartBeat hb),
 }
