@@ -11,6 +11,6 @@ service Server {
 	string Get(1:i64 key),
 	string GetLocal(1:i32 qserver_id, 2:i64 key),
 		
-	list<i64> Search(1:string query),
-	list<i64> SearchLocal(1:string query),
+	set<i64> Search(1:string query),
+	set<i64> SearchLocal(1:string query),
 }
