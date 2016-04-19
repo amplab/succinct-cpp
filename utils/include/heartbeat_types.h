@@ -21,6 +21,8 @@
 
 class HeartBeat;
 
+class HeartBeatResponse;
+
 typedef struct _HeartBeat__isset {
   _HeartBeat__isset() : timestamp(false), sender_id(false) {}
   bool timestamp :1;
@@ -68,6 +70,52 @@ class HeartBeat {
 void swap(HeartBeat &a, HeartBeat &b);
 
 inline std::ostream& operator<<(std::ostream& out, const HeartBeat& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _HeartBeatResponse__isset {
+  _HeartBeatResponse__isset() : health(false) {}
+  bool health :1;
+} _HeartBeatResponse__isset;
+
+class HeartBeatResponse {
+ public:
+
+  HeartBeatResponse(const HeartBeatResponse&);
+  HeartBeatResponse& operator=(const HeartBeatResponse&);
+  HeartBeatResponse() {
+  }
+
+  virtual ~HeartBeatResponse() throw();
+  std::vector<double>  health;
+
+  _HeartBeatResponse__isset __isset;
+
+  void __set_health(const std::vector<double> & val);
+
+  bool operator == (const HeartBeatResponse & rhs) const
+  {
+    if (!(health == rhs.health))
+      return false;
+    return true;
+  }
+  bool operator != (const HeartBeatResponse &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const HeartBeatResponse & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(HeartBeatResponse &a, HeartBeatResponse &b);
+
+inline std::ostream& operator<<(std::ostream& out, const HeartBeatResponse& obj)
 {
   obj.printTo(out);
   return out;

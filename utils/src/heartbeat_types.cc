@@ -120,3 +120,109 @@ void HeartBeat::printTo(std::ostream& out) const {
 }
 
 
+HeartBeatResponse::~HeartBeatResponse() throw() {
+}
+
+
+void HeartBeatResponse::__set_health(const std::vector<double> & val) {
+  this->health = val;
+}
+
+uint32_t HeartBeatResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->health.clear();
+            uint32_t _size2;
+            ::apache::thrift::protocol::TType _etype5;
+            xfer += iprot->readListBegin(_etype5, _size2);
+            this->health.resize(_size2);
+            uint32_t _i6;
+            for (_i6 = 0; _i6 < _size2; ++_i6)
+            {
+              xfer += iprot->readDouble(this->health[_i6]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.health = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t HeartBeatResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("HeartBeatResponse");
+
+  xfer += oprot->writeFieldBegin("health", ::apache::thrift::protocol::T_LIST, 1);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_DOUBLE, static_cast<uint32_t>(this->health.size()));
+    std::vector<double> ::const_iterator _iter7;
+    for (_iter7 = this->health.begin(); _iter7 != this->health.end(); ++_iter7)
+    {
+      xfer += oprot->writeDouble((*_iter7));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(HeartBeatResponse &a, HeartBeatResponse &b) {
+  using ::std::swap;
+  swap(a.health, b.health);
+  swap(a.__isset, b.__isset);
+}
+
+HeartBeatResponse::HeartBeatResponse(const HeartBeatResponse& other8) {
+  health = other8.health;
+  __isset = other8.__isset;
+}
+HeartBeatResponse& HeartBeatResponse::operator=(const HeartBeatResponse& other9) {
+  health = other9.health;
+  __isset = other9.__isset;
+  return *this;
+}
+void HeartBeatResponse::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "HeartBeatResponse(";
+  out << "health=" << to_string(health);
+  out << ")";
+}
+
+
