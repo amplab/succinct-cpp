@@ -4,16 +4,16 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "Master.h"
+#include "Coordinator.h"
 
 namespace succinct {
 
 
-Master_GetHostname_args::~Master_GetHostname_args() throw() {
+Coordinator_GetHostname_args::~Coordinator_GetHostname_args() throw() {
 }
 
 
-uint32_t Master_GetHostname_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_GetHostname_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -41,10 +41,10 @@ uint32_t Master_GetHostname_args::read(::apache::thrift::protocol::TProtocol* ip
   return xfer;
 }
 
-uint32_t Master_GetHostname_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_GetHostname_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Master_GetHostname_args");
+  xfer += oprot->writeStructBegin("Coordinator_GetHostname_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -52,14 +52,14 @@ uint32_t Master_GetHostname_args::write(::apache::thrift::protocol::TProtocol* o
 }
 
 
-Master_GetHostname_pargs::~Master_GetHostname_pargs() throw() {
+Coordinator_GetHostname_pargs::~Coordinator_GetHostname_pargs() throw() {
 }
 
 
-uint32_t Master_GetHostname_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_GetHostname_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Master_GetHostname_pargs");
+  xfer += oprot->writeStructBegin("Coordinator_GetHostname_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -67,11 +67,11 @@ uint32_t Master_GetHostname_pargs::write(::apache::thrift::protocol::TProtocol* 
 }
 
 
-Master_GetHostname_result::~Master_GetHostname_result() throw() {
+Coordinator_GetHostname_result::~Coordinator_GetHostname_result() throw() {
 }
 
 
-uint32_t Master_GetHostname_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_GetHostname_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -112,11 +112,11 @@ uint32_t Master_GetHostname_result::read(::apache::thrift::protocol::TProtocol* 
   return xfer;
 }
 
-uint32_t Master_GetHostname_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_GetHostname_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("Master_GetHostname_result");
+  xfer += oprot->writeStructBegin("Coordinator_GetHostname_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
@@ -129,11 +129,11 @@ uint32_t Master_GetHostname_result::write(::apache::thrift::protocol::TProtocol*
 }
 
 
-Master_GetHostname_presult::~Master_GetHostname_presult() throw() {
+Coordinator_GetHostname_presult::~Coordinator_GetHostname_presult() throw() {
 }
 
 
-uint32_t Master_GetHostname_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_GetHostname_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -175,11 +175,11 @@ uint32_t Master_GetHostname_presult::read(::apache::thrift::protocol::TProtocol*
 }
 
 
-Master_Ping_args::~Master_Ping_args() throw() {
+Coordinator_Ping_args::~Coordinator_Ping_args() throw() {
 }
 
 
-uint32_t Master_Ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_Ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -220,10 +220,10 @@ uint32_t Master_Ping_args::read(::apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t Master_Ping_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_Ping_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Master_Ping_args");
+  xfer += oprot->writeStructBegin("Coordinator_Ping_args");
 
   xfer += oprot->writeFieldBegin("hb", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->hb.write(oprot);
@@ -235,14 +235,14 @@ uint32_t Master_Ping_args::write(::apache::thrift::protocol::TProtocol* oprot) c
 }
 
 
-Master_Ping_pargs::~Master_Ping_pargs() throw() {
+Coordinator_Ping_pargs::~Coordinator_Ping_pargs() throw() {
 }
 
 
-uint32_t Master_Ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_Ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
-  xfer += oprot->writeStructBegin("Master_Ping_pargs");
+  xfer += oprot->writeStructBegin("Coordinator_Ping_pargs");
 
   xfer += oprot->writeFieldBegin("hb", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->hb)).write(oprot);
@@ -254,11 +254,11 @@ uint32_t Master_Ping_pargs::write(::apache::thrift::protocol::TProtocol* oprot) 
 }
 
 
-Master_Ping_result::~Master_Ping_result() throw() {
+Coordinator_Ping_result::~Coordinator_Ping_result() throw() {
 }
 
 
-uint32_t Master_Ping_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_Ping_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -286,11 +286,11 @@ uint32_t Master_Ping_result::read(::apache::thrift::protocol::TProtocol* iprot) 
   return xfer;
 }
 
-uint32_t Master_Ping_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Coordinator_Ping_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("Master_Ping_result");
+  xfer += oprot->writeStructBegin("Coordinator_Ping_result");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -298,11 +298,11 @@ uint32_t Master_Ping_result::write(::apache::thrift::protocol::TProtocol* oprot)
 }
 
 
-Master_Ping_presult::~Master_Ping_presult() throw() {
+Coordinator_Ping_presult::~Coordinator_Ping_presult() throw() {
 }
 
 
-uint32_t Master_Ping_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Coordinator_Ping_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
   uint32_t xfer = 0;
@@ -330,18 +330,18 @@ uint32_t Master_Ping_presult::read(::apache::thrift::protocol::TProtocol* iprot)
   return xfer;
 }
 
-void MasterClient::GetHostname(std::string& _return)
+void CoordinatorClient::GetHostname(std::string& _return)
 {
   send_GetHostname();
   recv_GetHostname(_return);
 }
 
-void MasterClient::send_GetHostname()
+void CoordinatorClient::send_GetHostname()
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Master_GetHostname_pargs args;
+  Coordinator_GetHostname_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -349,7 +349,7 @@ void MasterClient::send_GetHostname()
   oprot_->getTransport()->flush();
 }
 
-void MasterClient::recv_GetHostname(std::string& _return)
+void CoordinatorClient::recv_GetHostname(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -374,7 +374,7 @@ void MasterClient::recv_GetHostname(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Master_GetHostname_presult result;
+  Coordinator_GetHostname_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -387,18 +387,18 @@ void MasterClient::recv_GetHostname(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetHostname failed: unknown result");
 }
 
-void MasterClient::Ping(const  ::HeartBeat& hb)
+void CoordinatorClient::Ping(const  ::HeartBeat& hb)
 {
   send_Ping(hb);
   recv_Ping();
 }
 
-void MasterClient::send_Ping(const  ::HeartBeat& hb)
+void CoordinatorClient::send_Ping(const  ::HeartBeat& hb)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("Ping", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Master_Ping_pargs args;
+  Coordinator_Ping_pargs args;
   args.hb = &hb;
   args.write(oprot_);
 
@@ -407,7 +407,7 @@ void MasterClient::send_Ping(const  ::HeartBeat& hb)
   oprot_->getTransport()->flush();
 }
 
-void MasterClient::recv_Ping()
+void CoordinatorClient::recv_Ping()
 {
 
   int32_t rseqid = 0;
@@ -432,7 +432,7 @@ void MasterClient::recv_Ping()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Master_Ping_presult result;
+  Coordinator_Ping_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -440,7 +440,7 @@ void MasterClient::recv_Ping()
   return;
 }
 
-bool MasterProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
+bool CoordinatorProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
   ProcessMap::iterator pfn;
   pfn = processMap_.find(fname);
   if (pfn == processMap_.end()) {
@@ -459,34 +459,34 @@ bool MasterProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot,
   return true;
 }
 
-void MasterProcessor::process_GetHostname(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void CoordinatorProcessor::process_GetHostname(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Master.GetHostname", callContext);
+    ctx = this->eventHandler_->getContext("Coordinator.GetHostname", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Master.GetHostname");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Coordinator.GetHostname");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Master.GetHostname");
+    this->eventHandler_->preRead(ctx, "Coordinator.GetHostname");
   }
 
-  Master_GetHostname_args args;
+  Coordinator_GetHostname_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Master.GetHostname", bytes);
+    this->eventHandler_->postRead(ctx, "Coordinator.GetHostname", bytes);
   }
 
-  Master_GetHostname_result result;
+  Coordinator_GetHostname_result result;
   try {
     iface_->GetHostname(result.success);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Master.GetHostname");
+      this->eventHandler_->handlerError(ctx, "Coordinator.GetHostname");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -499,7 +499,7 @@ void MasterProcessor::process_GetHostname(int32_t seqid, ::apache::thrift::proto
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Master.GetHostname");
+    this->eventHandler_->preWrite(ctx, "Coordinator.GetHostname");
   }
 
   oprot->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -509,37 +509,37 @@ void MasterProcessor::process_GetHostname(int32_t seqid, ::apache::thrift::proto
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Master.GetHostname", bytes);
+    this->eventHandler_->postWrite(ctx, "Coordinator.GetHostname", bytes);
   }
 }
 
-void MasterProcessor::process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void CoordinatorProcessor::process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Master.Ping", callContext);
+    ctx = this->eventHandler_->getContext("Coordinator.Ping", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Master.Ping");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Coordinator.Ping");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Master.Ping");
+    this->eventHandler_->preRead(ctx, "Coordinator.Ping");
   }
 
-  Master_Ping_args args;
+  Coordinator_Ping_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Master.Ping", bytes);
+    this->eventHandler_->postRead(ctx, "Coordinator.Ping", bytes);
   }
 
-  Master_Ping_result result;
+  Coordinator_Ping_result result;
   try {
     iface_->Ping(args.hb);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Master.Ping");
+      this->eventHandler_->handlerError(ctx, "Coordinator.Ping");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
@@ -552,7 +552,7 @@ void MasterProcessor::process_Ping(int32_t seqid, ::apache::thrift::protocol::TP
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Master.Ping");
+    this->eventHandler_->preWrite(ctx, "Coordinator.Ping");
   }
 
   oprot->writeMessageBegin("Ping", ::apache::thrift::protocol::T_REPLY, seqid);
@@ -562,30 +562,30 @@ void MasterProcessor::process_Ping(int32_t seqid, ::apache::thrift::protocol::TP
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Master.Ping", bytes);
+    this->eventHandler_->postWrite(ctx, "Coordinator.Ping", bytes);
   }
 }
 
-::boost::shared_ptr< ::apache::thrift::TProcessor > MasterProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
-  ::apache::thrift::ReleaseHandler< MasterIfFactory > cleanup(handlerFactory_);
-  ::boost::shared_ptr< MasterIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
-  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new MasterProcessor(handler));
+::boost::shared_ptr< ::apache::thrift::TProcessor > CoordinatorProcessorFactory::getProcessor(const ::apache::thrift::TConnectionInfo& connInfo) {
+  ::apache::thrift::ReleaseHandler< CoordinatorIfFactory > cleanup(handlerFactory_);
+  ::boost::shared_ptr< CoordinatorIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
+  ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new CoordinatorProcessor(handler));
   return processor;
 }
 
-void MasterConcurrentClient::GetHostname(std::string& _return)
+void CoordinatorConcurrentClient::GetHostname(std::string& _return)
 {
   int32_t seqid = send_GetHostname();
   recv_GetHostname(_return, seqid);
 }
 
-int32_t MasterConcurrentClient::send_GetHostname()
+int32_t CoordinatorConcurrentClient::send_GetHostname()
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
   oprot_->writeMessageBegin("GetHostname", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Master_GetHostname_pargs args;
+  Coordinator_GetHostname_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -596,7 +596,7 @@ int32_t MasterConcurrentClient::send_GetHostname()
   return cseqid;
 }
 
-void MasterConcurrentClient::recv_GetHostname(std::string& _return, const int32_t seqid)
+void CoordinatorConcurrentClient::recv_GetHostname(std::string& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -634,7 +634,7 @@ void MasterConcurrentClient::recv_GetHostname(std::string& _return, const int32_
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
-      Master_GetHostname_presult result;
+      Coordinator_GetHostname_presult result;
       result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
@@ -656,19 +656,19 @@ void MasterConcurrentClient::recv_GetHostname(std::string& _return, const int32_
   } // end while(true)
 }
 
-void MasterConcurrentClient::Ping(const  ::HeartBeat& hb)
+void CoordinatorConcurrentClient::Ping(const  ::HeartBeat& hb)
 {
   int32_t seqid = send_Ping(hb);
   recv_Ping(seqid);
 }
 
-int32_t MasterConcurrentClient::send_Ping(const  ::HeartBeat& hb)
+int32_t CoordinatorConcurrentClient::send_Ping(const  ::HeartBeat& hb)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
   oprot_->writeMessageBegin("Ping", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Master_Ping_pargs args;
+  Coordinator_Ping_pargs args;
   args.hb = &hb;
   args.write(oprot_);
 
@@ -680,7 +680,7 @@ int32_t MasterConcurrentClient::send_Ping(const  ::HeartBeat& hb)
   return cseqid;
 }
 
-void MasterConcurrentClient::recv_Ping(const int32_t seqid)
+void CoordinatorConcurrentClient::recv_Ping(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -718,7 +718,7 @@ void MasterConcurrentClient::recv_Ping(const int32_t seqid)
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
-      Master_Ping_presult result;
+      Coordinator_Ping_presult result;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();

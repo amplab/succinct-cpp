@@ -4,12 +4,12 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef Master_H
-#define Master_H
+#ifndef Coordinator_H
+#define Coordinator_H
 
 #include <thrift/TDispatchProcessor.h>
 #include <thrift/async/TConcurrentClientSyncInfo.h>
-#include "master_types.h"
+#include "coordinator_types.h"
 
 namespace succinct {
 
@@ -18,40 +18,40 @@ namespace succinct {
   #pragma warning (disable : 4250 ) //inheriting methods via dominance 
 #endif
 
-class MasterIf {
+class CoordinatorIf {
  public:
-  virtual ~MasterIf() {}
+  virtual ~CoordinatorIf() {}
   virtual void GetHostname(std::string& _return) = 0;
   virtual void Ping(const  ::HeartBeat& hb) = 0;
 };
 
-class MasterIfFactory {
+class CoordinatorIfFactory {
  public:
-  typedef MasterIf Handler;
+  typedef CoordinatorIf Handler;
 
-  virtual ~MasterIfFactory() {}
+  virtual ~CoordinatorIfFactory() {}
 
-  virtual MasterIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) = 0;
-  virtual void releaseHandler(MasterIf* /* handler */) = 0;
+  virtual CoordinatorIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) = 0;
+  virtual void releaseHandler(CoordinatorIf* /* handler */) = 0;
 };
 
-class MasterIfSingletonFactory : virtual public MasterIfFactory {
+class CoordinatorIfSingletonFactory : virtual public CoordinatorIfFactory {
  public:
-  MasterIfSingletonFactory(const boost::shared_ptr<MasterIf>& iface) : iface_(iface) {}
-  virtual ~MasterIfSingletonFactory() {}
+  CoordinatorIfSingletonFactory(const boost::shared_ptr<CoordinatorIf>& iface) : iface_(iface) {}
+  virtual ~CoordinatorIfSingletonFactory() {}
 
-  virtual MasterIf* getHandler(const ::apache::thrift::TConnectionInfo&) {
+  virtual CoordinatorIf* getHandler(const ::apache::thrift::TConnectionInfo&) {
     return iface_.get();
   }
-  virtual void releaseHandler(MasterIf* /* handler */) {}
+  virtual void releaseHandler(CoordinatorIf* /* handler */) {}
 
  protected:
-  boost::shared_ptr<MasterIf> iface_;
+  boost::shared_ptr<CoordinatorIf> iface_;
 };
 
-class MasterNull : virtual public MasterIf {
+class CoordinatorNull : virtual public CoordinatorIf {
  public:
-  virtual ~MasterNull() {}
+  virtual ~CoordinatorNull() {}
   void GetHostname(std::string& /* _return */) {
     return;
   }
@@ -61,25 +61,25 @@ class MasterNull : virtual public MasterIf {
 };
 
 
-class Master_GetHostname_args {
+class Coordinator_GetHostname_args {
  public:
 
-  Master_GetHostname_args(const Master_GetHostname_args&);
-  Master_GetHostname_args& operator=(const Master_GetHostname_args&);
-  Master_GetHostname_args() {
+  Coordinator_GetHostname_args(const Coordinator_GetHostname_args&);
+  Coordinator_GetHostname_args& operator=(const Coordinator_GetHostname_args&);
+  Coordinator_GetHostname_args() {
   }
 
-  virtual ~Master_GetHostname_args() throw();
+  virtual ~Coordinator_GetHostname_args() throw();
 
-  bool operator == (const Master_GetHostname_args & /* rhs */) const
+  bool operator == (const Coordinator_GetHostname_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const Master_GetHostname_args &rhs) const {
+  bool operator != (const Coordinator_GetHostname_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Master_GetHostname_args & ) const;
+  bool operator < (const Coordinator_GetHostname_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -87,102 +87,102 @@ class Master_GetHostname_args {
 };
 
 
-class Master_GetHostname_pargs {
+class Coordinator_GetHostname_pargs {
  public:
 
 
-  virtual ~Master_GetHostname_pargs() throw();
+  virtual ~Coordinator_GetHostname_pargs() throw();
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Master_GetHostname_result__isset {
-  _Master_GetHostname_result__isset() : success(false) {}
+typedef struct _Coordinator_GetHostname_result__isset {
+  _Coordinator_GetHostname_result__isset() : success(false) {}
   bool success :1;
-} _Master_GetHostname_result__isset;
+} _Coordinator_GetHostname_result__isset;
 
-class Master_GetHostname_result {
+class Coordinator_GetHostname_result {
  public:
 
-  Master_GetHostname_result(const Master_GetHostname_result&);
-  Master_GetHostname_result& operator=(const Master_GetHostname_result&);
-  Master_GetHostname_result() : success() {
+  Coordinator_GetHostname_result(const Coordinator_GetHostname_result&);
+  Coordinator_GetHostname_result& operator=(const Coordinator_GetHostname_result&);
+  Coordinator_GetHostname_result() : success() {
   }
 
-  virtual ~Master_GetHostname_result() throw();
+  virtual ~Coordinator_GetHostname_result() throw();
   std::string success;
 
-  _Master_GetHostname_result__isset __isset;
+  _Coordinator_GetHostname_result__isset __isset;
 
   void __set_success(const std::string& val);
 
-  bool operator == (const Master_GetHostname_result & rhs) const
+  bool operator == (const Coordinator_GetHostname_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const Master_GetHostname_result &rhs) const {
+  bool operator != (const Coordinator_GetHostname_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Master_GetHostname_result & ) const;
+  bool operator < (const Coordinator_GetHostname_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Master_GetHostname_presult__isset {
-  _Master_GetHostname_presult__isset() : success(false) {}
+typedef struct _Coordinator_GetHostname_presult__isset {
+  _Coordinator_GetHostname_presult__isset() : success(false) {}
   bool success :1;
-} _Master_GetHostname_presult__isset;
+} _Coordinator_GetHostname_presult__isset;
 
-class Master_GetHostname_presult {
+class Coordinator_GetHostname_presult {
  public:
 
 
-  virtual ~Master_GetHostname_presult() throw();
+  virtual ~Coordinator_GetHostname_presult() throw();
   std::string* success;
 
-  _Master_GetHostname_presult__isset __isset;
+  _Coordinator_GetHostname_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-typedef struct _Master_Ping_args__isset {
-  _Master_Ping_args__isset() : hb(false) {}
+typedef struct _Coordinator_Ping_args__isset {
+  _Coordinator_Ping_args__isset() : hb(false) {}
   bool hb :1;
-} _Master_Ping_args__isset;
+} _Coordinator_Ping_args__isset;
 
-class Master_Ping_args {
+class Coordinator_Ping_args {
  public:
 
-  Master_Ping_args(const Master_Ping_args&);
-  Master_Ping_args& operator=(const Master_Ping_args&);
-  Master_Ping_args() {
+  Coordinator_Ping_args(const Coordinator_Ping_args&);
+  Coordinator_Ping_args& operator=(const Coordinator_Ping_args&);
+  Coordinator_Ping_args() {
   }
 
-  virtual ~Master_Ping_args() throw();
+  virtual ~Coordinator_Ping_args() throw();
    ::HeartBeat hb;
 
-  _Master_Ping_args__isset __isset;
+  _Coordinator_Ping_args__isset __isset;
 
   void __set_hb(const  ::HeartBeat& val);
 
-  bool operator == (const Master_Ping_args & rhs) const
+  bool operator == (const Coordinator_Ping_args & rhs) const
   {
     if (!(hb == rhs.hb))
       return false;
     return true;
   }
-  bool operator != (const Master_Ping_args &rhs) const {
+  bool operator != (const Coordinator_Ping_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Master_Ping_args & ) const;
+  bool operator < (const Coordinator_Ping_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -190,11 +190,11 @@ class Master_Ping_args {
 };
 
 
-class Master_Ping_pargs {
+class Coordinator_Ping_pargs {
  public:
 
 
-  virtual ~Master_Ping_pargs() throw();
+  virtual ~Coordinator_Ping_pargs() throw();
   const  ::HeartBeat* hb;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -202,25 +202,25 @@ class Master_Ping_pargs {
 };
 
 
-class Master_Ping_result {
+class Coordinator_Ping_result {
  public:
 
-  Master_Ping_result(const Master_Ping_result&);
-  Master_Ping_result& operator=(const Master_Ping_result&);
-  Master_Ping_result() {
+  Coordinator_Ping_result(const Coordinator_Ping_result&);
+  Coordinator_Ping_result& operator=(const Coordinator_Ping_result&);
+  Coordinator_Ping_result() {
   }
 
-  virtual ~Master_Ping_result() throw();
+  virtual ~Coordinator_Ping_result() throw();
 
-  bool operator == (const Master_Ping_result & /* rhs */) const
+  bool operator == (const Coordinator_Ping_result & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const Master_Ping_result &rhs) const {
+  bool operator != (const Coordinator_Ping_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Master_Ping_result & ) const;
+  bool operator < (const Coordinator_Ping_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -228,22 +228,22 @@ class Master_Ping_result {
 };
 
 
-class Master_Ping_presult {
+class Coordinator_Ping_presult {
  public:
 
 
-  virtual ~Master_Ping_presult() throw();
+  virtual ~Coordinator_Ping_presult() throw();
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
-class MasterClient : virtual public MasterIf {
+class CoordinatorClient : virtual public CoordinatorIf {
  public:
-  MasterClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
+  CoordinatorClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
     setProtocol(prot);
   }
-  MasterClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
+  CoordinatorClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
     setProtocol(iprot,oprot);
   }
  private:
@@ -276,46 +276,46 @@ class MasterClient : virtual public MasterIf {
   ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class MasterProcessor : public ::apache::thrift::TDispatchProcessor {
+class CoordinatorProcessor : public ::apache::thrift::TDispatchProcessor {
  protected:
-  boost::shared_ptr<MasterIf> iface_;
+  boost::shared_ptr<CoordinatorIf> iface_;
   virtual bool dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext);
  private:
-  typedef  void (MasterProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
+  typedef  void (CoordinatorProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_GetHostname(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
-  MasterProcessor(boost::shared_ptr<MasterIf> iface) :
+  CoordinatorProcessor(boost::shared_ptr<CoordinatorIf> iface) :
     iface_(iface) {
-    processMap_["GetHostname"] = &MasterProcessor::process_GetHostname;
-    processMap_["Ping"] = &MasterProcessor::process_Ping;
+    processMap_["GetHostname"] = &CoordinatorProcessor::process_GetHostname;
+    processMap_["Ping"] = &CoordinatorProcessor::process_Ping;
   }
 
-  virtual ~MasterProcessor() {}
+  virtual ~CoordinatorProcessor() {}
 };
 
-class MasterProcessorFactory : public ::apache::thrift::TProcessorFactory {
+class CoordinatorProcessorFactory : public ::apache::thrift::TProcessorFactory {
  public:
-  MasterProcessorFactory(const ::boost::shared_ptr< MasterIfFactory >& handlerFactory) :
+  CoordinatorProcessorFactory(const ::boost::shared_ptr< CoordinatorIfFactory >& handlerFactory) :
       handlerFactory_(handlerFactory) {}
 
   ::boost::shared_ptr< ::apache::thrift::TProcessor > getProcessor(const ::apache::thrift::TConnectionInfo& connInfo);
 
  protected:
-  ::boost::shared_ptr< MasterIfFactory > handlerFactory_;
+  ::boost::shared_ptr< CoordinatorIfFactory > handlerFactory_;
 };
 
-class MasterMultiface : virtual public MasterIf {
+class CoordinatorMultiface : virtual public CoordinatorIf {
  public:
-  MasterMultiface(std::vector<boost::shared_ptr<MasterIf> >& ifaces) : ifaces_(ifaces) {
+  CoordinatorMultiface(std::vector<boost::shared_ptr<CoordinatorIf> >& ifaces) : ifaces_(ifaces) {
   }
-  virtual ~MasterMultiface() {}
+  virtual ~CoordinatorMultiface() {}
  protected:
-  std::vector<boost::shared_ptr<MasterIf> > ifaces_;
-  MasterMultiface() {}
-  void add(boost::shared_ptr<MasterIf> iface) {
+  std::vector<boost::shared_ptr<CoordinatorIf> > ifaces_;
+  CoordinatorMultiface() {}
+  void add(boost::shared_ptr<CoordinatorIf> iface) {
     ifaces_.push_back(iface);
   }
  public:
@@ -343,12 +343,12 @@ class MasterMultiface : virtual public MasterIf {
 // The 'concurrent' client is a thread safe client that correctly handles
 // out of order responses.  It is slower than the regular client, so should
 // only be used when you need to share a connection among multiple threads
-class MasterConcurrentClient : virtual public MasterIf {
+class CoordinatorConcurrentClient : virtual public CoordinatorIf {
  public:
-  MasterConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
+  CoordinatorConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
     setProtocol(prot);
   }
-  MasterConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
+  CoordinatorConcurrentClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) {
     setProtocol(iprot,oprot);
   }
  private:

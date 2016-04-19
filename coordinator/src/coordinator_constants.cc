@@ -4,13 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "master_constants.h"
+#include "coordinator_constants.h"
 
 namespace succinct {
 
-const masterConstants g_master_constants;
+const coordinatorConstants g_coordinator_constants;
 
-masterConstants::masterConstants() {
+coordinatorConstants::coordinatorConstants() {
 }
 
 } // namespace
