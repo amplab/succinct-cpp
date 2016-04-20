@@ -64,7 +64,7 @@ class ServerImpl : virtual public ServerIf {
 
   void GetLocal(std::string& _return, const int32_t shard_idx,
                 const int64_t key) {
-    shards_[shard_idx].Get(_return, key);
+    shards_[shard_idx]->Get(_return, key);
   }
 
   void Search(std::set<int64_t> & _return, const std::string& query) {
@@ -73,7 +73,7 @@ class ServerImpl : virtual public ServerIf {
     for (size_t i = 0; i < hostnames_.size(); i++) {
       if (i == host_id_) {
         for (size_t j = 0; j < num_shards_; j++) {
-          results.push_back(shards_[j].SearchAsync(query));
+          results.push_back(shards_[j]->SearchAsync(query));
         }
       } else {
         qservers_.at(i).send_SearchLocal(query);
@@ -82,7 +82,7 @@ class ServerImpl : virtual public ServerIf {
 
     for (size_t i = 0; i < hostnames_.size(); i++) {
       if (i == host_id_) {
-        for (auto result : results) {
+        for (auto &result : results) {
           std::set<int64_t> keys = result.get();
           _return.insert(keys.begin(), keys.end());
         }
@@ -97,16 +97,16 @@ class ServerImpl : virtual public ServerIf {
   void SearchLocal(std::set<int64_t> & _return, const std::string& query) {
     std::vector<future_search_result> results;
     for (size_t j = 0; j < num_shards_; j++) {
-      results.push_back(shards_[j].SearchAsync(query));
+      results.push_back(shards_[j]->SearchAsync(query));
     }
 
-    for (auto result : results) {
+    for (auto &result : results) {
       std::set<int64_t> keys = result.get();
       _return.insert(keys.begin(), keys.end());
     }
   }
 
-  int32_t ConnectToHandlers() {
+  int32_t ConnectToServers() {
     // Get handler port
     uint16_t handler_port = conf_.GetInt("SERVER_PORT");
 
@@ -144,7 +144,7 @@ class ServerImpl : virtual public ServerIf {
     return 0;
   }
 
-  int32_t DisconnectFromHandlers() {
+  int32_t DisconnectFromServers() {
     // Get handler port
     uint16_t handler_port = conf_.GetInt("SERVER_PORT");
 
@@ -191,7 +191,7 @@ class ServerImpl : virtual public ServerIf {
   std::vector<std::string> hostnames_;
 
   uint32_t num_shards_;
-  SuccinctShardAsync* shards_;
+  SuccinctShardAsync** shards_;
 
   ConfigurationManager conf_;
   Logger logger_;
@@ -257,7 +257,7 @@ SuccinctShardAsync** InitShards(const int32_t host_id, Logger& logger,
   logger.Info("Data path is set to %s.", data_path.c_str());
 
   for (uint32_t i = 0; i < shards_per_server; i++) {
-    std::string filename = data_path + "/data_" + i;
+    std::string filename = data_path + "/data_" + std::to_string(i);
 
     // Initialize data structures
     int32_t shard_id = host_id * shards_per_server + i;

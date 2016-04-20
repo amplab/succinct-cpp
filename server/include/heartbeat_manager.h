@@ -8,6 +8,8 @@
 
 #include "heartbeat_manager.h"
 #include "Coordinator.h"
+#include "logger.h"
+#include "configuration_manager.h"
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;

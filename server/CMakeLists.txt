@@ -33,7 +33,8 @@ set(CLIENT_SOURCES ${SOURCES_DIR}/Server.cc)
 
 include_directories(${INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${COORDINATOR_INCLUDE_DIR})
 
-add_executable(sserver ${SERVER_SOURCES})
+# Hacky
+add_executable(sserver ${SERVER_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/../coordinator/src/Coordinator.cc)
 add_library(sclient ${CLIENT_SOURCES})
 
 target_link_libraries(sserver succinct sutils ${THRIFT_LIBRARIES})

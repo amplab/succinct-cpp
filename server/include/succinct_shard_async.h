@@ -27,7 +27,11 @@ class SuccinctShardAsync : public SuccinctShard {
 
   // Async get
   std::future<std::string> GetAsync(int64_t key) {
-    return std::async(std::launch::async, Get, key);
+    return std::async(std::launch::async, [&] {
+      std::string result;
+      Get(result, key);
+      return result;
+    });
   }
 
   // Async search
