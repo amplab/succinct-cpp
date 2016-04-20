@@ -42,7 +42,7 @@ for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
     ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server.sh" $i \
       2>&1 | sed "s/^/$host: /"
   else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server .sh" $i \
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server.sh" $i \
       2>&1 | sed "s/^/$host: /" &
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then

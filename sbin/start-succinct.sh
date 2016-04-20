@@ -6,9 +6,9 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
-# Sync succinct directory
-sync_dir="`cd "$SUCCINT_HOME"; pwd`"
-"$sbin"/sync "$sync_dir"
+# # Sync succinct directory
+# sync_dir="`cd "$SUCCINT_HOME"; pwd`"
+# "$sbin"/sync "$sync_dir"
 
 # Start Servers
 echo "Starting servers..."
