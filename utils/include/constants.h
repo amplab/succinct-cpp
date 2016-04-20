@@ -13,6 +13,7 @@ class Defaults {
   static constexpr const char* kConfPath = "conf/";
   static constexpr const char* kHostsFile = "hosts";
   static constexpr const char* kLogPath = "log/";
+  static constexpr const char* kDataPath = "data/";
   static constexpr const char* kCoordinatorHostname = "localhost";
   static const int32_t kLogLevel = Logger::DEBUG;
 

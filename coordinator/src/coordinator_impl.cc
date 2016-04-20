@@ -23,9 +23,9 @@ namespace succinct {
 class CoordinatorImpl: virtual public CoordinatorIf {
 
 public:
-	typedef struct HandlerMetadata {
+	typedef struct ServerMetadata {
 	public:
-		HandlerMetadata() {
+		ServerMetadata() {
 			host_id = 0;
 			hostname = "";
 
@@ -34,7 +34,7 @@ public:
 			goodness = 1.0;
 		}
 
-		HandlerMetadata(int32_t host_id, const std::string& hostname) {
+		ServerMetadata(int32_t host_id, const std::string& hostname) {
 			this->host_id = host_id;
 			this->hostname = hostname;
 
@@ -62,7 +62,7 @@ public:
 		double goodness;
 	} HandlerMetadata;
 
-	typedef std::map<int32_t, HandlerMetadata> HandlerMetadataMap;
+	typedef std::map<int32_t, ServerMetadata> ServerMetadataMap;
 
 	CoordinatorImpl(ConfigurationManager& conf, Logger& logger) :
 			conf_(conf), logger_(logger) {
@@ -71,8 +71,8 @@ public:
 
 		// Initialize handler metadata
 		for (int i = 0; i < hostnames_.size(); i++) {
-			typedef std::pair<int32_t, HandlerMetadata> HMEntry;
-			hm_map_.insert(HMEntry(i, HandlerMetadata(i, hostnames_[i])));
+			typedef std::pair<int32_t, ServerMetadata> HMEntry;
+			hm_map_.insert(HMEntry(i, ServerMetadata(i, hostnames_[i])));
 
 			logger_.Info("Initialized metadata for handler at %s...",
 					hostnames_[i].c_str());
@@ -129,7 +129,7 @@ private:
 		}
 	}
 
-	HandlerMetadataMap hm_map_;
+	ServerMetadataMap hm_map_;
 	std::vector<std::string> hostnames_;
 	ConfigurationManager conf_;
 	Logger logger_;
@@ -139,7 +139,7 @@ private:
 
 int main(int argc, char **argv) {
 	ConfigurationManager conf;
-	std::string coordinator_log_output = conf.Get("MASTER_LOG_FILE");
+	std::string coordinator_log_output = conf.Get("COORDINATOR_LOG_FILE");
 	FILE *desc = fopen(coordinator_log_output.c_str(), "a");
 	if (desc == NULL) {
 		fprintf(stderr,
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
 		desc = stderr;
 	}
 
-	Logger logger(static_cast<Logger::Level>(conf.GetInt("MASTER_LOG_LEVEL")),
+	Logger logger(static_cast<Logger::Level>(conf.GetInt("COORDINATOR_LOG_LEVEL")),
 			desc);
 	shared_ptr<succinct::CoordinatorImpl> coordinator(
 			new succinct::CoordinatorImpl(conf, logger));
@@ -157,19 +157,19 @@ int main(int argc, char **argv) {
 
 	try {
 		shared_ptr<TServerSocket> server_transport(
-				new TServerSocket(conf.GetInt("MASTER_PORT")));
+				new TServerSocket(conf.GetInt("COORDINATOR_PORT")));
 		shared_ptr<TBufferedTransportFactory> transport_factory(
 				new TBufferedTransportFactory());
 		shared_ptr<TProtocolFactory> protocol_factory(
 				new TBinaryProtocolFactory());
 		TThreadedServer server(processor, server_transport, transport_factory,
 				protocol_factory);
-		logger.Info("Starting Master on port %d...",
-				conf.GetInt("MASTER_PORT"));
+		logger.Info("Listening for connections on port %d...",
+				conf.GetInt("COORDINATOR_PORT"));
 		server.serve();
 	} catch (std::exception& e) {
-		logger.Error("Could not create master listening on port %d. Reason: %s",
-				conf.GetInt("MASTER_PORT"), e.what());
+		logger.Error("Could not create coordinator listening on port %d. Reason: %s",
+				conf.GetInt("COORDINATOR_PORT"), e.what());
 	}
 
 	return 0;

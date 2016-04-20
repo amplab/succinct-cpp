@@ -277,7 +277,7 @@ SuccinctShardAsync** InitShards(const int32_t host_id, Logger& logger,
     logger.Info(
         "Initialized Succinct data structures with original size = %llu",
         shards[i]->GetOriginalSize());
-    logger.Info("Initialization successful at shard id = %d.", shard_id);
+    logger.Info("Initialization successful for shard id = %d.", shard_id);
   }
 
   return shards;
@@ -323,7 +323,7 @@ int main(int argc, char **argv) {
     TThreadedServer server(handlerFactory, server_transport, transport_factory,
                            protocol_factory);
 
-    logger.Info("Starting Server on port %d...", port);
+    logger.Info("Listening for connections on port %d...", port);
     server.serve();
   } catch (std::exception& e) {
     logger.Error("Could not create server listening on port %d. Reason: %s",

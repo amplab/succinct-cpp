@@ -8,6 +8,7 @@ ConfigurationManager::ConfigurationManager() {
   // System configuration parameters
   SetFromEnv("CONF_PATH", std::string(Defaults::kConfPath));
   SetFromEnv("LOG_PATH", std::string(Defaults::kLogPath));
+  SetFromEnv("DATA_PATH", std::string(Defaults::kDataPath));
   SetFromEnv("MASTER_HOSTNAME", std::string(Defaults::kCoordinatorHostname));
   SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + "/" + Defaults::kHostsFile);
 
