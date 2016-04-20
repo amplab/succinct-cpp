@@ -6,7 +6,7 @@
 #include <thrift/transport/TBufferTransports.h>
 #include "succinct_shard.h"
 #include "benchmark.h"
-#include "Handler.h"
+#include "Server.h"
 #include "constants.h"
 
 using namespace ::apache::thrift;
@@ -20,17 +20,17 @@ class SuccinctServerBenchmark : public Benchmark {
                           uint32_t num_keys, std::string query_file = "")
       : Benchmark() {
     benchmark_type_ = benchmark_type;
-    int port = Defaults::kHandlerPort;
+    int port = Defaults::kServerPort;
 
     if (!benchmark_type.compare(0, 7, "latency")) {
       fprintf(stderr, "Connecting to server...\n");
       boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
       boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
       boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-      client_ = new succinct::HandlerClient(protocol);
+      client_ = new succinct::ServerClient(protocol);
       transport->open();
       fprintf(stderr, "Connected!\n");
-      client_->ConnectToHandlers();
+      client_->ConnectToServers();
     } else {
       client_ = NULL;
     }
@@ -115,7 +115,7 @@ class SuccinctServerBenchmark : public Benchmark {
     ThreadData data = *((ThreadData*) ptr);
     std::cout << "GET\n";
 
-    succinct::HandlerClient client = *(data.client);
+    succinct::ServerClient client = *(data.client);
     std::string value;
 
     double thput = 0;
@@ -167,12 +167,12 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
         boost::shared_ptr<TSocket> socket(
-            new TSocket("localhost", Defaults::kHandlerPort));
+            new TSocket("localhost", Defaults::kServerPort));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        succinct::HandlerClient *client = new succinct::HandlerClient(protocol);
+        succinct::ServerClient *client = new succinct::ServerClient(protocol);
         transport->open();
-        client->ConnectToHandlers();
+        client->ConnectToServers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
@@ -214,7 +214,7 @@ class SuccinctServerBenchmark : public Benchmark {
     ThreadData data = *((ThreadData*) ptr);
     std::cout << "SEARCH\n";
 
-    succinct::HandlerClient client = *(data.client);
+    succinct::ServerClient client = *(data.client);
 
     double thput = 0;
     try {
@@ -268,12 +268,12 @@ class SuccinctServerBenchmark : public Benchmark {
     for (uint32_t i = 0; i < num_threads; i++) {
       try {
         boost::shared_ptr<TSocket> socket(
-            new TSocket("localhost", Defaults::kHandlerPort));
+            new TSocket("localhost", Defaults::kServerPort));
         boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
         boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        succinct::HandlerClient *client = new succinct::HandlerClient(protocol);
+        succinct::ServerClient *client = new succinct::ServerClient(protocol);
         transport->open();
-        client->ConnectToHandlers();
+        client->ConnectToServers();
         ThreadData th_data;
         th_data.client = client;
         th_data.transport = transport;
@@ -313,7 +313,7 @@ class SuccinctServerBenchmark : public Benchmark {
 
  private:
   typedef struct {
-    succinct::HandlerClient *client;
+    succinct::ServerClient *client;
     boost::shared_ptr<TTransport> transport;
     std::vector<int64_t> randoms;
     std::vector<std::string> queries;
@@ -368,7 +368,7 @@ class SuccinctServerBenchmark : public Benchmark {
   std::vector<int64_t> randoms_;
   std::vector<std::string> queries_;
   std::string benchmark_type_;
-  succinct::HandlerClient *client_;
+  succinct::ServerClient *client_;
 };
 
 #endif
