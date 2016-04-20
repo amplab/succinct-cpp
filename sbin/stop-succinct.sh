@@ -4,8 +4,8 @@ sbin=`dirname "$0"`
 sbin=`cd "$sbin"; pwd`
 
 # Stop master
-echo "Stopping master..."
-"$sbin/stop-master.sh"
+echo "Stopping coordinator..."
+"$sbin/stop-coordinator.sh"
 
 # Stop servers
 echo "Stopping servers..."

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep smaster`"
+pids="`pgrep scoordinator`"
 
 for pid in $pids
 do
