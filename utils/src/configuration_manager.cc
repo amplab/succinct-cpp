@@ -8,20 +8,14 @@ ConfigurationManager::ConfigurationManager() {
   // System configuration parameters
   SetFromEnv("CONF_PATH", std::string(Defaults::kConfPath));
   SetFromEnv("LOG_PATH", std::string(Defaults::kLogPath));
-  SetFromEnv("MASTER_HOSTNAME", std::string(Defaults::kMasterHostname));
+  SetFromEnv("MASTER_HOSTNAME", std::string(Defaults::kCoordinatorHostname));
   SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + "/" + Defaults::kHostsFile);
 
-  // Master configuration parameters
-  SetFromEnv("MASTER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
-  SetFromEnv("MASTER_LOG_FILE",
-             Get("LOG_PATH") + "/" + Defaults::kMasterLogFile);
-  SetFromEnv("MASTER_PORT", std::to_string(Defaults::kMasterPort));
-
-  // Handler configuration parameters
-  SetFromEnv("HANDLER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
-  SetFromEnv("HANDLER_LOG_PATH_PREFIX",
-             Get("LOG_PATH") + "/" + Defaults::kHandlerLogFilePrefix);
-  SetFromEnv("HANDLER_PORT", std::to_string(Defaults::kHandlerPort));
+  // Coordinator configuration parameters
+  SetFromEnv("COORDINATOR_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
+  SetFromEnv("COORDINATOR_LOG_FILE",
+             Get("LOG_PATH") + "/" + Defaults::kCoordinatorLogFile);
+  SetFromEnv("COORDINATOR_PORT", std::to_string(Defaults::kCooordinatorPort));
 
   // Server configuration parameters
   SetFromEnv("SERVER_LOG_LEVEL", std::to_string(Defaults::kLogLevel));

@@ -21,9 +21,12 @@ namespace succinct {
 class ServerIf {
  public:
   virtual ~ServerIf() {}
-  virtual int32_t Initialize() = 0;
+  virtual int32_t ConnectToServers() = 0;
+  virtual int32_t DisconnectFromServers() = 0;
   virtual void Get(std::string& _return, const int64_t key) = 0;
+  virtual void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) = 0;
   virtual void Search(std::set<int64_t> & _return, const std::string& query) = 0;
+  virtual void SearchLocal(std::set<int64_t> & _return, const std::string& query) = 0;
 };
 
 class ServerIfFactory {
@@ -53,38 +56,48 @@ class ServerIfSingletonFactory : virtual public ServerIfFactory {
 class ServerNull : virtual public ServerIf {
  public:
   virtual ~ServerNull() {}
-  int32_t Initialize() {
+  int32_t ConnectToServers() {
+    int32_t _return = 0;
+    return _return;
+  }
+  int32_t DisconnectFromServers() {
     int32_t _return = 0;
     return _return;
   }
   void Get(std::string& /* _return */, const int64_t /* key */) {
     return;
   }
+  void GetLocal(std::string& /* _return */, const int32_t /* qserver_id */, const int64_t /* key */) {
+    return;
+  }
   void Search(std::set<int64_t> & /* _return */, const std::string& /* query */) {
+    return;
+  }
+  void SearchLocal(std::set<int64_t> & /* _return */, const std::string& /* query */) {
     return;
   }
 };
 
 
-class Server_Initialize_args {
+class Server_ConnectToServers_args {
  public:
 
-  Server_Initialize_args(const Server_Initialize_args&);
-  Server_Initialize_args& operator=(const Server_Initialize_args&);
-  Server_Initialize_args() {
+  Server_ConnectToServers_args(const Server_ConnectToServers_args&);
+  Server_ConnectToServers_args& operator=(const Server_ConnectToServers_args&);
+  Server_ConnectToServers_args() {
   }
 
-  virtual ~Server_Initialize_args() throw();
+  virtual ~Server_ConnectToServers_args() throw();
 
-  bool operator == (const Server_Initialize_args & /* rhs */) const
+  bool operator == (const Server_ConnectToServers_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const Server_Initialize_args &rhs) const {
+  bool operator != (const Server_ConnectToServers_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Server_Initialize_args & ) const;
+  bool operator < (const Server_ConnectToServers_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -92,66 +105,158 @@ class Server_Initialize_args {
 };
 
 
-class Server_Initialize_pargs {
+class Server_ConnectToServers_pargs {
  public:
 
 
-  virtual ~Server_Initialize_pargs() throw();
+  virtual ~Server_ConnectToServers_pargs() throw();
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Server_Initialize_result__isset {
-  _Server_Initialize_result__isset() : success(false) {}
+typedef struct _Server_ConnectToServers_result__isset {
+  _Server_ConnectToServers_result__isset() : success(false) {}
   bool success :1;
-} _Server_Initialize_result__isset;
+} _Server_ConnectToServers_result__isset;
 
-class Server_Initialize_result {
+class Server_ConnectToServers_result {
  public:
 
-  Server_Initialize_result(const Server_Initialize_result&);
-  Server_Initialize_result& operator=(const Server_Initialize_result&);
-  Server_Initialize_result() : success(0) {
+  Server_ConnectToServers_result(const Server_ConnectToServers_result&);
+  Server_ConnectToServers_result& operator=(const Server_ConnectToServers_result&);
+  Server_ConnectToServers_result() : success(0) {
   }
 
-  virtual ~Server_Initialize_result() throw();
+  virtual ~Server_ConnectToServers_result() throw();
   int32_t success;
 
-  _Server_Initialize_result__isset __isset;
+  _Server_ConnectToServers_result__isset __isset;
 
   void __set_success(const int32_t val);
 
-  bool operator == (const Server_Initialize_result & rhs) const
+  bool operator == (const Server_ConnectToServers_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
     return true;
   }
-  bool operator != (const Server_Initialize_result &rhs) const {
+  bool operator != (const Server_ConnectToServers_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Server_Initialize_result & ) const;
+  bool operator < (const Server_ConnectToServers_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Server_Initialize_presult__isset {
-  _Server_Initialize_presult__isset() : success(false) {}
+typedef struct _Server_ConnectToServers_presult__isset {
+  _Server_ConnectToServers_presult__isset() : success(false) {}
   bool success :1;
-} _Server_Initialize_presult__isset;
+} _Server_ConnectToServers_presult__isset;
 
-class Server_Initialize_presult {
+class Server_ConnectToServers_presult {
  public:
 
 
-  virtual ~Server_Initialize_presult() throw();
+  virtual ~Server_ConnectToServers_presult() throw();
   int32_t* success;
 
-  _Server_Initialize_presult__isset __isset;
+  _Server_ConnectToServers_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Server_DisconnectFromServers_args {
+ public:
+
+  Server_DisconnectFromServers_args(const Server_DisconnectFromServers_args&);
+  Server_DisconnectFromServers_args& operator=(const Server_DisconnectFromServers_args&);
+  Server_DisconnectFromServers_args() {
+  }
+
+  virtual ~Server_DisconnectFromServers_args() throw();
+
+  bool operator == (const Server_DisconnectFromServers_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Server_DisconnectFromServers_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_DisconnectFromServers_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Server_DisconnectFromServers_pargs {
+ public:
+
+
+  virtual ~Server_DisconnectFromServers_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_DisconnectFromServers_result__isset {
+  _Server_DisconnectFromServers_result__isset() : success(false) {}
+  bool success :1;
+} _Server_DisconnectFromServers_result__isset;
+
+class Server_DisconnectFromServers_result {
+ public:
+
+  Server_DisconnectFromServers_result(const Server_DisconnectFromServers_result&);
+  Server_DisconnectFromServers_result& operator=(const Server_DisconnectFromServers_result&);
+  Server_DisconnectFromServers_result() : success(0) {
+  }
+
+  virtual ~Server_DisconnectFromServers_result() throw();
+  int32_t success;
+
+  _Server_DisconnectFromServers_result__isset __isset;
+
+  void __set_success(const int32_t val);
+
+  bool operator == (const Server_DisconnectFromServers_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const Server_DisconnectFromServers_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_DisconnectFromServers_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_DisconnectFromServers_presult__isset {
+  _Server_DisconnectFromServers_presult__isset() : success(false) {}
+  bool success :1;
+} _Server_DisconnectFromServers_presult__isset;
+
+class Server_DisconnectFromServers_presult {
+ public:
+
+
+  virtual ~Server_DisconnectFromServers_presult() throw();
+  int32_t* success;
+
+  _Server_DisconnectFromServers_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -261,6 +366,117 @@ class Server_Get_presult {
 
 };
 
+typedef struct _Server_GetLocal_args__isset {
+  _Server_GetLocal_args__isset() : qserver_id(false), key(false) {}
+  bool qserver_id :1;
+  bool key :1;
+} _Server_GetLocal_args__isset;
+
+class Server_GetLocal_args {
+ public:
+
+  Server_GetLocal_args(const Server_GetLocal_args&);
+  Server_GetLocal_args& operator=(const Server_GetLocal_args&);
+  Server_GetLocal_args() : qserver_id(0), key(0) {
+  }
+
+  virtual ~Server_GetLocal_args() throw();
+  int32_t qserver_id;
+  int64_t key;
+
+  _Server_GetLocal_args__isset __isset;
+
+  void __set_qserver_id(const int32_t val);
+
+  void __set_key(const int64_t val);
+
+  bool operator == (const Server_GetLocal_args & rhs) const
+  {
+    if (!(qserver_id == rhs.qserver_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const Server_GetLocal_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_GetLocal_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Server_GetLocal_pargs {
+ public:
+
+
+  virtual ~Server_GetLocal_pargs() throw();
+  const int32_t* qserver_id;
+  const int64_t* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_GetLocal_result__isset {
+  _Server_GetLocal_result__isset() : success(false) {}
+  bool success :1;
+} _Server_GetLocal_result__isset;
+
+class Server_GetLocal_result {
+ public:
+
+  Server_GetLocal_result(const Server_GetLocal_result&);
+  Server_GetLocal_result& operator=(const Server_GetLocal_result&);
+  Server_GetLocal_result() : success() {
+  }
+
+  virtual ~Server_GetLocal_result() throw();
+  std::string success;
+
+  _Server_GetLocal_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  bool operator == (const Server_GetLocal_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const Server_GetLocal_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_GetLocal_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_GetLocal_presult__isset {
+  _Server_GetLocal_presult__isset() : success(false) {}
+  bool success :1;
+} _Server_GetLocal_presult__isset;
+
+class Server_GetLocal_presult {
+ public:
+
+
+  virtual ~Server_GetLocal_presult() throw();
+  std::string* success;
+
+  _Server_GetLocal_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 typedef struct _Server_Search_args__isset {
   _Server_Search_args__isset() : query(false) {}
   bool query :1;
@@ -365,6 +581,110 @@ class Server_Search_presult {
 
 };
 
+typedef struct _Server_SearchLocal_args__isset {
+  _Server_SearchLocal_args__isset() : query(false) {}
+  bool query :1;
+} _Server_SearchLocal_args__isset;
+
+class Server_SearchLocal_args {
+ public:
+
+  Server_SearchLocal_args(const Server_SearchLocal_args&);
+  Server_SearchLocal_args& operator=(const Server_SearchLocal_args&);
+  Server_SearchLocal_args() : query() {
+  }
+
+  virtual ~Server_SearchLocal_args() throw();
+  std::string query;
+
+  _Server_SearchLocal_args__isset __isset;
+
+  void __set_query(const std::string& val);
+
+  bool operator == (const Server_SearchLocal_args & rhs) const
+  {
+    if (!(query == rhs.query))
+      return false;
+    return true;
+  }
+  bool operator != (const Server_SearchLocal_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_SearchLocal_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Server_SearchLocal_pargs {
+ public:
+
+
+  virtual ~Server_SearchLocal_pargs() throw();
+  const std::string* query;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_SearchLocal_result__isset {
+  _Server_SearchLocal_result__isset() : success(false) {}
+  bool success :1;
+} _Server_SearchLocal_result__isset;
+
+class Server_SearchLocal_result {
+ public:
+
+  Server_SearchLocal_result(const Server_SearchLocal_result&);
+  Server_SearchLocal_result& operator=(const Server_SearchLocal_result&);
+  Server_SearchLocal_result() {
+  }
+
+  virtual ~Server_SearchLocal_result() throw();
+  std::set<int64_t>  success;
+
+  _Server_SearchLocal_result__isset __isset;
+
+  void __set_success(const std::set<int64_t> & val);
+
+  bool operator == (const Server_SearchLocal_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const Server_SearchLocal_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Server_SearchLocal_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Server_SearchLocal_presult__isset {
+  _Server_SearchLocal_presult__isset() : success(false) {}
+  bool success :1;
+} _Server_SearchLocal_presult__isset;
+
+class Server_SearchLocal_presult {
+ public:
+
+
+  virtual ~Server_SearchLocal_presult() throw();
+  std::set<int64_t> * success;
+
+  _Server_SearchLocal_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class ServerClient : virtual public ServerIf {
  public:
   ServerClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) {
@@ -390,15 +710,24 @@ class ServerClient : virtual public ServerIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  int32_t Initialize();
-  void send_Initialize();
-  int32_t recv_Initialize();
+  int32_t ConnectToServers();
+  void send_ConnectToServers();
+  int32_t recv_ConnectToServers();
+  int32_t DisconnectFromServers();
+  void send_DisconnectFromServers();
+  int32_t recv_DisconnectFromServers();
   void Get(std::string& _return, const int64_t key);
   void send_Get(const int64_t key);
   void recv_Get(std::string& _return);
+  void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key);
+  void send_GetLocal(const int32_t qserver_id, const int64_t key);
+  void recv_GetLocal(std::string& _return);
   void Search(std::set<int64_t> & _return, const std::string& query);
   void send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return);
+  void SearchLocal(std::set<int64_t> & _return, const std::string& query);
+  void send_SearchLocal(const std::string& query);
+  void recv_SearchLocal(std::set<int64_t> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -414,15 +743,21 @@ class ServerProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (ServerProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_Initialize(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_ConnectToServers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_DisconnectFromServers(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_GetLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_Search(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_SearchLocal(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   ServerProcessor(boost::shared_ptr<ServerIf> iface) :
     iface_(iface) {
-    processMap_["Initialize"] = &ServerProcessor::process_Initialize;
+    processMap_["ConnectToServers"] = &ServerProcessor::process_ConnectToServers;
+    processMap_["DisconnectFromServers"] = &ServerProcessor::process_DisconnectFromServers;
     processMap_["Get"] = &ServerProcessor::process_Get;
+    processMap_["GetLocal"] = &ServerProcessor::process_GetLocal;
     processMap_["Search"] = &ServerProcessor::process_Search;
+    processMap_["SearchLocal"] = &ServerProcessor::process_SearchLocal;
   }
 
   virtual ~ServerProcessor() {}
@@ -451,13 +786,22 @@ class ServerMultiface : virtual public ServerIf {
     ifaces_.push_back(iface);
   }
  public:
-  int32_t Initialize() {
+  int32_t ConnectToServers() {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->Initialize();
+      ifaces_[i]->ConnectToServers();
     }
-    return ifaces_[i]->Initialize();
+    return ifaces_[i]->ConnectToServers();
+  }
+
+  int32_t DisconnectFromServers() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->DisconnectFromServers();
+    }
+    return ifaces_[i]->DisconnectFromServers();
   }
 
   void Get(std::string& _return, const int64_t key) {
@@ -470,6 +814,16 @@ class ServerMultiface : virtual public ServerIf {
     return;
   }
 
+  void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->GetLocal(_return, qserver_id, key);
+    }
+    ifaces_[i]->GetLocal(_return, qserver_id, key);
+    return;
+  }
+
   void Search(std::set<int64_t> & _return, const std::string& query) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -477,6 +831,16 @@ class ServerMultiface : virtual public ServerIf {
       ifaces_[i]->Search(_return, query);
     }
     ifaces_[i]->Search(_return, query);
+    return;
+  }
+
+  void SearchLocal(std::set<int64_t> & _return, const std::string& query) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->SearchLocal(_return, query);
+    }
+    ifaces_[i]->SearchLocal(_return, query);
     return;
   }
 
@@ -510,15 +874,24 @@ class ServerConcurrentClient : virtual public ServerIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  int32_t Initialize();
-  int32_t send_Initialize();
-  int32_t recv_Initialize(const int32_t seqid);
+  int32_t ConnectToServers();
+  int32_t send_ConnectToServers();
+  int32_t recv_ConnectToServers(const int32_t seqid);
+  int32_t DisconnectFromServers();
+  int32_t send_DisconnectFromServers();
+  int32_t recv_DisconnectFromServers(const int32_t seqid);
   void Get(std::string& _return, const int64_t key);
   int32_t send_Get(const int64_t key);
   void recv_Get(std::string& _return, const int32_t seqid);
+  void GetLocal(std::string& _return, const int32_t qserver_id, const int64_t key);
+  int32_t send_GetLocal(const int32_t qserver_id, const int64_t key);
+  void recv_GetLocal(std::string& _return, const int32_t seqid);
   void Search(std::set<int64_t> & _return, const std::string& query);
   int32_t send_Search(const std::string& query);
   void recv_Search(std::set<int64_t> & _return, const int32_t seqid);
+  void SearchLocal(std::set<int64_t> & _return, const std::string& query);
+  int32_t send_SearchLocal(const std::string& query);
+  void recv_SearchLocal(std::set<int64_t> & _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

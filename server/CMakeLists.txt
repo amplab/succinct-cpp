@@ -25,16 +25,15 @@ file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set(SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
-set(HANDLER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../handler/include)
 set(UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../utils/include)
+set(COORDINATOR_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../coordinator/include)
 
 file(GLOB_RECURSE SERVER_SOURCES ${SOURCES_DIR}/*.cc)
-set(SERVER_CLIENT_SOURCES ${SOURCES_DIR}/Server.cc)
+set(CLIENT_SOURCES ${SOURCES_DIR}/Server.cc)
 
-include_directories(${INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${HANDLER_INCLUDE_DIR} ${CORE_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${UTILS_INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${COORDINATOR_INCLUDE_DIR})
 
-# Bit of a hack
-add_executable(sserver ${SERVER_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/../handler/src/Handler.cc)
-add_library(sserverclient ${SERVER_CLIENT_SOURCES})
+add_executable(sserver ${SERVER_SOURCES})
+add_library(sclient ${CLIENT_SOURCES})
 
 target_link_libraries(sserver succinct sutils ${THRIFT_LIBRARIES})
