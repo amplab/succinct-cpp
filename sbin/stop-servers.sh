@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-pids="`pgrep sserver`"
+sbin=`dirname "$0"`
+sbin=`cd "$sbin"; pwd`
 
-for pid in $pids
-do
-	echo "Killing pid $pid..."
-	kill -9 $pid
-done
+. "$sbin/succinct-config.sh"
+
+. "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
+
+exec "$sbin/hosts.sh" "$SUCCINCT_PREFIX/sbin/stop-server.sh"

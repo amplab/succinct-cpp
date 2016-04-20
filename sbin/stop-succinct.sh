@@ -7,6 +7,6 @@ sbin=`cd "$sbin"; pwd`
 echo "Stopping master..."
 "$sbin/stop-master.sh"
 
-# Stop workers
-echo "Stopping workers..."
-"$sbin/stop-workers.sh"
+# Stop servers
+echo "Stopping servers..."
+"$sbin/stop-servers.sh"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pids="`pgrep shandler`"
+pids="`pgrep sserver`"
 
 for pid in $pids
 do

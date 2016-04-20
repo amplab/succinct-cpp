@@ -30,23 +30,23 @@ if [ "$HOSTLIST" = "" ]; then
   fi
 fi
 
-# Launch the handlers
 # By default disable strict host key checking
 if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
   SUCCINCT_SSH_OPTS="-o StrictHostKeyChecking=no"
 fi
 
+# Launch the servers
 i=0
 for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $i\
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server.sh" $i \
       2>&1 | sed "s/^/$host: /"
   else
-    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-servers-local.sh" $SHARDS_PER_SERVER $i\
+    ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server .sh" $i \
       2>&1 | sed "s/^/$host: /" &
   fi
   if [ "$SUCCINCT_HOST_SLEEP" != "" ]; then
     sleep $SUCCINCT_HOST_SLEEP
   fi
-  i=$(($i+1))
+  i=$(( $i + 1 ))
 done
