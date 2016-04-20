@@ -1,13 +1,12 @@
 export SHARDS_PER_SERVER="1"
+export DATA_PATH="$SUCCINCT_HOME/dat"
 
-export MASTER_HOSTNAME="localhost"
+export COORDINATOR_HOSTNAME="localhost"
 
-export MASTER_LOG_LEVEL="1" # Debug
-export HANDLER_LOG_LEVEL="1" # Debug
+export COORDINATOR_LOG_LEVEL="1" # Debug
 export SERVER_LOG_LEVEL="1" # Debug
 
-export MASTER_PORT="11001"
-export HANDLER_PORT="11002"
+export COORDINATOR_PORT="11001"
 export SERVER_PORT="11003"
 
 ## Core parameters
