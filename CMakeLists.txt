@@ -22,9 +22,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)
 add_subdirectory(core)
 add_subdirectory(construct)
 add_subdirectory(utils)
+add_subdirectory(coordinator)
 add_subdirectory(server)
-add_subdirectory(handler)
-add_subdirectory(master)
 add_subdirectory(bench)
 
 # Testing framework
