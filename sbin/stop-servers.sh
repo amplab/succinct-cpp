@@ -7,4 +7,4 @@ sbin=`cd "$sbin"; pwd`
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-exec "$sbin/hosts.sh" "$SUCCINCT_PREFIX/sbin/stop-server.sh"
+exec "$sbin/servers.sh" "$SUCCINCT_PREFIX/sbin/stop-server.sh"

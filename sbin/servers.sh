@@ -1,15 +1,15 @@
-# Run a shell command on all hosts.
+# Run a shell command on all servers.
 #
 # Environment Variables
 #
-#   SUCCINCT_HOSTS    File naming remote hosts.
-#     Default is ${SUCCINCT_CONF_DIR}/hosts.
+#   SUCCINCT_SERVERS    File naming remote servers.
+#     Default is ${SUCCINCT_CONF_DIR}/servers.
 #   SUCCINCT_CONF_DIR  Alternate conf dir. Default is ${SUCCINCT_HOME}/conf.
 #   SUCCINCT_HOST_SLEEP Seconds to sleep between spawning remote commands.
 #   SUCCINCT_SSH_OPTS Options passed to ssh when running remote commands.
 ##
 
-usage="Usage: hosts.sh [--config <conf-dir>] command..."
+usage="Usage: servers.sh [--config <conf-dir>] command..."
 
 # if no args specified, show usage
 if [ $# -le 0 ]; then
@@ -22,11 +22,11 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
-# If the hosts file is specified in the command line,
+# If the servers file is specified in the command line,
 # then it takes precedence over the definition in
 # succinct-env.sh. Save it here.
-if [ -f "$SUCCINCT_HOSTS" ]; then
-  HOSTLIST=`cat "$SUCCINCT_HOSTS"`
+if [ -f "$SUCCINCT_SERVERS" ]; then
+  SERVERLIST=`cat "$SUCCINCT_SERVERS"`
 fi
 
 # Check if --config is passed as an argument. It is an optional parameter.
@@ -48,15 +48,15 @@ fi
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-if [ "$HOSTLIST" = "" ]; then
-  if [ "$SUCCINCT_HOSTS" = "" ]; then
-    if [ -f "${SUCCINCT_CONF_DIR}/hosts" ]; then
-      HOSTLIST=`cat "${SUCCINCT_CONF_DIR}/hosts"`
+if [ "$SERVERLIST" = "" ]; then
+  if [ "$SUCCINCT_SERVERS" = "" ]; then
+    if [ -f "${SUCCINCT_CONF_DIR}/servers" ]; then
+      SERVERLIST=`cat "${SUCCINCT_CONF_DIR}/servers"`
     else
-      HOSTLIST=localhost
+      SERVERLIST=localhost
     fi
   else
-    HOSTLIST=`cat "${SUCCINCT_HOSTS}"`
+    SERVERLIST=`cat "${SUCCINCT_SERVERS}"`
   fi
 fi
 
@@ -67,7 +67,7 @@ if [ "$SUCCINCT_SSH_OPTS" = "" ]; then
   SUCCINCT_SSH_OPTS="-o StrictHostKeyChecking=no"
 fi
 
-for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
+for host in `echo "$SERVERLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
     ssh $SUCCINCT_SSH_OPTS "$host" $"${@// /\\ }" \
       2>&1 | sed "s/^/$host: /"

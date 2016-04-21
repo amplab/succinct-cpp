@@ -1,5 +1,5 @@
 # Starts the coordinator on this node.
-# Starts a server on each node specified in conf/hosts
+# Starts a server on each node specified in conf/servers
 
 sbin="`dirname "$0"`"
 sbin="`cd "$sbin"; pwd`"

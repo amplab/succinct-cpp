@@ -1,5 +1,48 @@
 #!/bin/bash
 
+sbin="`dirname "$0"`"
+sbin="`cd "$sbin"; pwd`"
+
+. "$sbin/succinct-config.sh"
+
+# If the servers file is specified in the command line,
+# then it takes precedence over the definition in
+# succinct-env.sh. Save it here.
+if [ -f "$SUCCINCT_SERVERS" ]; then
+  SERVERLIST=`cat "$SUCCINCT_SERVERS"`
+fi
+
+# Check if --config is passed as an argument. It is an optional parameter.
+# Exit if the argument is not a directory.
+if [ "$1" == "--config" ]
+then
+  shift
+  conf_dir="$1"
+  if [ ! -d "$conf_dir" ]
+  then
+    echo "ERROR : $conf_dir is not a directory"
+    echo $usage
+    exit 1
+  else
+    export SUCCINCT_CONF_DIR="$conf_dir"
+  fi
+  shift
+fi
+
+. "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
+
+if [ "$SERVERLIST" = "" ]; then
+  if [ "$SUCCINCT_SERVERS" = "" ]; then
+    if [ -f "${SUCCINCT_CONF_DIR}/servers" ]; then
+      SERVERLIST=`cat "${SUCCINCT_CONF_DIR}/servers"`
+    else
+      SERVERLIST=localhost
+    fi
+  else
+    SERVERLIST=`cat "${SUCCINCT_SERVERS}"`
+  fi
+fi
+
 DELETE_FLAG=""
 
 usage() {
@@ -37,13 +80,11 @@ DIR=`readlink -f "$1"`
 DIR=`echo "$DIR"|sed 's@/$@@'`
 DEST=`dirname "$DIR"`
 
-SLAVES=`cat /root/spark-ec2/slaves`
-
 SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=5"
 
-echo "RSYNC'ing $DIR to slaves..."
-for slave in $SLAVES; do
-    echo $slave
-    rsync -e "ssh $SSH_OPTS" -az $DELETE_FLAG "$DIR" "$slave:$DEST" & sleep 0.5
+echo "RSYNC'ing $DIR to servers..."
+for server in $SERVERLIST; do
+    echo $server
+    rsync -e "ssh $SSH_OPTS" -az $DELETE_FLAG "$DIR" "$server:$DEST" & sleep 0.5
 done
 wait

@@ -5,11 +5,11 @@ sbin="`cd "$sbin"; pwd`"
 
 . "$sbin/succinct-config.sh"
 
-# If the hosts file is specified in the command line,
+# If the servers file is specified in the command line,
 # then it takes precedence over the definition in
 # succinct-env.sh. Save it here.
-if [ -f "$SUCCINCT_HOSTS" ]; then
-  HOSTLIST=`cat "$SUCCINCT_HOSTS"`
+if [ -f "$SUCCINCT_SERVERS" ]; then
+  SERVERLIST=`cat "$SUCCINCT_SERVERS"`
 fi
 
 if [ "$SHARDS_PER_SERVER" = "" ]; then
@@ -18,15 +18,15 @@ fi
 
 . "$SUCCINCT_PREFIX/sbin/load-succinct-env.sh"
 
-if [ "$HOSTLIST" = "" ]; then
-  if [ "$SUCCINCT_HOSTS" = "" ]; then
-    if [ -f "${SUCCINCT_CONF_DIR}/hosts" ]; then
-      HOSTLIST=`cat "${SUCCINCT_CONF_DIR}/hosts"`
+if [ "$SERVERLIST" = "" ]; then
+  if [ "$SUCCINCT_SERVERS" = "" ]; then
+    if [ -f "${SUCCINCT_CONF_DIR}/servers" ]; then
+      SERVERLIST=`cat "${SUCCINCT_CONF_DIR}/servers"`
     else
-      HOSTLIST=localhost
+      SERVERLIST=localhost
     fi
   else
-    HOSTLIST=`cat "${SUCCINCT_HOSTS}"`
+    SERVERLIST=`cat "${SUCCINCT_SERVERS}"`
   fi
 fi
 
@@ -37,7 +37,7 @@ fi
 
 # Launch the servers
 i=0
-for host in `echo "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
+for host in `echo "$SERVERLIST"|sed  "s/#.*$//;/^$/d"`; do
   if [ -n "${SUCCINCT_SSH_FOREGROUND}" ]; then
     ssh $SUCCINCT_SSH_OPTS "$host" "$sbin/start-server.sh" $i \
       2>&1 | sed "s/^/$host: /"
