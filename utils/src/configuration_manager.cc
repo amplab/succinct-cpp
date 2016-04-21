@@ -6,11 +6,11 @@
 
 ConfigurationManager::ConfigurationManager() {
   // System configuration parameters
-  SetFromEnv("CONF_PATH", std::string(Defaults::kConfPath));
+  SetFromEnv("SUCCINCT_CONF_DIR", std::string(Defaults::kSuccinctConfDir));
   SetFromEnv("LOG_PATH", std::string(Defaults::kLogPath));
   SetFromEnv("DATA_PATH", std::string(Defaults::kDataPath));
-  SetFromEnv("MASTER_HOSTNAME", std::string(Defaults::kCoordinatorHostname));
-  SetFromEnv("HOSTS_LIST", Get("CONF_PATH") + "/" + Defaults::kHostsFile);
+  SetFromEnv("COORDINATOR_HOSTNAME", std::string(Defaults::kCoordinatorHostname));
+  SetFromEnv("HOSTS_LIST", Get("SUCCINCT_CONF_DIR") + "/" + Defaults::kHostsFile);
 
   // Coordinator configuration parameters
   SetFromEnv("COORDINATOR_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
