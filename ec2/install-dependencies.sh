@@ -3,6 +3,8 @@ yum -y update
 
 yum -y groupinstall "Development Tools"
 
+yum install cmake gcc-c++
+
 yum install -y wget
 
 mkdir tmpdir
