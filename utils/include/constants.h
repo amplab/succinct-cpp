@@ -11,7 +11,7 @@ class Constants {
 class Defaults {
  public:
   static constexpr const char* kSuccinctConfDir = "conf/";
-  static constexpr const char* kHostsFile = "hosts";
+  static constexpr const char* kServersFile = "servers";
   static constexpr const char* kLogPath = "log/";
   static constexpr const char* kDataPath = "data/";
   static constexpr const char* kCoordinatorHostname = "localhost";

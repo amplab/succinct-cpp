@@ -10,7 +10,7 @@ ConfigurationManager::ConfigurationManager() {
   SetFromEnv("LOG_PATH", std::string(Defaults::kLogPath));
   SetFromEnv("DATA_PATH", std::string(Defaults::kDataPath));
   SetFromEnv("COORDINATOR_HOSTNAME", std::string(Defaults::kCoordinatorHostname));
-  SetFromEnv("HOSTS_LIST", Get("SUCCINCT_CONF_DIR") + "/" + Defaults::kHostsFile);
+  SetFromEnv("HOSTS_LIST", Get("SUCCINCT_CONF_DIR") + "/" + Defaults::kServersFile);
 
   // Coordinator configuration parameters
   SetFromEnv("COORDINATOR_LOG_LEVEL", std::to_string(Defaults::kLogLevel));
