@@ -1,0 +1,49 @@
+case "`uname`" in
+  Linux)
+    system_memory_in_mb=`free -m | awk '/:/ {print $2;exit}'`
+    system_cpu_cores=`egrep -c 'processor([[:space:]]+):.*' /proc/cpuinfo`
+    ;;
+  FreeBSD)
+    system_memory_in_bytes=`sysctl hw.physmem | awk '{print $2}'`
+    system_memory_in_mb=`expr $system_memory_in_bytes / 1024 / 1024`
+    system_cpu_cores=`sysctl hw.ncpu | awk '{print $2}'`
+    ;;
+  SunOS)
+    system_memory_in_mb=`prtconf | awk '/Memory size:/ {print $3}'`
+    system_cpu_cores=`psrinfo | wc -l`
+    ;;
+  Darwin)
+    system_memory_in_bytes=`sysctl hw.memsize | awk '{print $2}'`
+    system_memory_in_mb=`expr $system_memory_in_bytes / 1024 / 1024`
+    system_cpu_cores=`sysctl hw.ncpu | awk '{print $2}'`
+    ;;
+  *)
+    # assume reasonable defaults for e.g. a modern desktop or
+    # cheap server
+    system_memory_in_mb="2048"
+    system_cpu_cores="2"
+    ;;
+esac
+
+# some systems like the raspberry pi don't report cores, use at least 1
+if [ "$system_cpu_cores" -lt "1" ]
+then
+  system_cpu_cores="1"
+fi
+
+## Core parameters
+# export ISA_SAMPLING_RATE="32"
+# export SA_SAMPLING_RATE="32"
+# export NPA_SAMPLING_RATE="128"
+# export SA_SAMPLING_SCHEME="0"
+# export ISA_SAMPLING_SCHEME="0"
+# export NPA_SAMPLING_SCHEME="1"
+
+export SHARDS_PER_SERVER="$system_cpu_cores"
+export DATA_PATH="/mnt2"
+
+export COORDINATOR_LOG_LEVEL="2" # Info
+export SERVER_LOG_LEVEL="2" # Info
+
+export COORDINATOR_PORT="11001"
+export SERVER_PORT="11002"
