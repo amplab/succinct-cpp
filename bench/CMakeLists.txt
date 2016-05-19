@@ -16,12 +16,13 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
 
 find_package(Thrift REQUIRED)
+find_package(Boost REQUIRED)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-set(INCLUDE include ../core/include ../sharded/include ../sharded-kv/include ${THRIFT_INCLUDE_DIR})
+set(INCLUDE include ../core/include ../sharded/include ../sharded-kv/include ${THRIFT_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 include_directories(${INCLUDE})
 add_executable(fbench src/file_benchmark.cc)
 add_executable(sbench src/shard_benchmark.cc)

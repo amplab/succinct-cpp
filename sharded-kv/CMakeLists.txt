@@ -16,6 +16,7 @@ endif()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g")
 
 find_package(Thrift REQUIRED)
+find_package(Boost REQUIRED)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
@@ -40,7 +41,7 @@ set(CLIENT_SOURCES ${GENERAL_SOURCES}
     ${SOURCES_DIR}/KVQueryService.cc
     ${SOURCES_DIR}/KVAggregatorService.cc)
 
-include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${THRIFT_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${THRIFT_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
 add_executable(skvserver ${SERVER_SOURCES})
 add_executable(skvaggregator ${HANDLER_SOURCES})
