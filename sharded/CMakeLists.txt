@@ -40,7 +40,7 @@ set(CLIENT_SOURCES ${GENERAL_SOURCES}
     ${SOURCES_DIR}/QueryService.cc
     ${SOURCES_DIR}/AggregatorService.cc)
 
-include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${THRIFT_INCLUDE_DIR})
 
 add_executable(sserver ${SERVER_SOURCES})
 add_executable(saggregator ${HANDLER_SOURCES})

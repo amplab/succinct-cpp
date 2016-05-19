@@ -21,7 +21,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
-set(INCLUDE include ../core/include ../sharded/include ../sharded-kv/include)
+set(INCLUDE include ../core/include ../sharded/include ../sharded-kv/include ${THRIFT_INCLUDE_DIR})
 include_directories(${INCLUDE})
 add_executable(fbench src/file_benchmark.cc)
 add_executable(sbench src/shard_benchmark.cc)

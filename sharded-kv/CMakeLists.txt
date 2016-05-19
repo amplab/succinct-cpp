@@ -40,7 +40,7 @@ set(CLIENT_SOURCES ${GENERAL_SOURCES}
     ${SOURCES_DIR}/KVQueryService.cc
     ${SOURCES_DIR}/KVAggregatorService.cc)
 
-include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR})
+include_directories(${INCLUDE_DIR} ${CORE_INCLUDE_DIR} ${THRIFT_INCLUDE_DIR})
 
 add_executable(skvserver ${SERVER_SOURCES})
 add_executable(skvaggregator ${HANDLER_SOURCES})
