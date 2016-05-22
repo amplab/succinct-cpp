@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(succinct-construct CXX)
+project(succinct-examples CXX)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -21,6 +21,10 @@ file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
 set(INCLUDE include ../core/include)
 include_directories(${INCLUDE})
-add_executable(construct src/construct.cc)
+add_executable(compress src/compress.cc)
+add_executable(query_file src/query_file.cc)
+add_executable(query_kv src/query_kv.cc)
 
-target_link_libraries(construct succinct)
+target_link_libraries(compress succinct)
+target_link_libraries(query_file succinct)
+target_link_libraries(query_kv succinct)

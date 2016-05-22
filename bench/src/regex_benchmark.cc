@@ -4,8 +4,8 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "../../core/include/regex/regex.h"
-#include "../../core/include/succinct_file.h"
+#include "regex/regex.h"
+#include "succinct_file.h"
 
 // Debug
 void display(RegEx *re) {
