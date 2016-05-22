@@ -28,9 +28,11 @@ To clean-up build files, run:
 ./cleanup.sh
 ```
 
-# Constructing datasets
+# Examples
 
-TODO: Add description of how `construct` tool can be used.
+To see how Succinct's core data structures can be used, find examples in [examples/src](examples/src).
+
+The example in [compress.cc](examples/src/compress.cc) shows how Succinct can be used to compress input files (for both flat-file and key-value interfaces), while example programs in [query_file.cc](examples/src/query_file.cc) and [query_kv.cc](examples/src/query_kv.cc) show how the compressed files can be queried.
 
 # Starting Succinct as a Service
 
