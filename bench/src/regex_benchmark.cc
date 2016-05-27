@@ -111,9 +111,7 @@ int main(int argc, char **argv) {
     s_file = new SuccinctFile(filename);
 
     std::cout << "Serializing Succinct data structures...\n";
-    std::ofstream s_out(filename + ".succinct");
-    s_file->Serialize();
-    s_out.close();
+    s_file->Serialize(filename + ".succinct");
   } else {
     std::cout << "De-serializing Succinct data structures...\n";
     s_file = new SuccinctFile(filename, SuccinctMode::LOAD_IN_MEMORY);

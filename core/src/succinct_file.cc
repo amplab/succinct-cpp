@@ -12,8 +12,6 @@ SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode,
                    isa_sampling_rate, npa_sampling_rate, context_len,
                    sa_sampling_scheme, isa_sampling_scheme, npa_encoding_scheme,
                    sampling_range) {
-  this->input_filename_ = filename;
-  this->succinct_filename_ = filename + ".succinct";
 }
 
 uint64_t SuccinctFile::ComputeContextValue(const char *p, uint64_t i) {
@@ -158,10 +156,6 @@ std::pair<int64_t, int64_t> SuccinctFile::GetRange(const char *p,
   return range;
 }
 */
-
-std::string SuccinctFile::Name() {
-  return input_filename_;
-}
 
 void SuccinctFile::Extract(std::string& result, uint64_t offset, uint64_t len) {
   result.resize(len);

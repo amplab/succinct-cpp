@@ -36,6 +36,12 @@ class SuccinctShard : public SuccinctCore {
                     NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
                 uint32_t context_len = 3, uint32_t sampling_range = 1024);
 
+  SuccinctShard()
+      : SuccinctCore() {
+    id_ = 0;
+    invalid_offsets_ = NULL;
+  }
+
   virtual ~SuccinctShard() {
   }
 
@@ -45,11 +51,9 @@ class SuccinctShard : public SuccinctCore {
 
   uint32_t GetNPASamplingRate();
 
-  std::string Name();
-
   size_t GetNumKeys();
 
-  void Get(std::string& result, int64_t key);
+  virtual void Get(std::string& result, int64_t key);
 
   void Access(std::string& result, int64_t key, int32_t offset, int32_t len);
 
@@ -69,13 +73,13 @@ class SuccinctShard : public SuccinctCore {
   void RegexCount(std::vector<size_t>& result, const std::string& str);
 
   // Serialize succinct data structures
-  virtual size_t Serialize();
+  virtual size_t Serialize(const std::string& path);
 
   // Deserialize succinct data structures
-  virtual size_t Deserialize();
+  virtual size_t Deserialize(const std::string& path);
 
   // Memory map succinct data structures
-  virtual size_t MemoryMap();
+  virtual size_t MemoryMap(const std::string& path);
 
   // Get succinct shard size
   virtual size_t StorageSize();

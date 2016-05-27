@@ -37,7 +37,7 @@ class SuccinctCore : public SuccinctBase {
   typedef std::pair<int64_t, int64_t> Range;
 
   /* Constructors */
-  SuccinctCore(const char *filename, SuccinctMode s_mode =
+  SuccinctCore(const std::string& filename, SuccinctMode s_mode =
                    SuccinctMode::CONSTRUCT_IN_MEMORY,
                uint32_t sa_sampling_rate = 32, uint32_t isa_sampling_rate = 32,
                uint32_t npa_sampling_rate = 128, uint32_t context_len = 3,
@@ -48,6 +48,15 @@ class SuccinctCore : public SuccinctBase {
                NPA::NPAEncodingScheme npa_encoding_scheme =
                    NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
                uint32_t sampling_range = 1024);
+
+  SuccinctCore() {
+    this->alphabet_ = NULL;
+    this->sa_ = NULL;
+    this->isa_ = NULL;
+    this->npa_ = NULL;
+    this->alphabet_size_ = 0;
+    this->input_size_ = 0;
+  }
 
   virtual ~SuccinctCore() {
   }
@@ -69,13 +78,13 @@ class SuccinctCore : public SuccinctBase {
   char CharAt(uint64_t i);
 
   // Serialize succinct data structures
-  virtual size_t Serialize();
+  virtual size_t Serialize(const std::string& filename);
 
   // Deserialize succinct data structures
-  virtual size_t Deserialize();
+  virtual size_t Deserialize(const std::string& filename);
 
   // Memory map succinct data structures
-  virtual size_t MemoryMap();
+  virtual size_t MemoryMap(const std::string& filename);
 
   // Get size of original input
   uint64_t GetOriginalSize();
@@ -108,9 +117,31 @@ class SuccinctCore : public SuccinctBase {
 
  protected:
 
+  // Allocates high level containers
+  void Allocate(uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+                uint32_t npa_sampling_rate, uint32_t context_len,
+                SamplingScheme sa_sampling_scheme,
+                SamplingScheme isa_sampling_scheme,
+                NPA::NPAEncodingScheme npa_encoding_scheme,
+                uint32_t sampling_range);
+
+  // Constructs the core data structures
+  void Construct(const std::string& filename, uint32_t sa_sampling_rate,
+                 uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
+                 uint32_t context_len, SamplingScheme sa_sampling_scheme,
+                 SamplingScheme isa_sampling_scheme,
+                 NPA::NPAEncodingScheme npa_encoding_scheme,
+                 uint32_t sampling_range);
+
+  // Constructs the core data structures
+  void Construct(uint8_t* input, size_t input_size, uint32_t sa_sampling_rate,
+                 uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
+                 uint32_t context_len, SamplingScheme sa_sampling_scheme,
+                 SamplingScheme isa_sampling_scheme,
+                 NPA::NPAEncodingScheme npa_encoding_scheme,
+                 uint32_t sampling_range);
+
   /* Metadata */
-  std::string filename_;               // Name of input file
-  std::string succinct_path_;          // Name of succinct path
   uint64_t input_size_;                // Size of input
 
   /* Primary data structures */
@@ -124,13 +155,6 @@ class SuccinctCore : public SuccinctBase {
   uint32_t alphabet_size_;             // Size of the input alphabet_
 
  private:
-  // Constructs the core data structures
-  void Construct(const char* filename, uint32_t sa_sampling_rate,
-                 uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
-                 uint32_t context_len, SamplingScheme sa_sampling_scheme,
-                 SamplingScheme isa_sampling_scheme,
-                 NPA::NPAEncodingScheme npa_encoding_scheme,
-                 uint32_t sampling_range);
 
   uint64_t ComputeContextValue(char* data, uint32_t i, uint32_t context_len) {
     uint64_t val = 0;

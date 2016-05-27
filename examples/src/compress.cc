@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
                                         sampling_scheme, npa_encoding_scheme);
 
     // Serialize the compressed representation to disk at the location <inputpath>.succinct
-    fd->Serialize();
+    fd->Serialize(inputpath + ".succinct");
     delete fd;
   } else if (type == "kv") {
     // The following compresses an input file at "inputpath" in memory
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
                                           sampling_scheme, npa_encoding_scheme);
 
     // Serialize the compressed representation to disk at the location <inputpath>.succinct
-    fd->Serialize();
+    fd->Serialize(inputpath + ".succinct");
     delete fd;
   } else {
     fprintf(stderr, "Invalid type: %s\n", type.c_str());

@@ -1,6 +1,6 @@
 #include "succinct_core.h"
 
-SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
+SuccinctCore::SuccinctCore(const std::string& filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,
                            uint32_t isa_sampling_rate,
                            uint32_t npa_sampling_rate, uint32_t context_len,
@@ -16,8 +16,6 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
   this->npa_ = NULL;
   this->alphabet_size_ = 0;
   this->input_size_ = 0;
-  this->filename_ = std::string(filename);
-  this->succinct_path_ = this->filename_ + ".succinct";
   switch (s_mode) {
     case SuccinctMode::CONSTRUCT_IN_MEMORY: {
       Construct(filename, sa_sampling_rate, isa_sampling_rate,
@@ -31,153 +29,125 @@ SuccinctCore::SuccinctCore(const char *filename, SuccinctMode s_mode,
       break;
     }
     case SuccinctMode::LOAD_IN_MEMORY: {
-      switch (npa_encoding_scheme) {
-        case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-          npa_ = new EliasGammaEncodedNPA(context_len, npa_sampling_rate,
-                                          s_allocator);
-          break;
-        case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-          npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
-                                          s_allocator);
-          return;
-        case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-          npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
-                                           s_allocator);
-          break;
-        default:
-          npa_ = NULL;
-      }
-
-      assert(npa_ != NULL);
-
-      switch (sa_sampling_scheme) {
-        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-          sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-          sa_ = new SampledByValueSA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-          sa_ = new LayeredSampledSA(sa_sampling_rate,
-                                     sa_sampling_rate * sampling_range, npa_,
-                                     s_allocator);
-          break;
-        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-          sa_ = new OpportunisticLayeredSampledSA(
-              sa_sampling_rate, sa_sampling_rate * sampling_range, npa_,
-              s_allocator);
-          break;
-        default:
-          sa_ = NULL;
-      }
-
-      assert(sa_ != NULL);
-
-      switch (isa_sampling_scheme) {
-        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-          isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-          assert(
-              sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
-          isa_ = new SampledByValueISA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-          isa_ = new LayeredSampledISA(isa_sampling_rate,
-                                       isa_sampling_rate * sampling_range, npa_,
-                                       s_allocator);
-          break;
-        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-          isa_ = new OpportunisticLayeredSampledISA(
-              isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
-              s_allocator);
-          break;
-        default:
-          isa_ = NULL;
-      }
-
-      assert(isa_ != NULL);
-
-      Deserialize();
+      Allocate(sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
+               context_len, sa_sampling_scheme, isa_sampling_scheme,
+               npa_encoding_scheme, sampling_range);
+      Deserialize(filename);
       break;
     }
     case SuccinctMode::LOAD_MEMORY_MAPPED: {
-      switch (npa_encoding_scheme) {
-        case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-          npa_ = new EliasGammaEncodedNPA(context_len, npa_sampling_rate,
-                                          s_allocator);
-          break;
-        case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-          npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
-                                          s_allocator);
-          return;
-        case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-          npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
-                                           s_allocator);
-          break;
-        default:
-          npa_ = NULL;
-      }
-
-      assert(npa_ != NULL);
-
-      switch (sa_sampling_scheme) {
-        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-          sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-          sa_ = new SampledByValueSA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-          sa_ = new LayeredSampledSA(sa_sampling_rate,
-                                     sa_sampling_rate * sampling_range, npa_,
-                                     s_allocator);
-          break;
-        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-          sa_ = new OpportunisticLayeredSampledSA(
-              sa_sampling_rate, sa_sampling_rate * sampling_range, npa_,
-              s_allocator);
-          break;
-        default:
-          sa_ = NULL;
-      }
-
-      assert(sa_ != NULL);
-
-      switch (isa_sampling_scheme) {
-        case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-          isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-          assert(
-              sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
-          isa_ = new SampledByValueISA(sa_sampling_rate, npa_, s_allocator);
-          break;
-        case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-          isa_ = new LayeredSampledISA(isa_sampling_rate,
-                                       isa_sampling_rate * sampling_range, npa_,
-                                       s_allocator);
-          break;
-        case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-          isa_ = new OpportunisticLayeredSampledISA(
-              isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
-              s_allocator);
-          break;
-        default:
-          isa_ = NULL;
-      }
-
-      assert(isa_ != NULL);
-
-      MemoryMap();
+      Allocate(sa_sampling_rate, isa_sampling_rate, npa_sampling_rate,
+               context_len, sa_sampling_scheme, isa_sampling_scheme,
+               npa_encoding_scheme, sampling_range);
+      MemoryMap(filename);
       break;
     }
   }
 
 }
 
+void SuccinctCore::Allocate(uint32_t sa_sampling_rate,
+                            uint32_t isa_sampling_rate,
+                            uint32_t npa_sampling_rate, uint32_t context_len,
+                            SamplingScheme sa_sampling_scheme,
+                            SamplingScheme isa_sampling_scheme,
+                            NPA::NPAEncodingScheme npa_encoding_scheme,
+                            uint32_t sampling_range) {
+  switch (npa_encoding_scheme) {
+    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
+      npa_ = new EliasGammaEncodedNPA(context_len, npa_sampling_rate,
+                                      s_allocator);
+      break;
+    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
+      npa_ = new EliasDeltaEncodedNPA(context_len, npa_sampling_rate,
+                                      s_allocator);
+      return;
+    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
+      npa_ = new WaveletTreeEncodedNPA(context_len, npa_sampling_rate,
+                                       s_allocator);
+      break;
+    default:
+      npa_ = NULL;
+  }
+
+  assert(npa_ != NULL);
+
+  switch (sa_sampling_scheme) {
+    case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+      sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, s_allocator);
+      break;
+    case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
+      sa_ = new SampledByValueSA(sa_sampling_rate, npa_, s_allocator);
+      break;
+    case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+      sa_ = new LayeredSampledSA(sa_sampling_rate,
+                                 sa_sampling_rate * sampling_range, npa_,
+                                 s_allocator);
+      break;
+    case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+      sa_ = new OpportunisticLayeredSampledSA(sa_sampling_rate,
+                                              sa_sampling_rate * sampling_range,
+                                              npa_, s_allocator);
+      break;
+    default:
+      sa_ = NULL;
+  }
+
+  assert(sa_ != NULL);
+
+  switch (isa_sampling_scheme) {
+    case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+      isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, s_allocator);
+      break;
+    case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
+      assert(sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+      isa_ = new SampledByValueISA(sa_sampling_rate, npa_, s_allocator);
+      break;
+    case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+      isa_ = new LayeredSampledISA(isa_sampling_rate,
+                                   isa_sampling_rate * sampling_range, npa_,
+                                   s_allocator);
+      break;
+    case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+      isa_ = new OpportunisticLayeredSampledISA(
+          isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
+          s_allocator);
+      break;
+    default:
+      isa_ = NULL;
+  }
+
+  assert(isa_ != NULL);
+}
+
+void SuccinctCore::Construct(const std::string& filename,
+                             uint32_t sa_sampling_rate,
+                             uint32_t isa_sampling_rate,
+                             uint32_t npa_sampling_rate, uint32_t context_len,
+                             SamplingScheme sa_sampling_scheme,
+                             SamplingScheme isa_sampling_scheme,
+                             NPA::NPAEncodingScheme npa_encoding_scheme,
+                             uint32_t sampling_range) {
+  // Get input size
+  FILE *f = fopen(filename.c_str(), "r");
+  fseek(f, 0, SEEK_END);
+  uint64_t fsize = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  // Read input from file
+  uint8_t *data = (uint8_t *) s_allocator.s_malloc(fsize + 1);
+  fread(data, fsize, 1, f);
+  fclose(f);
+  data[fsize] = 1;
+
+  Construct(data, fsize + 1, sa_sampling_rate, isa_sampling_rate,
+            npa_sampling_rate, context_len, sa_sampling_scheme,
+            isa_sampling_scheme, npa_encoding_scheme, sampling_range);
+}
+
 /* Primary Construct function */
-void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
+void SuccinctCore::Construct(uint8_t* input, size_t input_size,
+                             uint32_t sa_sampling_rate,
                              uint32_t isa_sampling_rate,
                              uint32_t npa_sampling_rate, uint32_t context_len,
                              SamplingScheme sa_sampling_scheme,
@@ -185,30 +155,18 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
                              NPA::NPAEncodingScheme npa_encoding_scheme,
                              uint32_t sampling_range) {
 
-  std::string sa_file = std::string(filename) + ".tmp.sa";
-  std::string isa_file = std::string(filename) + ".tmp.isa";
-  std::string npa_file = std::string(filename) + ".tmp.npa";
-
-  // Get input size
-  FILE *f = fopen(filename, "r");
-  fseek(f, 0, SEEK_END);
-  uint64_t fsize = ftell(f);
-  fseek(f, 0, SEEK_SET);
-
-  // Read input from file
-  char *data = (char *) s_allocator.s_malloc(fsize + 1);
-  fread(data, fsize, 1, f);
-  fclose(f);
-  data[fsize] = (char) 1;
+  std::string sa_file = ".tmp.sa";
+  std::string isa_file = ".tmp.isa";
+  std::string npa_file = ".tmp.npa";
 
   // Save metadata
-  input_size_ = fsize + 1;
+  input_size_ = input_size;
   uint32_t bits = SuccinctUtils::IntegerLog2(input_size_ + 1);
 
   // Construct Suffix Array
   int64_t *lSA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t), input_size_);
-  divsufsortxx::constructSA((uint8_t *) data, (uint8_t *) (data + input_size_),
-                            lSA, lSA + input_size_, 256);
+  divsufsortxx::constructSA(input, (input + input_size_), lSA,
+                            lSA + input_size_, 256);
 
   // Write Suffix Array to file
   SuccinctUtils::WriteToFile(lSA, input_size_, sa_file);
@@ -227,13 +185,13 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
   prv_sa = cur_sa = sa_stream.Get();
   lISA[cur_sa] = 0;
   alphabet_size_ = 1;
-  alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
+  alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
   col_offsets.push_back(0);
   for (uint64_t i = 1; i < input_size_; i++) {
     cur_sa = sa_stream.Get();
     lISA[cur_sa] = i;
-    if (data[cur_sa] != data[prv_sa]) {
-      alphabet_map_[data[cur_sa]] = std::pair<uint64_t, uint32_t>(
+    if (input[cur_sa] != input[prv_sa]) {
+      alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
           i, alphabet_size_++);
       col_offsets.push_back(i);
     }
@@ -262,11 +220,11 @@ void SuccinctCore::Construct(const char* filename, uint32_t sa_sampling_rate,
     int sigma_bits = SuccinctUtils::IntegerLog2(alphabet_size_ + 1);
     InitBitmap(&data_bitmap, input_size_ * sigma_bits, s_allocator);
     for (uint64_t i = 0; i < input_size_; i++) {
-      SetBitmapArray(&data_bitmap, i, alphabet_map_[data[i]].second,
+      SetBitmapArray(&data_bitmap, i, alphabet_map_[input[i]].second,
                      sigma_bits);
     }
   }
-  s_allocator.s_free(data);
+  s_allocator.s_free(input);
 
   switch (npa_encoding_scheme) {
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
@@ -378,26 +336,22 @@ char SuccinctCore::CharAt(uint64_t i) {
   return alphabet_[LookupC(LookupISA(i))];
 }
 
-size_t SuccinctCore::Serialize() {
+size_t SuccinctCore::Serialize(const std::string& path) {
   size_t out_size = 0;
   typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
   struct stat st;
-  if (stat(succinct_path_.c_str(), &st) != 0) {
-    if (mkdir(succinct_path_.c_str(),
-              (mode_t) (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))
-        != 0) {
-      fprintf(
-          stderr,
-          "Succinct path '%s' does not exist, and failed to create it (no space or permission?)\n",
-          this->succinct_path_.c_str());
+  mode_t create_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  if (stat(path.c_str(), &st) != 0) {
+    if (mkdir(path.c_str(), create_mode) != 0) {
+      fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
       fprintf(stderr, "Terminating the serialization process.\n");
       return 0;
     }
   }
-  std::ofstream out(succinct_path_ + "/metadata");
-  std::ofstream sa_out(succinct_path_ + "/sa");
-  std::ofstream isa_out(succinct_path_ + "/isa");
-  std::ofstream npa_out(succinct_path_ + "/npa");
+  std::ofstream out(path + "/metadata");
+  std::ofstream sa_out(path + "/sa");
+  std::ofstream isa_out(path + "/isa");
+  std::ofstream npa_out(path + "/npa");
 
   // Output size of input file
   out.write(reinterpret_cast<const char *>(&(input_size_)), sizeof(uint64_t));
@@ -443,15 +397,15 @@ size_t SuccinctCore::Serialize() {
   return out_size;
 }
 
-size_t SuccinctCore::Deserialize() {
+size_t SuccinctCore::Deserialize(const std::string& path) {
   // Check if directory exists
   struct stat st;
-  assert(stat(succinct_path_.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+  assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
-  std::ifstream in(succinct_path_ + "/metadata");
-  std::ifstream sa_in(succinct_path_ + "/sa");
-  std::ifstream isa_in(succinct_path_ + "/isa");
-  std::ifstream npa_in(succinct_path_ + "/npa");
+  std::ifstream in(path + "/metadata");
+  std::ifstream sa_in(path + "/sa");
+  std::ifstream isa_in(path + "/isa");
+  std::ifstream npa_in(path + "/npa");
 
   size_t in_size = 0;
 
@@ -526,14 +480,13 @@ size_t SuccinctCore::Deserialize() {
   return in_size;
 }
 
-size_t SuccinctCore::MemoryMap() {
+size_t SuccinctCore::MemoryMap(const std::string& path) {
   // Check if directory exists
   struct stat st;
-  assert(stat(succinct_path_.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+  assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
   uint8_t *data_beg, *data;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(
-      succinct_path_ + "/metadata");
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/metadata");
 
   input_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);
@@ -565,8 +518,8 @@ size_t SuccinctCore::MemoryMap() {
   data += (sizeof(char) * (alphabet_size_ + 1));
 
   // Memory map SA and ISA
-  data += sa_->MemoryMap(succinct_path_ + "/sa");
-  data += isa_->MemoryMap(succinct_path_ + "/isa");
+  data += sa_->MemoryMap(path + "/sa");
+  data += isa_->MemoryMap(path + "/isa");
 
   // Memory map bitmap marking positions of sampled values if the sampling scheme
   // is sample by value.
@@ -581,16 +534,13 @@ size_t SuccinctCore::MemoryMap() {
   // Memory map NPA based on the NPA encoding scheme.
   switch (npa_->GetEncodingScheme()) {
     case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:
-      data += ((EliasDeltaEncodedNPA *) npa_)->MemoryMap(
-          succinct_path_ + "/npa");
+      data += ((EliasDeltaEncodedNPA *) npa_)->MemoryMap(path + "/npa");
       break;
     case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:
-      data += ((EliasGammaEncodedNPA *) npa_)->MemoryMap(
-          succinct_path_ + "/npa");
+      data += ((EliasGammaEncodedNPA *) npa_)->MemoryMap(path + "/npa");
       break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-      data += ((WaveletTreeEncodedNPA *) npa_)->MemoryMap(
-          succinct_path_ + "/npa");
+      data += ((WaveletTreeEncodedNPA *) npa_)->MemoryMap(path + "/npa");
       break;
     default:
       assert(0);

@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     s_file = new SuccinctFile(filename);
 
     std::cout << "Serializing Succinct data structures...\n";
-    s_file->Serialize();
+    s_file->Serialize(filename + ".succinct");
   } else {
     // If mode is set to 1, read the serialized data structures from disk.
     // The serialized data structures must exist at <filename>.succinct.

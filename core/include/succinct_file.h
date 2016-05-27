@@ -25,11 +25,6 @@ class SuccinctFile : public SuccinctCore {
                uint32_t context_len = 3, uint32_t sampling_range = 1024);
 
   /*
-   * Get the name of the SuccinctFile
-   */
-  std::string Name();
-
-  /*
    * Random access into the Succinct file with the specified offset
    * and length
    */
@@ -55,9 +50,6 @@ class SuccinctFile : public SuccinctCore {
   // std::pair<int64_t, int64_t> GetRangeSlow(const char *str, uint64_t len);
   std::pair<int64_t, int64_t> GetRange(const char *str, uint64_t len);
   uint64_t ComputeContextValue(const char *str, uint64_t pos);
-
-  std::string input_filename_;
-  std::string succinct_filename_;
 
 };
 

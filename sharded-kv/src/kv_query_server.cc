@@ -67,7 +67,7 @@ class KVQueryServiceHandler : virtual public KVQueryServiceIf {
       if (mode_ == 0) {
         fprintf(stderr, "Serializing data structures for file %s\n",
                 filename_.c_str());
-        succinct_shard_->Serialize();
+        succinct_shard_->Serialize(filename_ + ".succinct");
       } else {
         fprintf(stderr, "Read data structures from file %s\n",
                 filename_.c_str());

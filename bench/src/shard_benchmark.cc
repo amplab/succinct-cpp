@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
                            sa_sampling_rate, isa_sampling_rate,
                            npa_sampling_rate, scheme, scheme, npa_scheme);
     // Serialize
-    fd->Serialize();
+    fd->Serialize(inputpath + ".succinct");
   } else if (mode == 1) {
     fprintf(stderr, "SuccinctMode = Load in memory.\n");
     fd = new SuccinctShard(0, inputpath, SuccinctMode::LOAD_IN_MEMORY,

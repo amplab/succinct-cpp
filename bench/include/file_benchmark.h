@@ -265,42 +265,41 @@ class FileBenchmark : public Benchmark {
   void BenchmarkCore() {
     fprintf(stderr, "Benchmarking Core Functions...\n\n");
     fprintf(stderr, "Benchmarking lookupNPA...\n");
-    BenchmarkLookupFunction(&SuccinctFile::LookupNPA,
-                            succinct_file_->Name() + ".npa");
+    BenchmarkLookupFunction(&SuccinctFile::LookupNPA, "result.npa");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking lookupSA...\n");
     BenchmarkLookupFunction(&SuccinctFile::LookupSA,
-                            succinct_file_->Name() + ".sa");
+                            "result.sa");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking lookupISA...\n");
     BenchmarkLookupFunction(&SuccinctFile::LookupISA,
-                            succinct_file_->Name() + ".isa");
+                            "result.isa");
     fprintf(stderr, "Done!\n\n");
   }
 
   void BenchmarkFile() {
     fprintf(stderr, "Benchmarking File Functions...\n\n");
     fprintf(stderr, "Benchmarking extract ticks...\n");
-    BenchmarkExtractTicks(succinct_file_->Name() + ".extract.ticks");
+    BenchmarkExtractTicks("result.extract.ticks");
     fprintf(stderr, "Done!\n\n");
     fprintf(stderr, "Benchmarking extract...\n");
-    BenchmarkExtract(succinct_file_->Name() + ".extract");
+    BenchmarkExtract("result.extract");
     fprintf(stderr, "Done!\n\n");
     if (queries_.size() == 0) {
       fprintf(stderr, "[WARNING]: No queries have been loaded.\n");
       fprintf(stderr, "[WARNING]: Skipping count and search benchmarks.\n");
     } else {
       fprintf(stderr, "Benchmarking count ticks...\n");
-      BenchmarkCountTicks(succinct_file_->Name() + ".count.ticks");
+      BenchmarkCountTicks("result.count.ticks");
       fprintf(stderr, "Done!\n\n");
       fprintf(stderr, "Benchmarking search ticks...\n");
-      BenchmarkSearchTicks(succinct_file_->Name() + ".search.ticks");
+      BenchmarkSearchTicks("result.search.ticks");
       fprintf(stderr, "Done!\n\n");
       fprintf(stderr, "Benchmarking count...\n");
-      BenchmarkCount(succinct_file_->Name() + ".count");
+      BenchmarkCount("result.count");
       fprintf(stderr, "Done!\n\n");
       fprintf(stderr, "Benchmarking search...\n");
-      BenchmarkSearch(succinct_file_->Name() + ".search");
+      BenchmarkSearch("result.search");
       fprintf(stderr, "Done!\n\n");
     }
   }

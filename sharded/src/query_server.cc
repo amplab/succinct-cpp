@@ -64,7 +64,7 @@ class QueryServiceHandler : virtual public QueryServiceIf {
       if (mode_ == 0) {
         fprintf(stderr, "Serializing data structures for file %s\n",
                 filename_.c_str());
-        succinct_file_->Serialize();
+        succinct_file_->Serialize(filename_ + ".succinct");
       } else {
         fprintf(stderr, "Read data structures from file %s\n",
                 filename_.c_str());

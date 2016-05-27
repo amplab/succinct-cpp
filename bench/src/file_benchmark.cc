@@ -103,9 +103,7 @@ int main(int argc, char **argv) {
                                         npa_scheme);
 
     // Serialize and save to file
-    std::ofstream s_out(inputpath + ".succinct");
-    fd->Serialize();
-    s_out.close();
+    fd->Serialize(inputpath + ".succinct");
 
     // Create benchmark
     file_bench = new FileBenchmark(fd, querypath);
