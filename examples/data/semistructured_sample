@@ -1,0 +1,10 @@
+firstname=john,lastname=smith,age=42
+firstname=jane,lastname=smith,location=berkeley
+firstname=joe,age=32
+lastname=baggins,location=berkeley
+firstname=alice,lastname=smith,age=42,location=san francisco
+firstname=foo,lastname=bar,location=baz
+location=berkeley,age=22
+name=bob,dob=1/2/3
+firstname=something,lastname=else
+name=succinct,age=2,location=berkeley
