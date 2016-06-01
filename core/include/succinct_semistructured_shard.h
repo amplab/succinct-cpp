@@ -150,6 +150,24 @@ class SuccinctSemistructuredShard : public SuccinctShard {
     }
   }
 
+  void Get(std::string& result, int64_t key, std::string& attr_key) {
+    std::string data;
+    SuccinctShard::Get(data, key);
+
+    // Format
+    size_t i = 0;
+    while (i < data.size()) {
+      uint8_t delim = data[i++];
+      std::string _attr_key = delimiter_to_attr_key_map_.at(delim);
+      std::string _attr_val = ExtractField(data, i, delim);
+      if (_attr_key == attr_key) {
+        result = _attr_val;
+        return;
+      }
+      i += (_attr_val.size() + 1);
+    }
+  }
+
  private:
   std::string ExtractField(std::string& data, size_t start_offset,
                            uint8_t delim) {
