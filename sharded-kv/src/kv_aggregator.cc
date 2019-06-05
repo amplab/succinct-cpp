@@ -24,7 +24,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
+using stdcxx::shared_ptr;
 
 class KVAggregatorServiceHandler : virtual public KVAggregatorServiceIf {
  public:
@@ -37,9 +37,9 @@ class KVAggregatorServiceHandler : virtual public KVAggregatorServiceIf {
     fprintf(stderr, "Num shards = %u\n", num_shards_);
     for (uint32_t i = 0; i < num_shards_; i++) {
       int port = KV_SERVER_PORT + i;
-      boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-      boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-      boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+      stdcxx::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+      stdcxx::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+      stdcxx::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
       KVQueryServiceClient client(protocol);
       transport->open();
       fprintf(stderr, "Connected to QueryServer %u!\n", i);
@@ -147,10 +147,10 @@ class KVAggregatorServiceHandler : virtual public KVAggregatorServiceIf {
     for (int i = 0; i < num_shards_; i++) {
       fprintf(stderr, "Connecting to local server %d...", i);
       try {
-        boost::shared_ptr<TSocket> socket(
+        stdcxx::shared_ptr<TSocket> socket(
             new TSocket("localhost", KV_SERVER_PORT + i));
-        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        stdcxx::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        stdcxx::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         KVQueryServiceClient qsclient(protocol);
         transport->open();
         fprintf(stderr, "Connected!\n");
@@ -185,7 +185,7 @@ class KVAggregatorServiceHandler : virtual public KVAggregatorServiceIf {
 
  private:
   std::vector<KVQueryServiceClient> qservers_;
-  std::vector<boost::shared_ptr<TTransport>> qserver_transports_;
+  std::vector<stdcxx::shared_ptr<TTransport>> qserver_transports_;
   uint32_t num_shards_;
 };
 
@@ -195,10 +195,10 @@ class KVHandlerProcessorFactory : public TProcessorFactory {
     num_shards_ = num_shards;
   }
 
-  boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
-    boost::shared_ptr<KVAggregatorServiceHandler> handler(
+  stdcxx::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
+    stdcxx::shared_ptr<KVAggregatorServiceHandler> handler(
         new KVAggregatorServiceHandler(num_shards_));
-    boost::shared_ptr<TProcessor> handlerProcessor(
+    stdcxx::shared_ptr<TProcessor> handlerProcessor(
         new KVAggregatorServiceProcessor(handler));
     return handlerProcessor;
   }

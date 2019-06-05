@@ -24,7 +24,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
+using stdcxx::shared_ptr;
 
 class AggregatorServiceHandler : virtual public AggregatorServiceIf {
  public:
@@ -37,9 +37,9 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
     fprintf(stderr, "Num shards = %u\n", num_shards_);
     for (uint32_t i = 0; i < num_shards_; i++) {
       int port = SERVER_PORT + i;
-      boost::shared_ptr<TSocket> socket(new TSocket("localhost", port));
-      boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-      boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+      stdcxx::shared_ptr<TSocket> socket(new TSocket("localhost", port));
+      stdcxx::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+      stdcxx::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
       QueryServiceClient client(protocol);
       transport->open();
       fprintf(stderr, "Connected to QueryServer %u!\n", i);
@@ -143,10 +143,10 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
     for (int i = 0; i < num_shards_; i++) {
       fprintf(stderr, "Connecting to local server %d...", i);
       try {
-        boost::shared_ptr<TSocket> socket(
+        stdcxx::shared_ptr<TSocket> socket(
             new TSocket("localhost", SERVER_PORT + i));
-        boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-        boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+        stdcxx::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+        stdcxx::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
         QueryServiceClient qsclient(protocol);
         transport->open();
         fprintf(stderr, "Connected!\n");
@@ -200,7 +200,7 @@ class AggregatorServiceHandler : virtual public AggregatorServiceIf {
   }
 
   std::vector<QueryServiceClient> qservers_;
-  std::vector<boost::shared_ptr<TTransport>> qserver_transports_;
+  std::vector<stdcxx::shared_ptr<TTransport>> qserver_transports_;
   std::map<int64_t, size_t> shard_map_;
   std::map<size_t, int64_t> offset_map_;
   uint32_t num_shards_;
@@ -212,10 +212,10 @@ class HandlerProcessorFactory : public TProcessorFactory {
     num_shards_ = num_shards;
   }
 
-  boost::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
-    boost::shared_ptr<AggregatorServiceHandler> handler(
+  stdcxx::shared_ptr<TProcessor> getProcessor(const TConnectionInfo&) {
+    stdcxx::shared_ptr<AggregatorServiceHandler> handler(
         new AggregatorServiceHandler(num_shards_));
-    boost::shared_ptr<TProcessor> handlerProcessor(
+    stdcxx::shared_ptr<TProcessor> handlerProcessor(
         new AggregatorServiceProcessor(handler));
     return handlerProcessor;
   }

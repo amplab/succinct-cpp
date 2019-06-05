@@ -16,9 +16,9 @@ class SuccinctKVClient {
  public:
   SuccinctKVClient(const std::string& host, const uint32_t port =
   KV_AGGREGATOR_PORT) {
-    socket_ = boost::shared_ptr<TSocket>(new TSocket("localhost", port));
-    transport_ = boost::shared_ptr<TTransport>(new TBufferedTransport(socket_));
-    protocol_ = boost::shared_ptr<TProtocol>(new TBinaryProtocol(transport_));
+    socket_ = stdcxx::shared_ptr<TSocket>(new TSocket("localhost", port));
+    transport_ = stdcxx::shared_ptr<TTransport>(new TBufferedTransport(socket_));
+    protocol_ = stdcxx::shared_ptr<TProtocol>(new TBinaryProtocol(transport_));
     transport_->open();
     client_ = new KVAggregatorServiceClient(protocol_);
     client_->ConnectToServers();
@@ -111,9 +111,9 @@ class SuccinctKVClient {
   }
 
  private:
-  boost::shared_ptr<TSocket> socket_;
-  boost::shared_ptr<TTransport> transport_;
-  boost::shared_ptr<TProtocol> protocol_;
+  stdcxx::shared_ptr<TSocket> socket_;
+  stdcxx::shared_ptr<TTransport> transport_;
+  stdcxx::shared_ptr<TProtocol> protocol_;
   KVAggregatorServiceClient *client_;
 
 };

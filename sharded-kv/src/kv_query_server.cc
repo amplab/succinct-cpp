@@ -19,7 +19,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
+using stdcxx::shared_ptr;
 
 class KVQueryServiceHandler : virtual public KVQueryServiceIf {
  public:
