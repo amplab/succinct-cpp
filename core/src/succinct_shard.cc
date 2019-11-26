@@ -152,7 +152,7 @@ uint32_t SuccinctShard::GetSASamplingRate() {
   return sa_->GetSamplingRate();
 }
 
-uint32_t SuccinctShard::GetISASamplngRate() {
+uint32_t SuccinctShard::GetISASamplingRate() {
   return isa_->GetSamplingRate();
 }
 
@@ -168,7 +168,7 @@ int64_t SuccinctShard::GetValueOffsetPos(const int64_t key) {
           || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
 }
 
-void SuccinctShard::Access(std::string& result, int64_t key, int32_t offset,
+void SuccinctShard::Access(std::string &result, int64_t key, int32_t offset,
                            int32_t len) {
   result = "";
   int64_t pos = GetValueOffsetPos(key);
@@ -177,7 +177,7 @@ void SuccinctShard::Access(std::string& result, int64_t key, int32_t offset,
   int64_t start = value_offsets_[pos] + offset;
   int64_t end =
       ((size_t) (pos + 1) < value_offsets_.size()) ?
-          value_offsets_[pos + 1] : input_size_;
+      value_offsets_[pos + 1] : input_size_;
   len = fmin(len, end - start - 1);
   result.resize(len);
   uint64_t idx = LookupISA(start);
@@ -192,7 +192,7 @@ void SuccinctShard::Access(std::string& result, int64_t key, int32_t offset,
   }
 }
 
-void SuccinctShard::Get(std::string& result, int64_t key) {
+void SuccinctShard::Get(std::string &result, int64_t key) {
   result = "";
   int64_t pos = GetValueOffsetPos(key);
   if (pos < 0)
@@ -200,7 +200,7 @@ void SuccinctShard::Get(std::string& result, int64_t key) {
   int64_t start = value_offsets_[pos];
   int64_t end =
       ((size_t) (pos + 1) < value_offsets_.size()) ?
-          value_offsets_[pos + 1] : input_size_;
+      value_offsets_[pos + 1] : input_size_;
   int64_t len = end - start - 1;
   result.resize(len);
   uint64_t idx = LookupISA(start);
@@ -224,7 +224,7 @@ int64_t SuccinctShard::GetKeyPos(const int64_t value_offset) {
           || ACCESSBIT(invalid_offsets_, pos) == 1) ? -1 : pos;
 }
 
-void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
+void SuccinctShard::Search(std::set<int64_t> &result, const std::string &str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
@@ -237,25 +237,25 @@ void SuccinctShard::Search(std::set<int64_t> &result, const std::string& str) {
 }
 
 void SuccinctShard::RegexSearch(std::set<std::pair<size_t, size_t>> &result,
-                                const std::string& query, bool opt) {
+                                const std::string &query, bool opt) {
   SRegEx re(query, this, opt);
   re.Execute();
   re.GetResults(result);
 }
 
 void SuccinctShard::RegexCount(std::vector<size_t> &result,
-                               const std::string& query) {
+                               const std::string &query) {
   SRegEx re(query, this);
   re.Count(result);
 }
 
-int64_t SuccinctShard::Count(const std::string& str) {
+int64_t SuccinctShard::Count(const std::string &str) {
   std::set<int64_t> result;
   Search(result, str);
   return result.size();
 }
 
-void SuccinctShard::FlatExtract(std::string& result, int64_t offset,
+void SuccinctShard::FlatExtract(std::string &result, int64_t offset,
                                 int64_t len) {
   result = "";
   uint64_t idx = LookupISA(offset);
@@ -265,13 +265,13 @@ void SuccinctShard::FlatExtract(std::string& result, int64_t offset,
   }
 }
 
-int64_t SuccinctShard::FlatCount(const std::string& str) {
+int64_t SuccinctShard::FlatCount(const std::string &str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   return range.second - range.first + 1;
 }
 
-void SuccinctShard::FlatSearch(std::vector<int64_t>& result,
-                               const std::string& str) {
+void SuccinctShard::FlatSearch(std::vector<int64_t> &result,
+                               const std::string &str) {
   std::pair<int64_t, int64_t> range = GetRange(str.c_str(), str.length());
   if (range.first > range.second)
     return;
@@ -281,7 +281,7 @@ void SuccinctShard::FlatSearch(std::vector<int64_t>& result,
   }
 }
 
-size_t SuccinctShard::Serialize(const std::string& path) {
+size_t SuccinctShard::Serialize(const std::string &path) {
   size_t out_size = SuccinctCore::Serialize(path);
 
   // Write keys, value offsets, and invalid bitmap to file
@@ -313,7 +313,7 @@ size_t SuccinctShard::Serialize(const std::string& path) {
   return out_size;
 }
 
-size_t SuccinctShard::Deserialize(const std::string& path) {
+size_t SuccinctShard::Deserialize(const std::string &path) {
   size_t in_size = SuccinctCore::Deserialize(path);
 
   // Read keys, value offsets, and invalid bitmap from file
@@ -349,7 +349,7 @@ size_t SuccinctShard::Deserialize(const std::string& path) {
   return in_size;
 }
 
-size_t SuccinctShard::MemoryMap(const std::string& path) {
+size_t SuccinctShard::MemoryMap(const std::string &path) {
   size_t core_size = SuccinctCore::MemoryMap(path);
 
   uint8_t *data, *data_beg;

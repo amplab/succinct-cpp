@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <unistd.h>
 
 #include "succinct_shard.h"
@@ -137,11 +136,11 @@ int main(int argc, char **argv) {
     // as a flat file (no structure) using the compression parameters
     // passed in (sampling rates, etc.).
     // Leave the arguments unspecified to use default values.
-    SuccinctFile *fd = new SuccinctFile(inputpath,
-                                        SuccinctMode::CONSTRUCT_IN_MEMORY,
-                                        sa_sampling_rate, isa_sampling_rate,
-                                        npa_sampling_rate, sampling_scheme,
-                                        sampling_scheme, npa_encoding_scheme);
+    auto *fd = new SuccinctFile(inputpath,
+                                SuccinctMode::CONSTRUCT_IN_MEMORY,
+                                sa_sampling_rate, isa_sampling_rate,
+                                npa_sampling_rate, sampling_scheme,
+                                sampling_scheme, npa_encoding_scheme);
 
     // Serialize the compressed representation to disk at the location <inputpath>.succinct
     fd->Serialize(inputpath + ".succinct");
@@ -151,11 +150,11 @@ int main(int argc, char **argv) {
     // as a buffer containing key-value pairs. It uses newline '\n' to
     // differentiate between successive values, and assigns the line number
     // as the key for the corresponding value.
-    SuccinctShard *fd = new SuccinctShard(0, inputpath,
-                                          SuccinctMode::CONSTRUCT_IN_MEMORY,
-                                          sa_sampling_rate, isa_sampling_rate,
-                                          npa_sampling_rate, sampling_scheme,
-                                          sampling_scheme, npa_encoding_scheme);
+    auto *fd = new SuccinctShard(0, inputpath,
+                                 SuccinctMode::CONSTRUCT_IN_MEMORY,
+                                 sa_sampling_rate, isa_sampling_rate,
+                                 npa_sampling_rate, sampling_scheme,
+                                 sampling_scheme, npa_encoding_scheme);
 
     // Serialize the compressed representation to disk at the location <inputpath>.succinct
     fd->Serialize(inputpath + ".succinct");

@@ -1,9 +1,8 @@
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
-#include <time.h>
+#include <ctime>
 #include <sys/time.h>
-#include <sstream>
 
 #include "succinct_semistructured_shard.h"
 
@@ -24,8 +23,8 @@ void print_valid_cmds() {
 typedef unsigned long long int timestamp_t;
 
 static timestamp_t get_timestamp() {
-  struct timeval now;
-  gettimeofday(&now, NULL);
+  struct timeval now{};
+  gettimeofday(&now, nullptr);
 
   return (now.tv_usec + (time_t) now.tv_sec * 1000000);
 }
@@ -56,7 +55,7 @@ int main(int argc, char **argv) {
 
   std::string filename = std::string(argv[optind]);
 
-  SuccinctSemistructuredShard *s_file = NULL;
+  SuccinctSemistructuredShard *s_file = nullptr;
   if (mode == 0) {
     // If mode is set to 0, compress the input file.
     // Use default parameters.
@@ -124,6 +123,8 @@ int main(int argc, char **argv) {
       timestamp_t tot_time = get_timestamp() - start;
       std::cout << "Value = " << result << "; Time taken: " << tot_time
                 << "us\n";
+    } else if (cmd == "exit") {
+      break;
     } else {
       std::cerr << "Unsupported command: " << cmd << std::endl;
       print_valid_cmds();

@@ -82,8 +82,8 @@ size_t SuccinctBase::SerializeVector(std::vector<uint64_t> &v,
   out.write(reinterpret_cast<const char *>(&(v_size)), sizeof(size_t));
   out_size += sizeof(size_t);
 
-  for (size_t i = 0; i < v.size(); i++) {
-    out.write(reinterpret_cast<const char *>(&v[i]), sizeof(uint64_t));
+  for (unsigned long long & i : v) {
+    out.write(reinterpret_cast<const char *>(&i), sizeof(uint64_t));
     out_size += sizeof(uint64_t);
   }
 
@@ -163,9 +163,9 @@ void SuccinctBase::CreateBitmapArray(SuccinctBase::Bitmap **B, uint64_t *A,
                                      uint64_t n, uint32_t b,
                                      SuccinctAllocator s_allocator) {
   if (n == 0 || b == 0) {
-    assert(b == 0 || A == NULL);
+    assert(b == 0 || A == nullptr);
     delete *B;
-    *B = NULL;
+    *B = nullptr;
     return;
   }
 
@@ -247,7 +247,7 @@ size_t SuccinctBase::SerializeBitmap(SuccinctBase::Bitmap *B,
                                      std::ostream& out) {
   size_t out_size = 0;
 
-  if (B == NULL) {
+  if (B == nullptr) {
     out.write(reinterpret_cast<const char *>(&out_size), sizeof(uint64_t));
     return out_size;
   }
@@ -315,10 +315,10 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::Bitmap *B,
   D->B = new Bitmap;
   D->rank_l3 = new uint64_t[l3_size];
   D->pos_l3 = new uint64_t[l3_size];
-  uint64_t *rank_l2 = new uint64_t[l2_size];
-  uint64_t *rank_l1 = new uint64_t[l1_size];
-  uint64_t *pos_l2 = new uint64_t[l2_size];
-  uint64_t *pos_l1 = new uint64_t[l1_size];
+  auto *rank_l2 = new uint64_t[l2_size];
+  auto *rank_l1 = new uint64_t[l1_size];
+  auto *pos_l2 = new uint64_t[l2_size];
+  auto *pos_l1 = new uint64_t[l1_size];
   D->rank_l12 = new uint64_t[l2_size];
   D->pos_l12 = new uint64_t[l2_size];
 
@@ -390,13 +390,13 @@ uint64_t SuccinctBase::CreateDictionary(SuccinctBase::Bitmap *B,
 
   InitBitmap(&(D->B), size, s_allocator);
   uint64_t numBits = 0;
-  for (size_t i = 0; i < dict.size(); i++) {
-    if (i % 2 == 0) {
-      SetBitmapAtPos(&D->B, numBits, dict[i], 4);
+  for (size_t j = 0; j < dict.size(); j++) {
+    if (j % 2 == 0) {
+      SetBitmapAtPos(&D->B, numBits, dict[j], 4);
       numBits += 4;
     } else {
-      SetBitmapAtPos(&D->B, numBits, dict[i], offbits[dict[i - 1]]);
-      numBits += offbits[dict[i - 1]];
+      SetBitmapAtPos(&D->B, numBits, dict[j], offbits[dict[j - 1]]);
+      numBits += offbits[dict[j - 1]];
     }
   }
 
@@ -668,12 +668,12 @@ uint64_t SuccinctBase::GetSelect0(SuccinctBase::Dictionary *D, uint64_t i) {
   lastblock = decode_table[block_class][block_offset];
 
   uint64_t count = 0;
-  for (uint8_t i = 0; i < 16; i++) {
-    if (!((lastblock >> (15 - i)) & 1)) {
+  for (uint8_t j = 0; j < 16; j++) {
+    if (!((lastblock >> (15 - j)) & 1)) {
       count++;
     }
     if (count == val) {
-      return sel + i;
+      return sel + j;
     }
   }
 
@@ -684,7 +684,7 @@ size_t SuccinctBase::SerializeDictionary(Dictionary *D, std::ostream& out) {
 
   size_t out_size = 0;
 
-  if (D == NULL) {
+  if (D == nullptr) {
     out.write(reinterpret_cast<const char *>(&out_size), sizeof(uint64_t));
     return out_size;
   }
@@ -789,16 +789,15 @@ size_t SuccinctBase::VectorSize(std::vector<uint64_t> &v) {
 }
 
 size_t SuccinctBase::BitmapSize(Bitmap *B) {
-  if (B == NULL)
+  if (B == nullptr)
     return 0;
   return sizeof(B->size) + BITS2BLOCKS(B->size) * 8;
 }
 
 size_t SuccinctBase::DictionarySize(Dictionary *D) {
-  if (D == NULL)
+  if (D == nullptr)
     return 0;
-  return sizeof(D->size)
-      + 2 * ((D->size / L3BLKSIZE) + (D->size / L2BLKSIZE) + 2)
+  return sizeof(D->size) + 2 * ((D->size / L3BLKSIZE) + (D->size / L2BLKSIZE) + 2)
           * sizeof(uint64_t) + BitmapSize(D->B);
 }
 

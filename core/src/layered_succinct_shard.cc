@@ -1,5 +1,7 @@
 #include "layered_succinct_shard.h"
 
+#include <utility>
+
 LayeredSuccinctShard::LayeredSuccinctShard(
     uint32_t id, std::string datafile, SuccinctMode s_mode,
     uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
@@ -7,7 +9,7 @@ LayeredSuccinctShard::LayeredSuccinctShard(
     NPA::NPAEncodingScheme npa_encoding_scheme, uint32_t context_len)
     : SuccinctShard(
         id,
-        datafile,
+        std::move(datafile),
         s_mode,
         sa_sampling_rate,
         isa_sampling_rate,
@@ -50,7 +52,7 @@ size_t LayeredSuccinctShard::reconstruct_layer(uint32_t layer_id) {
 void LayeredSuccinctShard::get(std::string& result, int64_t key) {
 
   if (!opportunistic) {
-    LayeredSampledISA *ISA_lay = (LayeredSampledISA *) isa_;
+    auto *ISA_lay = (LayeredSampledISA *) isa_;
     result = "";
     int64_t pos = GetValueOffsetPos(key);
     if (pos < 0)
@@ -74,8 +76,7 @@ void LayeredSuccinctShard::get(std::string& result, int64_t key) {
     return;
   }
 
-  OpportunisticLayeredSampledISA *ISA_opp =
-      (OpportunisticLayeredSampledISA *) isa_;
+  auto *ISA_opp = (OpportunisticLayeredSampledISA *) isa_;
 
   result = "";
   int64_t pos = GetValueOffsetPos(key);
@@ -111,7 +112,7 @@ uint64_t LayeredSuccinctShard::num_sampled_values() {
 void LayeredSuccinctShard::access(std::string& result, int64_t key,
                                   int32_t offset, int32_t len) {
   if (!opportunistic) {
-    LayeredSampledISA *ISA_lay = (LayeredSampledISA *) isa_;
+    auto *ISA_lay = (LayeredSampledISA *) isa_;
     result = "";
     int64_t pos = GetValueOffsetPos(key);
     if (pos < 0)
@@ -131,8 +132,7 @@ void LayeredSuccinctShard::access(std::string& result, int64_t key,
     return;
   }
 
-  OpportunisticLayeredSampledISA *ISA_opp =
-      (OpportunisticLayeredSampledISA *) isa_;
+  auto *ISA_opp = (OpportunisticLayeredSampledISA *) isa_;
   result = "";
   int64_t pos = GetValueOffsetPos(key);
   if (pos < 0)

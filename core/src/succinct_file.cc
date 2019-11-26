@@ -1,6 +1,6 @@
 #include "succinct_file.h"
 
-SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode,
+SuccinctFile::SuccinctFile(const std::string& filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,
                            uint32_t isa_sampling_rate,
                            uint32_t npa_sampling_rate,
@@ -8,7 +8,7 @@ SuccinctFile::SuccinctFile(std::string filename, SuccinctMode s_mode,
                            SamplingScheme isa_sampling_scheme,
                            NPA::NPAEncodingScheme npa_encoding_scheme,
                            uint32_t context_len, uint32_t sampling_range)
-    : SuccinctCore(filename.c_str(), s_mode, sa_sampling_rate,
+    : SuccinctCore(filename, s_mode, sa_sampling_rate,
                    isa_sampling_rate, npa_sampling_rate, context_len,
                    sa_sampling_scheme, isa_sampling_scheme, npa_encoding_scheme,
                    sampling_range) {

@@ -112,10 +112,8 @@ class SuccinctCore : public SuccinctBase {
   Range BwdSearch(std::string mgram);
   Range ContinueBwdSearch(std::string mgram, Range range);
 
-  Range FwdSearch(std::string mgram);
-  Range ContinueFwdSearch(std::string mgram, Range range, size_t len);
-
- protected:
+  Range FwdSearch(const std::string& mgram);
+  Range ContinueFwdSearch(const std::string& mgram, Range range, size_t len);
 
   // Allocates high level containers
   void Allocate(uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
@@ -140,6 +138,8 @@ class SuccinctCore : public SuccinctBase {
                  SamplingScheme isa_sampling_scheme,
                  NPA::NPAEncodingScheme npa_encoding_scheme,
                  uint32_t sampling_range);
+
+ protected:
 
   /* Metadata */
   uint64_t input_size_;                // Size of input

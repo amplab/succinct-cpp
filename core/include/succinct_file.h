@@ -12,7 +12,7 @@
 
 class SuccinctFile : public SuccinctCore {
  public:
-  SuccinctFile(std::string filename, SuccinctMode s_mode =
+  SuccinctFile(const std::string& filename, SuccinctMode s_mode =
                    SuccinctMode::CONSTRUCT_IN_MEMORY,
                uint32_t sa_sampling_rate = 32, uint32_t isa_sampling_rate = 32,
                uint32_t npa_sampling_rate = 128,
