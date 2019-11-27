@@ -6,15 +6,84 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <utility>
 
 #include "succinct_shard.h"
 
+typedef std::unordered_map<std::string, uint8_t> FwdMap;
+typedef std::unordered_map<uint8_t, std::string> BwdMap;
+
+struct FormatterOutput {
+  explicit FormatterOutput(FwdMap &fwd,
+                           BwdMap &bwd,
+                           std::vector<int64_t> &keys,
+                           std::vector<int64_t> &value_offsets)
+      : attr_key_to_delimiter_(fwd),
+        delimiter_to_attr_key_(bwd),
+        keys_(keys),
+        value_offsets_(value_offsets) {}
+
+  FwdMap &attr_key_to_delimiter_;
+  BwdMap &delimiter_to_attr_key_;
+  std::vector<int64_t> &keys_;
+  std::vector<int64_t> &value_offsets_;
+};
+
+void FormatInput(FormatterOutput &out, const std::string &filename) {
+  uint8_t cur_delim = 128;
+  std::string outf = filename + ".formatted";
+  std::ifstream infile = std::ifstream(filename);
+  std::ofstream formatted = std::ofstream(outf);
+  std::string line;
+  int64_t line_no = 0;
+  while (std::getline(infile, line)) {
+    if (line_no != 0) {
+      char newline = '\n';
+      formatted.write(reinterpret_cast<const char *>(&newline), sizeof(uint8_t));
+    }
+    std::stringstream linestream(line);
+    std::string attr_val_pair;
+    int64_t attr_val_no = 1;
+    out.keys_.push_back(line_no);
+    out.value_offsets_.push_back(formatted.tellp());
+    while (std::getline(linestream, attr_val_pair, ',')) {
+      std::string::size_type pos = attr_val_pair.find('=');
+      if (pos != std::string::npos) {
+        std::string attr_key = attr_val_pair.substr(0, pos);
+        std::string attr_val = attr_val_pair.substr(pos + 1);
+        if (out.attr_key_to_delimiter_.find(attr_key)
+            == out.attr_key_to_delimiter_.end()) {
+          if (cur_delim == 254) {
+            fprintf(stderr, "Currently support < 128 unique attribute keys.\n");
+            exit(0);
+          }
+          // Create new entry
+          out.attr_key_to_delimiter_.insert(FwdMap::value_type(attr_key, cur_delim));
+          out.delimiter_to_attr_key_.insert(BwdMap::value_type(cur_delim, attr_key));
+          cur_delim++;
+        }
+        uint8_t attr_delim = out.attr_key_to_delimiter_.at(attr_key);
+        const char *attr_val_str = attr_val.c_str();
+        formatted.write(reinterpret_cast<const char *>(&attr_delim), sizeof(uint8_t));
+        formatted.write(reinterpret_cast<const char *>(attr_val_str), sizeof(char) * attr_val.length());
+        formatted.write(reinterpret_cast<const char *>(&attr_delim), sizeof(uint8_t));
+      } else {
+        fprintf(stderr, "Invalid attribute-value pair [%s] %lld on line %lld\n",
+                attr_val_pair.c_str(), attr_val_no, line_no + 1);
+        exit(0);
+      }
+    }
+    line_no++;
+  }
+  formatted.close();
+  infile.close();
+}
+
 class SuccinctSemistructuredShard : public SuccinctShard {
  public:
-  typedef std::unordered_map<std::string, uint8_t> FwdMap;
-  typedef std::unordered_map<uint8_t, std::string> BwdMap;
-
+  typedef std::function<void(FormatterOutput &, const std::string &)> InputFormatter;
   explicit SuccinctSemistructuredShard(const std::string &filename,
+                                       InputFormatter fmt = FormatInput,
                                        SuccinctMode s_mode = SuccinctMode::CONSTRUCT_IN_MEMORY,
                                        uint32_t sa_sampling_rate = 32,
                                        uint32_t isa_sampling_rate = 32,
@@ -27,13 +96,13 @@ class SuccinctSemistructuredShard : public SuccinctShard {
                                        NPA::NPAEncodingScheme npa_encoding_scheme =
                                        NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED,
                                        uint32_t sampling_range = 1024)
-      : SuccinctShard() {
+      : SuccinctShard(), input_formatter_(std::move(fmt)) {
     switch (s_mode) {
       case SuccinctMode::CONSTRUCT_IN_MEMORY: {
-        std::string formatted = Format(filename);
-        Construct(formatted, sa_sampling_rate, isa_sampling_rate,
-                  npa_sampling_rate, context_len, sa_sampling_scheme,
-                  isa_sampling_scheme, npa_encoding_scheme, sampling_range);
+        FormatterOutput out(attr_key_to_delimiter_, delimiter_to_attr_key_, keys_, value_offsets_);
+        input_formatter_(out, filename);
+        Construct(filename + ".formatted", sa_sampling_rate, isa_sampling_rate, npa_sampling_rate, context_len,
+                  sa_sampling_scheme, isa_sampling_scheme, npa_encoding_scheme, sampling_range);
         invalid_offsets_ = new Bitmap;
         InitBitmap(&invalid_offsets_, keys_.size(), s_allocator);
         break;
@@ -89,7 +158,7 @@ class SuccinctSemistructuredShard : public SuccinctShard {
         size_t keys_size = *((size_t *) data);
         data += sizeof(size_t);
         buf_allocator<int64_t> key_allocator((int64_t *) data);
-        keys_ = std::vector<int64_t>((int64_t *) data,(int64_t *) data + keys_size, key_allocator);
+        keys_ = std::vector<int64_t>((int64_t *) data, (int64_t *) data + keys_size, key_allocator);
         data += (sizeof(int64_t) * keys_size);
 
         // Read values
@@ -110,22 +179,20 @@ class SuccinctSemistructuredShard : public SuccinctShard {
 
   int64_t CountAttribute(const std::string &attr_key,
                          const std::string &attr_val) {
-    if (attr_key_to_delimiter_map_.find(attr_key)
-        == attr_key_to_delimiter_map_.end())
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end())
       return 0;
 
-    char delim = attr_key_to_delimiter_map_.at(attr_key);
+    char delim = attr_key_to_delimiter_.at(attr_key);
     std::string query = delim + attr_val + delim;
     return Count(query);
   }
 
   void SearchAttribute(std::set<int64_t> &keys, const std::string &attr_key,
                        const std::string &attr_val) {
-    if (attr_key_to_delimiter_map_.find(attr_key)
-        == attr_key_to_delimiter_map_.end())
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end())
       return;
 
-    char delim = attr_key_to_delimiter_map_.at(attr_key);
+    char delim = attr_key_to_delimiter_.at(attr_key);
     std::string query = delim + attr_val + delim;
     Search(keys, query);
   }
@@ -135,16 +202,7 @@ class SuccinctSemistructuredShard : public SuccinctShard {
     SuccinctShard::Get(data, key);
 
     // Format
-    size_t i = 0;
-    while (i < data.size()) {
-      uint8_t delim = data[i];
-      if (i++ != 0)
-        result += ",";
-      std::string attr_key = delimiter_to_attr_key_map_.at(delim);
-      std::string attr_val = ExtractField(data, i, delim);
-      result += (attr_key + "=" + attr_val);
-      i += (attr_val.size() + 1);
-    }
+    result = FormatOutput(data);
   }
 
   void Get(std::string &result, int64_t key, std::string &attr_key) {
@@ -152,79 +210,49 @@ class SuccinctSemistructuredShard : public SuccinctShard {
     SuccinctShard::Get(data, key);
 
     // Format
-    size_t i = 0;
-    while (i < data.size()) {
-      uint8_t delim = data[i++];
-      std::string _attr_key = delimiter_to_attr_key_map_.at(delim);
-      std::string _attr_val = ExtractField(data, i, delim);
-      if (_attr_key == attr_key) {
-        result = _attr_val;
-        return;
-      }
-      i += (_attr_val.size() + 1);
-    }
+    result = FormatOutput(data, attr_key);
   }
 
  protected:
-  static std::string ExtractField(std::string &data, size_t start_offset, uint8_t delim) {
+  static std::string ExtractField(const std::string &data, size_t start_offset, uint8_t delim) {
     size_t i = start_offset;
     while (((uint8_t) data[i]) != delim) i++;
     return data.substr(start_offset, i - start_offset);
   }
 
-  std::string Format(const std::string &filename, char delim = ',') {
-    std::string outf = filename + ".tmp.formatted";
-    std::ifstream infile = std::ifstream(filename);
-    std::ofstream formatted = std::ofstream(outf);
-    std::string line;
-    int64_t line_no = 0;
-    while (std::getline(infile, line)) {
-      if (line_no != 0) {
-        char newline = '\n';
-        formatted.write(reinterpret_cast<const char *>(&newline), sizeof(uint8_t));
-      }
-      std::stringstream linestream(line);
-      std::string attr_val_pair;
-      int64_t attr_val_no = 1;
-      keys_.push_back(line_no);
-      value_offsets_.push_back(formatted.tellp());
-      while (std::getline(linestream, attr_val_pair, delim)) {
-        std::string::size_type pos = attr_val_pair.find('=');
-        if (pos != std::string::npos) {
-          std::string attr_key = attr_val_pair.substr(0, pos);
-          std::string attr_val = attr_val_pair.substr(pos + 1);
-          if (attr_key_to_delimiter_map_.find(attr_key)
-              == attr_key_to_delimiter_map_.end()) {
-            if (cur_delim_ == 255) {
-              fprintf(stderr, "Currently support <= 128 unique attribute keys.\n");
-              exit(0);
-            }
-            // Create new entry
-            attr_key_to_delimiter_map_.insert(FwdMap::value_type(attr_key, cur_delim_));
-            delimiter_to_attr_key_map_.insert(BwdMap::value_type(cur_delim_, attr_key));
-            cur_delim_++;
-          }
-          uint8_t attr_delim = attr_key_to_delimiter_map_.at(attr_key);
-          const char *attr_val_str = attr_val.c_str();
-          formatted.write(reinterpret_cast<const char *>(&attr_delim), sizeof(uint8_t));
-          formatted.write(reinterpret_cast<const char *>(attr_val_str), sizeof(char) * attr_val.length());
-          formatted.write(reinterpret_cast<const char *>(&attr_delim), sizeof(uint8_t));
-        } else {
-          fprintf(stderr, "Invalid attribute-value pair [%s] %lld on line %lld\n",
-                  attr_val_pair.c_str(), attr_val_no, line_no + 1);
-          exit(0);
-        }
-      }
-      line_no++;
+  virtual std::string FormatOutput(const std::string &data) {
+    size_t i = 0;
+    std::string result;
+    while (i < data.size()) {
+      uint8_t delim = data[i];
+      if (i++ != 0)
+        result += ",";
+      std::string attr_key = delimiter_to_attr_key_.at(delim);
+      std::string attr_val = ExtractField(data, i, delim);
+      result += (attr_key + "=" + attr_val);
+      i += (attr_val.size() + 1);
     }
-    formatted.close();
-    infile.close();
-    return outf;
+    return result;
   }
 
-  FwdMap attr_key_to_delimiter_map_;
-  BwdMap delimiter_to_attr_key_map_;
-  uint8_t cur_delim_ = 128;
+  virtual std::string FormatOutput(const std::string &data, const std::string &attr_key) {
+    size_t i = 0;
+    std::string result;
+    while (i < data.size()) {
+      uint8_t delim = data[i++];
+      std::string _attr_key = delimiter_to_attr_key_.at(delim);
+      std::string _attr_val = ExtractField(data, i, delim);
+      if (_attr_key == attr_key) {
+        return _attr_val;
+      }
+      i += (_attr_val.size() + 1);
+    }
+    return result;
+  }
+
+  InputFormatter input_formatter_;
+  FwdMap attr_key_to_delimiter_;
+  BwdMap delimiter_to_attr_key_;
 };
 
 #endif /* SUCCINCT_SEMISTRUCTURED_SHARD_H_ */

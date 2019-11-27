@@ -3,8 +3,11 @@
 #include <unistd.h>
 #include <ctime>
 #include <sys/time.h>
+#include <sstream>
+#include <succinct_semistructured_shard.h>
+#include <succinct_paths.h>
 
-#include "succinct_semistructured_shard.h"
+#include "succinct_shard.h"
 
 /**
  * Prints usage.
@@ -14,10 +17,7 @@ void print_usage(char *exec) {
 }
 
 void print_valid_cmds() {
-  std::cerr << "Command must be one of:\n"
-            << "\t\tsearch [attr_key] [attr_val]\n"
-            << "\t\tcount [attr_key] [attr_val]\n"
-            << "\t\tget [key] [attr_key]\n";
+  std::cerr << "Command must be one of: search [field-name] [query], count [field-name] [query], get [key]\n";
 }
 
 typedef unsigned long long int timestamp_t;
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     // If mode is set to 0, compress the input file.
     // Use default parameters.
     std::cout << "Constructing Succinct data structures...\n";
-    s_file = new SuccinctSemistructuredShard(filename);
+    s_file = new SuccinctPathsShard(filename);
 
     std::cout << "Serializing Succinct data structures...\n";
     s_file->Serialize(filename + ".succinct");
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     // If mode is set to 1, read the serialized data structures from disk.
     // The serialized data structures must exist at <filename>.succinct.
     std::cout << "De-serializing Succinct data structures...\n";
-    s_file = new SuccinctSemistructuredShard(filename, FormatInput, SuccinctMode::LOAD_IN_MEMORY);
+    s_file = new SuccinctPathsShard(filename, SuccinctMode::LOAD_IN_MEMORY);
   }
 
   std::cout << "Done. Starting Succinct Shell...\n";
