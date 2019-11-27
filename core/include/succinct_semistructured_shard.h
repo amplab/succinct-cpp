@@ -179,21 +179,73 @@ class SuccinctSemistructuredShard : public SuccinctShard {
 
   int64_t CountAttribute(const std::string &attr_key,
                          const std::string &attr_val) {
-    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end())
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
       return 0;
+    }
 
     char delim = attr_key_to_delimiter_.at(attr_key);
     std::string query = delim + attr_val + delim;
     return Count(query);
   }
 
+  int64_t CountAttributePrefix(const std::string &attr_key,
+                         const std::string &attr_val_prefix) {
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
+      return 0;
+    }
+
+    char delim = attr_key_to_delimiter_.at(attr_key);
+    std::string query = delim + attr_val_prefix;
+    return Count(query);
+  }
+
+  int64_t CountAttributeSuffix(const std::string &attr_key,
+                         const std::string &attr_val_suffix) {
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
+      return 0;
+    }
+
+    char delim = attr_key_to_delimiter_.at(attr_key);
+    std::string query = attr_val_suffix + delim;
+    return Count(query);
+  }
+
   void SearchAttribute(std::set<int64_t> &keys, const std::string &attr_key,
                        const std::string &attr_val) {
-    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end())
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
       return;
+    }
 
     char delim = attr_key_to_delimiter_.at(attr_key);
     std::string query = delim + attr_val + delim;
+    Search(keys, query);
+  }
+
+  void SearchAttributePrefix(std::set<int64_t> &keys, const std::string &attr_key,
+                             const std::string &attr_val_prefix) {
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
+      return;
+    }
+
+    char delim = attr_key_to_delimiter_.at(attr_key);
+    std::string query = delim + attr_val_prefix;
+    Search(keys, query);
+  }
+
+  void SearchAttributeSuffix(std::set<int64_t> &keys, const std::string &attr_key,
+                             const std::string &attr_val_suffix) {
+    if (attr_key_to_delimiter_.find(attr_key) == attr_key_to_delimiter_.end()) {
+      fprintf(stderr, "No such attribute: %s\n", attr_key.c_str());
+      return;
+    }
+
+    char delim = attr_key_to_delimiter_.at(attr_key);
+    std::string query = attr_val_suffix + delim;
     Search(keys, query);
   }
 

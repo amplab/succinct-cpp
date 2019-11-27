@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <ctime>
 #include <sys/time.h>
-#include <sstream>
 #include <succinct_semistructured_shard.h>
 #include <succinct_paths.h>
 
@@ -17,7 +16,7 @@ void print_usage(char *exec) {
 }
 
 void print_valid_cmds() {
-  std::cerr << "Command must be one of: search [field-name] [query], count [field-name] [query], get [key]\n";
+  std::cerr << "Command must be one of: search [field-name] [query], count [field-name] [query], get [inode_num]\n";
 }
 
 typedef unsigned long long int timestamp_t;
@@ -94,7 +93,7 @@ int main(int argc, char **argv) {
       s_file->SearchAttribute(results, attr_key, attr_val);
       timestamp_t tot_time = get_timestamp() - start;
       std::cout << "Found " << results.size() << " records in " << tot_time
-                << "us; Matching keys:\n";
+                << "us; Matching inode_nums:\n";
       for (auto res : results) {
         std::cout << res << ", ";
       }

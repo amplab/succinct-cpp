@@ -4,18 +4,17 @@
 #include "succinct_semistructured_shard.h"
 
 template<typename T>
-std::string pad(T val) {
+std::string pad(T val, size_t len = std::numeric_limits<T>::digits10 + 1) {
   std::ostringstream ss;
-  ss << std::setw(std::numeric_limits<T>::digits10 + 1) << std::setfill('0') << val;
+  ss << std::setw(len) << std::setfill('0') << val;
   return ss.str();
 }
 
 #define WRITE(attr_name) \
-  attr_name << fout.attr_key_to_delimiter_.at(#attr_name)
+  fout.attr_key_to_delimiter_.at(#attr_name) << attr_name << fout.attr_key_to_delimiter_.at(#attr_name)
 
 #define WRITE_PAD(attr_name) \
-  pad(attr_name) << fout.attr_key_to_delimiter_.at(#attr_name)
-
+  fout.attr_key_to_delimiter_.at(#attr_name) << pad(attr_name) << fout.attr_key_to_delimiter_.at(#attr_name)
 
 void FormatPathsInput(FormatterOutput &fout, const std::string &filename) {
   std::ifstream in(filename);
@@ -90,7 +89,7 @@ void FormatPathsInput(FormatterOutput &fout, const std::string &filename) {
     fout.value_offsets_.push_back(out.tellp());
     out << WRITE_PAD(inode_num) << WRITE(file_change_type) << WRITE(file_type) << WRITE_PAD(create_time)
         << WRITE_PAD(modify_time) << WRITE_PAD(access_time) << WRITE_PAD(change_time) << WRITE_PAD(owner_id)
-        << WRITE_PAD(group_id) << WRITE_PAD(file_size) << WRITE_PAD(file_name_size) << WRITE(file_name) << '\n';
+        << WRITE_PAD(group_id) << WRITE_PAD(file_size) << WRITE_PAD(file_name_size) << WRITE(file_name);
   }
   out.close();
 }
