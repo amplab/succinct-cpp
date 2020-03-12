@@ -82,7 +82,7 @@ size_t SuccinctBase::SerializeVector(std::vector<uint64_t> &v,
   out.write(reinterpret_cast<const char *>(&(v_size)), sizeof(size_t));
   out_size += sizeof(size_t);
 
-  for (unsigned long long & i : v) {
+  for (unsigned long long i : v) {
     out.write(reinterpret_cast<const char *>(&i), sizeof(uint64_t));
     out_size += sizeof(uint64_t);
   }
