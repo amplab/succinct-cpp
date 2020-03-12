@@ -5,6 +5,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <function>
 #include <condition_variable>
 #include <iostream>
 #include <unistd.h>
