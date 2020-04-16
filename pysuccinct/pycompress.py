@@ -2,11 +2,16 @@ import pycompress
 import sys
 import getopt
 
+  if (sys.argc < 2 or sys.argc > 12):
+    print("Invalid number of arguments \n")
+    sys.exit(2)
+
 #Loop through arguments to change default values and get input path using getopt
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 's:i:x:n:r:t:')
 except getopt.GetoptError as err:
-        sys.exit(2)
+    print("Get opt error\n")
+    sys.exit(2)
 
 #Default values
 sa_sampling_rate = 32
@@ -33,12 +38,14 @@ for o, a in optlist:
     elif o == "-t":
         type = a
     else:
-        assert False, "unhandled option"
+        print("Unhandled option\n")
+        sys.exit(2)
 
 
 #Process input path
 if (len(args) != 1):
     #Should have 1 argument left for input path
+    print("File path not found\n")
     sys.exit(2)
 else:
     #Set the last unparsed element to the input path
@@ -59,3 +66,4 @@ elif (type == "kv"):
 else:
     #Error
     print("Invalid type\n")
+    sys.exit(2)
