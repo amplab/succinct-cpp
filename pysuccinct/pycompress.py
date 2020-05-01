@@ -2,7 +2,9 @@ import pycompress
 import sys
 import getopt
 
-  if (sys.argc < 2 or sys.argc > 12):
+#Argument size error checking
+argc = len(sys.argv)
+if (argc < 2 or argc > 12):
     print("Invalid number of arguments \n")
     sys.exit(2)
 
@@ -20,13 +22,12 @@ sampling_scheme = 0
 npa_sampling_rate = 128
 npa_encoding_scheme = 1
 type = "file"
-inputpath = "test.txt"
+inputpath = ""
 
 #Modify default values
 for o, a in optlist:
     if o == "-s":
         sa_sampling_rate = int(a)
-        #print("sampling rate is ", sa_sampling_rate, "\n")
     elif o == "-i":
         isa_sampling_rate = int(a)
     elif o == "-x":

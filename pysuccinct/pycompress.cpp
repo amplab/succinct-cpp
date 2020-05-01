@@ -5,6 +5,9 @@
 #include "succinct_file.h"
 #include "npa/npa.h"
 
+#include <boost/python.hpp>
+using namespace boost::python;
+
 /**
  * Example program that takes an input file and compresses it using Succinct.
  */
@@ -125,8 +128,6 @@ struct File{
 
 };
 
-#include <boost/python.hpp>
-using namespace boost::python;
 
 BOOST_PYTHON_MODULE(pycompress){
   class_<File>("File", init<std::string, uint32_t, uint32_t, uint32_t, int, int>())

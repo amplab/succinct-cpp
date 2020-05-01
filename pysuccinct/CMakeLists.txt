@@ -1,6 +1,9 @@
 PYTHON_ADD_MODULE(pycompress pycompress.cpp)
 FILE(COPY pycompress.py DESTINATION .)
 
+PYTHON_ADD_MODULE(pyquery_file pyquery_file.cpp)
+FILE(COPY pyquery_file.py DESTINATION .)
+
 cmake_minimum_required(VERSION 2.8)
 project(succinct-pysuccinct CXX)
 
@@ -26,3 +29,4 @@ set(INCLUDE include ../core/include)
 include_directories(${INCLUDE})
 
 target_link_libraries(pycompress succinct)
+target_link_libraries(pyquery_file succinct)
