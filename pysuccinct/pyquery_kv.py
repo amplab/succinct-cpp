@@ -13,14 +13,14 @@ def RepresentsInt(s):
 #Argument size error checking
 argc = len(sys.argv)
 if (argc < 2 or argc > 12):
-    print("Invalid number of arguments \n")
+    print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 
 #Loop through arguments to change default values and get input path using getopt
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 'm:')
 except getopt.GetoptError as err:
-    print("Get opt error\n")
+    print("Get opt error")
     sys.exit(2)
 
 #Default values
@@ -32,12 +32,13 @@ for o, a in optlist:
     if o == "-m":
         mode = int(a)
     else:
-        printf("Invalid Option")
+        print("Invalid Option")
+        sys.exit(2)
 
 #Process filename
 if (len(args) != 1):
     #Should have 1 argument left for filename
-    print("File path not found\n")
+    print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 else:
     #Set the last unparsed element to the filename
@@ -61,6 +62,9 @@ while (True):
         else:
             q.count(line[1].strip())
     elif(line[0] == "get"):
+        if (len(line) == 1):
+            print("Could not parse command: ")
+            continue
         key = line[1].strip()
         if (len(line) != 2 or RepresentsInt(key) == False):
             print("Could not parse command: ")

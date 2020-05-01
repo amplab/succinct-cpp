@@ -28,6 +28,7 @@
         "chrono": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "__node_handle": "cpp"
     }
 }

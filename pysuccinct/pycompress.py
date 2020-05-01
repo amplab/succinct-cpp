@@ -5,14 +5,14 @@ import getopt
 #Argument size error checking
 argc = len(sys.argv)
 if (argc < 2 or argc > 12):
-    print("Invalid number of arguments \n")
+    print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 
 #Loop through arguments to change default values and get input path using getopt
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 's:i:x:n:r:t:')
 except getopt.GetoptError as err:
-    print("Get opt error\n")
+    print("Get opt error")
     sys.exit(2)
 
 #Default values
@@ -39,14 +39,14 @@ for o, a in optlist:
     elif o == "-t":
         type = a
     else:
-        print("Unhandled option\n")
+        printf("Invalid Option")
         sys.exit(2)
 
 
 #Process input path
 if (len(args) != 1):
     #Should have 1 argument left for input path
-    print("File path not found\n")
+    print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 else:
     #Set the last unparsed element to the input path

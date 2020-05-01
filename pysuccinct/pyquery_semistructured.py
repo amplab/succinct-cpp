@@ -1,4 +1,4 @@
-import pyquery_file
+import pyquery_semistructured
 import sys
 import getopt
 
@@ -20,7 +20,7 @@ if (argc < 2 or argc > 12):
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 'm:')
 except getopt.GetoptError as err:
-    print(("Get opt error"))
+    print("Get opt error")
     sys.exit(2)
 
 #Default values
@@ -45,36 +45,35 @@ else:
     filename = str(args[0])
 
 #Create the pyquery_file struct and run command given on next input
-q = pyquery_file.QueryFile(filename, mode)
+q = pyquery_semistructured.QuerySemistructured(filename, mode)
 
 #parse through line by line
 while (True):
     line = input("succinct> ")
-    line = line.split(" ", 1)
-    #Search command
+    line = line.split(" ")
     if (line[0] == "search"):
-        if (len(line) != 2):
+        if (len(line) != 3):
             print("Could not parse command: ")
         else:
-            q.search(line[1].strip())
+            q.search(line[1].strip(), line[2].strip())
     elif(line[0] == "count"):
-        if (len(line) != 2):
-            print("Could not parse command: "])
+        if (len(line) != 3):
+            print("Could not parse command: ")
         else:
-            q.count(line[1].strip())
-    elif(line[0] == "extract"):
+            q.count(line[1].strip(), line[2].strip())
+    elif(line[0] == "get"):
         if (len(line) == 1):
             print("Could not parse command: ")
             continue
         line = line[1].split(" ", 1)
-        offset = line[0].strip()
-        length = line[1].strip()
-        if (len(line) != 2 or RepresentsInt(offset) == False or RepresentsInt(length) == False):
+        key = line[0].strip()
+        attr_key = line[1].strip()
+        if (len(line) != 2 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
-            q.extract(int(line[0].strip()), int(line[1].strip()))
+            q.get((int(key), attr_key))
     elif(line[0] == "exit"):
         break
     else:
         print("Unsupported command")
-        print("Command must be one of: search [query], count [query], extract [offset] [length]")
+        print("Command must be one of:\n\t\tsearch [attr_key] [attr_val]\n\t\tcount [attr_key] [attr_val]\n\t\tget [key] [attr_key]")

@@ -7,6 +7,9 @@ FILE(COPY pyquery_file.py DESTINATION .)
 PYTHON_ADD_MODULE(pyquery_kv pyquery_kv.cpp)
 FILE(COPY pyquery_kv.py DESTINATION .)
 
+PYTHON_ADD_MODULE(pyquery_semistructured pyquery_semistructured.cpp)
+FILE(COPY pyquery_semistructured.py DESTINATION .)
+
 cmake_minimum_required(VERSION 2.8)
 project(succinct-pysuccinct CXX)
 
@@ -34,3 +37,4 @@ include_directories(${INCLUDE})
 target_link_libraries(pycompress succinct)
 target_link_libraries(pyquery_file succinct)
 target_link_libraries(pyquery_kv succinct)
+target_link_libraries(pyquery_semistructured succinct)
