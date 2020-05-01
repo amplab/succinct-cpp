@@ -65,10 +65,9 @@ while (True):
         if (len(line) == 1):
             print("Could not parse command: ")
             continue
-        line = line[1].split(" ", 1)
-        key = line[0].strip()
-        attr_key = line[1].strip()
-        if (len(line) != 2 or RepresentsInt(key) == False):
+        key = line[1].strip()
+        attr_key = line[2].strip()
+        if (len(line) != 3 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
             q.get((int(key), attr_key))
