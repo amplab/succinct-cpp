@@ -1,4 +1,4 @@
-import pyquery_file
+import pyquery_kv
 import sys
 import getopt
 
@@ -44,13 +44,12 @@ else:
     filename = str(args[0])
 
 #Create the pyquery_file struct and run command given on next input
-q = pyquery_file.QueryFile(filename, mode)
+q = pyquery_kv.QueryKv(filename, mode)
 
 #parse through line by line
 while (True):
     line = input("succinct> ")
     line = line.split(" ", 1)
-    #Search command
     if (line[0] == "search"):
         if (len(line) != 2):
             print("Could not parse command: ")
@@ -58,21 +57,17 @@ while (True):
             q.search(line[1].strip())
     elif(line[0] == "count"):
         if (len(line) != 2):
-            print("Could not parse command: "])
+            print("Could not parse command: ")
         else:
             q.count(line[1].strip())
-    elif(line[0] == "extract"):
-        if (len(line) == 1):
-            print("Could not parse command: ")
-        line = line[1].split(" ", 1)
-        offset = line[0].strip()
-        length = line[1].strip()
-        if (len(line) != 2 or RepresentsInt(offset) == False or RepresentsInt(length) == False):
+    elif(line[0] == "get"):
+        key = line[1].strip()
+        if (len(line) != 2 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
-            q.extract(int(line[0].strip()), int(line[1].strip()))
+            q.get((int(key)))
     elif(line[0] == "exit"):
         break
     else:
         print("Unsupported command")
-        print("Command must be one of: search [query], count [query], extract [offset] [length]")
+        print("Command must be one of: search [query], count [query], get [key]")
