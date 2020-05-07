@@ -9,18 +9,8 @@
 using namespace boost::python;
 
 /**
- * Example program that takes an input file and compresses it using Succinct.
+ * Program that wraps succinct's compression functions for python use via boost
  */
-
-/**
- * Prints usage
- */
-void print_usage(char *exec) {
-  fprintf(
-      stderr,
-      "Usage: %s [-s sa_sampling_rate] [-i isa_sampling_rate] [-x sampling_scheme] [-n npa_sampling_rate] [-r npa_encoding_scheme] [-t input_type] [file]\n",
-      exec);
-}
 
 /**
  * Converts integer option to SamplingScheme
@@ -75,63 +65,63 @@ NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
   }
 }
 
-struct File{
+struct File {
   File(std::string inputpath, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
     uint32_t npa_sampling_rate, int sampling_opt, int npa_opt){
-      this->inputpath = inputpath;
-      this->sa_sampling_rate = sa_sampling_rate;
-      this->isa_sampling_rate = isa_sampling_rate;
-      this->npa_sampling_rate = npa_sampling_rate;
-      this->sampling_scheme = SamplingSchemeFromOption(sampling_opt);
-      this->npa_encoding_scheme = EncodingSchemeFromOption(npa_opt);
+      this->input_path_ = inputpath;
+      this->sa_sampling_rate_ = sa_sampling_rate;
+      this->isa_sampling_rate_ = isa_sampling_rate;
+      this->npa_sampling_rate_ = npa_sampling_rate;
+      this->sampling_scheme_ = SamplingSchemeFromOption(sampling_opt);
+      this->npa_encoding_scheme_ = EncodingSchemeFromOption(npa_opt);
     }
 
-    //File members
-    std::string inputpath;
-    uint32_t sa_sampling_rate;
-    uint32_t isa_sampling_rate;
-    uint32_t npa_sampling_rate;
-    SamplingScheme sampling_scheme;
-    NPA::NPAEncodingScheme npa_encoding_scheme;
-
-    void compressFile(){
+    void CompressFile() {
       // The following compresses an input file at "inputpath" in memory
       // as a flat file (no structure) using the compression parameters
       // passed in (sampling rates, etc.).
       // Leave the arguments unspecified to use default values.
-      auto *fd = new SuccinctFile(inputpath,
+      auto *fd = new SuccinctFile(input_path_,
                                   SuccinctMode::CONSTRUCT_IN_MEMORY,
-                                  sa_sampling_rate, isa_sampling_rate,
-                                  npa_sampling_rate, sampling_scheme,
-                                  sampling_scheme, npa_encoding_scheme);
+                                  sa_sampling_rate_, isa_sampling_rate_,
+                                  npa_sampling_rate_, sampling_scheme_,
+                                  sampling_scheme_, npa_encoding_scheme_);
 
       // Serialize the compressed representation to disk at the location <inputpath>.succinct
-      fd->Serialize(inputpath + ".succinct");
+      fd->Serialize(input_path_ + ".succinct");
       delete fd;
     }
 
-    void compressShard(){
+    void CompressShard() {
       // The following compresses an input file at "inputpath" in memory
       // as a buffer containing key-value pairs. It uses newline '\n' to
       // differentiate between successive values, and assigns the line number
       // as the key for the corresponding value.
-      auto *fd = new SuccinctShard(0, inputpath,
+      auto *fd = new SuccinctShard(0, input_path_,
                                   SuccinctMode::CONSTRUCT_IN_MEMORY,
-                                  sa_sampling_rate, isa_sampling_rate,
-                                  npa_sampling_rate, sampling_scheme,
-                                  sampling_scheme, npa_encoding_scheme);
+                                  sa_sampling_rate_, isa_sampling_rate_,
+                                  npa_sampling_rate_, sampling_scheme_,
+                                  sampling_scheme_, npa_encoding_scheme_);
 
       // Serialize the compressed representation to disk at the location <inputpath>.succinct
-      fd->Serialize(inputpath + ".succinct");
+      fd->Serialize(input_path_ + ".succinct");
       delete fd;
     }
 
+    //File members
+    std::string input_path_;
+    uint32_t sa_sampling_rate_;
+    uint32_t isa_sampling_rate_;
+    uint32_t npa_sampling_rate_;
+    SamplingScheme sampling_scheme_;
+    NPA::NPAEncodingScheme npa_encoding_scheme_;
+
 };
 
-
+//Boost Python module
 BOOST_PYTHON_MODULE(pycompress){
   class_<File>("File", init<std::string, uint32_t, uint32_t, uint32_t, int, int>())
-    .def("compressFile", &File::compressFile)
-    .def("compressShard", &File::compressShard)
+    .def("CompressFile", &File::CompressFile)
+    .def("CompressShard", &File::CompressShard)
     ;
 }

@@ -2,7 +2,7 @@ import pyquery_semistructured
 import sys
 import getopt
 
-#Try catch block for non integer argument checking
+# Try catch block for non integer argument checking
 def RepresentsInt(s):
     try: 
         int(s)
@@ -10,24 +10,24 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
-#Argument size error checking
+# Argument size error checking
 argc = len(sys.argv)
 if (argc < 2 or argc > 12):
     print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 
-#Loop through arguments to change default values and get input path using getopt
+# Loop through arguments to change default values and get input path using getopt
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 'm:')
 except getopt.GetoptError as err:
     print("Get opt error")
     sys.exit(2)
 
-#Default values
+# Default values
 mode = 0
 filename = ""
 
-#Modify default values
+# Modify default values
 for o, a in optlist:
     if o == "-m":
         mode = int(a)
@@ -35,19 +35,19 @@ for o, a in optlist:
         printf("Invalid Option")
         sys.exit(2)
 
-#Process filename
+# Process filename
 if (len(args) != 1):
-    #Should have 1 argument left for filename
     print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 else:
-    #Set the last unparsed element to the filename
     filename = str(args[0])
 
-#Create the pyquery_file struct and run command given on next input
+# Create the pyquery_file struct and run command given on next input
 q = pyquery_semistructured.QuerySemistructured(filename, mode)
+print("Done. Starting Succinct Shell...")
+print("Command must be one of:\n\t\tsearch [attr_key] [attr_val]\n\t\tcount [attr_key] [attr_val]\n\t\tget [key] [attr_key]")
 
-#parse through line by line
+# Parse through line by line
 while (True):
     line = input("succinct> ")
     line = line.split(" ")
@@ -55,12 +55,12 @@ while (True):
         if (len(line) != 3):
             print("Could not parse command: ")
         else:
-            q.search(line[1].strip(), line[2].strip())
+            q.Search(line[1].strip(), line[2].strip())
     elif(line[0] == "count"):
         if (len(line) != 3):
             print("Could not parse command: ")
         else:
-            q.count(line[1].strip(), line[2].strip())
+            q.Count(line[1].strip(), line[2].strip())
     elif(line[0] == "get"):
         if (len(line) == 1):
             print("Could not parse command: ")
@@ -70,7 +70,7 @@ while (True):
         if (len(line) != 3 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
-            q.get((int(key), attr_key))
+            q.Get((int(key), attr_key))
     elif(line[0] == "exit"):
         break
     else:

@@ -11,90 +11,59 @@
 using namespace boost::python;
 
 /**
- * Prints usage.
+ * Program that wraps succinct's query kv functions for python use via boost
  */
-void print_usage(char *exec) {
-  fprintf(stderr, "Usage: %s [-m mode] [file]\n", exec);
-}
-
-void print_valid_cmds() {
-  std::cerr
-      << "Command must be one of: search [query], count [query], get [key]\n";
-}
-
-typedef unsigned long long int timestamp_t;
-
-static timestamp_t get_timestamp() {
-  struct timeval now{};
-  gettimeofday(&now, nullptr);
-
-  return (now.tv_usec + (time_t) now.tv_sec * 1000000);
-}
 
 struct QueryKv{
-    QueryKv(std::string filename, uint32_t mode){
-        this->s_file = nullptr;
+    QueryKv(std::string filename, uint32_t mode) {
+        this->s_file_ = nullptr;
         if (mode == 0) {
             // If mode is set to 0, compress the input file.
             // Use default parameters.
             std::cout << "Constructing Succinct data structures...\n";
-            s_file = new SuccinctShard(0, filename);
+            s_file_ = new SuccinctShard(0, filename);
 
             std::cout << "Serializing Succinct data structures...\n";
-            s_file->Serialize(filename + ".succinct");
+            s_file_->Serialize(filename + ".succinct");
         } else {
             // If mode is set to 1, read the serialized data structures from disk.
             // The serialized data structures must exist at <filename>.succinct.
             std::cout << "De-serializing Succinct data structures...\n";
-            s_file = new SuccinctShard(0, filename, SuccinctMode::LOAD_IN_MEMORY);
+            s_file_ = new SuccinctShard(0, filename, SuccinctMode::LOAD_IN_MEMORY);
         }
-        std::cout << "Done. Starting Succinct Shell...\n";
-        print_valid_cmds();
     }
 
-    //QueryKv members
-    SuccinctShard *s_file;
-
     //Wrapped search command
-    void search(std::string arg){
+    std::set<int64_t> Search(const std::string &arg) {
         std::set<int64_t> results;
-        timestamp_t start = get_timestamp();
-        s_file->Search(results, arg);
-        timestamp_t tot_time = get_timestamp() - start;
-        std::cout << "Found " << results.size() << " results in " << tot_time
-                    << "us:\n";
-        for (auto res : results) {
-            std::cout << res << ", ";
-        }
-        std::cout << std::endl;
+        s_file_->Search(results, arg);
+        return results;
     }
 
     //Wrapped count command
-    void count(std::string arg){
-        timestamp_t start = get_timestamp();
-        int64_t count = s_file->Count(arg);
-        timestamp_t tot_time = get_timestamp() - start;
-        std::cout << "Count = " << count << "; Time taken: " << tot_time
-                    << "us\n";
+    int64_t Count(const std::string &arg) {
+        int64_t count = s_file_->Count(arg);
+        return count;
     }
 
     //Wrapped get command
-    void get(uint64_t key){
-        timestamp_t start = get_timestamp();
+    std::string Get(uint64_t key) {
         std::string result;
-        s_file->Get(result, key);
-        timestamp_t tot_time = get_timestamp() - start;
-        std::cout << "Value = " << result << "; Time taken: "
-                << tot_time << "us\n";
+        s_file_->Get(result, key);
+        return result;
     }
+
+    //QueryKv members
+    SuccinctShard *s_file_;
 
 };
 
+//Boost Python module
 BOOST_PYTHON_MODULE(pyquery_kv){
     class_<QueryKv>("QueryKv", init<std::string, uint32_t>())
-    .def("search", &QueryKv::search)
-    .def("count", &QueryKv::count)
-    .def("get", &QueryKv::get)
+    .def("Search", &QueryKv::Search)
+    .def("Count", &QueryKv::Count)
+    .def("Get", &QueryKv::Get)
     ;
 
 }

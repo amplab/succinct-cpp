@@ -2,20 +2,20 @@ import pycompress
 import sys
 import getopt
 
-#Argument size error checking
+# Argument size error checking
 argc = len(sys.argv)
 if (argc < 2 or argc > 12):
     print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 
-#Loop through arguments to change default values and get input path using getopt
+# Loop through arguments to change default values and get input path using getopt
 try:
     optlist, args = getopt.getopt(sys.argv[1:], 's:i:x:n:r:t:')
 except getopt.GetoptError as err:
     print("Get opt error")
     sys.exit(2)
 
-#Default values
+# Default values
 sa_sampling_rate = 32
 isa_sampling_rate = 32
 sampling_scheme = 0
@@ -24,7 +24,7 @@ npa_encoding_scheme = 1
 type = "file"
 inputpath = ""
 
-#Modify default values
+# Modify default values
 for o, a in optlist:
     if o == "-s":
         sa_sampling_rate = int(a)
@@ -43,28 +43,23 @@ for o, a in optlist:
         sys.exit(2)
 
 
-#Process input path
+# Process input path
 if (len(args) != 1):
-    #Should have 1 argument left for input path
     print("Usage: %s [-m mode] [file]")
     sys.exit(2)
 else:
-    #Set the last unparsed element to the input path
     inputpath = str(args[0])
 
-#Create the file struct and compress
+# Create the file struct and compress
 file = pycompress.File(inputpath, sa_sampling_rate, 
     isa_sampling_rate, npa_sampling_rate, 
     sampling_scheme, npa_encoding_scheme)
 
-#Compress file or shard depending on type
+# Compress file or shard depending on type
 if (type == "file"):
-    #Compress file
-    file.compressFile()
+    file.CompressFile()
 elif (type == "kv"):
-    #Compress shard
-    file.compressShard()
+    file.CompressShard()
 else:
-    #Error
     print("Invalid type\n")
     sys.exit(2)
