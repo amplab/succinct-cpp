@@ -29,6 +29,8 @@
         "map": "cpp",
         "set": "cpp",
         "unordered_map": "cpp",
-        "__node_handle": "cpp"
-    }
+        "__node_handle": "cpp",
+        "cwchar": "cpp"
+    },
+    "python.linting.enabled": false
 }
