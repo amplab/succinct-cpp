@@ -146,5 +146,3 @@ BOOST_PYTHON_MODULE(pykv){
     ;
 
 }
-
-

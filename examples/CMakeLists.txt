@@ -26,7 +26,20 @@ add_executable(query_file src/query_file.cc)
 add_executable(query_kv src/query_kv.cc)
 add_executable(query_semistructured src/query_semistructured.cc)
 
+python_add_module(pyfile src/pyfile.cpp)
+file(COPY ../pysuccinct/pyfile.py DESTINATION .)
+
+python_add_module(pykv src/pykv.cpp)
+file(COPY ../pysuccinct/pykv.py DESTINATION .)
+
+python_add_module(pysemistructured src/pysemistructured.cpp)
+file(COPY ../pysuccinct/pysemistructured.py DESTINATION .)
+
 target_link_libraries(compress succinct)
 target_link_libraries(query_file succinct)
 target_link_libraries(query_kv succinct)
 target_link_libraries(query_semistructured succinct)
+
+target_link_libraries(pyfile succinct)
+target_link_libraries(pykv succinct)
+target_link_libraries(pysemistructured succinct)
