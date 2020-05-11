@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(succinct-examples CXX)
+project(succinct-examples)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -21,25 +21,20 @@ file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 
 set(INCLUDE include ../core/include)
 include_directories(${INCLUDE})
+
+file(COPY pysuccinct/pyfile.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+add_dependencies(pysuccinct/pyfile.py pysuccinct)
+file(COPY pysuccinct/pykv.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+add_dependencies(pysuccinct/pykv.py pysuccinct)
+file(COPY pysuccinct/pysemistructured.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+add_dependencies(pysuccinct/pysemistructured.py pysuccinct)
+
 add_executable(compress src/compress.cc)
 add_executable(query_file src/query_file.cc)
 add_executable(query_kv src/query_kv.cc)
 add_executable(query_semistructured src/query_semistructured.cc)
 
-python_add_module(pyfile src/pyfile.cpp)
-file(COPY ../pysuccinct/pyfile.py DESTINATION .)
-
-python_add_module(pykv src/pykv.cpp)
-file(COPY ../pysuccinct/pykv.py DESTINATION .)
-
-python_add_module(pysemistructured src/pysemistructured.cpp)
-file(COPY ../pysuccinct/pysemistructured.py DESTINATION .)
-
 target_link_libraries(compress succinct)
 target_link_libraries(query_file succinct)
 target_link_libraries(query_kv succinct)
 target_link_libraries(query_semistructured succinct)
-
-target_link_libraries(pyfile succinct)
-target_link_libraries(pykv succinct)
-target_link_libraries(pysemistructured succinct)

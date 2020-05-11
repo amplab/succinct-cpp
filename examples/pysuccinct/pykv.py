@@ -1,4 +1,4 @@
-import pyfile
+import pykv
 import sys
 import getopt
 
@@ -30,7 +30,7 @@ else:
     if (option[0] == "load"):
         # Load file from memory
         print("loading ", inputpath, " from file")
-        q = pyfile.PyFile(inputpath)
+        q = pykv.PyKv(inputpath)
     elif (option[0] == "compress"):
         # Compress the file
         print("Please enter the sampling rates")
@@ -57,12 +57,15 @@ else:
             else:
                 printf("Invalid Option")
                 sys.exit(2)
-        q = pyfile.PyFile(inputpath, sa_sampling_rate, 
+        q = pykv.PyKv(inputpath, sa_sampling_rate, 
             isa_sampling_rate, npa_sampling_rate, 
             sampling_scheme, npa_encoding_scheme)
     else:
         print("Usage: [load/compress] [file]\n")
         sys.exit(2)
+
+print("Command must be one of: search [query], count [query], get [key]")
+
 
 # Parse through line by line
 while (True):
@@ -73,26 +76,24 @@ while (True):
             print("Could not parse command: ")
             continue
         else:
-            print(q.PySearch(line[1].strip()))
+            print(q.Search(line[1].strip()))
     elif(line[0] == "count"):
         if (len(line) != 2):
             print("Could not parse command: ")
             continue
         else:
             print(q.Count(line[1].strip()))
-    elif(line[0] == "extract"):
+    elif(line[0] == "get"):
         if (len(line) == 1):
             print("Could not parse command: ")
             continue
-        line = line[1].split(" ", 1)
-        offset = line[0].strip()
-        length = line[1].strip()
-        if (len(line) != 2 or RepresentsInt(offset) == False or RepresentsInt(length) == False):
+        key = line[1].strip()
+        if (len(line) != 2 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
-            print(q.Extract(int(line[0].strip()), int(line[1].strip())))
+            print(q.Get((int(key))))
     elif(line[0] == "exit"):
         break
     else:
         print("Unsupported command")
-        print("Command must be one of: search [query], count [query], extract [offset] [length]")
+        print("Command must be one of: search [query], count [query], get [key]")

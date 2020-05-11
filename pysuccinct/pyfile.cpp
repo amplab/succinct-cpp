@@ -2,16 +2,16 @@
 #include <iostream>
 #include <unistd.h>
 #include <ctime>
-#include <sys/time.h>
 #include <sstream>
+#include <sys/time.h>
 
-#include "succinct_shard.h"
+#include "succinct_file.h"
 
 #include <boost/python.hpp>
 using namespace boost::python;
 
 /**
- * Program that wraps succinct's query kv functions for python use via boost
+ * Program that wraps succinct's query file functions for python use via boost
  */
 
 /**
@@ -68,40 +68,51 @@ NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
 }
 
 /**
- * PyKv struct that wraps query and compress functions for boost python
+ * Boost python function to convert vector to python list
  */
-struct PyKv{
-    // Constructor that loads from kv
-    PyKv(const std::string& filename) {
+boost::python::list VectorToList(const std::vector<int64_t>& v) {
+    boost::python::object get_iter = boost::python::iterator<std::vector<int64_t> >();
+    boost::python::object iter = get_iter(v);
+    boost::python::list l(iter);
+    return l;
+}
+
+/**
+ * PyFile struct that wraps query and compress functions for boost python
+ */
+struct PyFile {
+    // Constructor that loads from file
+    PyFile(const std::string& filename) {
         s_file_ = nullptr;
         // Read the serialized data structures from disk.
         // The serialized data structures must exist at <filename>.succinct.
         std::cout << "De-serializing Succinct data structures...\n";
-        s_file_ = new SuccinctShard(0, filename, SuccinctMode::LOAD_IN_MEMORY);
+        s_file_ = new SuccinctFile(filename, SuccinctMode::LOAD_IN_MEMORY);
     }
 
-    // Constructor that compresses kv given the sampling rate arguments
-    PyKv(const std::string& inputpath, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+
+    // Constructor that compresses file given the sampling rate arguments
+    PyFile(const std::string& inputpath, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
     uint32_t npa_sampling_rate, int sampling_opt, int npa_opt){
-      s_file_ = nullptr;
-      // The following compresses an input file at "inputpath" in memory
-      // as a buffer containing key-value pairs. It uses newline '\n' to
-      // differentiate between successive values, and assigns the line number
-      // as the key for the corresponding value.
-      std::cout << "Constructing Succinct data structures...\n";
-      s_file_ = new SuccinctShard(0, inputpath,
-                                  SuccinctMode::CONSTRUCT_IN_MEMORY,
-                                  sa_sampling_rate, isa_sampling_rate,
-                                  npa_sampling_rate, SamplingSchemeFromOption(sampling_opt),
-                                  SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt));
-      std::cout << "Serializing Succinct data structures...\n";
-      // Serialize the compressed representation to disk at the location <inputpath>.succinct
-      s_file_->Serialize(inputpath + ".succinct");
+        s_file_ = nullptr;
+        // The following compresses an input file at "inputpath" in memory
+        // as a flat file (no structure) using the compression parameters
+        // passed in (sampling rates, etc.).
+        // Leave the arguments unspecified to use default values.
+        std::cout << "Constructing Succinct data structures...\n";
+        s_file_ = new SuccinctFile(inputpath,
+                                    SuccinctMode::CONSTRUCT_IN_MEMORY,
+                                    sa_sampling_rate, isa_sampling_rate,
+                                    npa_sampling_rate, SamplingSchemeFromOption(sampling_opt),
+                                    SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt));
+        std::cout << "Serializing Succinct data structures...\n";
+        // Serialize the compressed representation to disk at the location <inputpath>.succinct
+        s_file_->Serialize(inputpath + ".succinct");
     }
-    
+
     // Wrapped search command, that returns a python list
-    boost::python::list PySearch(const std::string& arg) {
-        std::set<int64_t> results;
+    boost::python::list Search(const std::string& arg) {
+        std::vector<int64_t> results;
         s_file_->Search(results, arg);
         boost::python::list ret;
         for (const auto& i :results){
@@ -110,39 +121,34 @@ struct PyKv{
         return ret;
     }
 
-    //Wrapped search command
-    std::set<int64_t> Search(const std::string &arg) {
-        std::set<int64_t> results;
-        s_file_->Search(results, arg);
-        return results;
-    }
-
-    //Wrapped count command
-    int64_t Count(const std::string &arg) {
+    // Wrapped count command
+    int64_t Count(const std::string& arg) {
         int64_t count = s_file_->Count(arg);
         return count;
     }
 
-    //Wrapped get command
-    std::string Get(uint64_t key) {
+    // Wrapped extract command
+    std::string Extract(uint64_t offset, uint64_t length) {
         std::string result;
-        s_file_->Get(result, key);
+        s_file_->Extract(result, offset, length);
         return result;
     }
 
-    //PyKv members
-    SuccinctShard *s_file_;
-
+    //PyFile members
+    SuccinctFile *s_file_;
 };
 
-//Boost Python module
-BOOST_PYTHON_MODULE(pykv){
-    class_<PyKv>("PyKv", init<std::string>())
+
+
+/**
+ * Boost Python module
+ */
+BOOST_PYTHON_MODULE(pyfile){
+    class_<PyFile>("PyFile", init<std::string>())
     .def(init<std::string, uint32_t, uint32_t, uint32_t, int, int>())
-    .def("PySearch", &PyKv::PySearch)
-    .def("Search", &PyKv::Search)
-    .def("Count", &PyKv::Count)
-    .def("Get", &PyKv::Get)
+    .def("Search", &PyFile::Search)
+    .def("Count", &PyFile::Count)
+    .def("Extract", &PyFile::Extract)
     ;
 
 }

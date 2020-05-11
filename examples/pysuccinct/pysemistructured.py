@@ -1,4 +1,4 @@
-import pykv
+import pysemistructured
 import sys
 import getopt
 
@@ -30,7 +30,7 @@ else:
     if (option[0] == "load"):
         # Load file from memory
         print("loading ", inputpath, " from file")
-        q = pykv.PyKv(inputpath)
+        q = pysemistructured.PySemistructured(inputpath)
     elif (option[0] == "compress"):
         # Compress the file
         print("Please enter the sampling rates")
@@ -57,43 +57,41 @@ else:
             else:
                 printf("Invalid Option")
                 sys.exit(2)
-        q = pykv.PyKv(inputpath, sa_sampling_rate, 
+        q = pysemistructured.PySemistructured(inputpath, sa_sampling_rate, 
             isa_sampling_rate, npa_sampling_rate, 
             sampling_scheme, npa_encoding_scheme)
     else:
         print("Usage: [load/compress] [file]\n")
         sys.exit(2)
 
-print("Command must be one of: search [query], count [query], get [key]")
-
+print("Command must be one of:\n\t\tsearch [attr_key] [attr_val]\n\t\tcount [attr_key] [attr_val]\n\t\tget [key] [attr_key]")
 
 # Parse through line by line
 while (True):
     line = input("succinct> ")
-    line = line.split(" ", 1)
+    line = line.split(" ")
     if (line[0] == "search"):
-        if (len(line) != 2):
+        if (len(line) != 3):
             print("Could not parse command: ")
-            continue
         else:
-            print(q.PySearch(line[1].strip()))
+            print(q.Search(line[1].strip(), line[2].strip()))
     elif(line[0] == "count"):
-        if (len(line) != 2):
+        if (len(line) != 3):
             print("Could not parse command: ")
-            continue
         else:
-            print(q.Count(line[1].strip()))
+            print(q.Count(line[1].strip(), line[2].strip()))
     elif(line[0] == "get"):
         if (len(line) == 1):
             print("Could not parse command: ")
             continue
         key = line[1].strip()
-        if (len(line) != 2 or RepresentsInt(key) == False):
+        attr_key = line[2].strip()
+        if (len(line) != 3 or RepresentsInt(key) == False):
             print("Could not parse command: ")
         else:
-            print(q.Get((int(key))))
+            print(q.Get((int(key), attr_key)))
     elif(line[0] == "exit"):
         break
     else:
         print("Unsupported command")
-        print("Command must be one of: search [query], count [query], get [key]")
+        print("Command must be one of:\n\t\tsearch [attr_key] [attr_val]\n\t\tcount [attr_key] [attr_val]\n\t\tget [key] [attr_key]")
