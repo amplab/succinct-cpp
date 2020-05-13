@@ -1,4 +1,4 @@
-import pysemistructured
+import semistructuredstore
 import sys
 import getopt
 
@@ -30,7 +30,7 @@ else:
     if (option[0] == "load"):
         # Load file from memory
         print("loading ", inputpath, " from file")
-        q = pysemistructured.PySemistructured(inputpath)
+        q = semistructuredstore.Semistructuredstore(inputpath)
     elif (option[0] == "compress"):
         # Compress the file
         print("Please enter the sampling rates")
@@ -57,7 +57,7 @@ else:
             else:
                 printf("Invalid Option")
                 sys.exit(2)
-        q = pysemistructured.PySemistructured(inputpath, sa_sampling_rate, 
+        q = semistructuredstore.Semistructuredstore(inputpath, sa_sampling_rate, 
             isa_sampling_rate, npa_sampling_rate, 
             sampling_scheme, npa_encoding_scheme)
     else:

@@ -22,17 +22,17 @@ file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
 set(INCLUDE include ../core/include)
 include_directories(${INCLUDE})
 
-file(COPY pysuccinct/pyfile.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-add_dependencies(pysuccinct/pyfile.py pysuccinct)
-file(COPY pysuccinct/pykv.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-add_dependencies(pysuccinct/pykv.py pysuccinct)
-file(COPY pysuccinct/pysemistructured.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-add_dependencies(pysuccinct/pysemistructured.py pysuccinct)
+set(INCLUDE include ../pysuccinct)
+include_directories(${INCLUDE})
 
 add_executable(compress src/compress.cc)
 add_executable(query_file src/query_file.cc)
 add_executable(query_kv src/query_kv.cc)
 add_executable(query_semistructured src/query_semistructured.cc)
+
+file(COPY pysuccinct/pyfile.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY pysuccinct/pykv.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+file(COPY pysuccinct/pysemistructured.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 target_link_libraries(compress succinct)
 target_link_libraries(query_file succinct)

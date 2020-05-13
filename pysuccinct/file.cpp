@@ -2,15 +2,16 @@
 #include <iostream>
 #include <unistd.h>
 #include <ctime>
+#include <sstream>
 #include <sys/time.h>
 
-#include "succinct_semistructured_shard.h"
+#include "succinct_file.h"
 
 #include <boost/python.hpp>
 using namespace boost::python;
 
 /**
- * Program that wraps succinct's query semistructured functions for python use via boost
+ * Program that wraps succinct's query file functions for python use via boost
  */
 
 /**
@@ -67,44 +68,52 @@ NPA::NPAEncodingScheme EncodingSchemeFromOption(int opt) {
 }
 
 /**
- * PySemistructured struct that wraps query and compress functions for boost python
+ * Boost python function to convert vector to python list
  */
-struct PySemistructured{
-    // Constructor that loads from semistructured 
-    PySemistructured(std::string filename) {
+boost::python::list VectorToList(const std::vector<int64_t>& v) {
+    boost::python::object get_iter = boost::python::iterator<std::vector<int64_t> >();
+    boost::python::object iter = get_iter(v);
+    boost::python::list l(iter);
+    return l;
+}
+
+/**
+ * file struct that wraps query and compress functions for boost python
+ */
+struct File {
+    // Constructor that loads from file
+    File(const std::string& filename) {
         s_file_ = nullptr;
-        // If mode is set to 1, read the serialized data structures from disk.
+        // Read the serialized data structures from disk.
         // The serialized data structures must exist at <filename>.succinct.
         std::cout << "De-serializing Succinct data structures...\n";
-        s_file_ = new SuccinctSemistructuredShard(filename,
-                                                SuccinctMode::LOAD_IN_MEMORY);
+        s_file_ = new SuccinctFile(filename, SuccinctMode::LOAD_IN_MEMORY);
     }
 
-    // Constructor that compresses semistructured given the sampling rate arguments
-    PySemistructured(const std::string& inputpath, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+
+    // Constructor that compresses file given the sampling rate arguments
+    File(const std::string& inputpath, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
     uint32_t npa_sampling_rate, int sampling_opt, int npa_opt){
         s_file_ = nullptr;
         // The following compresses an input file at "inputpath" in memory
-        // as a buffer containing key-value pairs. It uses newline '\n' to
-        // differentiate between successive values, and assigns the line number
-        // as the key for the corresponding value.
+        // as a flat file (no structure) using the compression parameters
+        // passed in (sampling rates, etc.).
+        // Leave the arguments unspecified to use default values.
         std::cout << "Constructing Succinct data structures...\n";
-        s_file_ = new SuccinctSemistructuredShard(inputpath,
-                                                SuccinctMode::CONSTRUCT_IN_MEMORY);
-        // s_file_ = new SuccinctSemistructuredShard(0, inputpath,
-        //                             SuccinctMode::CONSTRUCT_IN_MEMORY,
-        //                             sa_sampling_rate, isa_sampling_rate,
-        //                             npa_sampling_rate, SamplingSchemeFromOption(sampling_opt),
-        //                             SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt));
+        s_file_ = new SuccinctFile(inputpath,
+                                    SuccinctMode::CONSTRUCT_IN_MEMORY,
+                                    sa_sampling_rate, isa_sampling_rate,
+                                    npa_sampling_rate, SamplingSchemeFromOption(sampling_opt),
+                                    SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt));
         std::cout << "Serializing Succinct data structures...\n";
         // Serialize the compressed representation to disk at the location <inputpath>.succinct
         s_file_->Serialize(inputpath + ".succinct");
     }
 
     // Wrapped search command, that returns a python list
-    boost::python::list Search(const std::string &attr_key, const std::string &attr_val) {
-        std::set<int64_t> results;
-        s_file_->SearchAttribute(results, attr_key, attr_val);
+    boost::python::list Search(const std::string& arg) {
+        std::vector<int64_t> results;
+        s_file_->Search(results, arg);
         boost::python::list ret;
         for (const auto& i :results){
           ret.append(i);
@@ -112,33 +121,34 @@ struct PySemistructured{
         return ret;
     }
 
-    //Wrapped count command
-    int64_t Count(const std::string &attr_key, const std::string &attr_val) {
-      int64_t count = s_file_->CountAttribute(attr_key, attr_val);
-      return count;
+    // Wrapped count command
+    int64_t Count(const std::string& arg) {
+        int64_t count = s_file_->Count(arg);
+        return count;
     }
 
-    //Wrapped get command
-    std::string Get(int64_t key, std::string attr_key) {
-      std::string result;
-      s_file_->Get(result, key, attr_key);
-      return result;
+    // Wrapped extract command
+    std::string Extract(uint64_t offset, uint64_t length) {
+        std::string result;
+        s_file_->Extract(result, offset, length);
+        return result;
     }
 
-    //PySemistructured members
-    SuccinctSemistructuredShard *s_file_;
-
+    //File members
+    SuccinctFile *s_file_;
 };
 
-//Boost Python module
-BOOST_PYTHON_MODULE(pysemistructured){
-    class_<PySemistructured>("PySemistructured", init<std::string>())
+
+
+/**
+ * Boost Python module
+ */
+BOOST_PYTHON_MODULE(file){
+    class_<File>("File", init<std::string>())
     .def(init<std::string, uint32_t, uint32_t, uint32_t, int, int>())
-    .def("Search", &PySemistructured::Search)
-    .def("Count", &PySemistructured::Count)
-    .def("Get", &PySemistructured::Get)
+    .def("Search", &File::Search)
+    .def("Count", &File::Count)
+    .def("Extract", &File::Extract)
     ;
 
 }
-
-
