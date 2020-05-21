@@ -30,7 +30,9 @@
         "set": "cpp",
         "unordered_map": "cpp",
         "__node_handle": "cpp",
-        "cwchar": "cpp"
+        "cwchar": "cpp",
+        "iosfwd": "cpp",
+        "fstream": "cpp"
     },
     "python.linting.enabled": false
 }
