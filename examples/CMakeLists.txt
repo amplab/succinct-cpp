@@ -13,7 +13,7 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
     endif()
 endif()
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -ldl -lutil")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -g -ldl -lutil -I/usr/local/bin/python3.7")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
