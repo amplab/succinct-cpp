@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(succinct CXX)
 
-find_package(PythonInterp "3.7")
+find_package(PythonInterp "3.6")
 
 if (PYTHONINTERP_FOUND)
   if (UNIX AND NOT APPLE)
