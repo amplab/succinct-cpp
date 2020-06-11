@@ -338,7 +338,7 @@ size_t SuccinctCore::Serialize(const std::string &path) {
       return 0;
     }
   }
-  std::ofstream out(path + "/succinct_metadata");
+  std::ofstream out(path + "/" + path.substr(0, path.size()-9) + ".succinct.metadata");
   // std::ofstream sa_out(path + "/sa");
   // std::ofstream isa_out(path + "/isa");
   // std::ofstream npa_out(path + "/npa");
@@ -386,7 +386,7 @@ size_t SuccinctCore::Deserialize(const std::string &path) {
   struct stat st{};
   assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
-  std::ifstream in(path + "/succinct_metadata");
+  std::ifstream in(path + "/" + path.substr(0, path.size()-9) + ".succinct.metadata");
   // std::ifstream sa_in(path + "/sa");
   // std::ifstream isa_in(path + "/isa");
   // std::ifstream npa_in(path + "/npa");
@@ -463,7 +463,7 @@ size_t SuccinctCore::MemoryMap(const std::string &path) {
   assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
   uint8_t *data_beg, *data;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/succinct_metadata");
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/" + path.substr(0, path.size()-9) + ".succinct.metadata");
 
   input_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);
