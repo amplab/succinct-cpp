@@ -338,10 +338,10 @@ size_t SuccinctCore::Serialize(const std::string &path) {
       return 0;
     }
   }
-  std::ofstream out(path + "/metadata");
-  std::ofstream sa_out(path + "/sa");
-  std::ofstream isa_out(path + "/isa");
-  std::ofstream npa_out(path + "/npa");
+  std::ofstream out(path + "/succinct_metadata");
+  // std::ofstream sa_out(path + "/sa");
+  // std::ofstream isa_out(path + "/isa");
+  // std::ofstream npa_out(path + "/npa");
 
   // Output size of input file
   out.write(reinterpret_cast<const char *>(&(input_size_)), sizeof(uint64_t));
@@ -366,20 +366,17 @@ size_t SuccinctCore::Serialize(const std::string &path) {
     out.write(reinterpret_cast<const char *>(&alphabet_[i]), sizeof(char));
   }
 
-  out_size += sa_->Serialize(sa_out);
-  out_size += isa_->Serialize(isa_out);
+  out_size += sa_->Serialize(out);
+  out_size += isa_->Serialize(out);
 
   if (sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
     assert(isa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
     out_size += SerializeDictionary(((SampledByValueSA *) sa_)->GetSampledPositions(), out);
   }
 
-  out_size += npa_->Serialize(npa_out);
+  out_size += npa_->Serialize(out);
 
   out.close();
-  sa_out.close();
-  isa_out.close();
-  npa_out.close();
 
   return out_size;
 }
@@ -389,10 +386,10 @@ size_t SuccinctCore::Deserialize(const std::string &path) {
   struct stat st{};
   assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
-  std::ifstream in(path + "/metadata");
-  std::ifstream sa_in(path + "/sa");
-  std::ifstream isa_in(path + "/isa");
-  std::ifstream npa_in(path + "/npa");
+  std::ifstream in(path + "/succinct_metadata");
+  // std::ifstream sa_in(path + "/sa");
+  // std::ifstream isa_in(path + "/isa");
+  // std::ifstream npa_in(path + "/npa");
 
   size_t in_size = 0;
 
@@ -431,8 +428,8 @@ size_t SuccinctCore::Deserialize(const std::string &path) {
   }
 
   // Deserialize SA, ISA
-  in_size += sa_->Deserialize(sa_in);
-  in_size += isa_->Deserialize(isa_in);
+  in_size += sa_->Deserialize(in);
+  in_size += isa_->Deserialize(in);
 
   // Deserialize bitmap marking positions of sampled values if the sampling scheme
   // is sample by value.
@@ -446,19 +443,16 @@ size_t SuccinctCore::Deserialize(const std::string &path) {
 
   // Deserialize NPA based on the NPA encoding scheme.
   switch (npa_->GetEncodingScheme()) {
-    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:in_size += ((EliasDeltaEncodedNPA *) npa_)->Deserialize(npa_in);
+    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:in_size += ((EliasDeltaEncodedNPA *) npa_)->Deserialize(in);
       break;
-    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:in_size += ((EliasGammaEncodedNPA *) npa_)->Deserialize(npa_in);
+    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:in_size += ((EliasGammaEncodedNPA *) npa_)->Deserialize(in);
       break;
-    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:in_size += ((WaveletTreeEncodedNPA *) npa_)->Deserialize(npa_in);
+    case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:in_size += ((WaveletTreeEncodedNPA *) npa_)->Deserialize(in);
       break;
     default:assert(0);
   }
 
   in.close();
-  sa_in.close();
-  isa_in.close();
-  npa_in.close();
 
   return in_size;
 }
@@ -469,7 +463,7 @@ size_t SuccinctCore::MemoryMap(const std::string &path) {
   assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
   uint8_t *data_beg, *data;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/metadata");
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/succinct_metadata");
 
   input_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);
@@ -501,8 +495,8 @@ size_t SuccinctCore::MemoryMap(const std::string &path) {
   data += (sizeof(char) * (alphabet_size_ + 1));
 
   // Memory map SA and ISA
-  data += sa_->MemoryMap(path + "/sa");
-  data += isa_->MemoryMap(path + "/isa");
+  data += sa_->MemoryMap(data);
+  data += isa_->MemoryMap(data);
 
   // Memory map bitmap marking positions of sampled values if the sampling scheme
   // is sample by value.
@@ -516,12 +510,12 @@ size_t SuccinctCore::MemoryMap(const std::string &path) {
 
   // Memory map NPA based on the NPA encoding scheme.
   switch (npa_->GetEncodingScheme()) {
-    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:data += ((EliasDeltaEncodedNPA *) npa_)->MemoryMap(path + "/npa");
+    case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED:data += ((EliasDeltaEncodedNPA *) npa_)->MemoryMap(data);
       break;
-    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:data += ((EliasGammaEncodedNPA *) npa_)->MemoryMap(path + "/npa");
+    case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED:data += ((EliasGammaEncodedNPA *) npa_)->MemoryMap(data);
       break;
     case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED:
-      data += ((WaveletTreeEncodedNPA *) npa_)->MemoryMap(path + "/npa");
+      data += ((WaveletTreeEncodedNPA *) npa_)->MemoryMap(data);
       break;
     default:assert(0);
   }

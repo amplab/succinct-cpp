@@ -244,9 +244,8 @@ class LayeredSampledArray : public SampledArray {
     return in_size;
   }
 
-  virtual size_t MemoryMap(std::string filename) {
-    uint8_t *data, *data_beg;
-    data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
+  virtual size_t MemoryMap(uint8_t* data) {
+    uint8_t *data_beg = data;
 
     layer_map_ = *((uint64_t *) data);
     data += sizeof(uint64_t);

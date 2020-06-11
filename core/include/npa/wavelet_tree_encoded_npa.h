@@ -41,7 +41,7 @@ class WaveletTreeEncodedNPA : public NPA {
   virtual size_t Deserialize(std::istream& in);
 
   // Memory map the wavelet tree encoded NPA
-  virtual size_t MemoryMap(std::string filename);
+  virtual size_t MemoryMap(uint8_t* data);
 
   virtual size_t StorageSize();
 
