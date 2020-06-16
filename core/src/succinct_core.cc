@@ -1,14 +1,5 @@
 #include "succinct_core.h"
 
-#include <aws/s3/S3Client.h>
-#include <aws/s3/model/PutObjectRequest.h>
-#include <aws/s3/model/GetObjectRequest.h>
-#include <aws/s3/model/DeleteObjectRequest.h>
-#include <aws/core/utils/stream/SimpleStreamBuf.h>
-#include <aws/core/utils/logging/DefaultLogSystem.h>
-#include <aws/core/utils/logging/AWSLogging.h>
-#include <fstream>
-
 SuccinctCore::SuccinctCore(const std::string &filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,
                            uint32_t isa_sampling_rate,
@@ -334,10 +325,6 @@ uint64_t SuccinctCore::LookupC(uint64_t i) {
 
 char SuccinctCore::CharAt(uint64_t i) {
   return alphabet_[LookupC(LookupISA(i))];
-}
-
-void SuccinctCore::SerializeS3(const uint8_t *data, const std::string &out_path){
-  //TODO
 }
 
 size_t SuccinctCore::Serialize(const std::string &path) {

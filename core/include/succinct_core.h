@@ -76,7 +76,7 @@ class SuccinctCore : public SuccinctBase {
 
   // Get the character at index i
   char CharAt(uint64_t i);
-
+  
   // Serialize succinct data structures
   virtual size_t Serialize(const std::string& filename);
 
