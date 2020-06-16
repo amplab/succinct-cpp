@@ -6,6 +6,7 @@
 #include <sys/time.h>
 
 #include "succinct_file.h"
+#include "succinct_core.h"
 
 #include <boost/python.hpp>
 using namespace boost::python;
@@ -110,6 +111,21 @@ struct File {
         s_file_->Serialize(inputpath + ".succinct");
     }
 
+    //Constructor that takes input in a memory buffer and compresses
+    File(uint8_t *input, size_t input_size, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+    int32_t npa_sampling_rate, uint32_t context_len, int sampling_opt, int npa_opt, uint32_t sampling_range){
+        s_file_ = nullptr;
+        // Compresses a the data from "input" in memory
+        std::cout << "Constructing Succinct data structures...\n";
+        SuccinctCore* obj;
+        obj->Construct(input, input_size, sa_sampling_rate, isa_sampling_rate,
+                      npa_sampling_rate, context_len, SamplingSchemeFromOption(sampling_opt),
+                      SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt), sampling_range);
+         s_file_ = (SuccinctFile *) obj;
+         std::cout << "Serializing Succinct data structures...\n";
+    }
+
+
     // Wrapped search command, that returns a python list
     boost::python::list Search(const std::string& arg) {
         std::vector<int64_t> results;
@@ -138,14 +154,13 @@ struct File {
     SuccinctFile *s_file_;
 };
 
-
-
 /**
  * Boost Python module
  */
 BOOST_PYTHON_MODULE(file){
     class_<File>("File", init<std::string>())
     .def(init<std::string, uint32_t, uint32_t, uint32_t, int, int>())
+    .def(init<uint8_t *, size_t, uint32_t, uint32_t, int32_t, uint32_t, int, int, uint32_t>())
     .def("Search", &File::Search)
     .def("Count", &File::Count)
     .def("Extract", &File::Extract)

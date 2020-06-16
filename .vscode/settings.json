@@ -32,7 +32,13 @@
         "__node_handle": "cpp",
         "cwchar": "cpp",
         "iosfwd": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "cwctype": "cpp",
+        "array": "cpp",
+        "iterator": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "vector": "cpp"
     },
     "python.linting.enabled": false
 }
