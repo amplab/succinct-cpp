@@ -25,10 +25,11 @@
 #include "utils/divsufsortxx_utility.h"
 
 typedef enum {
-  CONSTRUCT_IN_MEMORY = 0,
-  CONSTRUCT_MEMORY_MAPPED = 1,
-  LOAD_IN_MEMORY = 2,
-  LOAD_MEMORY_MAPPED = 3
+  CONSTRUCT_FROM_CONTENT = 0,
+  CONSTRUCT_IN_MEMORY = 1,
+  CONSTRUCT_MEMORY_MAPPED = 2,
+  LOAD_IN_MEMORY = 3,
+  LOAD_MEMORY_MAPPED = 4
 } SuccinctMode;
 
 class SuccinctCore : public SuccinctBase {
@@ -76,6 +77,9 @@ class SuccinctCore : public SuccinctBase {
 
   // Get the character at index i
   char CharAt(uint64_t i);
+
+  // Serialize succinct data structures
+  virtual size_t SerializeFromContent(std::ostream &path);
   
   // Serialize succinct data structures
   virtual size_t Serialize(const std::string& filename);
@@ -122,6 +126,16 @@ class SuccinctCore : public SuccinctBase {
                 SamplingScheme isa_sampling_scheme,
                 NPA::NPAEncodingScheme npa_encoding_scheme,
                 uint32_t sampling_range);
+  
+  // Constructs the core data structures from an input string
+  void ConstructFromContent(const std::string &input,
+                             uint32_t sa_sampling_rate,
+                             uint32_t isa_sampling_rate,
+                             uint32_t npa_sampling_rate, uint32_t context_len,
+                             SamplingScheme sa_sampling_scheme,
+                             SamplingScheme isa_sampling_scheme,
+                             NPA::NPAEncodingScheme npa_encoding_scheme,
+                             uint32_t sampling_range);
 
   // Constructs the core data structures
   void Construct(const std::string& filename, uint32_t sa_sampling_rate,

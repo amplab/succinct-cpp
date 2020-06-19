@@ -29,6 +29,7 @@ add_executable(query_semistructured src/query_semistructured.cc)
 
 file(COPY lambda/lambdatest.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
+file(COPY pysuccinct/pyfile_input.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 file(COPY pysuccinct/pyfile.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 file(COPY pysuccinct/pykv.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 file(COPY pysuccinct/pysemistructured.py DESTINATION ${EXECUTABLE_OUTPUT_PATH})

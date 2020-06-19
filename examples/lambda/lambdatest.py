@@ -23,20 +23,25 @@ def call_compress (event, context):
     # f.close()
     # s3.meta.client.upload_file("/tmp/test.txt", "succinct-datasets", "test.txt")
 
-    # Download a file from a bucket and compress
+    # Get file content from S3 and save as "input"
     s3 = boto3.client("s3")
-    s3.download_file("succinct-datasets",event['key1'], "/tmp/" + event['key1'])
-    os.chdir("/tmp")
+    obj = client.get_object(Bucket='succinct-datasets', Key=event['key1'])
+    input = obj.get()['Body'].read().decode('utf-8')
     
     # with open(event['key1'], 'r') as f:
         # print(f.read())
- 
-    q = file.File(event['key1'], 32, 32, 128, 0, 1)
+
+    # Compress the input using file module
+    q = file.File(input, 32, 32, 128, 0, 1)
+    content = (q.GetContent().tobytes())
+
+    # Upload content back onto S3 in .succinct file
+    client.put_object(Body=content, Bucket='succinct-datasets', Key=event['key1'] + ".succinct")
 
     # for f in os.listdir("/tmp"):
         # print(f)
 
-    uploadDirectory("/tmp/" + event['key1'] + ".succinct", "succinct-datasets", event['key1'])
+    # uploadDirectory("/tmp/" + event['key1'] + ".succinct", "succinct-datasets", event['key1'])
     
     # out = os.path.isfile("/tmp/" + event['key1'] + ".succinct")
     # print(out)

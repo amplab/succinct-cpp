@@ -38,7 +38,17 @@
         "iterator": "cpp",
         "string": "cpp",
         "string_view": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "utility": "cpp",
+        "sstream": "cpp",
+        "strstream": "cpp",
+        "__string": "cpp"
     },
     "python.linting.enabled": false
 }

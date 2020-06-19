@@ -1,4 +1,6 @@
 #include "succinct_core.h"
+#include <string>
+#include <sstream>
 
 SuccinctCore::SuccinctCore(const std::string &filename, SuccinctMode s_mode,
                            uint32_t sa_sampling_rate,
@@ -17,6 +19,12 @@ SuccinctCore::SuccinctCore(const std::string &filename, SuccinctMode s_mode,
   this->alphabet_size_ = 0;
   this->input_size_ = 0;
   switch (s_mode) {
+    case SuccinctMode::CONSTRUCT_FROM_CONTENT: {
+      ConstructFromContent(filename, sa_sampling_rate, isa_sampling_rate,
+                npa_sampling_rate, context_len, sa_sampling_scheme,
+                isa_sampling_scheme, npa_encoding_scheme, sampling_range);
+      break;
+    }
     case SuccinctMode::CONSTRUCT_IN_MEMORY: {
       Construct(filename, sa_sampling_rate, isa_sampling_rate,
                 npa_sampling_rate, context_len, sa_sampling_scheme,
@@ -113,6 +121,28 @@ void SuccinctCore::Allocate(uint32_t sa_sampling_rate,
   }
 
   assert(isa_ != nullptr);
+}
+
+void SuccinctCore::ConstructFromContent(const std::string &input,
+                             uint32_t sa_sampling_rate,
+                             uint32_t isa_sampling_rate,
+                             uint32_t npa_sampling_rate, uint32_t context_len,
+                             SamplingScheme sa_sampling_scheme,
+                             SamplingScheme isa_sampling_scheme,
+                             NPA::NPAEncodingScheme npa_encoding_scheme,
+                             uint32_t sampling_range) {
+
+  // Convert input into uint8_t *
+  uint64_t fsize = input.length();
+  auto *data = (uint8_t *) s_allocator.s_malloc(fsize + 1);
+  for (int i = 0; i < fsize; i++ ){
+    data[i] = input[i];
+  }
+  data[fsize] = 1;
+
+  Construct(data, fsize + 1, sa_sampling_rate, isa_sampling_rate,
+            npa_sampling_rate, context_len, sa_sampling_scheme,
+            isa_sampling_scheme, npa_encoding_scheme, sampling_range);
 }
 
 void SuccinctCore::Construct(const std::string &filename,
@@ -327,6 +357,64 @@ char SuccinctCore::CharAt(uint64_t i) {
   return alphabet_[LookupC(LookupISA(i))];
 }
 
+// Serialize function that returns string
+size_t SuccinctCore::SerializeFromContent(std::ostream &path) {
+  size_t out_size = 0;
+  typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
+  struct stat st{};
+  // mode_t create_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  // if (stat(path.c_str(), &st) != 0) {
+  //   if (mkdir(path.c_str(), create_mode) != 0) {
+  //     fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
+  //     fprintf(stderr, "Terminating the serialization process.\n");
+  //     return 0;
+  //   }
+  // }
+  // std::ofstream out(path + "/" + path);
+  // std::ofstream sa_out(path + "/sa");
+  // std::ofstream isa_out(path + "/isa");
+  // std::ofstream npa_out(path + "/npa");
+
+  // Output size of input file
+  path.write(reinterpret_cast<const char *>(&(input_size_)), sizeof(uint64_t));
+  out_size += sizeof(uint64_t);
+
+  // Output cmap size
+  uint64_t cmap_size = alphabet_map_.size();
+  path.write(reinterpret_cast<const char *>(&(cmap_size)), sizeof(uint64_t));
+  out_size += sizeof(uint64_t);
+  for (auto &it : alphabet_map_) {
+    path.write(reinterpret_cast<const char *>(&(it.first)), sizeof(char));
+    out_size += sizeof(char);
+    path.write(reinterpret_cast<const char *>(&(it.second.first)), sizeof(uint64_t));
+    out_size += sizeof(uint64_t);
+    path.write(reinterpret_cast<const char *>(&(it.second.second)), sizeof(uint32_t));
+    out_size += sizeof(uint32_t);
+  }
+
+  path.write(reinterpret_cast<const char *>(&alphabet_size_), sizeof(uint32_t));
+  out_size += sizeof(uint32_t);
+  for (uint32_t i = 0; i < alphabet_size_ + 1; i++) {
+    path.write(reinterpret_cast<const char *>(&alphabet_[i]), sizeof(char));
+  }
+
+  out_size += sa_->Serialize(path);
+  out_size += isa_->Serialize(path);
+
+  if (sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE) {
+    assert(isa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+    out_size += SerializeDictionary(((SampledByValueSA *) sa_)->GetSampledPositions(), path);
+  }
+
+  out_size += npa_->Serialize(path);
+
+  return out_size;
+  // std::stringstream ss;
+  // ss << path.rdbuf();
+
+  // return reinterpret_cast<uint8_t*>(&((ss.str())[0]));
+}
+
 size_t SuccinctCore::Serialize(const std::string &path) {
   size_t out_size = 0;
   typedef std::map<char, std::pair<uint64_t, uint32_t> >::iterator iterator_t;
@@ -339,7 +427,7 @@ size_t SuccinctCore::Serialize(const std::string &path) {
       return 0;
     }
   }
-  std::ofstream out(path + "/" + path);
+  std::ofstream out(path);
   // std::ofstream sa_out(path + "/sa");
   // std::ofstream isa_out(path + "/isa");
   // std::ofstream npa_out(path + "/npa");
@@ -384,10 +472,10 @@ size_t SuccinctCore::Serialize(const std::string &path) {
 
 size_t SuccinctCore::Deserialize(const std::string &path) {
   // Check if directory exists
-  struct stat st{};
-  assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
+  //struct stat st{};
+  //assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
-  std::ifstream in(path + "/" + path);
+  std::ifstream in(path);
   // std::ifstream sa_in(path + "/sa");
   // std::ifstream isa_in(path + "/isa");
   // std::ifstream npa_in(path + "/npa");
@@ -464,7 +552,7 @@ size_t SuccinctCore::MemoryMap(const std::string &path) {
   assert(stat(path.c_str(), &st) == 0 && S_ISDIR(st.st_mode));
 
   uint8_t *data_beg, *data;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path + "/" + path);
+  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(path);
 
   input_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);

@@ -112,19 +112,40 @@ struct File {
     }
 
     //Constructor that takes input in a memory buffer and compresses
-    File(uint8_t *input, size_t input_size, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
-    int32_t npa_sampling_rate, uint32_t context_len, int sampling_opt, int npa_opt, uint32_t sampling_range){
+    File(int from_content, const std::string& input, uint32_t sa_sampling_rate, uint32_t isa_sampling_rate,
+    uint32_t npa_sampling_rate, int sampling_opt, int npa_opt){
         s_file_ = nullptr;
         // Compresses a the data from "input" in memory
         std::cout << "Constructing Succinct data structures...\n";
-        SuccinctCore* obj;
-        obj->Construct(input, input_size, sa_sampling_rate, isa_sampling_rate,
-                      npa_sampling_rate, context_len, SamplingSchemeFromOption(sampling_opt),
-                      SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt), sampling_range);
-         s_file_ = (SuccinctFile *) obj;
-         std::cout << "Serializing Succinct data structures...\n";
-    }
+        s_file_ = new SuccinctFile(input,
+                                    SuccinctMode::CONSTRUCT_FROM_CONTENT,
+                                    sa_sampling_rate, isa_sampling_rate,
+                                    npa_sampling_rate, SamplingSchemeFromOption(sampling_opt),
+                                    SamplingSchemeFromOption(sampling_opt), EncodingSchemeFromOption(npa_opt));
+        std::cout << "Serializing Succinct data structures...\n";
+        std::stringstream path;
+        size_t size = s_file_->SerializeFromContent(path);
 
+        std::string pathstring = path.str();
+        //unsigned char buffer[pathstring.length()];
+        file_content_length_ = pathstring.length();
+        file_content_ = new unsigned char[file_content_length_ ]();
+        memcpy(file_content_, pathstring.data(), file_content_length_);
+        //file_content_ = buffer;
+        // std::cout << "string is: " << pathstring << "\n";
+        // std::cout << "file_content_ is \n";
+        // for (int i = 0; i < pathstring.length(); i++){
+        //   std::cout << file_content_[i];
+        // }
+        
+        //boost::python::object memoryView(boost::python::handle<>(PyMemoryView_FromMemory(path, size, PyBUF_READ)));
+    }
+    
+    //Return the serialized content as a string
+    PyObject* GetContent(){
+      PyObject* pymemview = PyMemoryView_FromMemory((char*) file_content_, file_content_length_ , PyBUF_READ);
+      return pymemview;
+    }
 
     // Wrapped search command, that returns a python list
     boost::python::list Search(const std::string& arg) {
@@ -152,6 +173,8 @@ struct File {
 
     //File members
     SuccinctFile *s_file_;
+    unsigned char *file_content_;
+    int file_content_length_;
 };
 
 /**
@@ -160,7 +183,8 @@ struct File {
 BOOST_PYTHON_MODULE(file){
     class_<File>("File", init<std::string>())
     .def(init<std::string, uint32_t, uint32_t, uint32_t, int, int>())
-    .def(init<uint8_t *, size_t, uint32_t, uint32_t, int32_t, uint32_t, int, int, uint32_t>())
+    .def(init<int, std::string, uint32_t, uint32_t, uint32_t, int, int>())
+    .def("GetContent", &File::GetContent)
     .def("Search", &File::Search)
     .def("Count", &File::Count)
     .def("Extract", &File::Extract)
