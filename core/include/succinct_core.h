@@ -20,6 +20,7 @@
 #include "sampledarray/sampled_by_value_isa.h"
 #include "sampledarray/sampled_by_value_sa.h"
 #include "succinct_base.h"
+#include "utils/array_input.h"
 #include "utils/array_stream.h"
 #include "utils/divsufsortxx.h"
 #include "utils/divsufsortxx_utility.h"
@@ -146,7 +147,7 @@ class SuccinctCore : public SuccinctBase {
                  uint32_t sampling_range);
 
   // Constructs the core data structures
-  void Construct(uint8_t* input, size_t input_size, uint32_t sa_sampling_rate,
+  void Construct(bool in_mem, uint8_t* input, size_t input_size, uint32_t sa_sampling_rate,
                  uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
                  uint32_t context_len, SamplingScheme sa_sampling_scheme,
                  SamplingScheme isa_sampling_scheme,

@@ -91,6 +91,8 @@ class SuccinctUtils {
     return data;
   }
 
+  
+
   // Writes an integer array to file
   template<typename T>
   static void WriteToFile(T* data, size_t size, std::string outfile) {
