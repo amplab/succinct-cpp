@@ -116,7 +116,7 @@ struct File {
     uint32_t npa_sampling_rate, int sampling_opt, int npa_opt){
         s_file_ = nullptr;
         // Compresses a the data from "input" in memory
-        std::cout << "Constructing Succinct data structures...\n";
+        std::cout << "Constructing Succinct data structures... FROM CONTENT\n";
         s_file_ = new SuccinctFile(input,
                                     SuccinctMode::CONSTRUCT_FROM_CONTENT,
                                     sa_sampling_rate, isa_sampling_rate,

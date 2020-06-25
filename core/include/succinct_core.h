@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include <inttypes.h>
 
 #include "npa/elias_delta_encoded_npa.h"
 #include "npa/elias_gamma_encoded_npa.h"
@@ -217,6 +218,21 @@ class SuccinctCore : public SuccinctBase {
 //    }
 //    return false;
 //  }
+  static Bitmap* ArrayToBitmap(size_t size, uint8_t bits,
+                              SuccinctAllocator& s_allocator,
+                              int64_t* array_input) {
+    Bitmap* B = new Bitmap;
+    InitBitmap(&B, size * bits, s_allocator);
+    //std::ifstream in(infile);
+    for (uint64_t i = 0; i < size; i++) {
+      uint64_t val;
+        
+      //in.read(reinterpret_cast<char *>(&val), size * sizeof(uint64_t));
+      SetBitmapArray(&B, i, val, bits);
+    }
+    return B;
+  }
+
 
   static Bitmap* ReadAsBitmap(size_t size, uint8_t bits,
                               SuccinctAllocator& s_allocator,

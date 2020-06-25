@@ -10,6 +10,10 @@ class SampledByValueISA : public FlatSampledArray {
                     uint64_t sa_n, Dictionary *d_bpos,
                     SuccinctAllocator &s_allocator);
 
+  SampledByValueISA(uint32_t sampling_rate, NPA *npa, ArrayInput& sa_array,
+                    uint64_t sa_n, Dictionary *d_bpos,
+                    SuccinctAllocator &s_allocator);
+
   SampledByValueISA(uint32_t sampling_rate, NPA *npa,
                     SuccinctAllocator &s_allocator);
 
@@ -25,6 +29,8 @@ class SampledByValueISA : public FlatSampledArray {
  protected:
   // Sample by value for ISA using original SA
   virtual void Sample(ArrayStream& sa_stream, uint64_t n);
+
+  virtual void SampleInMem(ArrayInput& sa_array, uint64_t n);
 
  private:
   Dictionary *sampled_positions_;

@@ -10,6 +10,10 @@ class LayeredSampledSA : public LayeredSampledArray {
                    SuccinctAllocator &s_allocator);
 
   LayeredSampledSA(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
+                   NPA *npa, ArrayInput& sa_array, uint64_t sa_n,
+                   SuccinctAllocator &s_allocator);
+
+  LayeredSampledSA(uint32_t target_sampling_rate, uint32_t base_sampling_rate,
                    NPA *npa, SuccinctAllocator &s_allocator);
 
   // Access element at index i
@@ -19,6 +23,8 @@ class LayeredSampledSA : public LayeredSampledArray {
 
  protected:
   void SampleLayered(ArrayStream& sa_stream, uint64_t n);
+
+  void SampleLayeredInMem(ArrayInput& sa_array, uint64_t n);
 
   NPA *npa;
 };

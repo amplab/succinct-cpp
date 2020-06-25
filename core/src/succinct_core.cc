@@ -140,6 +140,8 @@ void SuccinctCore::ConstructFromContent(const std::string &input,
   }
   data[fsize] = 1;
 
+   std::cout << "ConstructFromContent Line 143" << std::endl;
+
   //Construct in memory
   Construct(1, data, fsize + 1, sa_sampling_rate, isa_sampling_rate,
             npa_sampling_rate, context_len, sa_sampling_scheme,
@@ -183,6 +185,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
                              uint32_t sampling_range) {
 
   if (in_mem == 0){
+    std::cout << "Storing data on disk" << std::endl;
     //USE FILES ON DISK TO STORE ARRAYS
 
     std::string sa_file = ".tmp.sa";
@@ -336,6 +339,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
 
     sa_stream.CloseAndRemove();
   } else {
+    std::cout << "Storing data in memory" << std::endl;
     //USE MEMORY TO STORE ARRAYS
 
     // Save metadata
@@ -411,12 +415,14 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
                                         s_allocator);
         break;
       }
-      // case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
-      //   npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
-      //                                   npa_sampling_rate, isa_file, col_offsets,
-      //                                   npa_file, s_allocator);
-      //   return;
-      // }
+      case NPA::NPAEncodingScheme::ELIAS_DELTA_ENCODED: {
+        npa_ = new EliasDeltaEncodedNPA(input_size_, alphabet_size_, context_len,
+                                        npa_sampling_rate, lISA, col_offsets,
+                                        s_allocator);
+        return;
+      }
+      // We'll deal with bitmap later
+
       // case NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED: {
       //   //isa_stream.CloseAndRemove();
       //   Bitmap *compactSA = ReadAsBitmap(input_size_, bits, s_allocator, sa_file);
@@ -428,59 +434,59 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
       //   DestroyBitmap(&data_bitmap, s_allocator);
       //   break;
       // }
-    //   default:npa_ = nullptr;
+      default:npa_ = nullptr;
     }
-    // assert(npa_ != nullptr);
+    assert(npa_ != nullptr);
 
-    // switch (sa_sampling_scheme) {
-    //   case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-    //     sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, sa_stream, input_size_,
-    //                                s_allocator);
-    //     break;
-    //   case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
-    //     sa_ = new SampledByValueSA(sa_sampling_rate, npa_, sa_stream, input_size_,
-    //                                s_allocator);
-    //     break;
-    //   case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-    //     sa_ = new LayeredSampledSA(sa_sampling_rate,
-    //                                sa_sampling_rate * sampling_range, npa_,
-    //                                sa_stream, input_size_, s_allocator);
-    //     break;
-    //   case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-    //     sa_ = new OpportunisticLayeredSampledSA(sa_sampling_rate,
-    //                                             sa_sampling_rate * sampling_range,
-    //                                             npa_, sa_stream, input_size_,
-    //                                             s_allocator);
-    //     break;
-    //   default:sa_ = nullptr;
-    // }
-    // sa_stream.Reset();
-    // assert(sa_ != nullptr);
+    switch (sa_sampling_scheme) {
+      case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+        sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, sa_array, input_size_,
+                                   s_allocator);
+        break;
+      case SamplingScheme::FLAT_SAMPLE_BY_VALUE:
+        sa_ = new SampledByValueSA(sa_sampling_rate, npa_, sa_array, input_size_,
+                                   s_allocator);
+        break;
+      case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+        sa_ = new LayeredSampledSA(sa_sampling_rate,
+                                   sa_sampling_rate * sampling_range, npa_,
+                                   sa_array, input_size_, s_allocator);
+        break;
+      case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+        sa_ = new OpportunisticLayeredSampledSA(sa_sampling_rate,
+                                                sa_sampling_rate * sampling_range,
+                                                npa_, sa_array, input_size_,
+                                                s_allocator);
+        break;
+      default:sa_ = nullptr;
+    }
+    sa_array.Reset();
+    assert(sa_ != nullptr);
 
-    // switch (isa_sampling_scheme) {
-    //   case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
-    //     isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, sa_stream,
-    //                                  input_size_, s_allocator);
-    //     break;
-    //   case SamplingScheme::FLAT_SAMPLE_BY_VALUE:assert(sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
-    //     isa_ = new SampledByValueISA(
-    //         sa_sampling_rate, npa_, sa_stream, input_size_,
-    //         ((SampledByValueSA *) sa_)->GetSampledPositions(), s_allocator);
-    //     break;
-    //   case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
-    //     isa_ = new LayeredSampledISA(isa_sampling_rate,
-    //                                  isa_sampling_rate * sampling_range, npa_,
-    //                                  sa_stream, input_size_, s_allocator);
-    //     break;
-    //   case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
-    //     isa_ = new OpportunisticLayeredSampledISA(
-    //         isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
-    //         sa_stream, input_size_, s_allocator);
-    //     break;
-    //   default:isa_ = nullptr;
-    // }
-    // sa_stream.Reset();
-    // assert(isa_ != nullptr);
+    switch (isa_sampling_scheme) {
+      case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
+        isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, sa_array,
+                                     input_size_, s_allocator);
+        break;
+      case SamplingScheme::FLAT_SAMPLE_BY_VALUE:assert(sa_->GetSamplingScheme() == SamplingScheme::FLAT_SAMPLE_BY_VALUE);
+        isa_ = new SampledByValueISA(
+            sa_sampling_rate, npa_, sa_array, input_size_,
+            ((SampledByValueSA *) sa_)->GetSampledPositions(), s_allocator);
+        break;
+      case SamplingScheme::LAYERED_SAMPLE_BY_INDEX:
+        isa_ = new LayeredSampledISA(isa_sampling_rate,
+                                     isa_sampling_rate * sampling_range, npa_,
+                                     sa_array, input_size_, s_allocator);
+        break;
+      case SamplingScheme::OPPORTUNISTIC_LAYERED_SAMPLE_BY_INDEX:
+        isa_ = new OpportunisticLayeredSampledISA(
+            isa_sampling_rate, isa_sampling_rate * sampling_range, npa_,
+            sa_array, input_size_, s_allocator);
+        break;
+      default:isa_ = nullptr;
+    }
+    sa_array.Reset();
+    assert(isa_ != nullptr);
 
     //sa_stream.CloseAndRemove();
 

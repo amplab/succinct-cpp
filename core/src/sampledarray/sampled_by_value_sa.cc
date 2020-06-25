@@ -14,6 +14,19 @@ SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
 }
 
 SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
+                                   ArrayInput& sa_array, uint64_t sa_n,
+                                   SuccinctAllocator &s_allocator)
+    : FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_VALUE, npa,
+                       s_allocator) {
+
+  assert(ISPOWOF2(sampling_rate));
+
+  this->sampled_positions_ = NULL;
+  this->original_size_ = sa_n;
+  SampleInMem(sa_array, sa_n);
+}
+
+SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
                                    SuccinctAllocator &s_allocator)
     : FlatSampledArray(sampling_rate, SamplingScheme::FLAT_SAMPLE_BY_VALUE, npa,
                        s_allocator) {
@@ -26,6 +39,33 @@ SampledByValueSA::SampledByValueSA(uint32_t sampling_rate, NPA *npa,
   this->data_bits_ = 0;
   this->data_ = NULL;
 
+}
+
+void SampledByValueSA::SampleInMem(ArrayInput& sa_array, uint64_t n) {
+  data_size_ = (n / sampling_rate_) + 1;
+  data_bits_ = SuccinctUtils::IntegerLog2(data_size_ + 1);
+  uint64_t sa_val, pos = 0;
+  uint32_t orig_bits = SuccinctUtils::IntegerLog2(n + 1);
+
+  bitmap_t *BPos = new bitmap_t;
+  data_ = new bitmap_t;
+  SuccinctBase::InitBitmap(&data_, data_size_ * data_bits_,
+                           succinct_allocator_);
+
+  SuccinctBase::InitBitmap(&BPos, n, succinct_allocator_);
+
+  for (uint64_t i = 0; i < n; i++) {
+    sa_val = sa_array.Get();
+    if (sa_val % sampling_rate_ == 0) {
+      SuccinctBase::SetBitmapArray(&data_, pos++, sa_val / sampling_rate_,
+                                   data_bits_);
+      SETBITVAL(BPos, i);
+    }
+  }
+
+  sampled_positions_ = new Dictionary;
+  SuccinctBase::CreateDictionary(BPos, sampled_positions_, succinct_allocator_);
+  SuccinctBase::DestroyBitmap(&BPos, succinct_allocator_);
 }
 
 void SampledByValueSA::Sample(ArrayStream& sa_stream, uint64_t n) {

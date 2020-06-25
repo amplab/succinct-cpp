@@ -3,6 +3,7 @@
 
 #include "sampling_scheme.h"
 #include "utils/array_stream.h"
+#include "utils/array_input.h"
 
 class SampledArray {
  public:

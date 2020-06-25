@@ -12,9 +12,31 @@ LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
 
 LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
                                      uint32_t base_sampling_rate, NPA *npa,
+                                     ArrayInput& sa_array, uint64_t sa_n,
+                                     SuccinctAllocator &s_allocator)
+    : LayeredSampledArray(target_sampling_rate, base_sampling_rate, sa_n,
+                          s_allocator) {
+  this->npa = npa;
+  SampleLayeredInMem(sa_array, sa_n);
+}
+
+LayeredSampledISA::LayeredSampledISA(uint32_t target_sampling_rate,
+                                     uint32_t base_sampling_rate, NPA *npa,
                                      SuccinctAllocator &s_allocator)
     : LayeredSampledArray(target_sampling_rate, base_sampling_rate, s_allocator) {
   this->npa = npa;
+}
+
+void LayeredSampledISA::SampleLayeredInMem(ArrayInput& sa_array, uint64_t n) {
+  for (uint64_t i = 0; i < n; i++) {
+    uint64_t sa_val = sa_array.Get();
+    if (sa_val % target_sampling_rate_ == 0) {
+      Layer l;
+      GetLayer(&l, sa_val);
+      bitmap_t *data = layer_data_[l.layer_id];
+      SuccinctBase::SetBitmapArray(&data, l.layer_idx, i, data_bits_);
+    }
+  }
 }
 
 void LayeredSampledISA::SampleLayered(ArrayStream& sa_stream, uint64_t n) {
