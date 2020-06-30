@@ -48,7 +48,9 @@
         "utility": "cpp",
         "sstream": "cpp",
         "strstream": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "thread": "cpp",
+        "istream": "cpp"
     },
     "python.linting.enabled": false
 }

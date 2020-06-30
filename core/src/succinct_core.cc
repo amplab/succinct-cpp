@@ -32,7 +32,7 @@ SuccinctCore::SuccinctCore(const std::string &filename, SuccinctMode s_mode,
       break;
     }
     case SuccinctMode::CONSTRUCT_MEMORY_MAPPED: {
-      fprintf(stderr, "Unsupported mode.\n");
+      // fprintf(stderr, "Unsupported mode.\n");
       assert(0);
       break;
     }
@@ -140,7 +140,7 @@ void SuccinctCore::ConstructFromContent(const std::string &input,
   }
   data[fsize] = 1;
 
-   std::cout << "ConstructFromContent Line 143" << std::endl;
+  // fprintf(stderr, "ConstructFromContent Line 143\n");
 
   //Construct in memory
   Construct(1, data, fsize + 1, sa_sampling_rate, isa_sampling_rate,
@@ -185,7 +185,6 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
                              uint32_t sampling_range) {
 
   if (in_mem == 0){
-    std::cout << "Storing data on disk" << std::endl;
     //USE FILES ON DISK TO STORE ARRAYS
 
     std::string sa_file = ".tmp.sa";
@@ -222,6 +221,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     col_offsets.push_back(0);
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_stream.Get();
+      //fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
       lISA[cur_sa] = i;
       if (input[cur_sa] != input[prv_sa]) {
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
@@ -339,13 +339,14 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
 
     sa_stream.CloseAndRemove();
   } else {
-    std::cout << "Storing data in memory" << std::endl;
     //USE MEMORY TO STORE ARRAYS
 
+    // fprintf(stderr, "Save metadata\n");
     // Save metadata
     input_size_ = input_size;
     uint32_t bits = SuccinctUtils::IntegerLog2(input_size_ + 1);
 
+    // fprintf(stderr, "Construct Suffix Array\n");
     // Construct Suffix Array
     auto *lSA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t), input_size_);
     divsufsortxx::constructSA(input, (input + input_size_), lSA,
@@ -356,22 +357,30 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
 
     ArrayInput sa_array(lSA);
 
+    // fprintf(stderr, "Allocate space for Inverse Suffix Array\n");
     // Allocate space for Inverse Suffix Array
     auto *lISA = (int64_t *) s_allocator.s_calloc(sizeof(int64_t),
                                                   input_size_);
 
+    // fprintf(stderr, "Auxiliary Data Structures for NPA\n");
     // Auxiliary Data Structures for NPA
     std::vector<uint64_t> col_offsets;
     uint64_t cur_sa, prv_sa;
-
+    // fprintf(stderr, "368\n");
     prv_sa = cur_sa = sa_array.Get();
+    // fprintf(stderr, "370\n");
     lISA[cur_sa] = 0;
+    // fprintf(stderr, "372\n");
     alphabet_size_ = 1;
+    // fprintf(stderr, "374\n");
     alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
+    // fprintf(stderr, "376\n");
     col_offsets.push_back(0);
+    // fprintf(stderr, "378\n");
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_array.Get();
       lISA[cur_sa] = i;
+      // fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
       if (input[cur_sa] != input[prv_sa]) {
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
             i, alphabet_size_++);
@@ -380,11 +389,13 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
       prv_sa = cur_sa;
     }
 
+    // fprintf(stderr, "389\n");
     alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
                                                             alphabet_size_);
     assert(sa_array.GetCurrentIndex() == input_size_);
     sa_array.Reset();
 
+    // fprintf(stderr, "396\n");
     alphabet_ = new char[alphabet_size_ + 1];
     for (auto alphabet_entry : alphabet_map_) {
       alphabet_[alphabet_entry.second.second] = alphabet_entry.first;
@@ -396,6 +407,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     //ArrayStream isa_stream(isa_file);
 
     // Compact input data (if needed)
+    // fprintf(stderr, "Compact input data (if needed)\n");
     Bitmap *data_bitmap = nullptr;
     if (npa_encoding_scheme == NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED) {
       data_bitmap = new Bitmap;
@@ -408,6 +420,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     }
     s_allocator.s_free(input);
 
+    // fprintf(stderr, "npa switch\n");
     switch (npa_encoding_scheme) {
       case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
         npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
@@ -438,6 +451,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     }
     assert(npa_ != nullptr);
 
+    // fprintf(stderr, "sa switch\n");
     switch (sa_sampling_scheme) {
       case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, sa_array, input_size_,
@@ -463,6 +477,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     sa_array.Reset();
     assert(sa_ != nullptr);
 
+    // fprintf(stderr, "isa switch\n");
     switch (isa_sampling_scheme) {
       case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, sa_array,
@@ -492,6 +507,9 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
 
     s_allocator.s_free(lISA);
     s_allocator.s_free(lSA);
+
+    // fprintf(stderr, "npa switch\n");
+
     }
 
 }
@@ -529,8 +547,8 @@ size_t SuccinctCore::SerializeFromContent(std::ostream &path) {
   // mode_t create_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   // if (stat(path.c_str(), &st) != 0) {
   //   if (mkdir(path.c_str(), create_mode) != 0) {
-  //     fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
-  //     fprintf(stderr, "Terminating the serialization process.\n");
+  //     // fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
+  //     // fprintf(stderr, "Terminating the serialization process.\n");
   //     return 0;
   //   }
   // }
@@ -586,8 +604,8 @@ size_t SuccinctCore::Serialize(const std::string &path) {
   mode_t create_mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   if (stat(path.c_str(), &st) != 0) {
     if (mkdir(path.c_str(), create_mode) != 0) {
-      fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
-      fprintf(stderr, "Terminating the serialization process.\n");
+      // fprintf(stderr, "Failed to create path '%s'\n", path.c_str());
+      // fprintf(stderr, "Terminating the serialization process.\n");
       return 0;
     }
   }
@@ -800,10 +818,10 @@ void SuccinctCore::PrintStorageBreakdown() {
       + alphabet_map_.size()
           * (sizeof(char) + sizeof(uint64_t) + sizeof(uint32_t));
   metadata_size += sizeof(alphabet_size_) + alphabet_size_ * sizeof(char);
-  fprintf(stderr, "Metadata size = %zu\n", metadata_size);
-  fprintf(stderr, "SA size = %zu\n", sa_->StorageSize());
-  fprintf(stderr, "ISA size = %zu\n", isa_->StorageSize());
-  fprintf(stderr, "NPA size = %zu\n", npa_->StorageSize());
+  // fprintf(stderr, "Metadata size = %zu\n", metadata_size);
+  // fprintf(stderr, "SA size = %zu\n", sa_->StorageSize());
+  // fprintf(stderr, "ISA size = %zu\n", isa_->StorageSize());
+  // fprintf(stderr, "NPA size = %zu\n", npa_->StorageSize());
 }
 
 std::pair<int64_t, int64_t> SuccinctCore::BwdSearch(std::string mgram) {

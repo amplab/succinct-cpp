@@ -135,7 +135,9 @@ void EliasGammaEncodedNPA::CreateDeltaEncodedVector(
       }
     } else {
       long delta = data[i] - last_val;
+      fprintf(stderr, "138\n");
       assert(delta > 0);
+      fprintf(stderr, "140\n");
       _deltas.push_back(delta);
 
       delta_enc_size = EliasGammaEncodingSize(delta);
