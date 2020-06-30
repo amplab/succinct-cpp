@@ -45,7 +45,7 @@ class ArrayStream {
     }
     uint64_t val;
     in_.read(reinterpret_cast<char *>(&(val)), sizeof(uint64_t));
-    fprintf(stderr, "item at index %" PRIu64 " is %" PRIu64 "\n", current_idx_, val);
+    // fprintf(stderr, "item at index %" PRIu64 " is %" PRIu64 "\n", current_idx_, val);
     current_idx_++;
     return val;
   }

@@ -17,7 +17,7 @@ class ArrayInput {
 
   uint64_t Get() {
     uint64_t val = array_[current_idx_];
-    fprintf(stderr, "item at index %" PRIu64 " is %" PRIu64 "\n", current_idx_, val);
+    // fprintf(stderr, "item at index %" PRIu64 " is %" PRIu64 "\n", current_idx_, val);
     current_idx_++;
     return val;
   }
