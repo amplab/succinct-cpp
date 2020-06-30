@@ -128,8 +128,6 @@ class DeltaEncodedNPA : public NPA {
     std::thread constructor_thread[8];
 
     ArrayStream isa_stream(isa_file);
-    // Output file contents
-    isa_stream.PrintStream();
 
     first_idx = isa_stream.Get();
     num_elements_per_chunk = SuccinctUtils::NumBlocks(npa_size_, 8);
