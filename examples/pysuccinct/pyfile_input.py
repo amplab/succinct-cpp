@@ -81,9 +81,9 @@ else:
             isa_sampling_rate, npa_sampling_rate,
             sampling_scheme, npa_encoding_scheme)
 
-        content = (q.GetContent().tobytes())
+        content = string(q.GetContent()).encode('ASCII')
         # print(str(content,'ISO-8859-1'))
-        text_file = open(inputpath + ".succinct", "wb")
+        text_file = open(inputpath + ".succinct", "w")
         text_file.write(content)
 
     else:

@@ -219,17 +219,21 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     alphabet_size_ = 1;
     alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
     col_offsets.push_back(0);
+    // fprintf(stderr, "input size: %zd\n", input_size_);
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_stream.Get();
-      //fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
+      // fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
       lISA[cur_sa] = i;
       if (input[cur_sa] != input[prv_sa]) {
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
             i, alphabet_size_++);
         col_offsets.push_back(i);
+        // fprintf(stderr, "PUSHING BACK %" PRIu64 "\n", i);
       }
       prv_sa = cur_sa;
     }
+
+    // fprintf(stderr, "234\n");
 
     alphabet_map_[(char) 0] = std::pair<uint64_t, uint32_t>(input_size_,
                                                             alphabet_size_);
@@ -242,11 +246,13 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     }
 
     // Write Inverse Suffix Array to file
+    // fprintf(stderr, "Write Inverse Suffix Array to file\n");
     SuccinctUtils::WriteToFile(lISA, input_size_, isa_file);
     s_allocator.s_free(lISA);
     ArrayStream isa_stream(isa_file);
 
     // Compact input data (if needed)
+    // fprintf(stderr, "Compact input data (if needed)\n");
     Bitmap *data_bitmap = nullptr;
     if (npa_encoding_scheme == NPA::NPAEncodingScheme::WAVELET_TREE_ENCODED) {
       data_bitmap = new Bitmap;
@@ -259,6 +265,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     }
     s_allocator.s_free(input);
 
+    // fprintf(stderr, "npa switch\n");
     switch (npa_encoding_scheme) {
       case NPA::NPAEncodingScheme::ELIAS_GAMMA_ENCODED: {
         npa_ = new EliasGammaEncodedNPA(input_size_, alphabet_size_, context_len,
@@ -287,6 +294,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     }
     assert(npa_ != nullptr);
 
+    // fprintf(stderr, "sa switch\n");
     switch (sa_sampling_scheme) {
       case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         sa_ = new SampledByIndexSA(sa_sampling_rate, npa_, sa_stream, input_size_,
@@ -312,6 +320,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     sa_stream.Reset();
     assert(sa_ != nullptr);
 
+    // fprintf(stderr, "isa switch\n");
     switch (isa_sampling_scheme) {
       case SamplingScheme::FLAT_SAMPLE_BY_INDEX:
         isa_ = new SampledByIndexISA(isa_sampling_rate, npa_, sa_stream,
@@ -366,17 +375,12 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     // Auxiliary Data Structures for NPA
     std::vector<uint64_t> col_offsets;
     uint64_t cur_sa, prv_sa;
-    // fprintf(stderr, "368\n");
     prv_sa = cur_sa = sa_array.Get();
-    // fprintf(stderr, "370\n");
     lISA[cur_sa] = 0;
-    // fprintf(stderr, "372\n");
     alphabet_size_ = 1;
-    // fprintf(stderr, "374\n");
     alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(0, 0);
-    // fprintf(stderr, "376\n");
     col_offsets.push_back(0);
-    // fprintf(stderr, "378\n");
+    // fprintf(stderr, "input size: %zd\n", input_size_);
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_array.Get();
       lISA[cur_sa] = i;
@@ -385,6 +389,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
             i, alphabet_size_++);
         col_offsets.push_back(i);
+        // fprintf(stderr, "PUSHING BACK %" PRIu64 "\n", i);
       }
       prv_sa = cur_sa;
     }
