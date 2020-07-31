@@ -8,29 +8,40 @@ import tempfile
 import time
 from threading import Thread
 
-# Change the filenames to succinctdi_sa, succinctdir_isa .... and upload to s3
-def uploadDirectory(path,bucketname, name):
-    s3 = boto3.client("s3")
-    for root,dirs,files in os.walk(path):   
-        for f in files:
-            s3.upload_file(os.path.join(root,f), bucketname, f)
+# Compress time global
+compress_time = 0
+read_time = 0
+upload_time = 0
+
 
 def read_chunk(i, chunk_string, read_chunks, s3):
-    # print("reading chunk " + str(i))
+    print("reading chunk " + str(i))
+    global read_time
+    start = time.time()
     obj = s3.get_object(Bucket='succinct-datasets', Key=chunk_string + str(i) + ".succinct")
     read_chunks.append(obj['Body'].read().decode('utf-8'))
+    del obj
+    read_time += time.time() - start
 
 def compress_chunk(i, read_chunks, compressed_chunks):
-    # print("compressing chunk " + str(i))
+    print("compressing chunk " + str(i))
+    global compress_time
+    start = time.time()
     q = file.File(0, read_chunks[i], 32, 32, 128, 0, 1)
     compressed_chunks.append(q.GetContent().tobytes())
+    q.DeleteContent()
+    del q
     read_chunks[i] = None
+    compress_time += time.time() - start
 
 def upload_chunk(i, chunk_string, compressed_chunks, s3):
-    # print("uploading chunk " + str(i))
+    print("uploading chunk " + str(i))
+    global upload_time
+    start = time.time()
     s3.put_object(Body=compressed_chunks[i], Bucket='succinct-datasets', Key=chunk_string + "compressed-" + str(i) + ".succinct")
     # Remove chunk here
     compressed_chunks[i] = None
+    upload_time += time.time() - start
 
 
 
@@ -39,8 +50,8 @@ def call_compress (event, context):
     # Define variables
     chunk_string = event['key1'] + "-chunk-"
     s3 = boto3.client("s3")
-    # Depends on number of chunks file is split into
-    num_chunks = 292
+    # Depends on number of chunks file is split
+    num_chunks = 1167
     read_chunks = []
     compressed_chunks = []
 
@@ -185,11 +196,11 @@ def call_compress (event, context):
     
     # # **** REMOVE OBJECTS FROM S3 ****
     # s3 = boto3.resource("s3")
-    # for i in range (0, 200):
+    # for i in range (0, 1500):
     #     obj = s3.Object("succinct-datasets", event['key1'] + "-chunk-compressed-" + str(i) +  ".succinct")
     #     obj.delete()
-    #     obj = s3.Object("succinct-datasets", event['key1'] + "-chunk-" + str(i) +  ".succinct")
-    #     obj.delete()
+        #obj = s3.Object("succinct-datasets", event['key1'] + "-chunk-" + str(i) +  ".succinct")
+        #obj.delete()
     print("File compression and upload is complete")
 
 def call_query (event, context):

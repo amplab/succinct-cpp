@@ -513,8 +513,6 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     s_allocator.s_free(lISA);
     s_allocator.s_free(lSA);
 
-    // fprintf(stderr, "npa switch\n");
-
     }
 
 }

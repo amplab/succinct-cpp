@@ -123,7 +123,7 @@ class DeltaEncodedNPA : public NPA {
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_]();
-    // fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
+    fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
     uint64_t first_idx, cur_idx, nxt_idx, num_elements_per_chunk;
     std::thread constructor_thread[8];
 
@@ -173,7 +173,7 @@ class DeltaEncodedNPA : public NPA {
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_]();
-    // fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
+    fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
     uint64_t first_idx, cur_idx, nxt_idx, num_elements_per_chunk;
     std::thread constructor_thread[8];
 
@@ -197,6 +197,7 @@ class DeltaEncodedNPA : public NPA {
     }
 
     for (uint8_t i = 0; i < 8; i++) {
+      // fprintf(stderr, "thread loop: %i\n", i); 
       constructor_thread[i].join();
     }
 
@@ -351,19 +352,20 @@ class DeltaEncodedNPA : public NPA {
                                 int64_t first_idx) {
     // ISA Stream is configured to start reading from correct position
     uint64_t cur_idx, nxt_idx;
-    // fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
+    fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
     ArrayStream isa_stream(isa_file, start_pos);
     cur_idx = isa_stream.Get();
+    fprintf(stderr, "n_elems = %" PRIu64 "\n", n_elems);
 
     for (uint64_t i = 0; i < n_elems; i++) {
       nxt_idx = isa_stream.Get();
-      // fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
+      fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
       lNPA[cur_idx] = nxt_idx;
       cur_idx = nxt_idx;
     }
-    // fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
+    fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
     if (first_idx > 0) {
-      // fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
+      fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
       lNPA[cur_idx] = first_idx;
     }
     isa_stream.Close();
@@ -375,23 +377,26 @@ class DeltaEncodedNPA : public NPA {
                                 int64_t first_idx, uint64_t npa_size) {
     // ISA Stream is configured to start reading from correct position
     uint64_t cur_idx, nxt_idx;
-    //fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
+    fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
     ArrayInput isa_array(lISA, start_pos);
     cur_idx = isa_array.Get();
+    fprintf(stderr, "n_elems = %" PRIu64 "\n", n_elems);
+
     if (cur_idx >= npa_size){
+      fprintf(stderr, "out of bounds\n");
       cur_idx = 0;
     } else {
       for (uint64_t i = 0; i < n_elems; i++) {
         nxt_idx = isa_array.Get();
-        // fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
+        fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
         lNPA[cur_idx] = nxt_idx;
         cur_idx = nxt_idx;
       }
     }
 
-    // fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
-    if (first_idx > 0) {
-      // fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
+    fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
+    if (first_idx > 0 && cur_idx < npa_size) {
+      fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
       lNPA[cur_idx] = first_idx;
     }
   }

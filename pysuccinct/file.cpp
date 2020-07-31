@@ -171,6 +171,12 @@ struct File {
         return result;
     }
 
+    // Deconstructor
+    void DeleteContent(){
+      delete s_file_;
+      delete file_content_;
+    }
+
     //File members
     SuccinctFile *s_file_;
     unsigned char *file_content_;
@@ -188,6 +194,7 @@ BOOST_PYTHON_MODULE(file){
     .def("Search", &File::Search)
     .def("Count", &File::Count)
     .def("Extract", &File::Extract)
+    .def("DeleteContent", &File::DeleteContent)
     ;
 
 }
