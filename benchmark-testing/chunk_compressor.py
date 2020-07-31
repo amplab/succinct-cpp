@@ -179,9 +179,6 @@ def upload_chunk(upload_index, chunk_string, compressed_arg, s3, code_start):
 start = time.time()
 # Define variables
 chunk_string = "sample.txt" + "-chunk-"
-s3 = boto3.client("s3", aws_access_key_id="AKIAJS52NT4AB7WQAZKA", 
-                aws_secret_access_key="5nc0Bc5HD8ugeqLRfF3h6kR9OCfLfQ/VTRYOaxy/", 
-                region_name="us-east-2")
 # Depends on number of chunks file is split into
 num_chunks = 1167
 read_chunks = []
@@ -434,9 +431,6 @@ for i in range(0, num_chunks + 2):
 # q = file.File(event['key1'], 32, 32, 128, 0, 1)
 
 # # **** CALCULATE COMPRESSION RATIO ****
-# s3 = boto3.resource("s3", aws_access_key_id="AKIAJS52NT4AB7WQAZKA", 
-#                 aws_secret_access_key="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", 
-#                 region_name="us-east-2")
 # bucket = s3.Bucket('succinct-datasets')
 # orignal_sizes = 0
 # compressed_sizes = 0
