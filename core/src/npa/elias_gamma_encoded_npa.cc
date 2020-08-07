@@ -135,10 +135,10 @@ void EliasGammaEncodedNPA::CreateDeltaEncodedVector(
       }
     } else {
       long delta = data[i] - last_val;
-      // assert(delta > 0);
-      if (delta <= 0){
-        fprintf(stderr, "WARNING DELTA <= 0 --> %ld = %" PRIu64 " - %" PRIu64 "\n",delta,data[i],last_val);
-      }
+      assert(delta > 0);
+      // if (delta <= 0){
+      //   fprintf(stderr, "WARNING DELTA <= 0 --> %ld = %" PRIu64 " - %" PRIu64 "\n",delta,data[i],last_val);
+      // }
       _deltas.push_back(delta);
 
       delta_enc_size = EliasGammaEncodingSize(delta);

@@ -222,7 +222,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     // fprintf(stderr, "input size: %zd\n", input_size_);
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_stream.Get();
-      // fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
+      fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
       lISA[cur_sa] = i;
       if (input[cur_sa] != input[prv_sa]) {
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
@@ -384,7 +384,7 @@ void SuccinctCore::Construct(bool in_mem, uint8_t *input, size_t input_size,
     for (uint64_t i = 1; i < input_size_; i++) {
       cur_sa = sa_array.Get();
       lISA[cur_sa] = i;
-      // fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
+      fprintf(stderr, "INITIALIZING lISA[ %" PRIu64 "] = %" PRIu64 "\n", cur_sa, i);
       if (input[cur_sa] != input[prv_sa]) {
         alphabet_map_[input[cur_sa]] = std::pair<uint64_t, uint32_t>(
             i, alphabet_size_++);
