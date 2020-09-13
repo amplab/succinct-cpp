@@ -7,6 +7,9 @@ import resource
 import signal
 import asyncio
 import aiobotocore
+import sys
+from promise import Promise
+
 # from memory_profiler import profile
 # from guppy import hpy
 
@@ -46,7 +49,7 @@ class ReusableThread(Thread):
         we can reuse the thread's resources"""
 
         self.restart()
-        while(True):    
+        while(True):
             # wait until we should process
             self._startSignal.wait()
 
@@ -55,7 +58,7 @@ class ReusableThread(Thread):
             if(self._finishIndicator):# check, if we want to stop
                 self._oneRunFinished.set()
                 return
-            
+
             # call the threaded function
             self._callable(*self._callableArgs)
 
@@ -75,8 +78,14 @@ class ReusableThread(Thread):
 def do_nothing(*args):
     pass
 
-# # **** PARALLEL EXECUTION WITH REUSABLE THREADS ****
+
+# # **** PARALLEL EXECUTION FUNCTIONS ****
 async def read_chunk(i, chunk_string, read_chunks, client, code_start):
+    if ( i != 0 ):
+        # Await on previous chunk if not chunk 0
+        await read_chunk(i - 1, chunk_string, read_chunks, client, code_start)
+
+    # After calling on previous chunk, run current chunk i read
     print("reading chunk " + str(i))
     global read_time
     start = time.time()
@@ -93,37 +102,120 @@ async def read_chunk(i, chunk_string, read_chunks, client, code_start):
     read_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
 
 async def compress_chunk(i, read_chunks, compressed_chunks, code_start):
-    print("compressing chunk " + str(i))
-    global compress_time
-    start = time.time()
+    if ( i != 0 ):
+        # Await on previous chunk if not chunk 0
+        await compress_chunk(i - 1, read_chunks, compressed_chunks, code_start)
 
-    q = file.File(0, read_chunks[i], 32, 32, 128, 0, 1)
-    compressed_chunks[i] = q.GetContent().tobytes()
-    q.DeleteContent()
-    del q
-    read_chunks[i] = None
+    # After calling on previous chunk, run current chunk i upload, and check to see if corresponding compression is complete
+    # Loop that exits when read_chunks thread for chunk i is complete
+    while (True):
+        if (read_chunks[i] != None):
+            print("compressing chunk " + str(i))
+            global compress_time
+            start = time.time()
 
-    end = time.time()
-    compress_time += end - start
+            # If there is read data in the list, then we can go ahead and compress
+            await asyncio.sleep(0)
+            q = file.File(0, read_chunks[i], 32, 32, 128, 0, 1)
+            compressed_chunks[i] = q.GetContent().tobytes()
+            q.DeleteContent()
+            del q
+            read_chunks[i] = None
 
-    # write chunk times to file
+            end = time.time()
+            compress_time += end - start
+            break
+        else:
+            # otherwise wait 0.05 seconds and check read_chunks again
+            print("waiting for read")
+            await asyncio.sleep(0.01)
+            # write chunk times to file
     compress_time_file = open("compress_time_file.txt","a")
     compress_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
 
 async def upload_chunk(i, chunk_string, compressed_chunks, client, code_start):
-    print("uploading chunk " + str(i))
-    global upload_time
-    start = time.time()
+    if ( i != 0 ):
+        # Await on previous chunk if not chunk 0
+        await upload_chunk(i - 1, chunk_string, compressed_chunks, client, code_start)
 
-    await client.put_object(Body=compressed_chunks[i], Bucket='succinct-datasets', Key=chunk_string + "compressed-" + str(i) + ".succinct")
-    compressed_chunks[i] = None
+    # After calling on previous chunk, run current chunk i upload, and check to see if corresponding compression is complete
 
-    end = time.time()
-    upload_time += end - start
+    # Loop that exits when compressed_chunks thread for chunk i is complete
+    while (True):
+        if (compressed_chunks[i] != None):
+            print("uploading chunk " + str(i))
+            global upload_time
+            start = time.time()
+
+            # If there is compressed data in the list, then we can go ahead and upload
+            await client.put_object(Body=compressed_chunks[i], Bucket='succinct-datasets', Key=chunk_string + "compressed-" + str(i) + ".succinct", StorageClass='REDUCED_REDUNDANCY')
+            compressed_chunks[i] = None
+
+            end = time.time()
+            upload_time += end - start
+            break
+        else:
+            # otherwise wait 0.05 seconds and check compressed_chunks again
+            print("waiting for compress")
+            await asyncio.sleep(0.01)
+
 
     # write chunk times to file
     upload_time_file = open("upload_time_file.txt","a")
     upload_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
+
+    # # # **** SEQUENTIAL EXECUTION FUNCTIONS ****
+# def read_chunk(i, chunk_string, read_chunks, client, code_start):
+#     print("reading chunk " + str(i))
+#     global read_time
+#     start = time.time()
+
+#     obj = client.get_object(Bucket='succinct-datasets', Key=chunk_string + str(i) + ".succinct")
+#     read_chunks[i] = obj['Body'].read()
+#     del obj
+
+#     end = time.time()
+#     read_time += end - start
+
+#     # # write chunk times to file
+#     # read_time_file = open("read_time_file.txt","a")
+#     # read_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
+
+# def compress_chunk(i, read_chunks, compressed_chunks, code_start):
+#     start = time.time()
+
+#     print("compressing chunk " + str(i))
+#     global compress_time
+
+#     # await asyncio.sleep(0)
+#     q = file.File(0, read_chunks[i], 32, 32, 128, 0, 1)
+#     compressed_chunks[i] = q.GetContent().tobytes()
+#     q.DeleteContent()
+#     del q
+#     read_chunks[i] = None
+
+#     end = time.time()
+#     compress_time += end - start
+
+#     # write chunk times to file
+#     # compress_time_file = open("compress_time_file.txt","a")
+#     # compress_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
+
+
+# def upload_chunk(i, chunk_string, compressed_chunks, client, code_start):
+#     print("uploading chunk " + str(i))
+#     global upload_time
+#     start = time.time()
+
+#     client.put_object(Body=compressed_chunks[i], Bucket='succinct-datasets', Key=chunk_string + "compressed-" + str(i) + ".succinct", StorageClass='REDUCED_REDUNDANCY')
+#     compressed_chunks[i] = None
+
+#     end = time.time()
+#     upload_time += end - start
+
+#     # write chunk times to file
+#     # upload_time_file = open("upload_time_file.txt","a")
+#     # upload_time_file.write("chunk " + str(i) +  " start: " + str(start - code_start) + " duration: " + str(end - start) + "\n")
 
 # **** FUNCTION START ****
 async def execute():
@@ -132,7 +224,7 @@ async def execute():
     # # Define variables
     chunk_string = "sample.txt" + "-chunk-"
     # # Depends on number of chunks file is split into
-    num_chunks = 10
+    num_chunks = 1167
     read_chunks = [None] * num_chunks
     compressed_chunks = [None] * num_chunks
 
@@ -155,282 +247,74 @@ async def execute():
 
     # signal.signal(signal.SIGUSR1, do_nothing)
 
-    # **** PARALLEL EXECUTION WITH AIDBOTOCORE ****
+    # client = boto3.client('s3', region_name='us-east-2',
+    #     aws_secret_access_key="AWS_SECRET_KEY",
+    #     aws_access_key_id="AWS_ACCESS_ID")
+# **** PARALLEL EXECUTION WITH AIDBOTOCORE ****
+
+    # Event driven approach
+    # launch thread(0), right before compress, launch thread 1,
+        # Create a "promise" object right before compress, pass it to thread 1
+        # Create another "promise" object right before upload, pass it to thread 1
+    # thread(1) reads, wait for compress_promise object to be resolved before doing it's compress
+
+    # compress operation 
 
     session = aiobotocore.get_session()
     async with session.create_client('s3', region_name='us-east-2',
-        aws_secret_access_key=KEY,
-        aws_access_key_id=SECRET_KEY) as client:
+        aws_secret_access_key="AWS_SECRET_KEY",
+        aws_access_key_id="AWS_ACCESS_ID") as client:
 
-        #i = 0
-        await read_chunk(0, chunk_string, read_chunks, client, start)
-
-        #i = 1
         tasks = []
-        tasks.append(read_chunk(1, chunk_string, read_chunks, client, start))
-        tasks.append(compress_chunk(0, read_chunks, compressed_chunks, start))
-        await asyncio.gather(*tasks)
-        
-        #i = 2 to num_chunks - 1
-        for i in range(2, num_chunks):
-            tasks = []
-            tasks.append(read_chunk(i, chunk_string, read_chunks, client, start))
-            tasks.append(compress_chunk(i - 1, read_chunks, compressed_chunks, start))
-            tasks.append(upload_chunk(i - 2, chunk_string, compressed_chunks, client, start))
-            await asyncio.gather(*tasks)
+        tasks.append(read_chunk(num_chunks-1, chunk_string, read_chunks, client, start))
+        tasks.append(compress_chunk(num_chunks-1, read_chunks, compressed_chunks, start))
+        tasks.append(upload_chunk(num_chunks-1, chunk_string, compressed_chunks, client, start))
+        await asyncio.wait(tasks)
+        # await asyncio.gather(*tasks)
+
 
     #     for i in range(0, num_chunks + 2):
+    #         tasks = []
+
     #         if (i == 0):
-    #             await read_chunk(0, chunk_string, read_chunks, client, start)
+    #             tasks.append(read_chunk(i, chunk_string, read_chunks, client, start))
     #         elif (i == 1):
-    #             await read_chunk(1, chunk_string, read_chunks, client, start)
-    #             await compress_chunk(0, read_chunks, compressed_chunks, start)
+    #             tasks.append(read_chunk(i, chunk_string, read_chunks, client, start))
+    #             tasks.append(compress_chunk(i - 1, read_chunks, compressed_chunks, start))
     #         elif (i == num_chunks):
-    #             await compress_chunk(num_chunks - 1, read_chunks, compressed_chunks, start)
-    #             await upload_chunk(num_chunks - 2, chunk_string, compressed_chunks, client, start)
+    #             tasks.append(compress_chunk(i - 1, read_chunks, compressed_chunks, start))
+    #             tasks.append(upload_chunk(i - 2, chunk_string, compressed_chunks, client, start))
     #         elif (i == num_chunks + 1):
-    #             await upload_chunk(num_chunks - 1, chunk_string, compressed_chunks, client, start)
+    #             tasks.append(upload_chunk(i - 2, chunk_string, compressed_chunks, client, start))
     #         else:
-    #             await read_chunk(i, chunk_string, read_chunks, client, start)
-    #             await compress_chunk(i - 1, read_chunks, compressed_chunks, start)
-    #             await upload_chunk(i - 2, chunk_string, compressed_chunks, client, start)
+    #             tasks.append(read_chunk(i, chunk_string, read_chunks, client, start))
+    #             tasks.append(compress_chunk(i - 1, read_chunks, compressed_chunks, start))
+    #             tasks.append(upload_chunk(i - 2, chunk_string, compressed_chunks, client, start))
 
-
-    # # **** PARALLEL EXECUTION WITH REUSABLE THREADS ****
-    # read_index = [0]
-    # compress_index = [0]
-    # upload_index = [0]
-
-
-    # read_thread = ReusableThread(target = read_chunk, args=(read_index, chunk_string, read_chunks, client, start))
-    # compress_thread = ReusableThread(target = compress_chunk, args=(compress_index, read_chunks, compressed_chunks, start))
-    # upload_thread = ReusableThread(target = upload_chunk, args=(upload_index, chunk_string, compressed_chunks, client, start))
-
-    # for i in range(0, num_chunks + 2):
-    #     if (i == 0):
-    #         # START: read
-    #         read_index[0] = i
-
-    #         read_thread.start()
-    #     elif (i == 1):
-    #         # RESTART: read START: compress
-    #         read_thread.join()
-
-    #         read_index[0] = i
-    #         compress_index[0] = i - 1
-
-    #         compress_thread.start()
-    #         read_thread.restart()
-    #     elif (i == 2):
-    #         # RESTART: compress, read START: upload
-    #         read_thread.join()
-    #         compress_thread.join()
-
-    #         read_index[0] = i
-    #         compress_index[0] = i - 1
-    #         upload_index[0] = i - 2
-
-    #         upload_thread.start()
-    #         compress_thread.restart()
-    #         read_thread.restart()
-    #     elif (i == num_chunks):
-    #         # RESTART: upload, compress
-    #         read_thread.join()
-    #         compress_thread.join()
-    #         upload_thread.join()
-
-    #         compress_index [0] = i - 1
-    #         upload_index [0] = i - 2
-
-    #         upload_thread.restart()
-    #         compress_thread.restart()
-    #     elif (i == num_chunks + 1):
-    #         # RESTART: upload
-    #         compress_thread.join()
-    #         upload_thread.join()
-
-    #         upload_index [0] = i - 2
-
-    #         upload_thread.restart()
-
-    #         # Join last thread and finish all threads
-    #         upload_thread.join()
-
-    #         read_thread.finish()
-    #         compress_thread.finish()
-    #         upload_thread.finish()
-    #     else:
-    #         # RESTART: upload, compress, read
-    #         read_thread.join()
-    #         compress_thread.join()
-    #         upload_thread.join()
-
-    #         read_index[0] = i
-    #         compress_index[0] = i - 1
-    #         upload_index[0] = i - 2
-
-    #         upload_thread.restart()
-    #         compress_thread.restart()
-    #         read_thread.restart()
-
-    # # **** PARALLEL EXECUTION WITH LIST OF THREADS ****
-    # read_threads = [None] * num_chunks
-    # compress_threads = [None] * num_chunks
-    # upload_threads = [None] * num_chunks
-
-    # for i in range(0, num_chunks + 2):
-    #     if (i == 0):
-    #         # Create read thread
-    #         read_thread = Thread(target=read_chunk, args=(0, chunk_string, read_chunks, s3, start))
-    #         read_thread.start()
-    #         read_threads[i] = read_thread
-
-    #     elif (i == 1):
-    #         # If read_threads[0] isn't done, finish
-    #         if read_threads[0].is_alive():
-    #             read_threads[0].join()
-
-    #         # Create read thread
-    #         read_thread = Thread(target=read_chunk, args=(1, chunk_string, read_chunks, s3, start))
-    #         read_thread.start()
-    #         read_threads[i] = read_thread
-
-    #         # Create compress thread
-    #         compress_thread = Thread(target=compress_chunk, args=(0, read_chunks, compressed_chunks, start))
-    #         compress_thread.start()
-    #         compress_threads[i-1] = compress_thread
-    #     elif (i == num_chunks):
-    #         # If read_threads[num_chunks - 1] isn't done, finish
-    #         if read_threads[i - 1].is_alive():
-    #             read_threads[i - 1].join()
-
-    #         # If compress_threads[num_chunks - 2] isn't done, finish
-    #         if compress_threads[i - 2].is_alive():
-    #             compress_threads[i - 2].join()
-            
-    #         # Create compress thread
-    #         compress_thread = Thread(target=compress_chunk, args=(i - 1, read_chunks, compressed_chunks, start))
-    #         compress_thread.start()
-    #         compress_threads[i-1] = compress_thread
-
-    #         # Create upload thread
-    #         upload_thread = Thread(target=upload_chunk, args=(i - 2, chunk_string, compressed_chunks, s3, start))
-    #         upload_thread.start()
-    #         upload_threads[i-2] = upload_thread
-    #     elif (i == num_chunks + 1):
-    #         # If compress_threads[num_chunks - 1] isn't done, finish
-    #         if compress_threads[i - 2].is_alive():
-    #             compress_threads[i - 2].join()
-    #         # Create upload thread
-    #         upload_thread = Thread(target=upload_chunk, args=(i - 2, chunk_string, compressed_chunks, s3, start))
-    #         upload_thread.start()
-    #         upload_threads[i-2] = upload_thread
-    #     else:
-    #         # If read_threads[i - 1] isn't done, finish
-    #         if read_threads[i - 1].is_alive():
-    #             read_threads[i - 1].join()
-                
-    #         # If compress_threads[i - 2] isn't done, finish
-    #         if compress_threads[i - 2].is_alive():
-    #             compress_threads[i - 2].join()
-
-    #         # Create read thread
-    #         read_thread = Thread(target=read_chunk, args=(i, chunk_string, read_chunks, s3, start))
-    #         read_thread.start()
-    #         read_threads[i] = read_thread
-
-    #         # Create compress thread
-    #         compress_thread = Thread(target=compress_chunk, args=(i - 1, read_chunks, compressed_chunks, start))
-    #         compress_thread.start()
-    #         compress_threads[i-1] = compress_thread
-
-    #         # Create upload thread
-    #         upload_thread = Thread(target=upload_chunk, args=(i - 2, chunk_string, compressed_chunks, s3, start))
-    #         upload_thread.start()
-    #         upload_threads[i-2] = upload_thread
-
+    #         await asyncio.wait(tasks)
     # os.kill(PID, signal.SIGUSR1)
 
 
     # **** SEQUENTIAL EXECUTION ****
     # for i in range(0, num_chunks + 2):
     #     if (i == 0):
-    #         read_chunk(0, chunk_string, read_chunks, s3, start)
+    #         read_chunk(0, chunk_string, read_chunks, client, start)
     #     elif (i == 1):
-    #         read_chunk(1, chunk_string, read_chunks, s3, start)
+    #         read_chunk(1, chunk_string, read_chunks, client, start)
     #         compress_chunk(0, read_chunks, compressed_chunks, start)
     #     elif (i == num_chunks):
     #         compress_chunk(num_chunks - 1, read_chunks, compressed_chunks, start)
-    #         upload_chunk(num_chunks - 2, chunk_string, compressed_chunks, s3, start)
+    #         upload_chunk(num_chunks - 2, chunk_string, compressed_chunks, client, start)
     #     elif (i == num_chunks + 1):
-    #         upload_chunk(num_chunks - 1, chunk_string, compressed_chunks, s3, start)
+    #         upload_chunk(num_chunks - 1, chunk_string, compressed_chunks, client, start)
     #     else:
-    #         read_chunk(i, chunk_string, read_chunks, s3, start)
+    #         read_chunk(i, chunk_string, read_chunks, client, start)
     #         compress_chunk(i - 1, read_chunks, compressed_chunks, start)
-    #         upload_chunk(i - 2, chunk_string, compressed_chunks, s3, start)
+    #         upload_chunk(i - 2, chunk_string, compressed_chunks, client, start)
 
 
     # signal.signal(signal.SIGUSR1, do_nothing)
 
-    # #with s3
-    # for i in range(11,12):
-    #     obj = s3.get_object(Bucket='succinct-datasets', Key=chunk_string + str(i) + ".succinct")
-    #     print("read " + str(i))
-    #     q = file.File(0, obj['Body'].read().decode('utf-8'), 32, 32, 128, 0, 1)
-    #     compressed_content = q.GetContent().tobytes()
-    #     print("compressed " + str(i))
-    #     s3.put_object(Body=compressed_content, Bucket='succinct-datasets', Key=chunk_string + "compressed-" + str(i) + ".succinct")
-    #     print("uploaded " + str(i))
-
-    # # without s3
-    # for i in range(1660, 1667):
-    #     f = open(chunk_string + str(i) + ".succinct","r")
-    #     content = f.read()
-    #     q = file.File(0, content, 32, 32, 128, 0, 1)
-    #     text_file = open(chunk_string + str(i) + "-compressed-local.succinct", "wb")
-    #     text_file.write(q.GetContent().tobytes())
-
-    # os.kill(PID, signal.SIGUSR1)
-    # print("done")
-
-    # # **** UPLOAD FILE TO BUCKET ****
-    # s3 = boto3.resource("s3")
-    # os.chdir("/tmp")
-    # f = open("test.txt","w")
-    # f.write("hello this is a test")
-    # f.close()
-    # s3.meta.client.upload_file("/tmp/test.txt", "succinct-datasets", "test.txt")
-
-    # # **** COMPRESS BY INPUT ****
-    # # Get file content from S3 and save as "input"
-    # s3 = boto3.client("s3")
-    # obj = s3.get_object(Bucket='succinct-datasets', Key=event['key1'])
-    # input = obj['Body'].read().decode('utf-8')
-
-    # # Compress the input using file module
-    # q = file.File(0, input, 32, 32, 128, 0, 1)
-    # content = q.GetContent().tobytes()
-
-    # # Upload content back onto S3 in .succinct file
-    # s3.put_object(Body=content, Bucket='succinct-datasets', Key=event['key1'] + ".succinct")
-
-    # # **** COMPRESS BY FILE ****
-    # s3 = boto3.resource("s3")
-    # os.chdir("/tmp")
-    # s3.Bucket('succinct-datasets').download_file(event['key1'], event['key1'])
-    # q = file.File(event['key1'], 32, 32, 128, 0, 1)
-
-    # # **** CALCULATE COMPRESSION RATIO ****
-    # bucket = s3.Bucket('succinct-datasets')
-    # orignal_sizes = 0
-    # compressed_sizes = 0
-    # for i in range (0, num_chunks):
-    #     orignal_sizes += bucket.Object("sample.txt-chunk-" + str(i) + ".succinct").content_length
-    #     compressed_sizes += bucket.Object("sample.txt-chunk-compressed-" + str(i) + ".succinct").content_length
-
-    # print(orignal_sizes)
-    # print(compressed_sizes)
-    # print(orignal_sizes/compressed_sizes)
 
 
     # # **** REMOVE OBJECTS FROM S3 ****
@@ -448,6 +332,28 @@ async def execute():
     print("TOTAL DURATION: " + str(time.time() - start))
     print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
-
+# modify recursion limit
+sys.setrecursionlimit(1500)
 loop = asyncio.get_event_loop()
 loop.run_until_complete(execute())
+loop.close()
+
+# # **** CALCULATE COMPRESSION RATIO ****
+# s3 = boto3.resource("s3", region_name='us-east-2',
+#     aws_secret_access_key="AWS_SECRET_KEY",
+#     aws_access_key_id="AWS_ACCESS_ID")
+# bucket = s3.Bucket('succinct-datasets')
+# orignal_sizes = 0
+# compressed_sizes = 0
+# num_chunks = 1167
+# for i in range (0, num_chunks):
+#     orignal_sizes += bucket.Object("sample.txt-chunk-" + str(i) + ".succinct").content_length
+#     compressed_sizes += bucket.Object("sample.txt-chunk-compressed-" + str(i) + ".succinct").content_length
+
+# print(orignal_sizes)
+# print(compressed_sizes)
+# print(orignal_sizes/compressed_sizes)
+                                             
+
+
+
