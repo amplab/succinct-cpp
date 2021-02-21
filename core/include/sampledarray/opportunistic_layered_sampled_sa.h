@@ -12,6 +12,11 @@ class OpportunisticLayeredSampledSA : public OpportunisticLayeredSampledArray {
 
   OpportunisticLayeredSampledSA(uint32_t target_sampling_rate,
                                 uint32_t base_sampling_rate, NPA *npa,
+                                ArrayInput& sa_array, uint64_t sa_n,
+                                SuccinctAllocator &s_allocator);
+
+  OpportunisticLayeredSampledSA(uint32_t target_sampling_rate,
+                                uint32_t base_sampling_rate, NPA *npa,
                                 SuccinctAllocator &s_allocator);
 
   // Access element at index i
@@ -21,6 +26,7 @@ class OpportunisticLayeredSampledSA : public OpportunisticLayeredSampledArray {
   NPA *npa;
 
   void SampleLayered(ArrayStream& sa_stream, uint64_t n);
+  void SampleLayeredInMem(ArrayInput& sa_array, uint64_t n);
 };
 
 #endif

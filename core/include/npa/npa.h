@@ -65,7 +65,7 @@ class NPA {
 
   virtual size_t Deserialize(std::istream& in) = 0;
 
-  virtual size_t MemoryMap(std::string filename) = 0;
+  virtual size_t MemoryMap(uint8_t* data) = 0;
 
   virtual size_t StorageSize() = 0;
 

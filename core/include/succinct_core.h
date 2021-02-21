@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include <inttypes.h>
 
 #include "npa/elias_delta_encoded_npa.h"
 #include "npa/elias_gamma_encoded_npa.h"
@@ -20,15 +21,17 @@
 #include "sampledarray/sampled_by_value_isa.h"
 #include "sampledarray/sampled_by_value_sa.h"
 #include "succinct_base.h"
+#include "utils/array_input.h"
 #include "utils/array_stream.h"
 #include "utils/divsufsortxx.h"
 #include "utils/divsufsortxx_utility.h"
 
 typedef enum {
-  CONSTRUCT_IN_MEMORY = 0,
-  CONSTRUCT_MEMORY_MAPPED = 1,
-  LOAD_IN_MEMORY = 2,
-  LOAD_MEMORY_MAPPED = 3
+  CONSTRUCT_FROM_CONTENT = 0,
+  CONSTRUCT_IN_MEMORY = 1,
+  CONSTRUCT_MEMORY_MAPPED = 2,
+  LOAD_IN_MEMORY = 3,
+  LOAD_MEMORY_MAPPED = 4
 } SuccinctMode;
 
 class SuccinctCore : public SuccinctBase {
@@ -78,6 +81,9 @@ class SuccinctCore : public SuccinctBase {
   char CharAt(uint64_t i);
 
   // Serialize succinct data structures
+  virtual size_t SerializeFromContent(std::ostream &path);
+  
+  // Serialize succinct data structures
   virtual size_t Serialize(const std::string& filename);
 
   // Deserialize succinct data structures
@@ -122,6 +128,16 @@ class SuccinctCore : public SuccinctBase {
                 SamplingScheme isa_sampling_scheme,
                 NPA::NPAEncodingScheme npa_encoding_scheme,
                 uint32_t sampling_range);
+  
+  // Constructs the core data structures from an input string
+  void ConstructFromContent(const std::string &input,
+                             uint32_t sa_sampling_rate,
+                             uint32_t isa_sampling_rate,
+                             uint32_t npa_sampling_rate, uint32_t context_len,
+                             SamplingScheme sa_sampling_scheme,
+                             SamplingScheme isa_sampling_scheme,
+                             NPA::NPAEncodingScheme npa_encoding_scheme,
+                             uint32_t sampling_range);
 
   // Constructs the core data structures
   void Construct(const std::string& filename, uint32_t sa_sampling_rate,
@@ -132,7 +148,7 @@ class SuccinctCore : public SuccinctBase {
                  uint32_t sampling_range);
 
   // Constructs the core data structures
-  void Construct(uint8_t* input, size_t input_size, uint32_t sa_sampling_rate,
+  void Construct(bool in_mem, uint8_t* input, size_t input_size, uint32_t sa_sampling_rate,
                  uint32_t isa_sampling_rate, uint32_t npa_sampling_rate,
                  uint32_t context_len, SamplingScheme sa_sampling_scheme,
                  SamplingScheme isa_sampling_scheme,
@@ -202,6 +218,21 @@ class SuccinctCore : public SuccinctBase {
 //    }
 //    return false;
 //  }
+  static Bitmap* ArrayToBitmap(size_t size, uint8_t bits,
+                              SuccinctAllocator& s_allocator,
+                              int64_t* array_input) {
+    Bitmap* B = new Bitmap;
+    InitBitmap(&B, size * bits, s_allocator);
+    //std::ifstream in(infile);
+    for (uint64_t i = 0; i < size; i++) {
+      uint64_t val;
+        
+      //in.read(reinterpret_cast<char *>(&val), size * sizeof(uint64_t));
+      SetBitmapArray(&B, i, val, bits);
+    }
+    return B;
+  }
+
 
   static Bitmap* ReadAsBitmap(size_t size, uint8_t bits,
                               SuccinctAllocator& s_allocator,

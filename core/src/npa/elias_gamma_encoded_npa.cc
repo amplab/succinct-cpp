@@ -14,6 +14,19 @@ EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
   Encode(isa_file, col_offsets, npa_file);
 }
 
+EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint64_t npa_size,
+                                           uint64_t sigma_size,
+                                           uint32_t context_len,
+                                           uint32_t sampling_rate,
+                                           int64_t* lISA,
+                                           std::vector<uint64_t>& col_offsets,
+                                           SuccinctAllocator &s_allocator)
+    : DeltaEncodedNPA(npa_size, sigma_size, context_len, sampling_rate,
+                      NPAEncodingScheme::ELIAS_GAMMA_ENCODED, s_allocator) {
+  InitPrefixSum();
+  EncodeInMem(lISA, col_offsets);
+}
+
 EliasGammaEncodedNPA::EliasGammaEncodedNPA(uint32_t context_len,
                                            uint32_t sampling_rate,
                                            SuccinctAllocator &s_allocator)
@@ -123,6 +136,9 @@ void EliasGammaEncodedNPA::CreateDeltaEncodedVector(
     } else {
       long delta = data[i] - last_val;
       assert(delta > 0);
+      // if (delta <= 0){
+      //   fprintf(stderr, "WARNING DELTA <= 0 --> %ld = %" PRIu64 " - %" PRIu64 "\n",delta,data[i],last_val);
+      // }
       _deltas.push_back(delta);
 
       delta_enc_size = EliasGammaEncodingSize(delta);

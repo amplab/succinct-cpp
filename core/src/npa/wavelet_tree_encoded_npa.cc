@@ -509,11 +509,9 @@ size_t WaveletTreeEncodedNPA::Deserialize(std::istream& in) {
   return in_size;
 }
 
-size_t WaveletTreeEncodedNPA::MemoryMap(std::string filename) {
-  uint8_t *data, *data_beg;
-  data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
+size_t WaveletTreeEncodedNPA::MemoryMap(uint8_t* data) {
+  uint8_t *data_beg = data;
 
-  encoding_scheme_ = (NPAEncodingScheme) (*((uint64_t *) data));
   data += sizeof(uint64_t);
   npa_size_ = *((uint64_t *) data);
   data += sizeof(uint64_t);

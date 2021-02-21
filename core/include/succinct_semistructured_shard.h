@@ -174,8 +174,8 @@ class SuccinctSemistructuredShard : public SuccinctShard {
 
   std::string Format(const std::string &filename, char delim = ',') {
     std::string outf = filename + ".tmp.formatted";
-    std::ifstream infile = std::ifstream(filename);
-    std::ofstream formatted = std::ofstream(outf);
+    std::ifstream infile(filename);
+    std::ofstream formatted(outf);
     std::string line;
     int64_t line_no = 0;
     while (std::getline(infile, line)) {

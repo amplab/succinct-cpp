@@ -2,10 +2,12 @@
 #define DELTA_ENCODED_NPA_H
 
 #include <thread>
+#include <inttypes.h>
 
 #include "utils/succinct_utils.h"
 #include "utils/definitions.h"
 #include "utils/array_stream.h"
+#include "utils/array_input.h"
 #include "utils/thread_pool.h"
 #include "npa.h"
 
@@ -121,10 +123,12 @@ class DeltaEncodedNPA : public NPA {
 
     // Get all NPA values
     int64_t *lNPA = new int64_t[npa_size_]();
+    // fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
     uint64_t first_idx, cur_idx, nxt_idx, num_elements_per_chunk;
     std::thread constructor_thread[8];
 
     ArrayStream isa_stream(isa_file);
+
     first_idx = isa_stream.Get();
     num_elements_per_chunk = SuccinctUtils::NumBlocks(npa_size_, 8);
     for (uint8_t i = 0; i < 8; i++) {
@@ -133,6 +137,7 @@ class DeltaEncodedNPA : public NPA {
               0 : npa_size_ - i * num_elements_per_chunk;
       uint64_t num_elements = SuccinctUtils::Min(remaining_elements,
                                                  num_elements_per_chunk);
+      // // fprintf(stderr, "loop: %i\n", i);                                          
       constructor_thread[i] = std::thread(&DeltaEncodedNPA::ConstructNPAChunk, lNPA,
                                     isa_file, i * num_elements_per_chunk,
                                     num_elements, (i == 7) ? first_idx : -1ULL);
@@ -141,6 +146,12 @@ class DeltaEncodedNPA : public NPA {
     for (uint8_t i = 0; i < 8; i++) {
       constructor_thread[i].join();
     }
+
+
+    // fprintf(stderr, "NPA ARRAY\n");
+    // for (uint64_t i= 0; i < npa_size_; i ++){
+    //   fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", i, lNPA[i]);
+    // }
 
     isa_stream.CloseAndRemove();
 
@@ -158,6 +169,66 @@ class DeltaEncodedNPA : public NPA {
     }
     pool.ShutDown();
     remove(npa_file.c_str());
+  }
+
+  // Encode DeltaEncodedNPA based on the delta encoding scheme IN MEMORY
+  void EncodeInMem(int64_t *lISA, std::vector<uint64_t>& col_offsets) {
+
+    // Initialize Auxiliary NPA structures
+    col_offsets_ = col_offsets;
+
+    // Get all NPA values
+    int64_t *lNPA = new int64_t[npa_size_]();
+    // fprintf(stderr, "the npa_size_ is: %" PRIu64 "\n", npa_size_);
+    uint64_t first_idx, cur_idx, nxt_idx, num_elements_per_chunk;
+    std::thread constructor_thread[8];
+
+    // for ( int i = 0; i < sizeof(lISA)/sizeof(lISA[0]); i ++){
+    //   // // fprintf(stderr, "lISA: %" PRIu64 "\n", lISA[i]);
+    // }
+
+    ArrayInput isa_array(lISA);
+    first_idx = isa_array.Get();
+    num_elements_per_chunk = SuccinctUtils::NumBlocks(npa_size_, 8);
+    for (uint8_t i = 0; i < 8; i++) {
+      uint64_t remaining_elements =
+          (i * num_elements_per_chunk >= npa_size_) ?
+              0 : npa_size_ - i * num_elements_per_chunk;
+      uint64_t num_elements = SuccinctUtils::Min(remaining_elements,
+                                                 num_elements_per_chunk);
+      // // fprintf(stderr, "loop: %i\n", i);                                 
+      constructor_thread[i] = std::thread(&DeltaEncodedNPA::ConstructNPAChunkInMem, lNPA,
+                                    lISA, i * num_elements_per_chunk,
+                                    num_elements, (i == 7) ? first_idx : -1ULL, npa_size_);
+    }
+
+    for (uint8_t i = 0; i < 8; i++) {
+      // // fprintf(stderr, "thread loop: %i\n", i); 
+      constructor_thread[i].join();
+    }
+
+    // fprintf(stderr, "NPA ARRAY\n");
+    // for (uint64_t i= 0; i < npa_size_; i ++){
+    //   fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", i, lNPA[i]);
+    // }
+
+    //isa_stream.CloseAndRemove();
+
+    //SuccinctUtils::WriteToFile(lNPA, npa_size_, npa_file);
+    // // fprintf(stderr, "200\n");
+    del_npa_ = new DeltaEncodedVector[sigma_size_];
+    ThreadPool pool(8);
+    for (uint64_t i = 0; i < col_offsets_.size(); i++) {
+      uint64_t start_offset = col_offsets_[i];
+      uint64_t end_offset = (i < col_offsets_.size() - 1) ? col_offsets_[i + 1] : npa_size_;
+      pool.Enqueue([&, start_offset, end_offset, i] {
+        EncodeNPAChunkInMem(&(this->del_npa_[i]), lNPA, start_offset, end_offset);
+      });
+    }
+    pool.ShutDown();
+    delete[] lNPA;
+    // // fprintf(stderr, "finished EncodeInMem\n");
+    // remove(npa_file.c_str());
   }
 
   // Access element at index i
@@ -243,7 +314,6 @@ class DeltaEncodedNPA : public NPA {
     // Read sampling rate
     in.read(reinterpret_cast<char *>(&(sampling_rate_)), sizeof(uint32_t));
     in_size += sizeof(uint32_t);
-
     // Read coloffsets
     in_size += SuccinctBase::DeserializeVector(col_offsets_, in);
 
@@ -256,9 +326,8 @@ class DeltaEncodedNPA : public NPA {
     return in_size;
   }
 
-  virtual size_t MemoryMap(std::string filename) {
-    uint8_t *data, *data_beg;
-    data = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
+  virtual size_t MemoryMap(uint8_t* data) {
+    uint8_t *data_beg = data;
 
     encoding_scheme_ = (NPAEncodingScheme) (*((uint64_t *) data));
     data += sizeof(uint64_t);
@@ -287,37 +356,92 @@ class DeltaEncodedNPA : public NPA {
   DeltaEncodedVector *del_npa_;
 
  private:
+  
+  //On-disk ConstructNPAChunk function
   static void ConstructNPAChunk(int64_t *lNPA, std::string isa_file,
                                 uint64_t start_pos, uint64_t n_elems,
                                 int64_t first_idx) {
     // ISA Stream is configured to start reading from correct position
     uint64_t cur_idx, nxt_idx;
+    // fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
     ArrayStream isa_stream(isa_file, start_pos);
     cur_idx = isa_stream.Get();
+    // fprintf(stderr, "n_elems = %" PRIu64 "\n", n_elems);
 
     for (uint64_t i = 0; i < n_elems; i++) {
       nxt_idx = isa_stream.Get();
+      // fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
       lNPA[cur_idx] = nxt_idx;
       cur_idx = nxt_idx;
     }
-
+    // fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
     if (first_idx > 0) {
+      // fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
       lNPA[cur_idx] = first_idx;
     }
     isa_stream.Close();
   }
 
+  //In memory ConstructNPAChunk function
+  static void ConstructNPAChunkInMem(int64_t *lNPA, int64_t *lISA,
+                                uint64_t start_pos, uint64_t n_elems,
+                                int64_t first_idx, uint64_t npa_size) {
+    // ISA Stream is configured to start reading from correct position
+    uint64_t cur_idx, nxt_idx;
+    // fprintf(stderr, "*** start_pos: %" PRIu64 ", first_idx: %" PRId64 "\n", start_pos, first_idx);
+    ArrayInput isa_array(lISA, start_pos);
+    cur_idx = isa_array.Get();
+    // fprintf(stderr, "n_elems = %" PRIu64 "\n", n_elems);
+
+    if (cur_idx >= npa_size){
+      // fprintf(stderr, "out of bounds\n");
+      cur_idx = 0;
+    } else {
+      for (uint64_t i = 0; i < n_elems; i++) {
+        nxt_idx = isa_array.Get();
+        // fprintf(stderr, "Setting lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, nxt_idx);
+        lNPA[cur_idx] = nxt_idx;
+        cur_idx = nxt_idx;
+      }
+    }
+
+    // fprintf(stderr, "cur_idx is :%" PRIu64 " when exiting the loop\n", cur_idx);
+    if (first_idx > 0 && cur_idx < npa_size) {
+      // fprintf(stderr, "TRYING TO SET lNPA[ %" PRIu64 "] = %" PRIu64 "\n", cur_idx, first_idx);
+      lNPA[cur_idx] = first_idx;
+    }
+  }
+
+  //On-disk ConstructNPAChunk function
   void EncodeNPAChunk(DeltaEncodedVector *dv, std::string npa_file, uint64_t start_offset,
                              uint64_t end_offset) {
     ArrayStream npa_stream(npa_file, start_offset);
     std::vector<uint64_t> column;
     for (uint64_t j = start_offset; j < end_offset; j++) {
-      column.push_back(npa_stream.Get());
+      uint64_t temp = npa_stream.Get();
+      column.push_back(temp);
+      // // fprintf(stderr, "pushing back %" PRIu64 "\n", temp);
     }
     assert(column.size() > 0);
     CreateDeltaEncodedVector(dv, column);
     npa_stream.Close();
   }
+
+  //In memory EncodeNPAChunk function
+  void EncodeNPAChunkInMem(DeltaEncodedVector *dv, int64_t *lNPA, uint64_t start_offset,
+                             uint64_t end_offset) {
+    ArrayInput npa_array(lNPA, start_offset);
+    std::vector<uint64_t> column;
+    for (uint64_t j = start_offset; j < end_offset; j++) {
+      uint64_t temp = npa_array.Get();
+      column.push_back(temp);
+      // // fprintf(stderr, "pushing back %" PRIu64 "\n", temp);
+    }
+    assert(column.size() > 0);
+    CreateDeltaEncodedVector(dv, column);
+  }
+
+
 
 };
 

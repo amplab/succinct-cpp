@@ -91,9 +91,8 @@ class FlatSampledArray : public SampledArray {
     return in_size;
   }
 
-  virtual size_t MemoryMap(std::string filename) {
-    uint8_t *data_buf, *data_beg;
-    data_buf = data_beg = (uint8_t *) SuccinctUtils::MemoryMap(filename);
+  virtual size_t MemoryMap(uint8_t* data) {
+    uint8_t *data_buf, *data_beg = data;
 
     data_size_ = *((uint64_t *) data_buf);
     data_buf += sizeof(uint64_t);

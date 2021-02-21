@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <inttypes.h>
+#include <sstream>
 
 #include "utils/succinct_utils.h"
 
@@ -24,12 +26,26 @@ class ArrayStream {
     }
   }
 
+  void PrintStream(){
+    in_.clear();
+    in_.seekg(0, std::ios::beg);
+    fprintf(stderr, "PRINTING STREAM\n");
+    for (int i = 0; i < 200; i++){
+      uint64_t val;
+      in_.read(reinterpret_cast<char *>(&(val)), sizeof(uint64_t));
+      fprintf(stderr, "%" PRIu64 "\n", val);
+    }
+    in_.clear();
+    in_.seekg(0, std::ios::beg);
+  }
+
   uint64_t Get() {
     if (memory_map_) {
       return data_[current_idx_++];
     }
     uint64_t val;
     in_.read(reinterpret_cast<char *>(&(val)), sizeof(uint64_t));
+    // fprintf(stderr, "item at index %" PRIu64 " is %" PRIu64 "\n", current_idx_, val);
     current_idx_++;
     return val;
   }

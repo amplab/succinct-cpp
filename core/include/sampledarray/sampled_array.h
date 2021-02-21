@@ -3,6 +3,7 @@
 
 #include "sampling_scheme.h"
 #include "utils/array_stream.h"
+#include "utils/array_input.h"
 
 class SampledArray {
  public:
@@ -19,7 +20,7 @@ class SampledArray {
 
   virtual size_t Serialize(std::ostream& out) = 0;
   virtual size_t Deserialize(std::istream& in) = 0;
-  virtual size_t MemoryMap(std::string filename) = 0;
+  virtual size_t MemoryMap(uint8_t* data) = 0;
 
   SamplingScheme GetSamplingScheme() {
     return sampling_scheme_;
